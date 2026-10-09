@@ -1,0 +1,34 @@
+[
+  {
+    "file": "idle.png",
+    "state": "idle",
+    "size": "390x844",
+    "zoom": 1,
+    "issues": [],
+    "lint": []
+  },
+  {
+    "file": "queued.png",
+    "state": "queued",
+    "size": "390x844",
+    "zoom": 1,
+    "issues": [],
+    "lint": []
+  },
+  {
+    "file": "synced.png",
+    "state": "synced",
+    "size": "390x844",
+    "zoom": 1,
+    "issues": [],
+    "lint": []
+  },
+  {
+    "file": "syncerror.png",
+    "state": "syncerror",
+    "size": "390x844",
+    "zoom": 1,
+    "issues": [],
+    "lint": []
+  }
+]

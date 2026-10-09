@@ -1,0 +1,118 @@
+[
+  {
+    "file": "motion-probe",
+    "state": null,
+    "size": "390x844",
+    "zoom": 1,
+    "motion": {
+      "load": {
+        "elements": 5,
+        "loops": 0,
+        "maxMove": 15,
+        "maxSize": 0,
+        "maxOpacity": 1,
+        "top": [
+          {
+            "el": "button#stop-TV-300002.stop-row.refined-row",
+            "move": 15,
+            "size": 0,
+            "opacity": 1,
+            "loop": false,
+            "sources": [
+              "css:arrive"
+            ]
+          },
+          {
+            "el": "div.filter",
+            "move": 9,
+            "size": 0,
+            "opacity": 1,
+            "loop": false,
+            "sources": [
+              "js:style",
+              "css:arrive"
+            ]
+          },
+          {
+            "el": "div.run-overview",
+            "move": 8,
+            "size": 0,
+            "opacity": 0.94,
+            "loop": false,
+            "sources": [
+              "css:arrive"
+            ]
+          },
+          {
+            "el": "div.stops-list",
+            "move": 8,
+            "size": 0,
+            "opacity": 0.94,
+            "loop": false,
+            "sources": [
+              "css:arrive"
+            ]
+          },
+          {
+            "el": "header.app-top.refined-top",
+            "move": 7,
+            "size": 0,
+            "opacity": 0.76,
+            "loop": false,
+            "sources": [
+              "css:arrive"
+            ]
+          }
+        ]
+      },
+      "steps": {
+        "elements": 1,
+        "loops": 0,
+        "maxMove": 24,
+        "maxSize": 0,
+        "maxOpacity": 1,
+        "top": [
+          {
+            "el": "section.detail-overlay",
+            "move": 24,
+            "size": 0,
+            "opacity": 1,
+            "loop": false,
+            "sources": [
+              "js:style",
+              "transition:opacity",
+              "transition:transform"
+            ]
+          }
+        ]
+      },
+      "hero": {
+        "elements": 0,
+        "loops": 0,
+        "maxMove": 0,
+        "maxSize": 0,
+        "maxOpacity": 0,
+        "top": [],
+        "layers": 0
+      },
+      "scroll": {
+        "elements": 0,
+        "loops": 0,
+        "maxMove": 0,
+        "maxSize": 0,
+        "maxOpacity": 0,
+        "top": [],
+        "scrollable": false
+      }
+    },
+    "issues": []
+  },
+  {
+    "file": "page.png",
+    "state": null,
+    "size": "390x844",
+    "zoom": 1,
+    "issues": [],
+    "lint": []
+  }
+]

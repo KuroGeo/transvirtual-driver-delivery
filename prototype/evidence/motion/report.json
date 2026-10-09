@@ -1,0 +1,213 @@
+[
+  {
+    "file": "motion-probe",
+    "state": null,
+    "size": "390x844",
+    "zoom": 1,
+    "motion": {
+      "load": {
+        "elements": 7,
+        "loops": 0,
+        "maxMove": 9,
+        "maxSize": 0,
+        "maxOpacity": 1,
+        "top": [
+          {
+            "el": "div.filter",
+            "move": 9,
+            "size": 0,
+            "opacity": 1,
+            "loop": false,
+            "sources": [
+              "js:style",
+              "css:arrive"
+            ]
+          },
+          {
+            "el": "button#stop-TV-300002.stop-row",
+            "move": 9,
+            "size": 0,
+            "opacity": 1,
+            "loop": false,
+            "sources": [
+              "css:arrive"
+            ]
+          },
+          {
+            "el": "div.progress-track",
+            "move": 6,
+            "size": 0,
+            "opacity": 0.62,
+            "loop": false,
+            "sources": [
+              "css:arrive"
+            ]
+          },
+          {
+            "el": "div.page-heading",
+            "move": 2,
+            "size": 0,
+            "opacity": 0.26,
+            "loop": false,
+            "sources": [
+              "css:arrive"
+            ]
+          },
+          {
+            "el": "span.progress-part.completed",
+            "move": 9,
+            "size": 0,
+            "opacity": 0,
+            "loop": false,
+            "sources": [
+              "js:style"
+            ]
+          },
+          {
+            "el": "span.progress-part.failed",
+            "move": 9,
+            "size": 0,
+            "opacity": 0,
+            "loop": false,
+            "sources": [
+              "js:style"
+            ]
+          },
+          {
+            "el": "header.app-top",
+            "move": 1,
+            "size": 0,
+            "opacity": 0.09,
+            "loop": false,
+            "sources": [
+              "css:arrive"
+            ]
+          }
+        ]
+      },
+      "steps": {
+        "elements": 14,
+        "loops": 0,
+        "maxMove": 694,
+        "maxSize": 350,
+        "maxOpacity": 1,
+        "top": [
+          {
+            "el": "div.toast",
+            "move": 694,
+            "size": 350,
+            "opacity": 1,
+            "loop": false,
+            "sources": [
+              "js:style",
+              "transition:opacity"
+            ]
+          },
+          {
+            "el": "button#stop-TV-300002.stop-row",
+            "move": 347,
+            "size": 1,
+            "opacity": 0,
+            "loop": false,
+            "sources": [
+              "transition:background-color",
+              "transition:transform",
+              "js:style"
+            ]
+          },
+          {
+            "el": "span.progress-part.completed",
+            "move": 4,
+            "size": 0.333,
+            "opacity": 0,
+            "loop": false,
+            "sources": [
+              "js:style",
+              "transition:width"
+            ]
+          },
+          {
+            "el": "section.detail-overlay",
+            "move": 24,
+            "size": 0,
+            "opacity": 1,
+            "loop": false,
+            "sources": [
+              "js:style",
+              "transition:opacity",
+              "transition:transform"
+            ]
+          },
+          {
+            "el": "span.progress-part.failed",
+            "move": 16,
+            "size": 0,
+            "opacity": 0,
+            "loop": false,
+            "sources": [
+              "js:style"
+            ]
+          },
+          {
+            "el": "div.offline-note",
+            "move": 5,
+            "size": 0,
+            "opacity": 0,
+            "loop": false,
+            "sources": [
+              "js:style"
+            ]
+          },
+          {
+            "el": "button.connection.main-toggle",
+            "move": 5,
+            "size": 0,
+            "opacity": 0,
+            "loop": false,
+            "sources": [
+              "transition:transform"
+            ]
+          },
+          {
+            "el": "span.switch",
+            "move": 5,
+            "size": 0,
+            "opacity": 0,
+            "loop": false,
+            "sources": [
+              "transition:background-color",
+              "transition:transform"
+            ]
+          }
+        ]
+      },
+      "hero": {
+        "elements": 0,
+        "loops": 0,
+        "maxMove": 0,
+        "maxSize": 0,
+        "maxOpacity": 0,
+        "top": [],
+        "layers": 0
+      },
+      "scroll": {
+        "elements": 0,
+        "loops": 0,
+        "maxMove": 0,
+        "maxSize": 0,
+        "maxOpacity": 0,
+        "top": [],
+        "scrollable": false
+      }
+    },
+    "issues": []
+  },
+  {
+    "file": "page.png",
+    "state": null,
+    "size": "390x844",
+    "zoom": 1,
+    "issues": [],
+    "lint": []
+  }
+]

@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "lang": "zh",
+  "project": "Transvirtual · 第二版",
+  "brief": "鲜明橙色 × 奶油白。重做构图与字体层级，把任务信息更早放到首屏；首页、详情、失败表单与同步队列使用一致的视觉语言。左边是第一版，右边可直接操作新版。",
+  "round": "02 · 重新设计",
+  "candidates": [
+    {
+      "id": "before",
+      "name": "第一版",
+      "concept": "之前的版式，保留作为对照。",
+      "typography": "系统无衬线 · 粗标题 / 蓝色操作",
+      "palette": [
+        "#182332",
+        "#2458e0",
+        "#f6f7f9"
+      ],
+      "traits": [
+        "之前的设计"
+      ],
+      "kind": "html",
+      "source": "archive/round1/index.html",
+      "baseline": true,
+      "interactive": true
+    },
+    {
+      "id": "refined",
+      "name": "橙色作业清单",
+      "concept": "温暖、鲜明、有秩序。让每一条配送任务和每一次操作都清楚可读。",
+      "typography": "Inter Variable · 标题 31–39px / 正文 14–18px / 克制字重与光学间距",
+      "palette": [
+        "#ff6b38",
+        "#30271f",
+        "#fff8ed",
+        "#fff"
+      ],
+      "traits": [
+        "新版 · 明确橙色识别",
+        "合并页头 / 搜索收起 / 信息前移",
+        "任务刻度 / 悬浮操作坞 / 直接保存反馈"
+      ],
+      "kind": "html",
+      "source": "index.html",
+      "interactive": true
+    }
+  ]
+}

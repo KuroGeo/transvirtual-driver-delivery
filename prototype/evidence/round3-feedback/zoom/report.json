@@ -1,0 +1,34 @@
+[
+  {
+    "file": "idle-@2x.png",
+    "state": "idle",
+    "size": "390x844",
+    "zoom": 2,
+    "issues": [],
+    "lint": []
+  },
+  {
+    "file": "list-@2x.png",
+    "state": "list",
+    "size": "390x844",
+    "zoom": 2,
+    "issues": [],
+    "lint": []
+  },
+  {
+    "file": "detail-@2x.png",
+    "state": "detail",
+    "size": "390x844",
+    "zoom": 2,
+    "issues": [],
+    "lint": []
+  },
+  {
+    "file": "done-@2x.png",
+    "state": "done",
+    "size": "390x844",
+    "zoom": 2,
+    "issues": [],
+    "lint": []
+  }
+]

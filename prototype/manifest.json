@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "lang": "zh",
+  "project": "ocean delivery · 地图工作台",
+  "brief": "地图是整个作业界面的基础：30 个站点按 CSV 坐标落点，标记表达配送状态；当前位置固定在站点附近。点选站点后展开底部任务卡，筛选、搜索和同步都在地图工作台完成。左边保留上一版，右边运行新版。",
+  "round": "03 · 地图为基础",
+  "candidates": [
+    {
+      "id": "before",
+      "name": "第二版 · 作业清单",
+      "concept": "地图改版前的实际页面，保留对照。",
+      "typography": "Inter Variable / 正文 14–18px",
+      "palette": [
+        "#ff6b38",
+        "#30271f",
+        "#fff8ed",
+        "#fff"
+      ],
+      "traits": [
+        "上一版 · 列表为基础"
+      ],
+      "kind": "html",
+      "source": "archive/round2/index.html",
+      "baseline": true,
+      "interactive": true
+    },
+    {
+      "id": "map",
+      "name": "地图工作台",
+      "concept": "先看位置和站点状态，点选后直接完成作业。",
+      "typography": "Inter Variable / 地图控件 13px / 任务地址 28px",
+      "palette": [
+        "#ff6b38",
+        "#245d43",
+        "#8f2f2b",
+        "#376bba",
+        "#fff8ed"
+      ],
+      "traits": [
+        "30 个真实坐标 / 状态标记 / 密集聚合",
+        "固定当前位置 / 搜索和筛选联动",
+        "最近站点与距离 / 按入口返回 / 直接同步 Toast"
+      ],
+      "kind": "url",
+      "url": "http://127.0.0.1:8764/index.html?state=idle"
+    }
+  ]
+}

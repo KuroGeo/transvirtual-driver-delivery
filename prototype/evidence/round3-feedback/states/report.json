@@ -1,0 +1,26 @@
+[
+  {
+    "file": "idle.png",
+    "state": "idle",
+    "size": "390x844",
+    "zoom": 1,
+    "issues": [],
+    "lint": []
+  },
+  {
+    "file": "list.png",
+    "state": "list",
+    "size": "390x844",
+    "zoom": 1,
+    "issues": [],
+    "lint": []
+  },
+  {
+    "file": "detail.png",
+    "state": "detail",
+    "size": "390x844",
+    "zoom": 1,
+    "issues": [],
+    "lint": []
+  }
+]
