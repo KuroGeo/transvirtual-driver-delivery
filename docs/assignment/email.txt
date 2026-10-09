@@ -1,0 +1,30 @@
+Subject: George Ye — Mobile Engineer (Flutter): Take-Home Assignment (Driver Delivery App)
+From: Xiaojie Zhang <xiaojie.zhang@transvirtual.com>
+To: "yeyufeng1998@gmail.com" <yeyufeng1998@gmail.com>, CM Lai <cm.lai@teohcapital.com>, Susu Chen <susu.chen@goletalab.com>
+Date: Fri, 09 Oct 2026 14:41:50 +0000
+Message-ID: <mv12mv8z.1ecf7960-3bb9-4e78-b2d7-a9d3ec188199@we.are.superhuman.com>
+Gmail URL: https://mail.google.com/mail/u/?authuser=yeyufeng1998%40gmail.com#all/1a1211d1ff20d220
+
+Hi George,
+
+Thanks for the conversation — we’d like to move forward with the take-home stage.
+
+The assignment is a driver delivery app in Flutter: view today’s delivery stops and update their status, designed offline-first — our drivers work in depots and dead zones, so this is the real problem our mobile team solves every day. We provide only deliveries.csv (30 stops); storage, sync design, and state management are yours to choose, and they’re part of what we evaluate. The full brief is attached. Key points:
+
+  *   Timebox: 4–6 hours of effort. Stop at the timebox and note what you’d do next — unfinished but well-reasoned beats gold-plated.
+  *   AI tools are encouraged. Use Claude Code, Copilot, Cursor, or whatever you prefer — we work AI-first. Include a short note on how you used them (details in the brief).
+  *   The demo is the deliverable. The app must run on an Android emulator or iOS simulator with the commands documented in your README. We’ll follow this flow: go offline → update several stops → restart the app → go online → watch the queue sync.
+
+The evaluation criteria are printed in the brief — no surprises. If your submission moves forward, the final step is a single 60-minute interview: live demo, design defense as we scale the constraints, and a discussion on helping our junior engineers pick up Flutter.
+
+Any questions, just reply.
+
+
+Best,
+Xiaojie Zhang
+
+
+ ;​
+
+
+This email and any files transmitted with it are confidential and intended solely for the individual or entity named above. If you are not the intended recipient, please notify the sender by reply email then delete this email and any files immediately.
