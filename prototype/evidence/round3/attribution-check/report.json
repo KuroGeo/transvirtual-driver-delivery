@@ -1,0 +1,42 @@
+[
+  {
+    "file": "idle.png",
+    "state": "idle",
+    "size": "390x844",
+    "zoom": 1,
+    "issues": [],
+    "lint": []
+  },
+  {
+    "file": "list.png",
+    "state": "list",
+    "size": "390x844",
+    "zoom": 1,
+    "issues": [],
+    "lint": []
+  },
+  {
+    "file": "queued.png",
+    "state": "queued",
+    "size": "390x844",
+    "zoom": 1,
+    "issues": [],
+    "lint": []
+  },
+  {
+    "file": "done.png",
+    "state": "done",
+    "size": "390x844",
+    "zoom": 1,
+    "issues": [],
+    "lint": []
+  },
+  {
+    "file": "maperror.png",
+    "state": "maperror",
+    "size": "390x844",
+    "zoom": 1,
+    "issues": [],
+    "lint": []
+  }
+]

@@ -1,0 +1,220 @@
+[
+  {
+    "file": "motion-probe",
+    "state": null,
+    "size": "390x844",
+    "zoom": 1,
+    "motion": {
+      "load": {
+        "elements": 17,
+        "loops": 6,
+        "maxMove": 9,
+        "maxSize": 0,
+        "maxOpacity": 1,
+        "top": [
+          {
+            "el": "section.map-overview",
+            "move": 8,
+            "size": 0,
+            "opacity": 0.93,
+            "loop": false,
+            "sources": [
+              "css:arrive"
+            ]
+          },
+          {
+            "el": "div.map-filters",
+            "move": 8,
+            "size": 0,
+            "opacity": 0.92,
+            "loop": false,
+            "sources": [
+              "css:arrive"
+            ]
+          },
+          {
+            "el": "img.leaflet-tile.leaflet-tile-loaded",
+            "move": 0,
+            "size": 0,
+            "opacity": 1,
+            "loop": false,
+            "sources": [
+              "js:style"
+            ]
+          },
+          {
+            "el": "img.leaflet-tile.leaflet-tile-loaded",
+            "move": 0,
+            "size": 0,
+            "opacity": 1,
+            "loop": false,
+            "sources": [
+              "js:style"
+            ]
+          },
+          {
+            "el": "img.leaflet-tile.leaflet-tile-loaded",
+            "move": 0,
+            "size": 0,
+            "opacity": 1,
+            "loop": false,
+            "sources": [
+              "js:style"
+            ]
+          },
+          {
+            "el": "img.leaflet-tile.leaflet-tile-loaded",
+            "move": 0,
+            "size": 0,
+            "opacity": 1,
+            "loop": false,
+            "sources": [
+              "js:style"
+            ]
+          },
+          {
+            "el": "img.leaflet-tile.leaflet-tile-loaded",
+            "move": 0,
+            "size": 0,
+            "opacity": 1,
+            "loop": true,
+            "sources": [
+              "js:style"
+            ]
+          },
+          {
+            "el": "img.leaflet-tile.leaflet-tile-loaded",
+            "move": 0,
+            "size": 0,
+            "opacity": 1,
+            "loop": true,
+            "sources": [
+              "js:style"
+            ]
+          }
+        ]
+      },
+      "steps": {
+        "elements": 20,
+        "loops": 0,
+        "maxMove": 750,
+        "maxSize": 1,
+        "maxOpacity": 1,
+        "top": [
+          {
+            "el": "section.map-drawer.stop-browser",
+            "move": 750,
+            "size": 1,
+            "opacity": 0,
+            "loop": false,
+            "sources": [
+              "js:style",
+              "transition:transform"
+            ]
+          },
+          {
+            "el": "section.map-overview",
+            "move": 608,
+            "size": 1,
+            "opacity": 1,
+            "loop": false,
+            "sources": [
+              "js:style",
+              "transition:transform",
+              "transition:opacity"
+            ]
+          },
+          {
+            "el": "button#stop-TV-300003.map-list-row",
+            "move": 618,
+            "size": 1,
+            "opacity": 0,
+            "loop": false,
+            "sources": [
+              "transition:background-color"
+            ]
+          },
+          {
+            "el": "button#stop-TV-300002.map-list-row",
+            "move": 495,
+            "size": 1,
+            "opacity": 0,
+            "loop": false,
+            "sources": [
+              "transition:background-color",
+              "transition:transform"
+            ]
+          },
+          {
+            "el": "section.detail-overlay.map-stop-card",
+            "move": 70,
+            "size": 0.128,
+            "opacity": 0,
+            "loop": false,
+            "sources": [
+              "js:style",
+              "transition:transform"
+            ]
+          },
+          {
+            "el": "img.leaflet-tile.leaflet-tile-loaded",
+            "move": 0,
+            "size": 0,
+            "opacity": 1,
+            "loop": false,
+            "sources": [
+              "js:style"
+            ]
+          },
+          {
+            "el": "img.leaflet-tile.leaflet-tile-loaded",
+            "move": 0,
+            "size": 0,
+            "opacity": 1,
+            "loop": false,
+            "sources": [
+              "js:style"
+            ]
+          },
+          {
+            "el": "img.leaflet-tile.leaflet-tile-loaded",
+            "move": 0,
+            "size": 0,
+            "opacity": 1,
+            "loop": false,
+            "sources": [
+              "js:style"
+            ]
+          }
+        ]
+      },
+      "hero": {
+        "elements": 0,
+        "loops": 0,
+        "maxMove": 0,
+        "maxSize": 0,
+        "maxOpacity": 0,
+        "top": [],
+        "layers": 0
+      },
+      "scroll": {
+        "elements": 0,
+        "loops": 0,
+        "maxMove": 0,
+        "maxSize": 0,
+        "maxOpacity": 0,
+        "top": [],
+        "scrollable": false
+      }
+    },
+    "issues": []
+  },
+  {
+    "file": "page.png",
+    "state": null,
+    "size": "390x844",
+    "zoom": 1,
+    "issues": [],
+    "lint": []
+  }
+]

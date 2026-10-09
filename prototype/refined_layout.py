@@ -1,0 +1,47 @@
+"""Round-two visual hierarchy. Data, state lifecycle and persistence remain shared."""
+import html,re
+
+def refine(doc,variant,data,icons):
+    def icon(name):return icons[name]
+    def esc(text):return html.escape(str(text),quote=True)
+    def row(stop,kind=''):
+        ref=stop['reference'];status=stop['status']
+        show=f"visible('{ref}')"
+        if kind=='compact-row':show+=f" && (focusAll || selectedId !== '{ref}')"
+        street,locality=stop['address'].split(',',1)
+        return f'''<button id="stop-{ref}" class="stop-row refined-row {kind}" data-ref="{ref}" x-show="{show}" @click="openStop('{ref}')" aria-label="Open {esc(stop['customer_name'])}, {ref}"><span class="stop-content"><span class="stop-row-title"><h3>{esc(stop['customer_name'])}</h3>{icon('arrow').replace('<svg ','<svg class="stop-arrow" ')}</span><span class="address">{esc(street)}, <span>{esc(locality.strip())}</span></span><span class="row-meta"><span class="time-label">{icon('clock')}{esc(stop['time_window'].replace('-','–'))}</span><span class="ref mono">{ref}</span><span class="status {status}" :class="status('{ref}')"><span class="status-dot" aria-hidden="true"></span><span x-text="label(status('{ref}'))">{status.capitalize()}</span></span></span><span class="row-queue" x-cloak x-show="isQueued('{ref}')">{icon('cloud')}Saved · waiting to sync</span></span></button>'''
+    def filters():
+        choices=[('all','All'),('pending','Pending'),('completed','Completed'),('failed','Failed')]
+        return '''<div class="filter" role="group" aria-label="Filter stops by status" :style="'--filter-index:'+filterIndex"><span class="filter-indicator" aria-hidden="true"></span>'''+''.join(f'''<button data-filter="{s}" :class="{{selected:filter === '{s}'}}" :aria-pressed="filter === '{s}'" @click="filter='{s}'"><span>{label}</span><span class="filter-count" x-text="count('{s}')">{30 if s=='all' else sum(t['status']==s for t in data)}</span></button>''' for s,label in choices)+'''</div>'''
+    progress='''<div class="run-overview"><div class="run-overview-label"><span><strong x-text="count('completed')+count('failed')">6</strong> of 30 finished</span><span class="run-legend"><span><i class="completed" aria-hidden="true"></i><strong x-text="count('completed')">3</strong> completed</span><span><i class="failed" aria-hidden="true"></i><strong x-text="count('failed')">3</strong> failed</span></span></div><div class="run-ticks" role="img" :aria-label="(count('completed')+count('failed'))+' of 30 stops finished'">'''+''.join(f'''<span class="run-tick {s['status']}" :class="status('{s['reference']}')" aria-hidden="true"></span>''' for s in data)+'''</div></div>'''
+    search=f'''<div class="search refined-search" x-cloak x-show="searchOpen" x-transition.opacity.duration.150ms>{icon('search')}<input x-ref="searchInput" type="search" x-model="search" placeholder="Customer, address or reference" aria-label="Find a customer or reference"><button aria-label="Close search" @click="searchOpen=false;search=''">{icon('close')}</button></div>'''
+    rows=''.join(row(s) for s in data)
+    listview=f'''<section class="view ledger-view" x-show="page === 'stops'" aria-label="Stops">{progress}{search}{filters()}<div class="ledger-intro" x-cloak x-show="search"><span>Search results</span><span class="ledger-count" x-text="visibleCount+' stops'">24 stops</span></div><div class="stops-list">{rows}</div><div class="empty" x-cloak x-show="visibleCount === 0"><h3>No matching stops</h3><p>Try another status or search term.</p></div></section>'''
+    focusview=f'''<section class="view ledger-view focus-ledger" x-show="page === 'stops'" aria-label="Stops">{progress}{search}<div class="workspace-context"><span>Selected stop</span><span class="mono" x-text="selected.reference">TV-300002</span></div><article class="focus-stop"><div class="focus-name" x-text="selected.customer_name">Silverline Supplies</div><h2 x-text="street">215 Pitt St</h2><p class="focus-locality" x-text="locality">Newtown NSW</p><div class="focus-time"><span>{icon('clock')}Delivery window</span><strong x-text="selected.time_window?.replace('-','–')">08:00–10:00</strong></div><div class="focus-actions"><div x-show="selected.status === 'pending'"><button class="primary complete-focus" @click="update('completed')">{icon('check')}Complete delivery</button><button class="secondary fail-focus" @click="openFailure()">Report a failed delivery {icon('arrow')}</button></div><div class="focus-final" x-cloak x-show="selected.status !== 'pending'" :class="{{failed:selected.status === 'failed'}}">{icon('checkcircle')}<span x-text="label(selected.status)"></span></div><button x-cloak x-show="selected.status !== 'pending' && count('pending') > 0" class="primary" @click="chooseNext()" style="margin-top:11px">Select another pending stop {icon('arrow')}</button><div x-cloak x-show="saveError" class="save-error" style="margin:15px 0 0" role="alert" x-text="saveError"></div></div></article><div class="focus-list-heading"><span>Other pending stops</span><button @click="focusAll=!focusAll" x-text="focusAll?'Show less':'View all'">View all</button></div><div class="stops-list">{''.join(row(s,'compact-row') for s in data)}</div></section>'''
+    times=['08:00-10:00','10:00-12:00','12:00-14:00','14:00-16:00','16:00-18:00']
+    groups=''
+    for t in times:
+        groups+=f'''<section x-show="windowFilter === 'all' || windowFilter === '{t}'" aria-label="Delivery window {t}"><div class="window-group-head"><div><div class="window-time">{t.replace('-','–')}</div><div class="window-end">Delivery window</div></div><span class="window-line"></span><span class="window-count" x-text="windowCount('{t}')+' stops'"></span></div>{''.join(row(s,'window-row') for s in data if s['time_window']==t)}<div x-cloak x-show="windowCount('{t}') === 0" class="queue-empty">No stops with this status in this window.</div></section>'''
+    windowview=f'''<section class="view ledger-view" x-show="page === 'stops'" aria-label="Stops">{progress}{search}{filters()}<div class="time-window-tabs" role="group" aria-label="Delivery time window"><button :class="{{selected:windowFilter === 'all'}}" @click="windowFilter='all'">All</button>'''+''.join(f'''<button :class="{{selected:windowFilter === '{t}'}}" @click="windowFilter='{t}'">{t[:2]}–{t[6:8]}</button>''' for t in times)+f'''</div>{groups}</section>'''
+    start=doc.index('<section class="view" x-show="page === \'stops\'"')
+    end=doc.index('<section class="view" x-cloak x-show="page === \'sync\'"')
+    doc=doc[:start]+{'a':listview,'b':focusview,'c':windowview}[variant]+doc[end:]
+    top=f'''<header class="app-top refined-top"><h1 x-text="page==='sync'?'Sync centre':'Deliveries'">Deliveries</h1><div class="top-tools"><button class="icon-button search-trigger" x-show="page === 'stops'" @click="openSearch()" aria-label="Search stops">{icon('search')}</button><button class="connection main-toggle" :class="{{offline:!online}}" role="switch" :aria-checked="online" aria-label="Online connection" @click="toggleOnline()"><span class="connection-dot"></span><span x-text="online?'Online':'Offline'">Online</span><span class="switch" :class="{{on:online}}"></span></button></div></header>'''
+    doc=re.sub(r'<header class="app-top">.*?</header>',lambda _:top,doc,count=1,flags=re.S)
+    doc=doc.replace('<link rel="stylesheet" href="assets/app.css">','<link rel="stylesheet" href="assets/app.css"><link rel="stylesheet" href="assets/refined.css">')
+    doc=doc.replace('<div class="sync-heading"><h1>Sync centre</h1><p>Delivery updates, kept safe on your device.</p></div>','')
+    doc=re.sub(r'<div class="sync-controls">.*?</div>','',doc,count=1,flags=re.S)
+    doc=re.sub(r'<div class="sync-bottom">.*?</div>','',doc,count=1,flags=re.S)
+    doc=doc.replace('x-show="!online"','x-show="!online && page !== \'sync\'"')
+    doc=doc.replace('No pending updates on this device.','Your device has no pending updates.')
+    doc=re.sub(r'<div class="detail-identity">.*?</div><div class="data-row">',lambda _:f'''<div class="detail-identity"><div class="detail-ref"><span class="mono" x-text="selected.reference">TV-300002</span><span>Delivery stop</span></div><div class="detail-customer" x-text="selected.customer_name">Silverline Supplies</div><h1 x-text="street">215 Pitt St</h1><p class="detail-locality" x-text="locality">Newtown NSW</p><div class="detail-motif" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div></div><div class="data-row">''',doc,count=1,flags=re.S)
+    location_start=doc.index('<div class="data-row"><span class="label">'+icon('location')+'Location</span>')
+    coordinate_start=doc.index('<div class="coordinate-row">',location_start)
+    location_end=doc.index('</div>',coordinate_start)+6
+    doc=doc[:location_start]+f'''<details class="location-details"><summary>{icon('location')}Location details {icon('arrow')}</summary><div class="coordinate-row"><span class="mono" x-text="selected.latitude?.toFixed(6)+', '+selected.longitude?.toFixed(6)">-33.909712, 151.162838</span></div></details>'''+doc[location_end:]
+    doc=re.sub(r'<div class="detail-motif".*?</div>','',doc,count=1,flags=re.S)
+    doc=doc.replace('<span>Delivery stop</span>','')
+    doc=doc.replace('<p class="muted" style="font-size:13px;text-align:center;margin-top:16px">This delivery status is final.</p>','')
+    doc=doc.replace('x-show="toast"','x-show="toast && !detailOpen"')
+    doc=doc.replace('style="color:var(--success)"','class="nav-synced"')
+    return doc

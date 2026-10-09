@@ -1,0 +1,15 @@
+{
+  "driver": {
+    "latitude": -33.9004,
+    "longitude": 151.139,
+    "headingDegrees": 35,
+    "label": "Your location",
+    "locality": "Near Newtown, Sydney NSW",
+    "source": "User-authorised fixed prototype position near the supplied delivery stops"
+  },
+  "tiles": {
+    "url": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    "attribution": "© OpenStreetMap contributors",
+    "maxZoom": 19
+  }
+}

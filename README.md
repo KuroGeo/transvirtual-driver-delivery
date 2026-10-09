@@ -1,0 +1,37 @@
+# ocean delivery
+
+地图为基础的司机配送 App 交互原型。使用题目附件中的 30 个悉尼站点，让司机从位置与状态找到任务，完成配送或记录失败，并在离线时保留更新。
+
+<img src="prototype/evidence/direct-sync/home/page.png" alt="ocean delivery 地图工作台" width="320">
+
+## 本地运行
+
+仓库根目录执行：
+
+```sh
+python3 prototype/serve.py
+```
+
+打开 [地图原型](http://127.0.0.1:8764/index.html) 或 [设计前后对比](http://127.0.0.1:8764/style-explorer.html)。Python 3 标准库即可启动；页面运行依赖、字体和图标均在仓库内。OpenStreetMap 底图需要联网，加载失败时仍可浏览站点和保存配送结果。
+
+## 已实现的原型流程
+
+- 30 个站点按附件坐标落点，密集位置聚合；Pending / Completed / Failed 同时由颜色和符号区分。
+- 地图筛选、搜索、站点列表联动。列表按固定当前位置的直线距离排序；底部显示最近匹配站点及距离。
+- 当前位置使用蓝色方向箭头。位置和朝向保存在 `prototype/assets/map-config.json`，原型暂时固定。
+- 完成或失败即时更新站点；失败必须提供原因，Other 必须有非空说明；终态不可再次改动。
+- 配送结果和未确认更新保存到 localStorage。离线可操作，重连自动同步；左侧更新按钮直接执行，并用 Toast 提示进度和结果。
+- Stop list → 详情 → Stop list，恢复原列表位置；底部最近站点 / 地图站标 → 详情 → 地图。
+- 鲜橙与奶油白的工具风界面、390 × 844 手机画布、用户选定的第一版 App 图标。
+
+## 制作方式
+
+设计使用 **Oil UI** 工作流，保留设计比较、修改说明、截图与动效证据；**Codex** 完成交互原型与验证，内置图像生成工具制作 App 图标。界面采用 HTML / CSS / JavaScript 与 Alpine.js；地图使用 Leaflet、Leaflet.markercluster 和 OpenStreetMap；Inter 字体和 Carbon 图标缓存到本地。Python 标准库负责从原始 CSV 生成页面和启动预览服务。
+
+[原型运行与验收说明](prototype/README.md) · [当前返回规则](prototype/origin-return-design.md) · [同步及最近站点设计](prototype/direct-sync-design.md) · [第三方资源和许可](prototype/assets/THIRD_PARTY.md)
+
+最新交互验收为 78 项连续三轮通过，报告与录屏位于 `prototype/evidence/origin-return/`。前几轮设计及证据留在 `prototype/archive/` 和 `prototype/evidence/`，用于追溯比较。
+
+## 范围
+
+这是可操作的浏览器设计原型。同步目标为应用内 fake，没有真实服务端上传；距离为直线距离，未接入 GPS / 罗盘、路网导航或 ETA。Flutter 应用、Android / iOS 设备运行与正式题目提交材料仍属于后续实现范围。原始题目和数据保存在 `docs/assignment/`，本次不修改附件。

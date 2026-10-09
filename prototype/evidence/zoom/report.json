@@ -1,0 +1,18 @@
+[
+  {
+    "file": "detail-@2x.png",
+    "state": "detail",
+    "size": "390x844",
+    "zoom": 2,
+    "issues": [],
+    "lint": []
+  },
+  {
+    "file": "failure-@2x.png",
+    "state": "failure",
+    "size": "390x844",
+    "zoom": 2,
+    "issues": [],
+    "lint": []
+  }
+]
