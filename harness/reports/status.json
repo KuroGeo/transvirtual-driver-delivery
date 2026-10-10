@@ -187,15 +187,15 @@
   },
   "active_candidate_validation": {
     "scope": "fresh current G1/max N7/full 34/native cancellation pending",
-    "status": "Two actual UI taps frozen; freshG1 actualrunning",
-    "candidate": "f25ddccd38ace3d3deb1850e6533f17f8c5360e240220ea8e27dbc2f06b4fe5e",
+    "status": "Frozen realdeep target; freshG1 pending",
+    "candidate": "1fcf05a58154113ff020294e1766610517157d696c33488d7fb98ac89e453805",
     "production_eligible": false,
-    "quality_report": "harness/runs/20261010T221632901926Z-quality/attempts/000001/report.json"
+    "quality_report": "harness/runs/20261010T225319629590Z-quality/attempts/000001/report.json"
   },
   "latest_quality_observation": {
-    "source_fingerprint": "0e73dd72256cee309b4e83fb600746365c2a79db32d1ac53ac9aebe7a4e91549",
-    "report": "harness/runs/20261010T224638741032Z-quality/attempts/000001/report.json",
-    "report_sha256": "5d6938ed9bcdba6f4dc35f35e545c8dfdaced3e7e341da4a85689deea8732478",
+    "source_fingerprint": "f25ddccd38ace3d3deb1850e6533f17f8c5360e240220ea8e27dbc2f06b4fe5e",
+    "report": "harness/runs/20261010T225319629590Z-quality/attempts/000001/report.json",
+    "report_sha256": "0f60de5a4ddb9e21251f717fde4ad37baa32850cd4d8d32b05340d47302dfade",
     "tooling_checks": 158,
     "tooling_skipped": 1,
     "flutter_checks": 177,
@@ -204,13 +204,12 @@
     "independent_review": "pending"
   },
   "e08_latest_observation": {
-    "candidate": "0e73dd72256cee309b4e83fb600746365c2a79db32d1ac53ac9aebe7a4e91549",
-    "report": "harness/runs/20261010T224756616476Z-native/attempts/000001/report.json",
+    "candidate": "f25ddccd38ace3d3deb1850e6533f17f8c5360e240220ea8e27dbc2f06b4fe5e",
+    "report": "harness/runs/20261010T225440659816Z-native/attempts/000001/report.json",
     "status": "failed",
     "full_g2": false,
-    "report_sha256": "4272855fa0715a608452d585f371255a0f9987f67524140efabe11b5642f528e",
-    "native_sha256": "2287d25b9e1d2607f914eb393eb38d21074b1e63b7334c2f09deb3270250df9f",
-    "failure": "sharedAll nearestTV2 completed; fixedpending driver assumption"
+    "report_sha256": "3117bfe4f3cf3fefdb3d2ea7e94d7b3a2de92c33fb1485303ea15e4b2ff0402d",
+    "failure": "TV24 seconddistance row cannotexercise >400 deepoffset"
   },
   "latest_ci_observation": {
     "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38090820475",

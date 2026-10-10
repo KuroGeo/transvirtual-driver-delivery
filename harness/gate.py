@@ -1106,7 +1106,7 @@ class Validator:
             offset = _number(list_before.get("model", {}).get("listSession", {}).get("scrollOffset"), "actual deep list offset")
             require(offset > 400, "actual nonzero deep lazy-list scroll")
             _expect(model.get("listSession", {}).get("scrollOffset"), offset, "actual list Return preserves offset")
-            _expect(after.get("focusedWidget"), "Stop TV-300024", "actual restored row focus")
+            _expect(after.get("focusedWidget"), "Stop TV-300029", "actual restored row focus")
             _expect(model.get("query", {}).get("search"), "", "actual empty-query list Return")
         elif check_id == "N4.notice-context":
             for key in ("query", "selected", "selectedOrigin", "listSession"):

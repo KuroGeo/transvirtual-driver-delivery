@@ -1714,6 +1714,11 @@
       "task": "E08",
       "at": "2026-10-10T22:50:45.811327+00:00",
       "event": "Current0e73 targetedN4 actualfailure preserved at reference-nearest; sharedAll nearest correctly completedTV2. Root terminalraw/PG/kernel/lease/clone/taskUDIDabsence proven; Req assigned driver UI setup only and E08 independent review."
+    },
+    {
+      "task": "E08/X03",
+      "at": "2026-10-10T22:57:38.984012+00:00",
+      "event": "Actualf25 deep-list failure preserved; TV24 is Allsecond/Pendingnearest. CorrectfarPendingfixture identity only, originaldeep>400/gesturebounds/modal/focus/SQL predicates unchanged; independent review assigned."
     }
   ],
   "status": "Matrix stopped at actual occluded first-cluster driver locator; bounded repair assigned",
@@ -1724,11 +1729,11 @@
     "working_tree_changes": true
   },
   "runtime_observation": {
-    "observed_at": "2026-10-10T22:54:19.288559+00:00",
+    "observed_at": "2026-10-10T22:59:43.595327+00:00",
     "source_writers": [],
     "executor": "/root",
-    "active_run": "harness/runs/20261010T225319629590Z-quality",
-    "note": "Root sole SDK; standalone format rejected beforedart due to missing contextFD. Original failure preserved and normalG1 format verification running."
+    "active_run": null,
+    "note": "Sole rootSDK; authorfrozen, standardqualitywillverifyformatzerochange"
   },
   "evidence_archive": "harness/archive/2026-10-10-engineering.tar.gz",
   "next_task": "X04 and E08 rework",
@@ -1746,17 +1751,18 @@
     "native_rerun": false,
     "production_eligible": false
   },
-  "updated_at": "2026-10-10T22:54:19.288559+00:00",
+  "updated_at": "2026-10-10T22:59:43.595327+00:00",
   "native_protocol_revision": 6,
   "source_writers": [],
   "active_execution": {
-    "candidate": "f25ddccd38ace3d3deb1850e6533f17f8c5360e240220ea8e27dbc2f06b4fe5e",
-    "status": "Standard freshG1 running on frozen two taps",
+    "candidate": "1fcf05a58154113ff020294e1766610517157d696c33488d7fb98ac89e453805",
+    "status": "Realdeep Pendingtarget frozen; standardG1 format/analyze/tests",
     "source_writers": [],
     "sole_sdk_executor": "/root",
     "helper_sha256": "16a434d5cddecb6b8f212f6801bf36a065c00ab8a2cd3b6727f73fed74cc242c",
     "previous_native_failure": "harness/runs/20261010T205314408077Z-native/attempts/000001/report.json",
     "failure_reason": "cached offstage bounds mistaken for actionable row; no actual primary scroll occurred; strict failure retained",
-    "driver_sha256": "88e18dfa78f5c9222a7bfe529aee88670cdd6394a838575abca1411c440cffce"
+    "driver_sha256": "d45690160e0b1161f05e4757e6d4c596cffab5e2ba39bc5db14b87c516f16661",
+    "gate_sha256": "fa40d101bcf13e55114c935a3f4e0b4ff9e4dcac0873fad0ba6f71469e7017da"
   }
 }
