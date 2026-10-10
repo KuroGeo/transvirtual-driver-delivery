@@ -101,7 +101,8 @@ def lease(resources, run_dir, lock_root):
                 _write_json(run_dir / "lease.json", metadata)
             finally:
                 for handle in reversed(acquired):
-                    fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+                    # Inherited descriptors share this open-file-description.
+                    # Explicit LOCK_UN would also unlock a surviving child.
                     handle.close()
         else:
             for handle in reversed(acquired):
@@ -132,12 +133,16 @@ def validate_resume(report, candidate):
     acquisition itself is the atomic protection against concurrent execution.
     """
     reasons = []
+    if not isinstance(report, dict):
+        return {"allowed": False, "reasons": ["resume report must be an object"]}
     previous, current = _fingerprint(report.get("candidate")), _fingerprint(candidate)
     if not previous or not current:
         reasons.append("candidate.source_fingerprint is missing; cannot reuse completed stages")
     elif previous != current:
         reasons.append("candidate.source_fingerprint changed; rerun completed stages for this source")
     job = report.get("job", {})
+    if not isinstance(job, dict):
+        return {"allowed": False, "reasons": [*reasons, "job must be an object"]}
     pid = job.get("pid")
     if pid is not None:
         if not isinstance(pid, int) or isinstance(pid, bool) or pid <= 0:
@@ -148,16 +153,46 @@ def validate_resume(report, candidate):
         reasons.append("job is running but job.pid is missing; process exit cannot be verified")
     if not job.get("status"):
         reasons.append("job.status is missing; agent completion is not a process status")
-    for stage in report.get("stages", []):
+    stages = report.get("stages", [])
+    if not isinstance(stages, list) or any(not isinstance(stage, dict) for stage in stages):
+        return {"allowed": False, "reasons": [*reasons, "stages must be a list of objects"]}
+    for stage in stages:
         pid = stage.get("job_pid")
-        if stage.get("status") != "running" or pid is None:
+        completion = stage.get("completion", {})
+        if not isinstance(completion, dict):
+            reasons.append(f"stage {stage.get('id', 'unknown')}: completion must be an object")
+            continue
+        group = completion.get("process_group")
+        if group is not None:
+            if type(group) is not int or group <= 0 or group != pid:
+                reasons.append(f"stage {stage.get('id', 'unknown')}: process_group must match the positive wrapper job_pid")
+            else:
+                try:
+                    os.killpg(group, 0)
+                except ProcessLookupError:
+                    pass
+                except PermissionError:
+                    reasons.append(f"stage {stage.get('id', 'unknown')}: process group {group} is still alive")
+                else:
+                    reasons.append(f"stage {stage.get('id', 'unknown')}: process group {group} is still alive")
+        unfinished = stage.get("status") == "running" or completion.get("wrapper_reaped") is False
+        if not unfinished:
+            continue
+        if pid is None:
+            reasons.append(f"stage {stage.get('id', 'unknown')}: unfinished stage is missing job_pid")
             continue
         if not isinstance(pid, int) or isinstance(pid, bool) or pid <= 0:
             reasons.append(f"stage {stage.get('id', 'unknown')}: job_pid must be a positive process ID")
         elif _pid_alive(pid):
             reasons.append(f"stage {stage.get('id', 'unknown')}: job_pid {pid} is still alive; stop/reap the prior stage")
-    lease_record = report.get("lease", {}) or {}
+    lease_record = report.get("lease", {})
+    if not isinstance(lease_record, dict):
+        return {"allowed": False, "reasons": [*reasons, "lease must be an object"]}
     resources, lock_root = lease_record.get("resources", []), lease_record.get("lock_root")
+    if not isinstance(resources, list) or any(not isinstance(item, str) or not item for item in resources):
+        return {"allowed": False, "reasons": [*reasons, "lease.resources must be a list of nonempty strings"]}
+    if lock_root is not None and (not isinstance(lock_root, str) or not lock_root):
+        return {"allowed": False, "reasons": [*reasons, "lease.lock_root must be a path string"]}
     if resources and not lock_root:
         reasons.append("lease.lock_root is missing for recorded resources")
     elif resources:

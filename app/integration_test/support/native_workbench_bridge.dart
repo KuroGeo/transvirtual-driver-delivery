@@ -150,6 +150,8 @@ class NativeWorkbenchBridge {
     final progress = current?.syncProgress.value;
     final notice = current?.notice.value;
     final selected = current?.selectedStop;
+    final accessibility =
+        WidgetsBinding.instance.platformDispatcher.accessibilityFeatures;
     return {
       'schema': 1,
       'processId': pid,
@@ -163,6 +165,11 @@ class NativeWorkbenchBridge {
       'launchConfigByteLength': launchConfigBytes,
       'launchConfigSchema': 1,
       'observedAt': DateTime.now().toUtc().toIso8601String(),
+      'platformAccessibility': {
+        'platform': Platform.operatingSystem,
+        'reduceMotion': accessibility.reduceMotion,
+        'disableAnimations': accessibility.disableAnimations,
+      },
       'model': current == null
           ? null
           : {
@@ -269,8 +276,10 @@ class NativeWorkbenchBridge {
             'top': rect.top,
             'right': rect.right,
             'bottom': rect.bottom,
-            'width': rect.width,
-            'height': rect.height,
+            // Global edge subtraction can lose precision at fractional
+            // offsets; the layout size retains the actual target dimensions.
+            'width': render.size.width,
+            'height': render.size.height,
             'centerHit': hits.path.any((hit) => identical(hit.target, render)),
           });
         }

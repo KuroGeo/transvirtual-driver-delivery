@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "audit_date": "2026-10-11",
-  "scope": "FullprototypeAppG1 andcontrollednative toolingsmokes accepted; fullnativeacceptance/evidencegate next",
+  "scope": "X03 strict evidence validator implementation independently accepted; E08/X04 actual acceptance ongoing",
   "production_eligible": false,
   "production_verdict": "no-go",
   "enforcement_deployed": false,
@@ -140,11 +140,12 @@
     ],
     "running": [
       "E08",
-      "X03"
+      "X03",
+      "X04"
     ],
     "task_board": "harness/project/work.json",
     "coordinator": "/root",
-    "note": "Formal workbench assembled and independent host/build verification accepted; controlled native observation/acceptance next"
+    "note": "X03 acceptedhistory retained; reopened fornativeprotocol6 correctiOSflags. ActualN7geometrypassed, full34 andfinalsourcepending."
   },
   "x00_execution": {
     "candidate": "f9137cb845783c63b0b182be1936c7682d4d3fd5fa061f19e0de79c2da0eadcd",
@@ -176,22 +177,49 @@
     ],
     "running": [
       "E08",
-      "X03"
+      "X03",
+      "X04"
     ],
     "review": [],
     "independent_testing": [],
-    "production_eligible": false
+    "production_eligible": false,
+    "note": "X03 acceptedhistory retained; reopened fornativeprotocol6 correctiOSflags. ActualN7geometrypassed, full34 andfinalsourcepending."
   },
   "active_candidate_validation": {
-    "scope": "Fullnative34checks/evidencevalidator implementation; nofreshG1/G2 yet",
-    "status": "LastacceptedX02 e888; E08/X03 sourcechanging",
-    "candidate": "e888779d6b48c5a3aecd002b20f0a21362134594fbb19680562bd535a7cc769b",
-    "quality_report": "harness/runs/20261010T175151779951Z-quality/report.json",
-    "tooling_checks": 89,
-    "flutter_checks": 159,
-    "native_report": "harness/runs/20261010T175309967471Z-native/report.json",
-    "production_eligible": false,
-    "demo_native_report": "harness/runs/20261010T175309967471Z-native/report.json",
-    "local_native_report": "harness/runs/20261010T175539527417Z-native/report.json"
+    "scope": "Currentimplementation G1; full34G2pending",
+    "status": "G1passed,nativeinprogress",
+    "candidate": "c3e05ac1f457ecf7e47bc16d1fdcc229010c1b84f7d67a04b3c3c29714aca30a",
+    "quality_report": "harness/runs/20261010T202147347764Z-quality/attempts/000001/report.json",
+    "tooling_checks": 146,
+    "flutter_checks": 176,
+    "production_eligible": false
+  },
+  "latest_quality_observation": {
+    "source_fingerprint": "c3e05ac1f457ecf7e47bc16d1fdcc229010c1b84f7d67a04b3c3c29714aca30a",
+    "report": "harness/runs/20261010T202147347764Z-quality/attempts/000001/report.json",
+    "report_sha256": "bb7ed3d0ab190e815c7c66c9bea9dc83b3cacacf19af898c6e07a37d03ef9dad",
+    "tooling_checks": 146,
+    "flutter_checks": 176,
+    "status": "passed",
+    "current_source_matches": true
+  },
+  "e08_latest_observation": {
+    "report": "harness/runs/20261010T195031320652Z-native/attempts/000003/report.json",
+    "report_sha256": "393df48a5398e0dd61e77335830705c1999799741863d147ef17c0f54a75a7b3",
+    "status": "failed",
+    "device_cleaned": true,
+    "passed_checks": [
+      "N7.two-sizes-safearea"
+    ],
+    "facts": {
+      "platform": "ios",
+      "reduceMotion": true,
+      "disableAnimations": false,
+      "textScaleAt16": 3.1176470588235294
+    },
+    "findings": [
+      "overview scroll viewport69.91 shorter than actualBrowse124; tap impossiblewithoutadaptive productrepair"
+    ],
+    "full_g2": false
   }
 }

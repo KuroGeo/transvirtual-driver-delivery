@@ -1,7 +1,7 @@
 {
   "mode": "execute",
   "contract_revision": 5,
-  "source_head": "6a70a94eab758731bfd1468a384247bbfae48a83",
+  "source_head": "02608127fd2cd42286d7eb4e6d4b357b8a3ac394",
   "coordinator": "/root",
   "scope": "Implement full prototype/architecture Flutter demo and local-client with independently verified Harness evidence; production no-go remains",
   "tasks": [
@@ -799,7 +799,7 @@
       "base_sha": "6a70a94eab758731bfd1468a384247bbfae48a83",
       "started_at": "2026-10-10T18:03:39.398623+00:00",
       "source_fingerprint": "e888779d6b48c5a3aecd002b20f0a21362134594fbb19680562bd535a7cc769b",
-      "note": "Independent34checkdriver/readonlybridgedobservations; sharedsupport sole writer E08; hostcapabilities delegatedIE08H. Noexecution untilallfreeze.",
+      "note": "Readonly stable case boundaries plus adaptiveoverview and approved-font geometrytests passedG1; allsourcefrozen finalcutfull34pending",
       "coordinator_write_scope": [
         "harness/run.py",
         "harness/tests/test_runner_options.py",
@@ -817,10 +817,20 @@
       "returned_at": "2026-10-10T18:36:42.279179+00:00",
       "result_path": "harness/runs/implementation/E08.md",
       "frozen_source_hashes": {
-        "app/integration_test/acceptance_driver.dart": "9383c7239305afce352ecc76087bdf70cf83b1e36c14b7fdea0a30685c1e676a",
-        "app/integration_test/support/native_acceptance_support.dart": "8fd221c1057da8657d23076615d792548e7cac8702239262ef38b4fd052c4962",
+        "app/integration_test/acceptance_driver.dart": "b0dd5362972afe8a955871d80294569306d040d3c3669e8a819674ce1cf2fbfb",
+        "app/integration_test/support/native_acceptance_support.dart": "4512131a3156679ac1597163d78a6e6a61ed72e6bed19a05564a47bd7a2a33c7",
         "app/integration_test/support/native_driver_support.dart": "bc48b523bd86082fc67bd393780ef8e1e416954ad518c0f4a07003881d356ea7"
-      }
+      },
+      "native_protocol_revision": 6,
+      "current_frozen_candidate": "c3e05ac1f457ecf7e47bc16d1fdcc229010c1b84f7d67a04b3c3c29714aca30a",
+      "quality_report": "harness/runs/20261010T202147347764Z-quality/attempts/000001/report.json",
+      "independent_reviewer": "/root/e08_acceptance_review",
+      "coordinator_current_repair_scope": [
+        "app/integration_test/support/native_acceptance_support.dart",
+        "app/test/native_acceptance_stability_test.dart",
+        ".agents/skills/flutter-native-acceptance/SKILL.md",
+        ".agents/skills/harness-engineering/SKILL.md"
+      ]
     },
     {
       "id": "E09",
@@ -851,7 +861,7 @@
     {
       "id": "X03",
       "role": "harness-engineering",
-      "status": "accepted",
+      "status": "rework",
       "owner_agent_id": "/root/data_development",
       "contract_revision": 5,
       "write_scope": [
@@ -878,20 +888,26 @@
       "verification_level": "H06 本地候选证据校验；强制部署由 X05 验证",
       "base_sha": "6a70a94eab758731bfd1468a384247bbfae48a83",
       "started_at": "2026-10-10T18:03:39.398623+00:00",
-      "note": "Implementstrict evidencevalidator afterX02accepted; rootownsCLI/contracts. Coordinate34checkreceiptswithE08. Noexecution untilallfreeze.",
+      "note": "Native6 gate current source accepted independent 2 controls+32negatives. Actual full34 localgate pending.",
       "source_frozen": true,
       "returned_at": "2026-10-10T18:44:58.234389+00:00",
       "result_path": "harness/runs/implementation/X03.md",
       "frozen_hashes": {
-        "harness/gate.py": "eebf29c719bddd47907356f824622ea43abc19883ed8e485dcca622a4e7657fd",
-        "harness/tests/test_gate.py": "34950888d2407cf7376f03fdf09a4f85c2d50042c236cb4449e30b310a0d36da",
-        "harness/tests/test_gate_native.py": "9faeda8aa3c383244b86d31a5189d7633ba419c6400141653696f80acf25f66d"
+        "harness/gate.py": "730aa5e27a9c1497045da9b731601410aaa04e5ad64f79d0d89cb34b6d9b415e",
+        "harness/tests/test_gate.py": "3ca1a5c20f80d94e1cd542bf70693288acf92c25187e63d712ead151cd943adf",
+        "harness/tests/test_gate_native.py": "7e1c7bb852fb21aec558abfde65be267080869588aeb8d6af746afd46165746f"
       },
       "accepted_at": "2026-10-10T19:06:26.968515+00:00",
       "accepted_source_fingerprint": "4c98b970dae12aa2fbe3c3a0fe9d83b8e84289b08b16a158cfe9e747a687de22",
-      "quality_report": "harness/runs/20261010T190121388422Z-quality/report.json",
+      "quality_report": "harness/runs/20261010T202147347764Z-quality/attempts/000001/report.json",
       "review": "harness/runs/implementation/X03-independent-review.md",
-      "review_result": "Strict validator implementation accepted130Harness159Flutter+99independentgate outcomes. ActualfullE08/local-gatepasspending, noproduction."
+      "review_result": "Strict validator implementation accepted130Harness159Flutter+99independentgate outcomes. ActualfullE08/local-gatepasspending, noproduction.",
+      "github_close_comment": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/28#issuecomment-6101190105",
+      "github_state": "open",
+      "native_protocol_revision": 6,
+      "github_protocol6_comment": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/28#issuecomment-6101367131",
+      "repair_reason": "Correct pinnedFlutter iOS OSmotion observation in native protocol6; retain previous strictimplementation acceptance history.",
+      "current_frozen_candidate": "c3e05ac1f457ecf7e47bc16d1fdcc229010c1b84f7d67a04b3c3c29714aca30a"
     },
     {
       "id": "X05",
@@ -926,14 +942,16 @@
     {
       "id": "X04",
       "role": "harness-engineering",
-      "status": "planned",
-      "owner_agent_id": null,
+      "status": "review",
+      "owner_agent_id": "/root/harness_review",
       "contract_revision": 5,
       "write_scope": [
+        "harness/run.py",
         "harness/state.py",
+        "harness/tests/test_runner.py",
         "harness/tests/test_state.py",
-        "harness/tests/test_native.py",
-        "harness/runs/X04"
+        "harness/tests/test_runner_options.py",
+        "harness/tests/test_recovery.py"
       ],
       "resource_leases": [],
       "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/29",
@@ -950,7 +968,15 @@
       "requirements": [
         "R17"
       ],
-      "verification_level": "H07/H08 实际生命周期/保留场景"
+      "verification_level": "H07/H08 实际生命周期/保留场景",
+      "source_frozen": true,
+      "started_at": "2026-10-10T19:12:17.131419+00:00",
+      "note": "Currentcut21realOS+16authenticcleanup heldouts independentlypassed; roottrueN3heldHTTPcancel/replay pending.",
+      "returned_at": "2026-10-10T19:22:09.550330+00:00",
+      "result_path": "harness/runs/implementation/X04.md",
+      "source_fingerprint": "45151988e0c042ec45de02797ffda4c1a56924910af13884f07f416a61228d73",
+      "current_frozen_candidate": "c3e05ac1f457ecf7e47bc16d1fdcc229010c1b84f7d67a04b3c3c29714aca30a",
+      "quality_report": "harness/runs/20261010T202147347764Z-quality/attempts/000001/report.json"
     },
     {
       "id": "E10",
@@ -1391,7 +1417,7 @@
       "id": "IE08H",
       "role": "native-acceptance-host-capabilities",
       "candidate_task": "E08",
-      "status": "rework",
+      "status": "review",
       "owner_agent_id": "/root/harness_review",
       "base_sha": "6a70a94eab758731bfd1468a384247bbfae48a83",
       "started_at": "2026-10-10T18:03:39.398623+00:00",
@@ -1407,12 +1433,14 @@
         "harness/runs/implementation/E08-host.md"
       ],
       "resource_leases": [],
-      "note": "Taskonlyruntime/device/scale/reducedmotion/tile503/viewport/migrationrollback controls. Rootrun.py solewriter; E08Dart/support solewriter requirements reviewer.",
-      "source_frozen": false,
-      "returned_at": "2026-10-10T18:25:13.699524+00:00",
+      "note": "Strict startup fallback and task-UDID ReduceMotion notification frozen; actualOS result pending.",
+      "source_frozen": true,
+      "returned_at": "2026-10-10T19:22:09.550330+00:00",
       "result_path": "harness/runs/implementation/E08-host.md",
       "repair_reason": "Actual184820startupVMpublicationmissedlive logstream; strict taskcurrentPID persistedOSlogfallback without broadURIacceptance",
-      "failed_report": "harness/runs/20261010T184820743712Z-native/report.json"
+      "failed_report": "harness/runs/20261010T184820743712Z-native/report.json",
+      "source_fingerprint": "45151988e0c042ec45de02797ffda4c1a56924910af13884f07f416a61228d73",
+      "native_protocol_revision": 6
     },
     {
       "id": "PX03R",
@@ -1447,17 +1475,18 @@
         "X02"
       ],
       "write_scope": [
-        "app/lib/ui/delivery_screen.dart:header",
-        "app/lib/ui/delivery/map/delivery_map_workspace.dart:attribution-footer",
+        "app/lib/ui/delivery_screen.dart",
+        "app/lib/ui/delivery/detail/delivery_detail_card.dart",
         "harness/runs/implementation/E08-large-text-repair.md"
       ],
       "resource_leases": [],
       "started_at": "2026-10-10T18:53:38.967631+00:00",
       "failed_report": "harness/runs/20261010T184820743712Z-native/report.json",
-      "note": "RealOSPNGobservedbrandwrapped3lines/header44%footer29%; preserveactualOSoperationaltextscale/semantics andoriginal34 checks.",
+      "note": "Second actualN7 failed70.91px card clips Close; now bounded compactheight and pinned48px Close frozen. All operational OStextscale retained; independent review and actual retest pending.",
       "source_frozen": true,
-      "returned_at": "2026-10-10T18:58:54.894325+00:00",
-      "result_path": "harness/runs/implementation/E08-large-text-repair.md"
+      "returned_at": "2026-10-10T19:12:17.131419+00:00",
+      "result_path": "harness/runs/implementation/E08-large-text-repair.md",
+      "native_protocol_revision": 6
     },
     {
       "id": "RE08I",
@@ -1476,7 +1505,28 @@
       ],
       "resource_leases": [],
       "started_at": "2026-10-10T18:58:54.894325+00:00",
-      "note": "Reviewer has authored no product, driver or gate; actualwhole34rawreceipts/OSSQL/image/cleanuprequired. RootSDKsoleexecutor."
+      "note": "Independent currentquality2ddea accepted; protocol6/helper staticreview now. No product/driver/gate authorship. Full34 pending.",
+      "result_path": "harness/runs/implementation/E08-independent-acceptance.md",
+      "native_protocol_revision": 6
+    },
+    {
+      "id": "RE08G",
+      "role": "native-observation-geometry-repair",
+      "candidate_task": "E08",
+      "status": "review",
+      "owner_agent_id": "/root/query_development",
+      "base_sha": "02608127fd2cd42286d7eb4e6d4b357b8a3ac394",
+      "contract_revision": 5,
+      "write_scope": [
+        "app/integration_test/support/native_workbench_bridge.dart",
+        "app/test/native_observation_geometry_test.dart",
+        "harness/runs/implementation/native-geometry-repair.md"
+      ],
+      "resource_leases": [],
+      "source_frozen": true,
+      "returned_at": "2026-10-10T19:12:17.131419+00:00",
+      "note": "Actual RenderBox size replaces lossy global Rect subtraction. Genuine fractional44 and43.5 regressions authored, no44predicate waiver; root runtime pending.",
+      "native_protocol_revision": 6
     }
   ],
   "resource_leases": [],
@@ -1614,9 +1664,34 @@
       "task": "X03",
       "at": "2026-10-10T19:06:26.968515+00:00",
       "event": "Independent strictgateimplementationaccepted130Harness/159Flutter+99heldout; realemptydiagnosticscontextrepaired. FullG2/localallowednotclaimed. X04unlocked."
+    },
+    {
+      "task": "X04/E08",
+      "at": "2026-10-10T19:23:08.109446+00:00",
+      "event": "Preserved192209 fail141Harness1fixture; actualnewattempt terminalfailed/exit1/reaped/0group/hashedlog/clone+leasereleased proves no stale runningstage. Host minimalfixture repair, no product change/native launched."
+    },
+    {
+      "task": "X04/E08",
+      "at": "2026-10-10T19:25:01.397144+00:00",
+      "event": "Samecurrent2ddea isolatedquality141Harness161Flutter all7 passed with actualcompletion/hash/reap/lease/cloneverified. MaximumOSN7 started192420 beforefinalmatrix; nofullG2claim."
+    },
+    {
+      "task": "E08",
+      "at": "2026-10-10T19:31:05.501461+00:00",
+      "event": "Preserved192420N7 geometrypassed/rawkeyboardnotrun/OSflagfalse. SDK+officialsource proveiosreduceMotionseparateflag; protocol6 correctsobservation, source product/bridge/driver/gate ownersassigned, full34 unchanged."
+    },
+    {
+      "task": "E08/X03/X04",
+      "at": "2026-10-10T19:57:32.553674+00:00",
+      "event": "Current d633 G1 146Harness169Flutter accepted independently; strict motion negatives2positive32reject; X04 realOS21+cleanup16 currentcut pass. Root N7 immutable host TLS retry000002."
+    },
+    {
+      "task": "E08",
+      "at": "2026-10-10T20:23:26.914878+00:00",
+      "event": "ActualBrowse clipping + viewportcoherence race and regressionRenderFlex preserved; finalInter/adaptiveheader/stablecapture source currentc3e G1passed146Harness176Flutter; maxN7 actualVM rerun"
     }
   ],
-  "status": "X03 validator implementation accepted; E08 actualN7rework; X04 unlocked",
+  "status": "Current frozen G1 passed; E08 maxN7 native real UI running; X04 actualcancel/replay next",
   "accepted_candidate": {
     "source_head": "6a70a94eab758731bfd1468a384247bbfae48a83",
     "source_fingerprint": "e888779d6b48c5a3aecd002b20f0a21362134594fbb19680562bd535a7cc769b",
@@ -1624,15 +1699,17 @@
     "working_tree_changes": true
   },
   "runtime_observation": {
-    "observed_at": "2026-10-10T19:06:26.968515+00:00",
+    "observed_at": "2026-10-10T20:23:26.914878+00:00",
     "active_agents": [
       "/root",
-      "/root/harness_review"
+      "/root/e08_acceptance_review",
+      "/root/query_development"
     ],
     "source_writers": [],
     "executor": "/root",
-    "note": "N7retest190211terminated/owncleanuptrue. StrictOSdiscoveryworks; actualfloatrect44-e13 +real70pxdetailclip +reduceMotionfalse found. X03toolingaccepted4c98; X04ready.",
-    "active_run": null
+    "active_run": "harness/runs/20261010T202250904043Z-native/attempts/000001/report.json",
+    "source_fingerprint": "c3e05ac1f457ecf7e47bc16d1fdcc229010c1b84f7d67a04b3c3c29714aca30a",
+    "note": "All tracked source frozen; actual SDK/native serialized; independent OS tests private copies"
   },
   "evidence_archive": "harness/archive/2026-10-10-engineering.tar.gz",
   "next_task": "X04 and E08 rework",
@@ -1650,5 +1727,6 @@
     "native_rerun": false,
     "production_eligible": false
   },
-  "updated_at": "2026-10-10T18:44:58.234389+00:00"
+  "updated_at": "2026-10-10T20:23:26.914878+00:00",
+  "native_protocol_revision": 6
 }

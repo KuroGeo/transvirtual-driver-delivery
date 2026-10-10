@@ -188,7 +188,14 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                     children: [
                       ConstrainedBox(
                         constraints: BoxConstraints(
-                          maxHeight: constraints.maxHeight * .43,
+                          // Large business text also expands the footer and
+                          // Browse. Keep room for both by scrolling the header
+                          // sooner; its complete content keeps the OS scaler.
+                          maxHeight:
+                              constraints.maxHeight *
+                              (MediaQuery.textScalerOf(context).scale(14) > 22
+                                  ? .32
+                                  : .43),
                         ),
                         child: SingleChildScrollView(child: _header(context)),
                       ),
@@ -280,19 +287,29 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                                           ),
                                         if (!list && !detail)
                                           Positioned(
-                                            left: 12,
+                                            left: _compact(context, area)
+                                                ? 114
+                                                : 12,
                                             right: 12,
                                             bottom: 12,
                                             child: ConstrainedBox(
                                               constraints: BoxConstraints(
                                                 maxHeight: math.max(
                                                   0,
-                                                  area.maxHeight - 225,
+                                                  area.maxHeight -
+                                                      (_compact(context, area)
+                                                          ? 24
+                                                          : 225),
                                                 ),
                                               ),
-                                              child: SingleChildScrollView(
-                                                child: _overview(context),
-                                              ),
+                                              child: _compact(context, area)
+                                                  ? _overview(
+                                                      context,
+                                                      compact: true,
+                                                    )
+                                                  : SingleChildScrollView(
+                                                      child: _overview(context),
+                                                    ),
                                             ),
                                           ),
                                         if (detail)
@@ -302,12 +319,9 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                                                 : 12,
                                             right: 12,
                                             bottom: 12,
-                                            height: math.min(
-                                              _cardHeight(
-                                                area.maxHeight,
-                                                _compact(context, area),
-                                              ),
-                                              area.maxHeight - 24,
+                                            height: _cardHeight(
+                                              area.maxHeight,
+                                              _compact(context, area),
                                             ),
                                             child: DeliveryDetailCard(
                                               key: ValueKey(
@@ -317,22 +331,28 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                                               onClose: model.closeDetail,
                                             ),
                                           ),
-                                        Positioned(
-                                          top: 12,
-                                          left: list ? 20 : 114,
-                                          right: 12,
-                                          child: _feedback(
-                                            list,
-                                            detail
-                                                ? area.maxHeight -
-                                                      _cardHeight(
-                                                        area.maxHeight,
-                                                        _compact(context, area),
-                                                      ) -
-                                                      36
-                                                : area.maxHeight - 24,
+                                        if (list ||
+                                            detail ||
+                                            !_compact(context, area))
+                                          Positioned(
+                                            top: 12,
+                                            left: list ? 20 : 114,
+                                            right: 12,
+                                            child: _feedback(
+                                              list,
+                                              detail
+                                                  ? area.maxHeight -
+                                                        _cardHeight(
+                                                          area.maxHeight,
+                                                          _compact(
+                                                            context,
+                                                            area,
+                                                          ),
+                                                        ) -
+                                                        36
+                                                  : area.maxHeight - 24,
+                                            ),
                                           ),
-                                        ),
                                       ],
                                     ),
                                   );
@@ -353,56 +373,61 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
   bool _compact(BuildContext context, BoxConstraints area) =>
       area.maxHeight < 500 || MediaQuery.textScalerOf(context).scale(14) > 22;
 
-  double _cardHeight(double height, bool compact) =>
-      compact ? math.max(44.0, height - 224) : height * .55;
+  double _cardHeight(double height, bool compact) {
+    // Compact detail occupies the right lane beside the tools/selected marker.
+    // Reserve 64px for scrollable feedback above it plus the surrounding gaps,
+    // rather than reserving the left toolbar's whole height in this lane too.
+    final preferred = compact ? math.max(144.0, height - 100) : height * .55;
+    return math.min(preferred, math.max(0.0, height - 24));
+  }
 
   Widget _feedback(bool list, double availableHeight) => ConstrainedBox(
     constraints: BoxConstraints(
       maxHeight: math.max(0, math.min(list ? 88.0 : 196.0, availableHeight)),
     ),
-    child: SingleChildScrollView(
-      child: ValueListenableBuilder<MapTileStatus>(
-        valueListenable: _map.tileStatus,
-        builder: (_, tileStatus, _) => Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (model.loadError != null)
-              _reloadNotice()
-            else
-              WorkbenchNoticeView(viewModel: model),
-            if (tileStatus == MapTileStatus.error && !list) ...[
-              Material(
-                key: const ValueKey('root-map-error'),
-                color: OceanColors.cream,
-                borderRadius: BorderRadius.circular(14),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Semantics(
-                        liveRegion: true,
-                        child: const Text(
-                          'Map unavailable',
-                          style: TextStyle(fontSize: 12),
-                        ),
-                      ),
-                      TextButton(
-                        key: const ValueKey('retry-map'),
-                        onPressed: _map.retryTiles,
-                        child: const Text('Retry map'),
-                      ),
-                    ],
+    child: SingleChildScrollView(child: _feedbackContent(list)),
+  );
+
+  Widget _feedbackContent(bool list) => ValueListenableBuilder<MapTileStatus>(
+    valueListenable: _map.tileStatus,
+    builder: (_, tileStatus, _) => Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (model.loadError != null)
+          _reloadNotice()
+        else
+          WorkbenchNoticeView(viewModel: model),
+        if (tileStatus == MapTileStatus.error && !list) ...[
+          Material(
+            key: const ValueKey('root-map-error'),
+            color: OceanColors.cream,
+            borderRadius: BorderRadius.circular(14),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Semantics(
+                    liveRegion: true,
+                    child: const Text(
+                      'Map unavailable',
+                      style: TextStyle(fontSize: 12),
+                    ),
                   ),
-                ),
+                  TextButton(
+                    key: const ValueKey('retry-map'),
+                    onPressed: _map.retryTiles,
+                    child: const Text('Retry map'),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-            ],
-          ],
-        ),
-      ),
+            ),
+          ),
+          const SizedBox(height: 8),
+        ],
+      ],
     ),
   );
 
@@ -632,10 +657,142 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
     ),
   );
 
-  Widget _overview(BuildContext context) {
+  Widget _overview(BuildContext context, {bool compact = false}) {
     final nearest = model.result.nearest;
     final finished = model.stops.length - model.pendingCount;
     final ratio = model.stops.isEmpty ? 0.0 : finished / model.stops.length;
+    final browse = TextButton(
+      key: const ValueKey('browse-stops'),
+      onPressed: model.openList,
+      style: TextButton.styleFrom(minimumSize: const Size(0, 44)),
+      child: const Text('Browse stops', textAlign: TextAlign.center),
+    );
+    final completion = Text(
+      model.loadError == null
+          ? '$finished of ${model.stops.length} finished'
+          : 'Saved state needs reload',
+      style: const TextStyle(fontSize: 11, color: OceanColors.muted),
+    );
+    final waiting = TextButton(
+      key: const ValueKey('map-waiting-only'),
+      onPressed: () => model.setWaitingOnly(!model.query.waitingOnly),
+      style: TextButton.styleFrom(
+        minimumSize: const Size(0, 44),
+        padding: const EdgeInsets.symmetric(horizontal: 6),
+      ),
+      child: Text(
+        '${model.query.waitingOnly ? '✓ ' : ''}${model.loadError == null ? model.queueCount : '—'} waiting to sync',
+        style: const TextStyle(fontSize: 11),
+        textAlign: TextAlign.center,
+      ),
+    );
+    final summary = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'TODAY’S DELIVERIES',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: OceanColors.muted,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    model.loadError == null
+                        ? '${model.pendingCount} left to deliver'
+                        : 'Reload for current totals',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: -.6,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (!compact) Flexible(child: browse),
+          ],
+        ),
+        const SizedBox(height: 12),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: LinearProgressIndicator(
+            value: model.loadError == null ? ratio : 0,
+            minHeight: 4,
+            color: OceanColors.orange,
+            backgroundColor: OceanColors.border,
+          ),
+        ),
+        const SizedBox(height: 6),
+        if (compact) ...[
+          completion,
+          waiting,
+        ] else
+          Row(
+            children: [
+              Expanded(child: completion),
+              Flexible(child: waiting),
+            ],
+          ),
+        const Divider(height: 16),
+        InkWell(
+          key: const ValueKey('nearest-stop'),
+          borderRadius: BorderRadius.circular(10),
+          onTap: nearest == null
+              ? null
+              : () => _open(nearest, DetailOrigin.nearest),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'NEAREST MATCH',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: OceanColors.muted,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        nearest?.customerName ?? 'No matching stops',
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      if (nearest != null)
+                        Text(
+                          '${nearest.reference} · ${straightLineDistanceLabel(model.result.distanceMeters(nearest)!)} straight-line',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: OceanColors.muted,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Icon(Icons.arrow_forward, size: 20),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
     return Material(
       key: const ValueKey('delivery-overview'),
       color: OceanColors.cream,
@@ -646,144 +803,29 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
         side: const BorderSide(color: OceanColors.border),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'TODAY’S DELIVERIES',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: OceanColors.muted,
-                          letterSpacing: 1,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        model.loadError == null
-                            ? '${model.pendingCount} left to deliver'
-                            : 'Reload for current totals',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: -.6,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Flexible(
-                  child: TextButton(
-                    key: const ValueKey('browse-stops'),
-                    onPressed: model.openList,
-                    child: const Text(
-                      'Browse stops',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: model.loadError == null ? ratio : 0,
-                minHeight: 4,
-                color: OceanColors.orange,
-                backgroundColor: OceanColors.border,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    model.loadError == null
-                        ? '$finished of ${model.stops.length} finished'
-                        : 'Saved state needs reload',
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: OceanColors.muted,
-                    ),
-                  ),
-                ),
-                Flexible(
-                  child: TextButton(
-                    key: const ValueKey('map-waiting-only'),
-                    onPressed: () =>
-                        model.setWaitingOnly(!model.query.waitingOnly),
-                    style: TextButton.styleFrom(
-                      minimumSize: const Size(0, 44),
-                      padding: const EdgeInsets.symmetric(horizontal: 6),
-                    ),
-                    child: Text(
-                      '${model.query.waitingOnly ? '✓ ' : ''}${model.loadError == null ? model.queueCount : '—'} waiting to sync',
-                      style: const TextStyle(fontSize: 11),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const Divider(height: 16),
-            InkWell(
-              key: const ValueKey('nearest-stop'),
-              borderRadius: BorderRadius.circular(10),
-              onTap: nearest == null
-                  ? null
-                  : () => _open(nearest, DetailOrigin.nearest),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Row(
-                  children: [
-                    Expanded(
+        padding: EdgeInsets.all(compact ? 12 : 16),
+        child: compact
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Keep the primary entry outside the summary's scroll clip.
+                  // The right lane leaves map tools and the footer exposed.
+                  browse,
+                  const SizedBox(height: 8),
+                  Flexible(
+                    child: SingleChildScrollView(
+                      key: const ValueKey('overview-summary'),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'NEAREST MATCH',
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: OceanColors.muted,
-                              letterSpacing: 1,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            nearest?.customerName ?? 'No matching stops',
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          if (nearest != null)
-                            Text(
-                              '${nearest.reference} · ${straightLineDistanceLabel(model.result.distanceMeters(nearest)!)} straight-line',
-                              style: const TextStyle(
-                                fontSize: 11,
-                                color: OceanColors.muted,
-                              ),
-                            ),
-                        ],
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [_feedbackContent(false), summary],
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    const Icon(Icons.arrow_forward, size: 20),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+                  ),
+                ],
+              )
+            : summary,
       ),
     );
   }

@@ -145,221 +145,256 @@ class _DeliveryDetailCardState extends State<DeliveryDetailCard> {
             clipBehavior: Clip.antiAlias,
             child: SafeArea(
               top: false,
-              child: SingleChildScrollView(
-                key: const ValueKey('detail-scroll'),
-                padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 32,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: OceanColors.border,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
+              child: Stack(
+                children: [
+                  SingleChildScrollView(
+                    key: const ValueKey('detail-scroll'),
+                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Expanded(
-                          child: Wrap(
-                            spacing: 14,
-                            runSpacing: 6,
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            children: [
-                              StopStatusBadge(status: status),
-                              Text(
-                                stop.reference,
-                                style: Theme.of(context).textTheme.labelMedium
-                                    ?.copyWith(color: OceanColors.muted),
-                              ),
-                            ],
-                          ),
-                        ),
-                        IconButton(
-                          key: const ValueKey('detail-close'),
-                          tooltip: returnLabel,
-                          onPressed: _busy ? null : _close,
-                          icon: Icon(fromList ? Icons.arrow_back : Icons.close),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      stop.customerName,
-                      key: const ValueKey('detail-customer'),
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      street,
-                      key: const ValueKey('detail-street'),
-                      style: Theme.of(context).textTheme.headlineLarge
-                          ?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: -1.1,
-                            height: 1.15,
-                          ),
-                    ),
-                    if (locality.isNotEmpty) ...[
-                      const SizedBox(height: 5),
-                      Text(
-                        locality,
-                        key: const ValueKey('detail-locality'),
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: OceanColors.muted,
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: 20),
-                    Wrap(
-                      spacing: 18,
-                      runSpacing: 8,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.access_time,
-                              size: 18,
-                              color: OceanColors.muted,
+                        Center(
+                          child: Container(
+                            width: 32,
+                            height: 4,
+                            decoration: BoxDecoration(
+                              color: OceanColors.border,
+                              borderRadius: BorderRadius.circular(4),
                             ),
-                            const SizedBox(width: 6),
-                            Flexible(
-                              child: Text(
-                                stop.timeWindow?.replaceAll('-', '–') ??
-                                    'Time window not provided',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            final largeText =
+                                MediaQuery.textScalerOf(context).scale(12) > 20;
+                            final reference = Text(
+                              stop.reference,
+                              style: Theme.of(context).textTheme.labelMedium
+                                  ?.copyWith(color: OceanColors.muted),
+                            );
+                            final badge = Padding(
+                              padding: const EdgeInsets.only(right: 56),
+                              child: StopStatusBadge(status: status),
+                            );
+                            if (largeText || constraints.maxWidth < 200) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  badge,
+                                  const SizedBox(height: 6),
+                                  reference,
+                                ],
+                              );
+                            }
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 56),
+                              child: Wrap(
+                                spacing: 14,
+                                runSpacing: 6,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: [
+                                  StopStatusBadge(status: status),
+                                  reference,
+                                ],
                               ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          stop.customerName,
+                          key: const ValueKey('detail-customer'),
+                          style: Theme.of(context).textTheme.bodyLarge
+                              ?.copyWith(fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          street,
+                          key: const ValueKey('detail-street'),
+                          style: Theme.of(context).textTheme.headlineLarge
+                              ?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: -1.1,
+                                height: 1.15,
+                              ),
+                        ),
+                        if (locality.isNotEmpty) ...[
+                          const SizedBox(height: 5),
+                          Text(
+                            locality,
+                            key: const ValueKey('detail-locality'),
+                            style: Theme.of(context).textTheme.bodyLarge
+                                ?.copyWith(color: OceanColors.muted),
+                          ),
+                        ],
+                        const SizedBox(height: 20),
+                        Wrap(
+                          spacing: 18,
+                          runSpacing: 8,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.access_time,
+                                  size: 18,
+                                  color: OceanColors.muted,
+                                ),
+                                const SizedBox(width: 6),
+                                Flexible(
+                                  child: Text(
+                                    stop.timeWindow?.replaceAll('-', '–') ??
+                                        'Time window not provided',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Text(
+                              syncLabel,
+                              key: const ValueKey('detail-sync-state'),
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    color: waiting
+                                        ? OceanColors.muted
+                                        : OceanColors.ink,
+                                  ),
                             ),
                           ],
                         ),
-                        Text(
-                          syncLabel,
-                          key: const ValueKey('detail-sync-state'),
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: waiting
-                                    ? OceanColors.muted
-                                    : OceanColors.ink,
+                        if (status != DeliveryStatus.pending) ...[
+                          const SizedBox(height: 20),
+                          _TerminalResult(
+                            status: status,
+                            reason: reason,
+                            note: note,
+                            recordedAt: localFallback ? null : stop.recordedAt,
+                            acknowledgedAt: localFallback
+                                ? null
+                                : stop.acknowledgedAt,
+                            imported:
+                                !unrefreshedResult &&
+                                !localFallback &&
+                                stop.operationId == null,
+                          ),
+                        ],
+                        if (savedResult) ...[
+                          const SizedBox(height: 14),
+                          Semantics(
+                            liveRegion: true,
+                            child: Text(
+                              staleSnapshot
+                                  ? 'Saved locally. Reload required.'
+                                  : waiting
+                                  ? 'Saved locally. Waiting to sync.'
+                                  : 'Saved locally.',
+                              key: const ValueKey('detail-saved'),
+                              style: const TextStyle(
+                                color: OceanColors.green,
+                                fontWeight: FontWeight.w500,
                               ),
-                        ),
+                            ),
+                          ),
+                        ],
+                        if (staleSnapshot) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            savedResult
+                                ? 'The result was saved, but details could not be refreshed. Reload to view the stored record.'
+                                : 'Details could not be refreshed. Reload before recording a delivery.',
+                            key: const ValueKey('detail-reload-warning'),
+                          ),
+                          TextButton(
+                            key: const ValueKey('detail-reload'),
+                            onPressed: _busy || model.isLoading
+                                ? null
+                                : model.load,
+                            child: const Text('Reload details'),
+                          ),
+                        ],
+                        if (model.saveError != null && !_failureOpen) ...[
+                          const SizedBox(height: 14),
+                          Semantics(
+                            liveRegion: true,
+                            child: const Text(
+                              'Could not save. The stop has not changed. Please try again.',
+                              style: TextStyle(color: OceanColors.red),
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 22),
+                        if (status == DeliveryStatus.pending) ...[
+                          FilledButton.icon(
+                            key: const ValueKey('detail-complete'),
+                            onPressed: _busy || !model.canRecord
+                                ? null
+                                : () => _complete(stop),
+                            style: _primaryStyle(),
+                            icon: const Icon(Icons.check),
+                            label: Text(
+                              _completing || model.isSaving
+                                  ? 'Saving…'
+                                  : 'Complete delivery',
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextButton(
+                            key: const ValueKey('detail-fail'),
+                            onPressed: _busy || !model.canRecord
+                                ? null
+                                : () => _fail(stop),
+                            style: TextButton.styleFrom(
+                              foregroundColor: OceanColors.ink,
+                              minimumSize: const Size.fromHeight(48),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 12,
+                                horizontal: 8,
+                              ),
+                            ),
+                            child: const Text(
+                              'Report a failed delivery',
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ] else
+                          FilledButton.icon(
+                            key: const ValueKey('detail-return'),
+                            onPressed: _busy ? null : _close,
+                            style: _primaryStyle(),
+                            icon: Icon(
+                              fromList ? Icons.arrow_back : Icons.arrow_forward,
+                            ),
+                            label: Text(
+                              returnLabel,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
                       ],
                     ),
-                    if (status != DeliveryStatus.pending) ...[
-                      const SizedBox(height: 20),
-                      _TerminalResult(
-                        status: status,
-                        reason: reason,
-                        note: note,
-                        recordedAt: localFallback ? null : stop.recordedAt,
-                        acknowledgedAt: localFallback
-                            ? null
-                            : stop.acknowledgedAt,
-                        imported:
-                            !unrefreshedResult &&
-                            !localFallback &&
-                            stop.operationId == null,
-                      ),
-                    ],
-                    if (savedResult) ...[
-                      const SizedBox(height: 14),
-                      Semantics(
-                        liveRegion: true,
-                        child: Text(
-                          staleSnapshot
-                              ? 'Saved locally. Reload required.'
-                              : waiting
-                              ? 'Saved locally. Waiting to sync.'
-                              : 'Saved locally.',
-                          key: const ValueKey('detail-saved'),
-                          style: const TextStyle(
-                            color: OceanColors.green,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                    if (staleSnapshot) ...[
-                      const SizedBox(height: 8),
-                      Text(
-                        savedResult
-                            ? 'The result was saved, but details could not be refreshed. Reload to view the stored record.'
-                            : 'Details could not be refreshed. Reload before recording a delivery.',
-                        key: const ValueKey('detail-reload-warning'),
-                      ),
-                      TextButton(
-                        key: const ValueKey('detail-reload'),
-                        onPressed: _busy || model.isLoading ? null : model.load,
-                        child: const Text('Reload details'),
-                      ),
-                    ],
-                    if (model.saveError != null && !_failureOpen) ...[
-                      const SizedBox(height: 14),
-                      Semantics(
-                        liveRegion: true,
-                        child: const Text(
-                          'Could not save. The stop has not changed. Please try again.',
-                          style: TextStyle(color: OceanColors.red),
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: 22),
-                    if (status == DeliveryStatus.pending) ...[
-                      FilledButton.icon(
-                        key: const ValueKey('detail-complete'),
-                        onPressed: _busy || !model.canRecord
-                            ? null
-                            : () => _complete(stop),
-                        style: _primaryStyle(),
-                        icon: const Icon(Icons.check),
-                        label: Text(
-                          _completing || model.isSaving
-                              ? 'Saving…'
-                              : 'Complete delivery',
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextButton(
-                        key: const ValueKey('detail-fail'),
-                        onPressed: _busy || !model.canRecord
-                            ? null
-                            : () => _fail(stop),
-                        style: TextButton.styleFrom(
-                          foregroundColor: OceanColors.ink,
-                          minimumSize: const Size.fromHeight(48),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 12,
-                            horizontal: 8,
-                          ),
-                        ),
-                        child: const Text(
-                          'Report a failed delivery',
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ] else
-                      FilledButton.icon(
-                        key: const ValueKey('detail-return'),
+                  ),
+                  Positioned(
+                    top: 8,
+                    right: 12,
+                    child: SizedBox.square(
+                      dimension: 48,
+                      child: IconButton(
+                        key: const ValueKey('detail-close'),
+                        tooltip: returnLabel,
                         onPressed: _busy ? null : _close,
-                        style: _primaryStyle(),
-                        icon: Icon(
-                          fromList ? Icons.arrow_back : Icons.arrow_forward,
+                        style: IconButton.styleFrom(
+                          backgroundColor: OceanColors.cream,
                         ),
-                        label: Text(returnLabel, textAlign: TextAlign.center),
+                        icon: Icon(fromList ? Icons.arrow_back : Icons.close),
                       ),
-                  ],
-                ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

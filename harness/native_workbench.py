@@ -1084,6 +1084,7 @@ class Workbench:
                     "reduce_motion_requested": self.options["reduce_motion"], "actual_mediaquery_proof": "required from independent UI driver, not inferred from command success"}
                 if self.options["reduce_motion"]:
                     self.command("spawn", self.device, "defaults", "write", "com.apple.Accessibility", "ReduceMotionEnabled", "-bool", "YES", timeout=30)
+                    self.report["os_controls"]["reduce_motion_notification_receipt"] = self.command("spawn", self.device, "notifyutil", "-p", "com.apple.Accessibility.ReduceMotionStatusDidChange", timeout=30)
                     self.report["os_controls"]["reduce_motion_defaults_receipt"] = self.command("spawn", self.device, "defaults", "read", "com.apple.Accessibility", "ReduceMotionEnabled", timeout=30)
             if self.args.fixture:
                 self.report["legacy_fixture"] = seed_legacy(self.container, self.device, self.args.configuration, self.root / "app/assets/deliveries.csv", self.output)

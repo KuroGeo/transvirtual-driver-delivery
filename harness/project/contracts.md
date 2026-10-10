@@ -60,7 +60,7 @@ E02 的签名适配写域明确增加 `app/test/ui/fake_delivery_repository.dart
 
 ## E08 / X03 原生验收与证据合同
 
-完整本地功能验收采用 [原生检查合同](native-acceptance-contract.json) 的 revision5：N1–N7 共34个明确检查，与 R01–R14 逐项绑定。默认 probe/startup/workbench smoke 继续保留各自范围，不能提供完整 G2。独立验收 driver 走相同私有工作台入口、正式 App、原生 SQLite、真实 UI 和三次 OS 进程启动；只读 snapshot 不提供业务变更方法。
+完整本地功能验收采用 [原生检查合同](native-acceptance-contract.json) 的 revision6：N1–N7 共34个明确检查，与 R01–R14 逐项绑定。默认 probe/startup/workbench smoke 继续保留各自范围，不能提供完整 G2。独立验收 driver 走相同私有工作台入口、正式 App、原生 SQLite、真实 UI 和三次 OS 进程启动；只读 snapshot 不提供业务变更方法。
 
 共享写域分别为：主控维护 run.py/CLI/合同/固定双击手势与聚合交付；原生验收负责人维护 acceptance_driver/native_acceptance_support/native_driver_support；原生宿主负责人维护 native.py/native_workbench.py 与对应回归；门禁负责人维护 gate.py 与对应回归。所有源写入者冻结后才执行 quality/pub/build/native。测试候选验证原目录和隔离副本的前后指纹，原始失败不会被下一次运行覆盖。
 
@@ -114,3 +114,7 @@ E07 formal source is accepted. X02 may add private instrumentation under `app/in
 - Local HTTP fixture serves controlled tile PNG/503 and captures immutable sync requests. Matching ACK release, wrong ACK or never completing request are explicit fixture states; actual coordinator timeout stays5s. Host controls operate fixtures, not app business/query/UI state. Both host-control and simulated sync POSTs send exact UTF-8 bytes with explicit Content-Length; ambiguous/chunked/oversized/incomplete framing fails before any fixture mutation, with bounded token-filtered raw error receipts. Native SQL triggers may be installed only in a verified path beneath the newly-created simulator/app data container. No fixture may touch user devices/containers or invent an acknowledged result.
 - Native lifecycle uses explicit task simctl create/boot/install/launch/terminate/relaunch receipts, fresh native PID plus launch session nonce matched to bounded VM connection, readonly snapshot and same-session journal, same installation/data for cold recovery, actual SQLite backup+event journal and keyed driver action logs. All long-lived descendants inherit resource lock FDs; cancellation reaps owned drivers/services and removes only the created UDID. All observation/action deadlines fail rather than warn/return success.
 - X02 retains raw actions/observations, simctl receipts, PNG, PID/data/transport/source identity and optional debug trace sample. Keyboard text entered through emulation and actual OS keyboard geometry/screenshots are separate labels; reduced motion/text accessibility settings reflect actual observed MediaQuery. Debug/simulator trace is not G3 physical performance. X02 author cannot self-sign E08 business acceptance; current production no-go persists.
+
+## 原生观察协议 revision6
+
+Issue/任务拆分合同仍为 revision5；原生34项协议单独升为 revision6，保留全部检查ID与需求绑定。锁定Flutter的iOS引擎将系统Reduce Motion写入`dart:ui.AccessibilityFeatures.reduceMotion`，不会设置`MediaQuery.disableAnimations`。原生只读桥保留两项实际值；iOS门禁必须验证实际平台reduceMotion=true及系统设置/语义证据，不能靠MediaQuery覆盖值或设置命令通过。产品同步旋转与失败表单转场需响应该真实标志，Android继续使用其实际disableAnimations。见[Flutter官方属性说明](https://api.flutter.dev/flutter/widgets/MediaQueryData/disableAnimations.html)。此前失败证据保持原样，不按新协议回签。

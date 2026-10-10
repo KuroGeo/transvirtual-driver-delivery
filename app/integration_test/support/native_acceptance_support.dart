@@ -6,6 +6,7 @@ import 'package:path/path.dart' as path;
 import 'native_driver_support.dart';
 
 const acceptanceScope = 'e08-native-functional-acceptance';
+const acceptanceRevision = 6;
 const acceptanceChecks = <String, List<String>>{
   'N1': [
     'N1.first-import',
@@ -120,6 +121,58 @@ class _Absent {
   const _Absent();
 }
 
+/// True only when an observed committed viewport agrees with the real camera.
+/// Null is meaningful for invalid/absent persisted viewports and is retained.
+bool acceptanceCaptureReady(Map<String, dynamic> value) {
+  final settings = value['persistedSettings'];
+  final viewport = settings is Map ? settings['viewport'] : null;
+  if (viewport == null) return true;
+  final camera = value['camera'];
+  return viewport is Map &&
+      camera is Map &&
+      ['latitude', 'longitude', 'zoom'].every((key) {
+        final actual = camera[key];
+        final committed = viewport[key];
+        return actual is num &&
+            committed is num &&
+            actual.isFinite &&
+            committed.isFinite &&
+            (actual - committed).abs() < .000001;
+      });
+}
+
+Map<String, dynamic> acceptanceCaptureState(Map<String, dynamic> value) => {
+  for (final key in ['outbox', 'persistedStops', 'persistedSettings', 'camera'])
+    key: value[key],
+};
+
+/// Wait at ordinary case boundaries; held requests and failure samples keep
+/// their original immediate observations inside each action callback.
+Future<Map<String, dynamic>> acceptanceStableCapture(
+  NativeWorkbenchDriver client,
+) async {
+  final clock = Stopwatch()..start();
+  Map<String, dynamic>? previous;
+  Duration? stableSince;
+  return client.waitForSnapshot(
+    'stable readonly capture and committed camera',
+    (value) {
+      final state = acceptanceCaptureState(value);
+      if (!acceptanceCaptureReady(value)) {
+        previous = null;
+        stableSince = null;
+        return false;
+      }
+      if (previous == null || !acceptanceEqual(previous, state)) {
+        previous = state;
+        stableSince = clock.elapsed;
+        return false;
+      }
+      return clock.elapsed - stableSince! >= const Duration(milliseconds: 500);
+    },
+  );
+}
+
 /// This receipt records assertions against raw observations. It does not grant
 /// acceptance: the host hashes immutable artifacts and the independent gate
 /// checks its own minimum predicates and real OS lifecycle receipts.
@@ -175,13 +228,13 @@ class NativeAcceptanceRecorder {
     );
     final context = AcceptanceCase(this, id, client.actionSequence + 1);
     try {
-      context.before = await client.snapshot();
+      context.before = await acceptanceStableCapture(client);
       context.beforePath = await evidence(
         '${context.slug}-before.json',
         context.before,
       );
       await action(context);
-      context.after = await client.snapshot();
+      context.after = await acceptanceStableCapture(client);
       context.afterPath = await evidence(
         '${context.slug}-after.json',
         context.after,
@@ -218,7 +271,7 @@ class NativeAcceptanceRecorder {
     String status = 'passed',
   }) => client.writeJson('e08-phase-receipt.json', {
     'schema': 1,
-    'revision': 5,
+    'revision': acceptanceRevision,
     'scope': acceptanceScope,
     'status': status,
     'scenario': scenario,
@@ -386,8 +439,12 @@ Future<void> acceptanceMap(NativeWorkbenchDriver client) async {
   final value = await client.snapshot();
   final model = acceptanceModel(value);
   if (model['panel'] == 'detail') {
-    await client.revealKey('detail-return');
-    await client.tapKey('detail-return');
+    if (nativeObject(model['selected'])['status'] == 'pending' &&
+        !nativeObject(value['bounds']).containsKey('detail-return')) {
+      await acceptanceCloseDetail(client);
+    } else {
+      await acceptanceReturn(client);
+    }
   }
   final next = await client.snapshot();
   if (acceptanceModel(next)['panel'] == 'list') {
@@ -401,6 +458,7 @@ Future<void> acceptanceMap(NativeWorkbenchDriver client) async {
 
 Future<void> acceptanceList(NativeWorkbenchDriver client) async {
   await acceptanceMap(client);
+  await client.revealKey('browse-stops');
   await client.tapKey('browse-stops');
   await client.waitForSnapshot(
     'actual stop list',
@@ -444,6 +502,22 @@ Future<void> acceptanceReturn(NativeWorkbenchDriver client) async {
   await client.waitForSnapshot(
     'typed detail Return',
     (value) => acceptanceModel(value)['panel'] != 'detail',
+  );
+}
+
+Future<void> acceptanceCloseDetail(NativeWorkbenchDriver client) async {
+  final value = await client.snapshot();
+  final model = acceptanceModel(value);
+  nativeRequire(model['panel'] == 'detail', 'Close requires actual detail UI.');
+  nativeRequire(
+    const ['list', 'map', 'nearest'].contains(model['selectedOrigin']),
+    'Close requires a recorded typed detail source.',
+  );
+  final destination = model['selectedOrigin'] == 'list' ? 'list' : 'map';
+  await client.tapKey('detail-close');
+  await client.waitForSnapshot(
+    'actual detail Close restores $destination source',
+    (value) => acceptanceModel(value)['panel'] == destination,
   );
 }
 

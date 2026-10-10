@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../../../models/delivery.dart';
 import '../../core/brand_theme.dart';
+import '../../core/motion_settings.dart';
 
 typedef FailureSubmit =
     Future<bool> Function({required String reason, String? note});
@@ -27,7 +28,7 @@ Future<FailureSubmission?> showDeliveryFailureSheet(
   isDismissible: true,
   enableDrag: false,
   backgroundColor: Colors.transparent,
-  sheetAnimationStyle: MediaQuery.disableAnimationsOf(context)
+  sheetAnimationStyle: reduceMotionRequested(context)
       ? AnimationStyle.noAnimation
       : const AnimationStyle(
           duration: Duration(milliseconds: 190),

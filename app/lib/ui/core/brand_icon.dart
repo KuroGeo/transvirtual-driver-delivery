@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import 'motion_settings.dart';
+
 /// The licensed Carbon paths from the approved prototype, loaded once.
 class BrandIcon extends StatelessWidget {
   const BrandIcon(this.name, {super.key, this.size = 20, this.color});
@@ -48,11 +50,17 @@ class SyncActionIcon extends StatefulWidget {
 }
 
 class _SyncActionIconState extends State<SyncActionIcon>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late final _rotation = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 1400),
   );
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
 
   @override
   void didChangeDependencies() {
@@ -66,8 +74,13 @@ class _SyncActionIconState extends State<SyncActionIcon>
     _update();
   }
 
+  @override
+  void didChangeAccessibilityFeatures() {
+    _update();
+  }
+
   void _update() {
-    if (widget.syncing && !MediaQuery.disableAnimationsOf(context)) {
+    if (widget.syncing && !reduceMotionRequested(context)) {
       if (!_rotation.isAnimating) _rotation.repeat();
     } else {
       _rotation.stop();
@@ -77,6 +90,7 @@ class _SyncActionIconState extends State<SyncActionIcon>
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _rotation.dispose();
     super.dispose();
   }

@@ -47,7 +47,7 @@ Map<String, Object?> _result(
   String status,
 ) => {
   'schema': 1,
-  'revision': 5,
+  'revision': acceptanceRevision,
   'scope': acceptanceScope,
   'status': status,
   'scenario': client.options.required('scenario'),
@@ -1061,13 +1061,13 @@ Future<void> _n4(NativeAcceptanceRecorder r) async {
       await _mapSearch(d, '');
       await d.tapKey('nearest-stop');
       await d.waitForSnapshot(
-        'nearest detail for typed Return',
+        'nearest detail for typed Close',
         (s) =>
             acceptanceModel(s)['selectedOrigin'] == 'nearest' &&
             acceptanceModel(s)['panel'] == 'detail',
       );
       await c.sample('nearest-origin', await d.snapshot());
-      await acceptanceReturn(d);
+      await acceptanceCloseDetail(d);
       await c.sample('nearest-return', await d.snapshot());
       await _openMapStop(d, 'TV-300002');
       await c.sample('map-origin', await d.snapshot());
@@ -1077,6 +1077,11 @@ Future<void> _n4(NativeAcceptanceRecorder r) async {
         (s) => acceptanceModel(s)['panel'] == 'map',
       );
       await c.sample('map-return', mapReturn);
+      // Return belongs to terminal detail; retain a real terminal Return as
+      // well as the pending nearest/deep-list Close and map Close branches.
+      await _openMapStop(d, 'TV-300002');
+      await acceptanceReturn(d);
+      await c.sample('terminal-map-return', await d.snapshot());
       await acceptanceList(d);
       await d.enterText('stop-search', '');
       final scrollDeadline = Stopwatch()..start();
@@ -1127,7 +1132,7 @@ Future<void> _n4(NativeAcceptanceRecorder r) async {
             !nativeObject(modalReturn['bounds']).containsKey('failure-sheet'),
         'Modal Close must preserve selected detail.',
       );
-      await acceptanceReturn(d);
+      await acceptanceCloseDetail(d);
       await d.waitForSnapshot(
         'real list offset and row focus restored',
         (s) =>
@@ -1612,14 +1617,18 @@ Future<void> _n7(NativeAcceptanceRecorder r) async {
         await c.expect('/browse', 'gte', 0, artifact: ref);
       },
       (c) async {
-        await c.expect('/mediaQuery/disableAnimations', 'eq', true);
+        // iOS exposes Reduce Motion separately; retain the independent raw
+        // MediaQuery flag rather than pretending UIKit sets disableAnimations.
+        await c.expect('/platformAccessibility/platform', 'eq', 'ios');
+        await c.expect('/platformAccessibility/reduceMotion', 'eq', true);
+        await c.expect('/mediaQuery/disableAnimations', 'eq', false);
         await c.expect('/mapReady', 'eq', true);
       },
     );
   } else {
     r.notApplicable(
       'N7.reduced-motion-semantics',
-      'Normal OS-motion job; separate actual reduced-motion job must prove disableAnimations and native semantics.',
+      'Normal OS-motion job; separate actual iOS reduced-motion job must prove the platform Reduce Motion flag and native semantics, retaining raw disableAnimations independently.',
     );
   }
   await r.check(
@@ -1634,13 +1643,18 @@ Future<void> _n7(NativeAcceptanceRecorder r) async {
             !nativeObject(modal['bounds']).containsKey('failure-sheet'),
         'Typed modal Close lost detail source.',
       );
-      await acceptanceReturn(d);
+      await acceptanceCloseDetail(d);
       final list = await d.snapshot();
       await c.sample('list-return', list);
       nativeRequire(
         acceptanceModel(list)['panel'] == 'list',
-        'Typed Return failed list source.',
+        'Pending detail Close failed list source.',
       );
+      // The OS-keyboard case saved this stop. Use its genuine terminal Return
+      // too, without recording a new result solely for a navigation test.
+      await acceptanceOpenListStop(d, 'TV-300004');
+      await acceptanceReturn(d);
+      await c.sample('terminal-list-return', await d.snapshot());
       await acceptanceMap(d);
       await _openMapStop(d, 'TV-300006');
       await d.tapKey('detail-close');

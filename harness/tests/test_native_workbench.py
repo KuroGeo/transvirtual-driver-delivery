@@ -286,9 +286,11 @@ class WorkbenchTests(unittest.TestCase):
         self.session()
         (self.root / "app/integration_test/independent.dart").write_text("void main() {}")
         executed = []
-        def stage(argv, cwd, log, timeout, descriptors, on_spawn, context):
+        def stage(argv, cwd, log, timeout, descriptors, on_spawn, context, **kwargs):
             executed.append(argv)
             log.write_text("mock tooling stage; no device\n")
+            on_spawn(123456789)
+            kwargs["on_finish"]({"fixture": True, "returncode": 0, "wrapper_reaped": True, "group_alive": False})
             return 0
         def cli(arguments):
             with patch.object(run, "ROOT", self.root), patch.object(run, "RUNS", self.root / "harness/runs"), patch.object(sys, "argv", ["run", *arguments]), patch.object(run, "subprocess_stage", side_effect=stage), patch.object(sys, "stdout", io.StringIO()), patch.object(sys, "stderr", io.StringIO()):
@@ -488,6 +490,8 @@ class WorkbenchTests(unittest.TestCase):
             self.assertEqual(session.execute(), 1)
         self.assertIn(("ui", UDID, "content_size", "accessibility-extra-extra-extra-large"), calls)
         self.assertIn(("spawn", UDID, "defaults", "write", "com.apple.Accessibility", "ReduceMotionEnabled", "-bool", "YES"), calls)
+        self.assertIn(("spawn", UDID, "notifyutil", "-p", "com.apple.Accessibility.ReduceMotionStatusDidChange"), calls)
+        self.assertLess(calls.index(("spawn", UDID, "defaults", "write", "com.apple.Accessibility", "ReduceMotionEnabled", "-bool", "YES")), calls.index(("spawn", UDID, "notifyutil", "-p", "com.apple.Accessibility.ReduceMotionStatusDidChange")))
         self.assertEqual(session.report["status"], "failed")
         self.assertIn("not inferred", session.report["os_controls"]["actual_mediaquery_proof"])
         self.assertIn("app/integration_test/support/native_acceptance_support.dart", session.report["inputs"])

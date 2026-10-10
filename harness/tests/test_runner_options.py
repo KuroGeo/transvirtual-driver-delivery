@@ -82,21 +82,24 @@ class AcceptanceRunnerOptionsTests(unittest.TestCase):
         manifest.write_text('{"accepted":true}')
         reads = []
 
-        def evaluate_stage(argv, cwd, log, timeout, lock_fds, on_spawn, context=None):
+        def evaluate_stage(argv, cwd, log, timeout, lock_fds, on_spawn, context=None, **kwargs):
             self.assertIn("_local_gate", argv)
             data = json.loads(manifest.read_text())
             reads.append(data)
             log.write_text(json.dumps(data))
-            return 0 if data["accepted"] else 1
+            code = 0 if data["accepted"] else 1
+            on_spawn(123456789)
+            kwargs["on_finish"]({"fixture": True, "returncode": code, "wrapper_reaped": True, "group_alive": False})
+            return code
 
         args = ["local-gate", "--manifest", str(manifest)]
         self.assertEqual(self.cli(args, evaluate_stage)[0], 0)
         directory = next((self.root / "harness/runs").glob("*-local-gate"))
         # This in-process CLI fixture has no prior OS job to reap. Existing
         # state tests separately verify real live PID/flock resume rejection.
-        saved = json.loads((directory / "report.json").read_text())
+        saved, leaf, mirror = run.resume_report(directory)
         saved["job"]["pid"] = None
-        run.save(directory / "report.json", saved)
+        run.save_attempt(directory, leaf.parent, saved, mirror)
         manifest.write_text('{"accepted":false}')
         code, _ = self.cli([*args, "--resume", str(directory)], evaluate_stage)
         self.assertEqual(code, 1)

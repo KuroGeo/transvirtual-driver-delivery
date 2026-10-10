@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": 5,
+  "revision": 6,
   "scope": "E08 full iOS simulator functional acceptance; not G3/production",
   "cases": {
     "N1": [
@@ -163,5 +163,19 @@
     "android_hardware_back_on_ios": "not_applicable; typed UI/modal return still required",
     "http_handler_count_is_coordinator_owner_count": false,
     "local_validator_publish_allowed": false
+  },
+  "platform_motion_observation": {
+    "ios": {
+      "snapshot_pointer": "/platformAccessibility/reduceMotion",
+      "expected": true,
+      "source": "dart:ui.PlatformDispatcher.accessibilityFeatures.reduceMotion",
+      "mediaquery_disableAnimations": "retained actual value; iOS Reduce Motion does not set this separate flag"
+    },
+    "android": {
+      "snapshot_pointer": "/mediaQuery/disableAnimations",
+      "expected": true
+    },
+    "source": "https://api.flutter.dev/flutter/widgets/MediaQueryData/disableAnimations.html",
+    "change_reason": "Correct locked Flutter iOS platform observation; full34 checks and product reduced-motion behavior remain required."
   }
 }

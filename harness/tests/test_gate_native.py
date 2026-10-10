@@ -123,9 +123,83 @@ class NativeGateTests(unittest.TestCase):
                     with self.assertRaises(gate.EvidenceError):
                         self.validator.raw(ref)
 
+    def ios_motion_observation(self):
+        return {"check": {"id": "N7.reduced-motion-semantics", "configuration": "demo", "transport": "controlled-http-simulated"},
+                "before": {}, "after": {"model": {}, "mediaQuery": {"disableAnimations": False},
+                                           "platformAccessibility": {"platform": "ios", "reduceMotion": True},
+                                           "bounds": {"online-toggle": [{"centerHit": True}]}},
+                "run": {"platform": "ios", "commands": [
+                    {"argv": ["xcrun", "simctl", "spawn", "owned-device", "defaults", "write", "com.apple.Accessibility", "ReduceMotionEnabled", "-bool", "YES"], "exit_code": 0},
+                    {"argv": ["xcrun", "simctl", "spawn", "owned-device", "defaults", "read", "com.apple.Accessibility", "ReduceMotionEnabled"], "exit_code": 0, "stdout": "1\n"}]},
+                "journal": [], "actions": ["semantics-probe:zoom-in"],
+                "action_records": [{"action": "semantics-probe:zoom-in", "stage": "completed", "response": 7}]}
+
+    def test_ios_actual_reduce_motion_flag_accepts_and_preserves_false_mediaquery(self):
+        value = self.ios_motion_observation()
+        self.validator.native_minimum(value)
+        self.assertIs(value["after"]["mediaQuery"]["disableAnimations"], False)
+        # Typed raw predicates consume the actual platform observation and the
+        # unchanged Flutter value, rather than synthesizing disableAnimations.
+        artifacts = {"after": self.artifact("motion.json", "ui-snapshot", value["after"])}
+        for pointer, expected in (("/platformAccessibility/platform", "ios"), ("/platformAccessibility/reduceMotion", True), ("/mediaQuery/disableAnimations", False)):
+            self.validator.assertion({"artifact": "after", "pointer": pointer, "op": "eq", "value": expected}, artifacts)
+
+    def test_ios_missing_false_or_wrong_platform_flag_cannot_be_waived_by_mediaquery_true(self):
+        for change in (
+            lambda after: after["platformAccessibility"].update(reduceMotion=False),
+            lambda after: after["platformAccessibility"].pop("reduceMotion"),
+            lambda after: after["platformAccessibility"].update(reduceMotion=1),
+            lambda after: after["platformAccessibility"].update(platform="android"),
+            lambda after: after["platformAccessibility"].pop("platform"),
+            lambda after: after.pop("platformAccessibility"),
+        ):
+            value = self.ios_motion_observation()
+            value["after"]["mediaQuery"]["disableAnimations"] = True
+            change(value["after"])
+            with self.subTest(after=value["after"]), self.assertRaises(gate.EvidenceError):
+                self.validator.native_minimum(value)
+
+    def test_actual_ios_motion_still_requires_os_receipts_and_typed_semantics_responses(self):
+        for mutation in (
+            lambda value: value["run"].update(commands=[]),
+            lambda value: value["run"]["commands"].pop(0),
+            lambda value: value["run"]["commands"].pop(1),
+            lambda value: value["run"]["commands"][1].update(stdout="0\n"),
+            lambda value: value.update(actions=[]),
+            lambda value: value.update(action_records=[]),
+            lambda value: value["action_records"][0].update(response=True),
+            lambda value: value["action_records"][0].pop("response"),
+            lambda value: value["action_records"][0].update(response=-1),
+        ):
+            value = self.ios_motion_observation()
+            mutation(value)
+            with self.subTest(value=value), self.assertRaises(gate.EvidenceError):
+                self.validator.native_minimum(value)
+
+    def test_android_motion_cannot_substitute_ios_flag_for_actual_disable_animations(self):
+        value = self.ios_motion_observation()
+        value["run"]["platform"] = "android"
+        value["after"]["platformAccessibility"]["platform"] = "android"
+        with self.assertRaises(gate.EvidenceError) as caught:
+            self.validator.native_minimum(value)
+        self.assertIn("actual Android disableAnimations", str(caught.exception))
+
+    def test_native_protocol5_aggregate_and_raw_phase_receipt_are_rejected(self):
+        report = self.acceptance()
+        report["revision"] = 5
+        self.rejected_acceptance(report, "native acceptance revision")
+        check, runs, artifacts = self.first_import_graph()
+        old = gate._json(artifacts["receipt"]["raw"], "phase receipt")
+        old["revision"] = 5
+        artifacts["receipt"] = self.artifact("receipt.json", "e08-phase-receipt", old)
+        runs["run"]["_verified_artifacts"][str(artifacts["receipt"]["path_object"])] = artifacts["receipt"]["sha256"]
+        with self.assertRaises(gate.EvidenceError) as caught:
+            self.validator.native_check(check, runs, artifacts)
+        self.assertIn("phase receipt revision", str(caught.exception))
+
     def acceptance(self):
         return {
-            "schema": 1, "revision": 5, "candidate": self.fp, "status": "passed",
+            "schema": 1, "revision": 6, "candidate": self.fp, "status": "passed",
             "scope": "full-native-functional", "platform": "ios", "process_restart": True,
             "independent_review": {"task": "synthetic-independent", "reviewer": "synthetic-reviewer", "product_author": False},
             "contract": self.contract_ref, "artifacts": {}, "runs": [],
@@ -293,7 +367,7 @@ class NativeGateTests(unittest.TestCase):
         actions = [{**identity, "vmProcessId": 123, "sequence": 1, "action": "snapshot", "stage": stage} for stage in ("started", "completed")]
         artifacts["actions"] = self.artifact("actions.jsonl", "ui-actions", "".join(json.dumps(value) + "\n" for value in actions))
         artifacts["observations"] = self.artifact("observations.jsonl", "ui-observations", json.dumps(snapshot) + "\n")
-        receipt = {"schema": 1, "revision": 5, **identity, "vmProcessId": 123, "checks": [{"id": check["id"], "status": "passed", "before": "before.json", "after": "after.json", "actionSequenceStart": 1, "actionSequenceEnd": 1, "capture": {"png": "os.png", "sqlite": "native.sqlite", "projection": "projection.json", "journal": "journal.jsonl"}, "assertions": [{"artifact": "after.json", "pointer": "/persistedStops", "op": "length", "value": 30}]}]}
+        receipt = {"schema": 1, "revision": 6, **identity, "vmProcessId": 123, "checks": [{"id": check["id"], "status": "passed", "before": "before.json", "after": "after.json", "actionSequenceStart": 1, "actionSequenceEnd": 1, "capture": {"png": "os.png", "sqlite": "native.sqlite", "projection": "projection.json", "journal": "journal.jsonl"}, "assertions": [{"artifact": "after.json", "pointer": "/persistedStops", "op": "length", "value": 30}]}]}
         artifacts["receipt"] = self.artifact("receipt.json", "e08-phase-receipt", receipt)
         run = {"configuration": "demo", "data_container": "/same-install", "launches": [{"phase": "saved", **identity}], "_evidence_owner": self.root, "_verified_artifacts": {str(item["path_object"]): item["sha256"] for item in artifacts.values()}}
         return check, {"run": run}, artifacts

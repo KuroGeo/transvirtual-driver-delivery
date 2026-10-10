@@ -72,6 +72,88 @@ def save(path, value):
     temporary.replace(path)
 
 
+def resume_report(run_dir):
+    run_dir = Path(run_dir).absolute()
+    if run_dir.resolve() != run_dir or not run_dir.is_dir():
+        raise ValueError("resume requires a canonical logical run root")
+    pointer = run_dir / "latest.json"
+    if pointer.is_symlink():
+        raise ValueError("latest attempt pointer cannot be a symlink")
+    if not pointer.exists():
+        legacy = read_manifest(run_dir / "report.json")
+        if "latest_attempt_report" in legacy or (run_dir / "attempts").exists() or (run_dir / "attempts").is_symlink():
+            raise ValueError("modern attempt pointer is missing; cannot fall back to a status mirror")
+        return legacy, run_dir / "report.json", "latest-report.json"
+    latest = read_manifest(pointer)
+    name, mirror = latest.get("latest_attempt_report"), latest.get("status_mirror")
+    if latest.get("schema") != 1 or type(latest.get("schema")) is not int or not isinstance(name, str) or not re.fullmatch(r"attempts/\d{6}/report\.json", name) or mirror not in {"report.json", "latest-report.json"}:
+        raise ValueError("invalid latest attempt pointer")
+    leaf = run_dir / name
+    report = read_manifest(leaf)
+    if sha(leaf) != latest.get("sha256") or report.get("latest_attempt_report") != name:
+        raise ValueError("latest attempt report hash/path mismatch")
+    read_manifest(run_dir / mirror)
+    if sha(run_dir / mirror) != latest["sha256"]:
+        raise ValueError("latest status mirror differs from immutable attempt report")
+    return report, leaf, mirror
+
+
+def attempt_directory(run_dir):
+    directory = run_dir / "attempts"
+    if directory.is_symlink() or directory.resolve() != directory:
+        raise ValueError("attempts must be a canonical task-owned directory")
+    directory.mkdir(exist_ok=True)
+    entries = list(directory.iterdir())
+    if any(not re.fullmatch(r"\d{6}", path.name) or path.is_symlink() or not path.is_dir() for path in entries):
+        raise ValueError("unexpected/symlink attempt directory")
+    number = max((int(path.name) for path in entries), default=0) + 1
+    if number > 999999:
+        raise ValueError("attempt directory capacity exceeded")
+    result = directory / f"{number:06d}"
+    result.mkdir()
+    return result
+
+
+def save_attempt(run_dir, attempt, report, mirror):
+    leaf = attempt / "report.json"
+    save(leaf, report)
+    save(run_dir / mirror, report)
+    save(run_dir / "latest.json", {"schema": 1, "latest_attempt_report": leaf.relative_to(run_dir).as_posix(), "sha256": sha(leaf), "status_mirror": mirror})
+
+
+def native_resume_ready(report, directory):
+    application_stages = [stage for stage in report.get("stages", []) if stage.get("id") in {"process-restart", "startup-smoke", "workbench-smoke"}]
+    if report.get("command") != "native" or not application_stages:
+        return
+    if all(stage.get("completion", {}).get("spawned") is False and stage.get("job_pid") is None for stage in application_stages):
+        return  # The recorded wrapper never started; it could not allocate a device.
+    path = directory / "native/result.json"
+    if not path.exists():
+        raise ValueError("prior native cleanup is unknown; evidenced task-owner cleanup is required before resume")
+    native = read_manifest(path)
+    device, commands = native.get("device"), native.get("commands")
+    expected = report.get("options", {})
+    if (native.get("candidate") != report.get("candidate", {}).get("source_fingerprint")
+            or native.get("configuration") != expected.get("configuration")
+            or native.get("entrypoint") != expected.get("entrypoint")
+            or not isinstance(device, dict) or device.get("task_owned") is not True
+            or not isinstance(device.get("udid"), str) or not re.fullmatch(r"[A-Fa-f0-9]{8}(?:-[A-Fa-f0-9]{4}){3}-[A-Fa-f0-9]{12}", device["udid"])
+            or device.get("runtime") != expected.get("runtime") or device.get("type") != expected.get("device_type")
+            or native.get("device_cleaned") is not True
+            or any(key.endswith("cleanup_error") for key in native)
+            or not isinstance(commands, list)):
+        raise ValueError("prior native task device/descendant cleanup is not verified; no automatic orphan cleanup")
+    name = "OceanDelivery-Workbench" if expected.get("scope") == "workbench" else "OceanDelivery-Harness"
+    created = any(isinstance(record, dict) and record.get("argv") == ["xcrun", "simctl", "create", name, device["type"], device["runtime"]] and type(record.get("exit_code")) is int and record["exit_code"] == 0 and isinstance(record.get("stdout"), str) and record["stdout"].strip() == device["udid"] for record in commands)
+    deleted = any(isinstance(record, dict) and record.get("argv") == ["xcrun", "simctl", "delete", device["udid"]] and type(record.get("exit_code")) is int and record["exit_code"] == 0 for record in commands)
+    if not created or not deleted:
+        raise ValueError("prior native cleanup lacks actual owned-device create/delete receipts")
+
+
+def cleanup_grace(stage_id):
+    return 150 if stage_id in {"process-restart", "startup-smoke", "workbench-smoke"} else 5
+
+
 def build_arguments(options):
     arguments = ["flutter", "build", "ios", f"--{options['build_mode']}", "--no-pub", "--target", options["entrypoint"], f"--dart-define=OCEAN_MODE={options['configuration']}"]
     if options["ios_target"] == "simulator":
@@ -267,27 +349,72 @@ def cleanup_previous_isolation(report, source_root):
     shutil.rmtree(path)
 
 
-def subprocess_stage(argv, cwd, log, timeout, lock_fds, on_spawn, lease_context=None):
+def subprocess_stage(argv, cwd, log, timeout, lock_fds, on_spawn, lease_context=None, *, on_finish=None, cleanup_grace=5):
+    if isinstance(cleanup_grace, bool) or not isinstance(cleanup_grace, (int, float)) or not math.isfinite(cleanup_grace) or not 0 < cleanup_grace <= 150:
+        raise ValueError("cleanup grace must be finite in (0, 150] seconds")
     env = os.environ.copy()
     for key in ("NO_PROXY", "no_proxy"):
         current = env.get(key, "")
         env[key] = ",".join(filter(None, [current, "localhost", "127.0.0.1", "::1"]))
-    with log.open("w") as output:
-        wrapper = [sys.executable, str(ROOT / "harness/run.py"), "_stage", "--stage-argv", json.dumps(argv)]
-        if lease_context:
-            wrapper += ["--lease-context", json.dumps(lease_context)]
-        process = subprocess.Popen(wrapper, cwd=cwd, env=env, stdout=output, stderr=subprocess.STDOUT, start_new_session=True, pass_fds=tuple(lock_fds))
-        try:
+    process, primary = None, None
+    receipt = {"spawned": False, "wrapper_reaped": False, "returncode": None, "cleanup_grace_seconds": cleanup_grace, "cleanup_errors": []}
+    try:
+        with log.open("x") as output:
+            wrapper = [sys.executable, str(ROOT / "harness/run.py"), "_stage", "--stage-argv", json.dumps(argv)]
+            if lease_context:
+                wrapper += ["--lease-context", json.dumps(lease_context)]
+            process = subprocess.Popen(wrapper, cwd=cwd, env=env, stdout=output, stderr=subprocess.STDOUT, start_new_session=True, pass_fds=tuple(lock_fds))
+            receipt.update(spawned=True, wrapper_pid=process.pid, process_group=process.pid)
             on_spawn(process.pid)
             return process.wait(timeout=timeout)
-        finally:
-            if process.poll() is None:
-                os.killpg(process.pid, signal.SIGTERM)
-                try:
-                    process.wait(timeout=5)
-                except subprocess.TimeoutExpired:
-                    os.killpg(process.pid, signal.SIGKILL)
-                    process.wait()
+    except BaseException as error:
+        primary = error
+        receipt["cause"] = type(error).__name__
+        raise
+    finally:
+        cleanup_started = time.monotonic()
+        if process is not None:
+            try:
+                if process.poll() is None:
+                    receipt["termination_requested_at"] = datetime.now(timezone.utc).isoformat()
+                    try:
+                        os.killpg(process.pid, signal.SIGTERM)
+                        receipt["term_sent"] = True
+                    except ProcessLookupError:
+                        receipt["term_sent"] = False
+                    try:
+                        process.wait(timeout=cleanup_grace)
+                    except subprocess.TimeoutExpired:
+                        try:
+                            os.killpg(process.pid, signal.SIGKILL)
+                            receipt["kill_sent"] = True
+                        except ProcessLookupError:
+                            receipt["kill_sent"] = False
+                        process.wait(timeout=5)
+            except (OSError, subprocess.TimeoutExpired, InterruptedError, KeyboardInterrupt) as error:
+                receipt["cleanup_errors"].append({"type": type(error).__name__, "message": str(error)})
+            receipt.update(returncode=process.poll(), wrapper_reaped=process.returncode is not None)
+            try:
+                os.killpg(process.pid, 0)
+            except ProcessLookupError:
+                receipt["group_alive"] = False
+            except PermissionError:
+                receipt["group_alive"] = True
+            except OSError as error:
+                receipt["group_alive"] = None
+                receipt["cleanup_errors"].append({"type": type(error).__name__, "message": str(error)})
+            else:
+                receipt["group_alive"] = True
+        receipt["finished_at"] = datetime.now(timezone.utc).isoformat()
+        receipt["cleanup_elapsed_seconds"] = round(time.monotonic() - cleanup_started, 3)
+        if on_finish is not None:
+            try:
+                on_finish(receipt)
+            except BaseException:
+                if primary is None:
+                    raise
+        if primary is None and (receipt["cleanup_errors"] or not receipt["wrapper_reaped"] or receipt.get("group_alive") is True):
+            raise RuntimeError("stage cleanup/reap is incomplete; inspect completion receipt")
 
 
 def main():
@@ -421,23 +548,29 @@ def main():
         options["device_type"] = args.device_type or "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro"
     RUNS.mkdir(exist_ok=True)
     candidate = {"source_fingerprint": checks.fingerprint(ROOT)}
+    prior, prior_path, attempt = None, None, None
+    mirror = "report.json"
     if args.resume:
-        run_dir = args.resume.resolve()
-        report = json.loads((run_dir / "report.json").read_text())
-        validation = state.validate_resume(report, candidate)
-        if report.get("command") != args.command:
-            validation["reasons"].append("resume command differs from saved command")
-        if report.get("options") != options:
-            validation["reasons"].append("resume configuration/targets/stage options differ from saved run")
-        if validation["reasons"]:
-            print(json.dumps(validation, ensure_ascii=False, indent=2))
+        run_dir = args.resume.absolute()
+        try:
+            prior, prior_path, mirror = resume_report(run_dir)
+            validation = state.validate_resume(prior, candidate)
+            if prior.get("command") != args.command:
+                validation["reasons"].append("resume command differs from saved command")
+            if prior.get("options") != options:
+                validation["reasons"].append("resume configuration/targets/stage options differ from saved run")
+            if validation["reasons"]:
+                raise ValueError("; ".join(validation["reasons"]))
+            native_resume_ready(prior, prior_path.parent)
+        except (OSError, ValueError, KeyError, TypeError) as error:
+            print(f"Cannot resume: {error}")
             return 1
-        report["resume_count"] = report.get("resume_count", 0) + 1
     else:
         stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
         run_dir = RUNS / f"{stamp}-{args.command}"
         run_dir.mkdir()
-        report = {"command": args.command, "candidate": candidate, "options": options, "started_at": stamp, "stages": [], "inputs": {"flutter": json.loads((ROOT / "app/.fvmrc").read_text())["flutter"], "lock_sha256": sha(ROOT / "app/pubspec.lock"), "asset_sha256": sha(ROOT / "app/assets/deliveries.csv"), "entrypoint": effective_entrypoint, "driver_target": args.driver_target, "fixture": args.fixture, "tile_url": options["tile_url"], "native_options": {key: options.get(key) for key in NATIVE_OPTION_KEYS}}}
+    report = {"command": args.command, "candidate": candidate, "options": options, "started_at": datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ"), "resume_count": prior.get("resume_count", 0) + 1 if prior else 0, "stages": [], "inputs": {"flutter": json.loads((ROOT / "app/.fvmrc").read_text())["flutter"], "lock_sha256": sha(ROOT / "app/pubspec.lock"), "asset_sha256": sha(ROOT / "app/assets/deliveries.csv"), "entrypoint": effective_entrypoint, "driver_target": args.driver_target, "fixture": args.fixture, "tile_url": options["tile_url"], "native_options": {key: options.get(key) for key in NATIVE_OPTION_KEYS}}}
+    parent_hash = sha(prior_path) if prior_path else None
     resources = ["app-workspace" if args.command in {"quality", "test", "integration", "pub", "build", "native", "preflight"} else "repository-checks"]
     if args.command == "native":
         resources.append("device:ios-task-simulator")
@@ -449,56 +582,86 @@ def main():
         raise InterruptedError(f"received signal {signum}")
     signal.signal(signal.SIGTERM, interrupted)
     status = "failed"
+    lease_dir = run_dir / "leases" / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
     try:
-        with state.lease(resources, run_dir, RUNS / "locks") as metadata:
+        with state.lease(resources, lease_dir, RUNS / "locks") as metadata:
             if args.resume:
-                cleanup_previous_isolation(report, ROOT)
+                current_prior, current_path, _ = resume_report(run_dir)
+                if current_path != prior_path or sha(current_path) != parent_hash:
+                    raise ValueError("latest attempt changed before atomic lease acquisition")
+                native_resume_ready(current_prior, current_path.parent)
+                cleanup_previous_isolation(prior, ROOT)
+            attempt = attempt_directory(run_dir)
+            report["latest_attempt_report"] = (attempt / "report.json").relative_to(run_dir).as_posix()
+            if prior_path:
+                report["parent_attempt"] = {"path": str(prior_path), "sha256": parent_hash}
+            print(f"Attempt report: {attempt / 'report.json'}", flush=True)
             report["lease"] = {key: value for key, value in metadata.items() if key != "lock_fds"}
-            save(run_dir / "report.json", report)
+            save_attempt(run_dir, attempt, report, mirror)
             from contextlib import nullcontext
             workspace = isolated_workspace(ROOT, candidate["source_fingerprint"], report) if args.isolated else nullcontext(ROOT)
             with workspace as execution_root:
-                plan = stages(args.command, run_dir, candidate["source_fingerprint"], args.manifest.resolve() if args.manifest else None, args.target, options, execution_root, metadata)
-                spec = stage_spec(plan, execution_root, run_dir)
-                if args.resume and report.get("stage_spec") != spec:
+                plan = stages(args.command, attempt, candidate["source_fingerprint"], args.manifest.resolve() if args.manifest else None, args.target, options, execution_root, metadata)
+                spec = stage_spec(plan, execution_root, attempt)
+                if args.resume and prior.get("stage_spec") != spec:
                     raise ValueError("resume stage plan differs from saved run")
-                previous_root = Path(report.get("execution_root", str(execution_root)))
+                previous_root = Path(prior.get("execution_root", str(execution_root))) if prior else execution_root
                 report.update(stage_spec=spec, source_root=str(ROOT), execution_root=str(execution_root), isolation={"requested": args.isolated, "verified_fingerprint": candidate["source_fingerprint"], "task_owned": args.isolated, "cleaned": False})
-                save(run_dir / "report.json", report)
+                save_attempt(run_dir, attempt, report, mirror)
                 for stage_id, argv, cwd in plan:
-                    prior = next((item for item in report["stages"] if item["id"] == stage_id), None)
-                    current_spec = stage_spec([(stage_id, argv, cwd)], execution_root, run_dir)
-                    old_spec = stage_spec([(stage_id, prior["command"], prior["cwd"])], previous_root, run_dir) if prior else None
-                    if args.command not in {"gate", "local-gate"} and stage_id != "pub" and not (args.isolated and args.command in {"build", "native", "integration"}) and prior and prior["status"] == "passed" and old_spec == current_spec:
-                        previous_log = Path(prior["log_path"])
-                        if not previous_log.exists() or sha(previous_log) != prior["sha256"]:
+                    old = next((item for item in prior["stages"] if item["id"] == stage_id), None) if prior else None
+                    current_spec = stage_spec([(stage_id, argv, cwd)], execution_root, attempt)
+                    old_spec = stage_spec([(stage_id, old["command"], old["cwd"])], previous_root, prior_path.parent) if old else None
+                    retained_outputs = {"ios-build", "probe-build", "startup-build", "workbench-build", "process-restart", "startup-smoke", "workbench-smoke", "integration-tests"}
+                    if args.command not in {"gate", "local-gate"} and stage_id not in {"pub", *retained_outputs} and not args.isolated and old and old["status"] == "passed" and type(old.get("exit_code")) is int and old["exit_code"] == 0 and old_spec == current_spec:
+                        previous_log = Path(old["log_path"])
+                        if not previous_log.is_relative_to(run_dir) or previous_log.resolve() != previous_log or not previous_log.is_file() or sha(previous_log) != old["sha256"]:
                             raise ValueError(f"{stage_id}: saved log missing or changed; completed stage cannot be reused")
+                        record = {**old, "reused_from": {"report": str(prior_path), "report_sha256": parent_hash, "stage_id": stage_id}}
+                        report["stages"].append(record)
+                        save_attempt(run_dir, attempt, report, mirror)
                         print(f"{stage_id}: reused verified stage", flush=True)
                         continue
-                    record = {"id": stage_id, "command": argv, "cwd": str(cwd), "status": "running", "log_path": str(run_dir / f"{stage_id}.log")}
-                    if prior:
-                        report["stages"].remove(prior)
+                    record = {"id": stage_id, "command": argv, "cwd": str(cwd), "status": "running", "log_path": str(attempt / f"{stage_id}.log")}
                     report["stages"].append(record)
-                    save(run_dir / "report.json", report)
+                    save_attempt(run_dir, attempt, report, mirror)
                     started = time.monotonic()
                     def on_spawn(pid):
                         record["job_pid"] = pid
-                        save(run_dir / "report.json", report)
-                    code = subprocess_stage(argv, cwd, Path(record["log_path"]), args.timeout, metadata["lock_fds"], on_spawn, metadata)
-                    record.update(status="passed" if code == 0 else "failed", exit_code=code, elapsed_seconds=round(time.monotonic() - started, 3), sha256=sha(record["log_path"]))
-                    if code == 0 and stage_id in {"ios-build", "probe-build", "startup-build", "workbench-build"}:
-                        record["artifact"] = preserve_artifact(execution_root, run_dir, stage_id, options, candidate["source_fingerprint"])
-                    save(run_dir / "report.json", report)
+                        save_attempt(run_dir, attempt, report, mirror)
+                    def on_finish(receipt):
+                        record["completion"] = receipt
+                    code, failure = None, None
+                    try:
+                        code = subprocess_stage(argv, cwd, Path(record["log_path"]), args.timeout, metadata["lock_fds"], on_spawn, metadata, on_finish=on_finish, cleanup_grace=cleanup_grace(stage_id))
+                    except BaseException as error:
+                        failure = error
+                        raise
+                    finally:
+                        completion = record.get("completion", {})
+                        observed = completion.get("returncode", code)
+                        completed = type(observed) is int and observed == 0 and completion.get("wrapper_reaped") is True and completion.get("group_alive") is False and not completion.get("cleanup_errors")
+                        terminal = "timed_out" if isinstance(failure, subprocess.TimeoutExpired) else "interrupted" if isinstance(failure, (KeyboardInterrupt, InterruptedError)) else "failed" if failure or not completed else "passed"
+                        record.update(status=terminal, exit_code=observed, elapsed_seconds=round(time.monotonic() - started, 3))
+                        if failure:
+                            record["error"] = {"type": type(failure).__name__, "message": str(failure)}
+                        log = Path(record["log_path"])
+                        if log.is_file():
+                            record.update(sha256=sha(log), log_bytes=log.stat().st_size)
+                        save_attempt(run_dir, attempt, report, mirror)
+                    if record["status"] == "passed" and stage_id in {"ios-build", "probe-build", "startup-build", "workbench-build"}:
+                        record["artifact"] = preserve_artifact(execution_root, attempt, stage_id, options, candidate["source_fingerprint"])
+                    save_attempt(run_dir, attempt, report, mirror)
                     print(f"{stage_id}: {record['status']} ({record['elapsed_seconds']}s); {record['log_path']}", flush=True)
-                    if code:
+                    if record["status"] != "passed":
                         print(Path(record["log_path"]).read_text()[-6000:])
                         break
                 else:
                     status = "passed"
     except (KeyboardInterrupt, InterruptedError):
         status = "interrupted"
-        print("Interrupted; subprocess stopped, lease released. Resume only after checking candidate and saved logs.")
-    except (OSError, ValueError, state.BusyError, subprocess.TimeoutExpired) as error:
+        print("Interrupted; inspect recorded process cleanup and actual OS leases before resume.")
+    except (OSError, ValueError, RuntimeError, state.BusyError, subprocess.TimeoutExpired) as error:
         report["error"] = str(error)
         print(f"Cannot complete run: {error}")
     finally:
@@ -510,10 +673,11 @@ def main():
             print("Source or isolated execution source changed during run; retain diagnostics and rerun the final candidate.")
         report["job"]["status"] = status
         report["finished_at"] = datetime.now(timezone.utc).isoformat()
-        report["lease"] = json.loads((run_dir / "lease.json").read_text()) if (run_dir / "lease.json").exists() else {}
+        report["lease"] = json.loads((lease_dir / "lease.json").read_text()) if (lease_dir / "lease.json").exists() else {}
         if report.get("isolation", {}).get("requested"):
             report["isolation"]["cleaned"] = not Path(report["execution_root"]).exists()
-        save(run_dir / "report.json", report)
+        if attempt is not None:
+            save_attempt(run_dir, attempt, report, mirror)
     return 0 if status == "passed" else 1
 
 

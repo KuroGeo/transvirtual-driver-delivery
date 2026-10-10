@@ -19,6 +19,7 @@ GATES = tuple(f"G{i}" for i in range(7))
 QUALITY_STAGES = ("repository", "tooling-tests", "sdk", "pub", "format", "analyze", "flutter-tests")
 SOURCE_ROOT = Path(__file__).resolve().parents[1]
 NATIVE_CONTRACT = SOURCE_ROOT / "harness/project/native-acceptance-contract.json"
+NATIVE_REVISION = 6
 HASH = re.compile(r"[0-9a-f]{64}\Z")
 MAX_RAW = 128 * 1024 * 1024
 MAX_RECORDS = 50000
@@ -640,7 +641,7 @@ class Validator:
     def native(self, report, item):
         if report.get("platform") not in ("ios", "android"):
             raise EvidenceError("platform must be android or ios; browser/host evidence is insufficient")
-        for key, expected in {"schema": 1, "revision": 5, "scope": "full-native-functional", "process_restart": True}.items():
+        for key, expected in {"schema": 1, "revision": NATIVE_REVISION, "scope": "full-native-functional", "process_restart": True}.items():
             _expect(report.get(key), expected, "native acceptance " + key)
         review = _object(report.get("independent_review"), "native independent_review")
         _expect(review.get("product_author"), False, "native independent product_author")
@@ -650,6 +651,7 @@ class Validator:
         if contract_item["raw"] != NATIVE_CONTRACT.read_bytes():
             raise EvidenceError("native contract differs from authoritative current source")
         contract = _json(contract_item["raw"], "native contract")
+        _expect(contract.get("revision"), NATIVE_REVISION, "authoritative native evidence protocol revision")
         cases = _object(report.get("cases"), "native cases")
         _expect(set(cases), set(contract["cases"]), "native exact case IDs")
         _expect(report.get("requirements"), contract["requirements"], "native exact R01-R14 bindings")
@@ -743,7 +745,7 @@ class Validator:
         receipt_item = artifacts[check["receipt"]]
         receipt = _object(_json(receipt_item["raw"], "raw E08 phase receipt"), "raw E08 phase receipt")
         _expect(receipt.get("schema"), 1, "phase receipt schema")
-        _expect(receipt.get("revision"), 5, "phase receipt revision")
+        _expect(receipt.get("revision"), NATIVE_REVISION, "phase receipt revision")
         self.identity(receipt, check, vm=True)
         raw_checks = _list(receipt.get("checks"), "raw phase checks")
         matches = [value for value in raw_checks if value.get("id") == check["id"]]
@@ -1207,10 +1209,27 @@ class Validator:
             require(after["mediaQuery"].get("textScaleAt16", 0) >= 2, "actual system 2x text scale")
             self.native_os_settings(value, "content_size")
         elif check_id == "N7.reduced-motion-semantics":
-            _expect(after["mediaQuery"].get("disableAnimations"), True, "actual native reduced motion")
+            accessibility = _object(after.get("platformAccessibility"), "actual platform accessibility observation")
+            platform = value["run"].get("platform")
+            _expect(accessibility.get("platform"), platform, "actual accessibility platform matches collector")
+            media = _object(after.get("mediaQuery"), "actual reduced-motion MediaQuery")
+            if type(media.get("disableAnimations")) is not bool:
+                raise EvidenceError("actual observed disableAnimations must be boolean")
+            if platform == "ios":
+                # Pinned Flutter's iOS Reduce Motion flag is distinct from its
+                # Disable Animations flag. Preserve the actual MediaQuery value.
+                _expect(accessibility.get("reduceMotion"), True, "actual iOS UIAccessibility Reduce Motion")
+            elif platform == "android":
+                _expect(media["disableAnimations"], True, "actual Android disableAnimations")
+            else:
+                raise EvidenceError("unsupported actual reduced-motion platform")
             self.native_os_settings(value, "reduce_motion")
             require(after.get("bounds", {}).get("detail-close") or after.get("bounds", {}).get("online-toggle"), "usable actual controls")
             require(any(name.startswith("semantics-probe:") for name in actions), "actual driver semantics response probe")
+            probes = [event for event in value.get("action_records", []) if event.get("action", "").startswith("semantics-probe:")]
+            require(probes, "actual completed native semantics responses")
+            for event in probes:
+                _integer(event.get("response"), "actual native semantics response ID")
         elif check_id == "N7.platform-back":
             require(any(name in actions for name in ("tap:failure-close", "tap:detail-return", "tap:detail-close", "os-system-back")), "actual modal/typed/system return")
         else:

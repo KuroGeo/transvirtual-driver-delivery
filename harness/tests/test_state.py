@@ -101,6 +101,56 @@ class StateTests(unittest.TestCase):
         with lease(["device:test"], self.root / "two", self.locks):
             pass
 
+    def test_graceful_parent_close_preserves_descendant_inherited_lock(self):
+        with lease(["device:test"], self.root / "one", self.locks) as record:
+            child = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(60)"], pass_fds=record["lock_fds"])
+            self.addCleanup(self.stop_holder, child)
+        self.assertIsNone(child.poll())
+        self.assertEqual(json.loads((self.root / "one/lease.json").read_text())["status"], "released")
+        self.report["stages"] = [{"id": "descendant", "status": "running", "job_pid": child.pid}]
+        blocked = validate_resume(self.report, self.candidate)
+        self.assertTrue(any("still locked" in reason for reason in blocked["reasons"]), blocked)
+        with self.assertRaises(BusyError):
+            with lease(["device:test"], self.root / "contender", self.locks):
+                self.fail("parent close must not unlock the inherited descriptor")
+        child.terminate()
+        child.wait(timeout=5)
+        self.assertTrue(validate_resume(self.report, self.candidate)["allowed"])
+        with lease(["device:test"], self.root / "after-child", self.locks):
+            pass
+
+    def test_real_timeout_preserves_completion_callback_and_forced_reap(self):
+        from harness.run import subprocess_stage
+        receipt = []
+        log = self.root / "timeout.log"
+        with self.assertRaises(subprocess.TimeoutExpired):
+            subprocess_stage([sys.executable, "-u", "-c", "import signal,time; signal.signal(signal.SIGTERM,signal.SIG_IGN); print('ready',flush=True); time.sleep(60)"],
+                             REPO, log, 1, [], lambda pid: None, on_finish=receipt.append, cleanup_grace=0.2)
+        self.assertEqual(len(receipt), 1)
+        self.assertTrue(receipt[0]["spawned"])
+        self.assertTrue(receipt[0]["wrapper_reaped"])
+        self.assertEqual(receipt[0]["returncode"], -signal.SIGKILL)
+        self.assertTrue(receipt[0]["term_sent"])
+        self.assertTrue(receipt[0]["kill_sent"])
+        self.assertEqual(receipt[0]["cause"], "TimeoutExpired")
+        self.assertIn("ready", log.read_text())
+        with self.assertRaises(ProcessLookupError):
+            os.kill(receipt[0]["wrapper_pid"], 0)
+
+    def test_native_grace_allows_cooperative_cleanup_longer_than_generic_five_seconds(self):
+        from harness.run import cleanup_grace, subprocess_stage
+        receipt = []
+        code = "import signal,time,sys\ndef stop(*args):\n time.sleep(5.2)\n sys.exit(0)\nsignal.signal(signal.SIGTERM,stop)\nprint('ready',flush=True)\ntime.sleep(60)"
+        with self.assertRaises(subprocess.TimeoutExpired):
+            subprocess_stage([sys.executable, "-u", "-c", code], REPO, self.root / "cooperative.log", 1, [], lambda pid: None,
+                             on_finish=receipt.append, cleanup_grace=cleanup_grace("workbench-smoke"))
+        self.assertEqual(receipt[0]["cleanup_grace_seconds"], 150)
+        self.assertGreater(receipt[0]["cleanup_elapsed_seconds"], 5)
+        self.assertEqual(receipt[0]["returncode"], 0)
+        self.assertTrue(receipt[0]["wrapper_reaped"])
+        self.assertFalse(receipt[0].get("kill_sent", False))
+        self.assertFalse(receipt[0]["group_alive"])
+
     def test_spawn_record_failure_reaps_the_started_stage(self):
         with patch.object(sys, "path", [str(REPO / "harness"), *sys.path]):
             from harness.run import subprocess_stage
@@ -122,7 +172,7 @@ class StateTests(unittest.TestCase):
                             pass
                 self.addCleanup(cleanup)
                 with self.assertRaises(type(error)):
-                    subprocess_stage([sys.executable, "-c", "import time; time.sleep(60)"], REPO, self.root / "spawn.log", 10, [], on_spawn)
+                    subprocess_stage([sys.executable, "-c", "import time; time.sleep(60)"], REPO, self.root / (type(error).__name__ + "-spawn.log"), 10, [], on_spawn)
                 self.assertEqual(len(started), 1)
                 with self.assertRaises(ProcessLookupError):
                     os.kill(started[0], 0)
@@ -222,6 +272,19 @@ class StateTests(unittest.TestCase):
                 result = validate_resume(report, self.candidate)
                 self.assertFalse(result["allowed"])
                 self.assertTrue(any(reason in value for value in result["reasons"]), result)
+
+    def test_resume_rejects_malformed_nested_shapes_and_live_recorded_group(self):
+        for edit in (lambda r: r.update(job=[]), lambda r: r.update(stages={}),
+                     lambda r: r.update(stages=[None]), lambda r: r.update(stages=[{"completion": []}]),
+                     lambda r: r.update(lease=[]), lambda r: r.update(lease={"resources": [1]})):
+            report = json.loads(json.dumps(self.report))
+            edit(report)
+            self.assertFalse(validate_resume(report, self.candidate)["allowed"])
+        self.report["stages"] = [{"id": "unfinished", "status": "failed", "job_pid": 123456789,
+                                  "completion": {"wrapper_reaped": True, "process_group": 123456789}}]
+        with patch("harness.state.os.killpg", return_value=None):
+            result = validate_resume(self.report, self.candidate)
+        self.assertTrue(any("process group" in reason for reason in result["reasons"]), result)
 
 
 if __name__ == "__main__":
