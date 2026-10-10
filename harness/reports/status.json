@@ -1,33 +1,24 @@
 {
   "schema_version": 2,
   "audit_date": "2026-10-10",
-  "scope": "Engineering skills, executable Harness and Flutter local reliability baseline",
+  "scope": "Full prototype Flutter demo/local-client implementation in progress; candidate-bound Harness execution and independent verification",
   "production_eligible": false,
   "production_verdict": "no-go",
   "enforcement_deployed": false,
   "current_validation": {
     "status": "passed",
-    "candidate": {
-      "source_fingerprint": "b5050d4731905258653e434db66e2d2bb80db4232ebc03ebde3a373199f68f78"
-    },
-    "finished_at": "2026-10-10T12:47:44.500082+00:00",
-    "scope": "Issue planning/publication docs and existing Flutter reliability source; no full product implementation",
-    "checks": [
-      "repository links / R01-R17 coverage / 19-task DAG / Dart layers",
-      "33 Harness regressions",
-      "Flutter 3.44.2 / enforced lockfile",
-      "format / analyze",
-      "52 Flutter host / SQLite / widget tests",
-      "GitHub parent #14 / 19 sub-issues / 31 native dependencies / exact body hash"
-    ],
-    "archive": "harness/reports/issue-planning-2026-10-10.tar.gz",
-    "archive_sha256": "a27a8b9cde7f8d5658741721c02287fb5d01b2910800f9c748dc9d0176c2b6df",
-    "report_member": "quality-verified/report.json",
-    "review_member": "issue-planning/draft-requirements-review.md",
-    "harness_review_member": "issue-planning/draft-harness-review.md",
-    "remote_verification_member": "issue-planning/remote-verification.json",
+    "scope": "E05/E06/E11 plus earlier component G1; full workbench and G2 pending",
+    "source_fingerprint": "a0cd4c77f71e3fa6342b2919ace236ba7ca71c81700b8fff2acaf40ddac0bc5a",
+    "quality_report": "harness/runs/20261010T143250780131Z-quality/report.json",
+    "quality_report_sha256": "30d960a33db7f10508460ae1b362463977c4c2c17ba571cedd199e3443f456cf",
+    "tooling_tests": 44,
+    "flutter_tests": 142,
+    "source_and_execution_unchanged": true,
+    "independent_review": true,
+    "evidence_archive": "pending E10",
     "native_rerun": false,
-    "ci_rerun": false
+    "ci_rerun": false,
+    "production_eligible": false
   },
   "historical_rehearsal": {
     "candidate": {
@@ -108,5 +99,76 @@
       },
       "report_member": "ci/report.json"
     }
+  },
+  "issue_planning_validation": {
+    "status": "passed",
+    "candidate": {
+      "source_fingerprint": "b5050d4731905258653e434db66e2d2bb80db4232ebc03ebde3a373199f68f78"
+    },
+    "finished_at": "2026-10-10T12:47:44.500082+00:00",
+    "scope": "Issue planning/publication docs and existing Flutter reliability source; no full product implementation",
+    "checks": [
+      "repository links / R01-R17 coverage / 19-task DAG / Dart layers",
+      "33 Harness regressions",
+      "Flutter 3.44.2 / enforced lockfile",
+      "format / analyze",
+      "52 Flutter host / SQLite / widget tests",
+      "GitHub parent #14 / 19 sub-issues / 31 native dependencies / exact body hash"
+    ],
+    "archive": "harness/reports/issue-planning-2026-10-10.tar.gz",
+    "archive_sha256": "a27a8b9cde7f8d5658741721c02287fb5d01b2910800f9c748dc9d0176c2b6df",
+    "report_member": "quality-verified/report.json",
+    "review_member": "issue-planning/draft-requirements-review.md",
+    "harness_review_member": "issue-planning/draft-harness-review.md",
+    "remote_verification_member": "issue-planning/remote-verification.json",
+    "native_rerun": false,
+    "ci_rerun": false
+  },
+  "implementation": {
+    "mode": "execute",
+    "accepted": [
+      "E00",
+      "E01",
+      "X00",
+      "E02",
+      "E03"
+    ],
+    "running": [
+      "E05",
+      "E06",
+      "E11"
+    ],
+    "task_board": "harness/project/work.json",
+    "coordinator": "/root",
+    "note": "Independent implementation/test roles and no-overlap scopes; final UI/native acceptance not yet delivered"
+  },
+  "x00_execution": {
+    "candidate": "f9137cb845783c63b0b182be1936c7682d4d3fd5fa061f19e0de79c2da0eadcd",
+    "startup_report": "harness/runs/20261010T133748741624Z-native/report.json",
+    "probe_report": "harness/runs/20261010T134039604972Z-native/report.json",
+    "startup_pid": 47568,
+    "probe_pids": [
+      49243,
+      49255,
+      49267
+    ],
+    "task_devices_deleted": true,
+    "scope": "isolated tools + formal-entry startup + narrow reliability probe; not full G2"
+  },
+  "implementation_mode": {
+    "mode": "execute",
+    "accepted": [
+      "E00",
+      "E01",
+      "X00",
+      "E02",
+      "E03",
+      "E05",
+      "E06",
+      "E11"
+    ],
+    "running": [],
+    "task_board": "harness/project/work.json",
+    "coordinator": "/root"
   }
 }

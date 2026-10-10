@@ -65,3 +65,11 @@ E02 的签名适配写域明确增加 `app/test/ui/fake_delivery_repository.dart
 DeliveryViewModel 暴露 `query/result`、`setSearch/setStatus/setWaitingOnly/resetQuery`；`WorkbenchPanel {map,list,detail}` 和 `DetailOrigin {list,map,nearest}`，通过 `openList/closeList/openDetail(stopId,{required origin})/closeDetail` 操作。`selectedStop` 读取全量 stops；`detailContext` 包含 stopId/origin/列表会话；`listSession` 保存 scrollOffset/focusedReference，经 `rememberListSession` 更新。列表可复用组件 `StopListWorkspace(viewModel:, onOpenStop:, onClose:)` 只发回调，不自行建应用级 Navigator/Repository。
 
 E06/E11/E07 依此消费；E03 开发后主控审查实际 API，签入组件接受记录。视口保存边界为有限 latitude[-90,90]/longitude[-180,180]/zoom[0,22]、当前 dataset；地图使用同一范围，不将合法持久值静默改写。
+
+## 组件消费 API（E05/E06/E11 冻结）
+
+E05：纯 Dart `SyncStage {started,sending,acknowledged,paused,failed,finished}`、不可变 `SyncProgress(stage,runId,confirmedCount,operationId?,error?)` 与监听器；Coordinator `addListener/removeListener`、`progress`，保留 sync/pause/isRunning 与 legacy eventSink。默认 requestTimeout=5s；确认数只在持久 acknowledge 成功后增加，runId 区分前后循环，退出释放 owner 后才能发终结回调，新 owner 不被旧 finally 清除。
+
+E06：`DeliveryMapWorkspace(result,datasetId,onOpenStop(Stop,DetailOrigin),initialViewport?,controller?,tileUrlTemplate,tileProvider?,fitPadding,toolbarTop?,selectedStopId?,onViewportChanged?,onSync?,syncing=false,onAttributionTap?,tileCacheClearer?)`；`DeliveryMapController` 持稳定 MapController、loading/ready/error notifier，提供 zoomIn/zoomOut/fitMatches/locateTestReference/retryTiles/clearTileCache。回调来源固定 map；默认产品交互底图 OSM、maxNativeZoom=19，自动化一律注入任务 HTTP/provider fixture。清瓦片仅删缓存和其 image keys，不动业务数据；根装配按实际安全区域覆盖 fitPadding。
+
+E11：`DeliveryDetailCard(viewModel,onClose)` 读取全量 selectedStop/typed origin，表单启动 `showDeliveryFailureSheet(context,stop,onSubmit) -> Future<FailureSubmission?>`；onSubmit 返回持久提交事实 bool，true 后仅关闭表单并留终态详情。提交已成功但 refresh 失败，详情可保持已知终态和原因/备注的本地只读投影，明确 Reload，未知发生时间/opId 不补造；VM loadError 阻止把旧列表当刷新成功。键盘/系统返回先关表单，再按原来源关闭详情；所有 Repository/Coordinator 仍由根装配单独持有。
