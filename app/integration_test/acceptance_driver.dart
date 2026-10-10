@@ -1123,6 +1123,7 @@ Future<void> _n4(NativeAcceptanceRecorder r) async {
     (c) async {
       await acceptanceMap(d);
       await _mapSearch(d, '');
+      await d.tapKey('header-filter-pending');
       final beforeNearest = await d.snapshot();
       final ref = await c.sample('eligible-nearest', beforeNearest);
       await d.tapKey('nearest-stop');
@@ -1167,6 +1168,7 @@ Future<void> _n4(NativeAcceptanceRecorder r) async {
       await c.sample('nearest-origin', await d.snapshot());
       await acceptanceCloseDetail(d);
       await c.sample('nearest-return', await d.snapshot());
+      await d.tapKey('header-filter-all');
       await _openMapStop(d, 'TV-300002');
       await c.sample('map-origin', await d.snapshot());
       await d.tapKey('detail-close');

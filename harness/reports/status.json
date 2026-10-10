@@ -187,28 +187,30 @@
   },
   "active_candidate_validation": {
     "scope": "fresh current G1/max N7/full 34/native cancellation pending",
-    "status": "Frozen bounded N4 driver repair; fresh G1/real N4 and full matrix pending",
-    "candidate": "0e73dd72256cee309b4e83fb600746365c2a79db32d1ac53ac9aebe7a4e91549",
+    "status": "Two actual UI taps frozen; freshG1 actualrunning",
+    "candidate": "f25ddccd38ace3d3deb1850e6533f17f8c5360e240220ea8e27dbc2f06b4fe5e",
     "production_eligible": false,
     "quality_report": "harness/runs/20261010T221632901926Z-quality/attempts/000001/report.json"
   },
   "latest_quality_observation": {
-    "source_fingerprint": "58fba2fc4452741b0b6f69b8e4972db50e834ab0d21c6ee10e077eb9b11cd0d7",
-    "report": "harness/runs/20261010T221632901926Z-quality/attempts/000001/report.json",
-    "report_sha256": "fbfd5ae47dba792d93f8a00d74a99cf5b6e1454f3297fb9efdc868e9543afc68",
+    "source_fingerprint": "0e73dd72256cee309b4e83fb600746365c2a79db32d1ac53ac9aebe7a4e91549",
+    "report": "harness/runs/20261010T224638741032Z-quality/attempts/000001/report.json",
+    "report_sha256": "5d6938ed9bcdba6f4dc35f35e545c8dfdaced3e7e341da4a85689deea8732478",
     "tooling_checks": 158,
     "tooling_skipped": 1,
     "flutter_checks": 177,
     "status": "passed",
-    "current_source_matches": false
+    "current_source_matches": false,
+    "independent_review": "pending"
   },
   "e08_latest_observation": {
-    "report": "harness/runs/20261010T212258879884Z-native/attempts/000001/report.json",
-    "candidate": "e85164907c5c0b2d5517c4988624f7975a7eb24a42c3c6da6603033a2d1aab85",
-    "status": "passed",
+    "candidate": "0e73dd72256cee309b4e83fb600746365c2a79db32d1ac53ac9aebe7a4e91549",
+    "report": "harness/runs/20261010T224756616476Z-native/attempts/000001/report.json",
+    "status": "failed",
     "full_g2": false,
-    "report_sha256": "3f24efd4ce8f23044cf1ec08d3bf2fdeb31cde74309b1a2cf50f888c3aa182d5",
-    "native_sha256": "d51b54433c2dcb3a9d9ae0d8398b8d58fa809e7fbe90a73bfce5ac055ca358e0"
+    "report_sha256": "4272855fa0715a608452d585f371255a0f9987f67524140efabe11b5642f528e",
+    "native_sha256": "2287d25b9e1d2607f914eb393eb38d21074b1e63b7334c2f09deb3270250df9f",
+    "failure": "sharedAll nearestTV2 completed; fixedpending driver assumption"
   },
   "latest_ci_observation": {
     "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38090820475",

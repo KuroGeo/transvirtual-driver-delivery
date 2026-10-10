@@ -1709,6 +1709,11 @@
       "task": "E08",
       "at": "2026-10-10T22:46:35.603316+00:00",
       "event": "N4 occluded-first-cluster actual failure retained; independent bounded driver selection and format trailing-comma review passed. Fresh candidate0e73; old58 evidence historical."
+    },
+    {
+      "task": "E08",
+      "at": "2026-10-10T22:50:45.811327+00:00",
+      "event": "Current0e73 targetedN4 actualfailure preserved at reference-nearest; sharedAll nearest correctly completedTV2. Root terminalraw/PG/kernel/lease/clone/taskUDIDabsence proven; Req assigned driver UI setup only and E08 independent review."
     }
   ],
   "status": "Matrix stopped at actual occluded first-cluster driver locator; bounded repair assigned",
@@ -1719,13 +1724,11 @@
     "working_tree_changes": true
   },
   "runtime_observation": {
-    "observed_at": "2026-10-10T22:24:13.260535+00:00",
-    "source_writers": [
-      "/root/requirements_review:N4 cluster selection in driver only"
-    ],
+    "observed_at": "2026-10-10T22:54:19.288559+00:00",
+    "source_writers": [],
     "executor": "/root",
-    "active_run": null,
-    "note": "Failed N4 terminal resource proofs passed; only bounded source author may write; no SDK active"
+    "active_run": "harness/runs/20261010T225319629590Z-quality",
+    "note": "Root sole SDK; standalone format rejected beforedart due to missing contextFD. Original failure preserved and normalG1 format verification running."
   },
   "evidence_archive": "harness/archive/2026-10-10-engineering.tar.gz",
   "next_task": "X04 and E08 rework",
@@ -1743,17 +1746,17 @@
     "native_rerun": false,
     "production_eligible": false
   },
-  "updated_at": "2026-10-10T22:46:35.603316+00:00",
+  "updated_at": "2026-10-10T22:54:19.288559+00:00",
   "native_protocol_revision": 6,
   "source_writers": [],
   "active_execution": {
-    "candidate": "0e73dd72256cee309b4e83fb600746365c2a79db32d1ac53ac9aebe7a4e91549",
-    "status": "Frozen N4 actual-hit selection; root fresh G1 then targeted N4",
+    "candidate": "f25ddccd38ace3d3deb1850e6533f17f8c5360e240220ea8e27dbc2f06b4fe5e",
+    "status": "Standard freshG1 running on frozen two taps",
     "source_writers": [],
     "sole_sdk_executor": "/root",
     "helper_sha256": "16a434d5cddecb6b8f212f6801bf36a065c00ab8a2cd3b6727f73fed74cc242c",
     "previous_native_failure": "harness/runs/20261010T205314408077Z-native/attempts/000001/report.json",
     "failure_reason": "cached offstage bounds mistaken for actionable row; no actual primary scroll occurred; strict failure retained",
-    "driver_sha256": "5619e4ed61435b5c08559791134f01707328994459981a2a720837f3987555dc"
+    "driver_sha256": "88e18dfa78f5c9222a7bfe529aee88670cdd6394a838575abca1411c440cffce"
   }
 }
