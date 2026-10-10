@@ -931,12 +931,110 @@ Future<void> _n4(NativeAcceptanceRecorder r) async {
       await c.sample('fit', await d.snapshot());
       String? cluster;
       for (var attempt = 0; attempt < 4; attempt++) {
-        final overview = await d.snapshot();
-        final keys = nativeObject(
-          overview['bounds'],
-        ).keys.where((key) => key.startsWith('map-cluster-')).toList();
-        if (keys.isNotEmpty) {
-          cluster = keys.first;
+        final readinessClock = Stopwatch()..start();
+        Map<String, Object?>? previousReadiness;
+        Duration? quietSince;
+        String? readyCluster;
+        final overview = await d.waitForSnapshot(
+          'actual map camera and exposed cluster stable for 500 milliseconds',
+          (s) {
+            final camera = nativeObject(s['camera']);
+            final bounds = nativeObject(s['bounds']);
+            Map<String, dynamic>? uniqueRect(String key) {
+              final rows = bounds[key];
+              if (rows is! List || rows.length != 1 || rows.single is! Map) {
+                return null;
+              }
+              final rect = nativeObject(rows.single);
+              if (['left', 'top', 'right', 'bottom', 'width', 'height'].any(
+                    (field) =>
+                        rect[field] is! num || !(rect[field] as num).isFinite,
+                  ) ||
+                  (rect['right'] as num) <= (rect['left'] as num) ||
+                  (rect['bottom'] as num) <= (rect['top'] as num)) {
+                return null;
+              }
+              return rect;
+            }
+
+            final viewport = uniqueRect('delivery-map');
+            final media = nativeObject(s['mediaQuery']);
+            final padding = nativeObject(media['padding']);
+            final dimensions = [
+              media['width'],
+              media['height'],
+              padding['left'],
+              padding['top'],
+              padding['right'],
+              padding['bottom'],
+            ];
+            final valid =
+                s['mapReady'] == true &&
+                nativeObject(s['model'])['panel'] == 'map' &&
+                dimensions.every((value) => value is num && value.isFinite) &&
+                ['latitude', 'longitude', 'zoom', 'rotation'].every(
+                  (field) =>
+                      camera[field] is num && (camera[field] as num).isFinite,
+                );
+            if (viewport == null || !valid) {
+              previousReadiness = null;
+              quietSince = null;
+              readyCluster = null;
+              return false;
+            }
+            String? candidate;
+            Map<String, dynamic>? candidateRect;
+            final clusterBounds = <String, Object?>{};
+            for (final key in bounds.keys.where(
+              (key) => key.startsWith('map-cluster-'),
+            )) {
+              clusterBounds[key] = bounds[key];
+              final rect = uniqueRect(key);
+              if (candidate != null ||
+                  rect == null ||
+                  rect['centerHit'] != true ||
+                  (rect['width'] as num) < 44 ||
+                  (rect['height'] as num) < 44 ||
+                  (rect['left'] as num) < (viewport['left'] as num) ||
+                  (rect['top'] as num) < (viewport['top'] as num) ||
+                  (rect['right'] as num) > (viewport['right'] as num) ||
+                  (rect['bottom'] as num) > (viewport['bottom'] as num) ||
+                  (rect['left'] as num) < (padding['left'] as num) ||
+                  (rect['top'] as num) < (padding['top'] as num) ||
+                  (rect['right'] as num) >
+                      (media['width'] as num) - (padding['right'] as num) ||
+                  (rect['bottom'] as num) >
+                      (media['height'] as num) - (padding['bottom'] as num)) {
+                continue;
+              }
+              candidate = key;
+              candidateRect = rect;
+            }
+            final readiness = <String, Object?>{
+              'camera': camera,
+              'viewport': viewport,
+              'candidate': candidate,
+              'rect': candidateRect,
+              if (candidate == null) 'clusterBounds': clusterBounds,
+            };
+            if (previousReadiness == null ||
+                !acceptanceEqual(previousReadiness, readiness)) {
+              previousReadiness = readiness;
+              quietSince = readinessClock.elapsed;
+              readyCluster = null;
+              return false;
+            }
+            if (readinessClock.elapsed - quietSince! <
+                const Duration(milliseconds: 500)) {
+              return false;
+            }
+            readyCluster = candidate;
+            return true;
+          },
+          timeout: NativeWorkbenchDriver.observationDeadline,
+        );
+        if (readyCluster != null) {
+          cluster = readyCluster;
           await c.sample('cluster-overview', overview);
           break;
         }

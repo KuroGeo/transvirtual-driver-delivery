@@ -187,16 +187,16 @@
   },
   "active_candidate_validation": {
     "scope": "fresh current G1/max N7/full 34/native cancellation pending",
-    "status": "Source frozen; fresh G1/full native pending",
-    "candidate": "58fba2fc4452741b0b6f69b8e4972db50e834ab0d21c6ee10e077eb9b11cd0d7",
+    "status": "Frozen bounded N4 driver repair; fresh G1/real N4 and full matrix pending",
+    "candidate": "0e73dd72256cee309b4e83fb600746365c2a79db32d1ac53ac9aebe7a4e91549",
     "production_eligible": false,
-    "quality_report": "harness/runs/20261010T220013315368Z-quality/attempts/000001/report.json"
+    "quality_report": "harness/runs/20261010T221632901926Z-quality/attempts/000001/report.json"
   },
   "latest_quality_observation": {
-    "source_fingerprint": "145d263543989cb4b02dd7fa7d3f022cf1dc8744cd6a33eaee692ab3877bf2aa",
-    "report": "harness/runs/20261010T220013315368Z-quality/attempts/000001/report.json",
-    "report_sha256": "1d2f1365f0fb8351466057bc3c16b9a068326613fcfb7ffac3ec573b84aab219",
-    "tooling_checks": 153,
+    "source_fingerprint": "58fba2fc4452741b0b6f69b8e4972db50e834ab0d21c6ee10e077eb9b11cd0d7",
+    "report": "harness/runs/20261010T221632901926Z-quality/attempts/000001/report.json",
+    "report_sha256": "fbfd5ae47dba792d93f8a00d74a99cf5b6e1454f3297fb9efdc868e9543afc68",
+    "tooling_checks": 158,
     "tooling_skipped": 1,
     "flutter_checks": 177,
     "status": "passed",
@@ -211,36 +211,42 @@
     "native_sha256": "d51b54433c2dcb3a9d9ae0d8398b8d58fa809e7fbe90a73bfce5ac055ca358e0"
   },
   "latest_ci_observation": {
-    "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38089860289",
-    "head": "3fffe84fe5b30abeac8982e2dac295d9aae64811",
+    "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38090820475",
+    "head": "6d63a5fee2982e6d59f409b9361b7595ad18643b",
     "status": "passed",
-    "source_fingerprint": "145d263543989cb4b02dd7fa7d3f022cf1dc8744cd6a33eaee692ab3877bf2aa",
+    "source_fingerprint": "58fba2fc4452741b0b6f69b8e4972db50e834ab0d21c6ee10e077eb9b11cd0d7",
     "current_source_matches": false,
-    "tooling_checks": 153,
+    "tooling_checks": 158,
     "tooling_skipped": 0,
     "flutter_checks": 177,
-    "independent_review": "harness/runs/implementation/ci-38089860289-independent/review.md",
-    "artifact_sha256": "45348baeae337dfff4cf6356552971e2edf187034724414a9a0a7b6bfd99989d",
-    "scope": "Actual exact historical 145d G1, no fullG2"
+    "independent_review": "harness/runs/implementation/ci-38090820475-independent/review.md",
+    "artifact_sha256": "76e99bc71d260c20756b1672706e8cc7745b9e84207e34886c8d58262ecfbddc",
+    "scope": "Actual exact current58fba2 CI G1; fullG2 pending"
   },
   "x04_active_observation": {
-    "candidate": "161b9a7414b36082489bae7b20ce4e7d2ad1d2ff1c51520cde82600c29477270",
-    "report": "harness/runs/implementation/N3-161b9a-cancel-replay-actual/report.json",
-    "status": "passed-controller-pending-independent-review",
-    "report_sha256": "8f701ddb225fca3eedf5e334b9a53010c716a62e13a7c10896dacf61fc73c581",
+    "candidate": "58fba2fc4452741b0b6f69b8e4972db50e834ab0d21c6ee10e077eb9b11cd0d7",
+    "report": "harness/runs/implementation/N3-58fba2-cancel-replay-actual/report.json",
+    "status": "passed-independent-actual-N3",
     "actual_pass_claimed": true,
-    "scope": "Actual first-request TERM/replay; full localgate pending"
+    "report_sha256": "d478612bbcd4c6aa2c2a301c7e542055339b85c5d5085fc1b55af9e560082357",
+    "independent_review": "harness/runs/implementation/X04-independent-N3-58fba2-raw-audit.json",
+    "independent_review_sha256": "13e193e52fe62bddc4f95651e0e02cd44af644309683cc12fc32a4047c843cba"
   },
   "matrix_latest_observation": {
+    "candidate": "58fba2fc4452741b0b6f69b8e4972db50e834ab0d21c6ee10e077eb9b11cd0d7",
+    "report": "harness/runs/implementation/E08-58fba2-matrix-actual/report.json",
     "status": "failed",
-    "candidate": "161b9a7414b36082489bae7b20ce4e7d2ad1d2ff1c51520cde82600c29477270",
-    "report": "harness/runs/implementation/E08-161b9a-matrix-actual/report.json",
+    "full_g2": false,
     "passed_jobs": [
       1,
-      2
+      2,
+      3,
+      4
     ],
-    "native_failure": "N2.imported-unknown incorrect detail-saved locator seq162; actual source reason present",
-    "scope": "Driver-only repair; no fullG2"
+    "running_jobs": [],
+    "failed_job": 5,
+    "native_failure": "N4 actual seq55 blindly selected first cluster; centerHitfalse occluded by TV-300020; original4 hittable clusters present; preserved immutable failure",
+    "current_source_matches": false
   },
   "n2_targeted_observation": {
     "candidate": "145d263543989cb4b02dd7fa7d3f022cf1dc8744cd6a33eaee692ab3877bf2aa",
@@ -263,5 +269,27 @@
     },
     "terminal_proof": "raw stages/reaped/groups/lease/clones/actual kernel resume passed",
     "independent_review": "N2 historical145d actual7checks54assertions accepted by /root/e08_acceptance_review"
-  }
+  },
+  "current_independent_component_reviews": [
+    {
+      "report": "harness/runs/implementation/E08-independent-58fba2-phase-end-heldouts.json",
+      "sha256": "0e2bacfd8ad157e04f74cc37d37202cb4b6cc11df2963ac7dc0dd0aca01bc367",
+      "scope": "Current source/G1/rights or private heldout predicates; not full G2"
+    },
+    {
+      "report": "harness/runs/implementation/E08-independent-58fba2-quality-source.json",
+      "sha256": "977c511b75938a02d061f3e7113d92ee41bdcf82eb4f6db07713ba4b47aa388f",
+      "scope": "Current source/G1/rights or private heldout predicates; not full G2"
+    },
+    {
+      "report": "harness/runs/implementation/E08-independent-58fba2-N6-reload-sql-heldouts.json",
+      "sha256": "86e0814e8873b0bed52302f43753ebe6123056d118d03528a46369290478dc4c",
+      "scope": "Current source/G1/rights or private heldout predicates; not full G2"
+    },
+    {
+      "report": "harness/runs/implementation/E08-independent-rights-58fba2.json",
+      "sha256": "2191a40604f8f6b0c0fa5a8a2cf03dc6195107a94bedd1eaa6a297b47018d482",
+      "scope": "Current source/G1/rights or private heldout predicates; not full G2"
+    }
+  ]
 }
