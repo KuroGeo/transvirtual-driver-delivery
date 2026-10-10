@@ -1195,7 +1195,7 @@ Future<void> _n4(NativeAcceptanceRecorder r) async {
         final row = await d.snapshot().timeout(
           NativeWorkbenchDriver.observationDeadline - scrollDeadline.elapsed,
         );
-        final targetRows = nativeObject(row['bounds'])['stop-TV-300029'];
+        final targetRows = nativeObject(row['bounds'])['stop-TV-300023'];
         final targetExposed =
             targetRows is List &&
             targetRows.length == 1 &&
@@ -1203,7 +1203,7 @@ Future<void> _n4(NativeAcceptanceRecorder r) async {
             (targetRows.single as Map)['centerHit'] == true;
         if (targetExposed) {
           await d
-              .revealKey('stop-TV-300029')
+              .revealKey('stop-TV-300023')
               .timeout(
                 NativeWorkbenchDriver.observationDeadline -
                     scrollDeadline.elapsed,
@@ -1222,7 +1222,7 @@ Future<void> _n4(NativeAcceptanceRecorder r) async {
       }
       if (scrolled == null) {
         throw StateError(
-          'Bounded real lazy-list scroll did not expose TV-300029.',
+          'Bounded real lazy-list scroll did not expose TV-300023.',
         );
       }
       nativeRequire(
@@ -1233,13 +1233,13 @@ Future<void> _n4(NativeAcceptanceRecorder r) async {
       );
       await c.sample('scrolled-list', scrolled);
       c.metadata['list_before'] = r.relative('${c.slug}-scrolled-list.json');
-      await d.tapKey('stop-TV-300029');
+      await d.tapKey('stop-TV-300023');
       final detail = await d.waitForSnapshot(
         'deep-list actual source detail',
         (s) =>
             acceptanceModel(s)['panel'] == 'detail' &&
             nativeObject(acceptanceModel(s)['selected'])['reference'] ==
-                'TV-300029',
+                'TV-300023',
       );
       await c.sample('list-origin', detail);
       await d.revealKey('detail-fail');
@@ -1257,14 +1257,14 @@ Future<void> _n4(NativeAcceptanceRecorder r) async {
         'real list offset and row focus restored',
         (s) =>
             acceptanceModel(s)['panel'] == 'list' &&
-            s['focusedWidget'] == 'Stop TV-300029',
+            s['focusedWidget'] == 'Stop TV-300023',
       );
     },
     (c) async {
       await c.expect('/model/panel', 'eq', 'list');
       await c.expect('/model/query/search', 'eq', '');
-      await c.expect('/model/listSession/focusedReference', 'eq', 'TV-300029');
-      await c.expect('/focusedWidget', 'eq', 'Stop TV-300029');
+      await c.expect('/model/listSession/focusedReference', 'eq', 'TV-300023');
+      await c.expect('/focusedWidget', 'eq', 'Stop TV-300023');
       await c.expect('/model/selected', 'eq', null);
       await c.expect(
         '/model/listSession/scrollOffset',

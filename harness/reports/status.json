@@ -187,8 +187,8 @@
   },
   "active_candidate_validation": {
     "scope": "fresh current G1/max N7/full 34/native cancellation pending",
-    "status": "Frozen realdeep target; freshG1 pending",
-    "candidate": "1fcf05a58154113ff020294e1766610517157d696c33488d7fb98ac89e453805",
+    "status": "Frozen actualobserved deepTV23 target; freshG1 pending",
+    "candidate": "fba6d99e8e4a780fe92810b73b78c4a455948195cc0bb543ea964eed614ca078",
     "production_eligible": false,
     "quality_report": "harness/runs/20261010T225319629590Z-quality/attempts/000001/report.json"
   },
@@ -204,12 +204,13 @@
     "independent_review": "pending"
   },
   "e08_latest_observation": {
-    "candidate": "f25ddccd38ace3d3deb1850e6533f17f8c5360e240220ea8e27dbc2f06b4fe5e",
-    "report": "harness/runs/20261010T225440659816Z-native/attempts/000001/report.json",
+    "candidate": "1fcf05a58154113ff020294e1766610517157d696c33488d7fb98ac89e453805",
+    "report": "harness/runs/20261010T230058277939Z-native/attempts/000001/report.json",
     "status": "failed",
     "full_g2": false,
-    "report_sha256": "3117bfe4f3cf3fefdb3d2ea7e94d7b3a2de92c33fb1485303ea15e4b2ff0402d",
-    "failure": "TV24 seconddistance row cannotexercise >400 deepoffset"
+    "report_sha256": "7ceb53357a58aaaaa6311ad466e938247b3490d75032a3fa590089bedead5565",
+    "native_sha256": "1c3e90f331651acb5d76e80e65e3a7b54105320719b10e4298fe8261baba7929",
+    "failure": "TV29notexposed by original12gestures; actualTV23 exposedat3435.055 Pendingfullrecthit"
   },
   "latest_ci_observation": {
     "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38090820475",
