@@ -1,7 +1,7 @@
 {
   "mode": "execute",
   "contract_revision": 5,
-  "source_head": "02bf4bcc1da0506559bfdcde7bd66e7e68032cc9",
+  "source_head": "11cb926",
   "coordinator": "/root",
   "scope": "Implement full prototype/architecture Flutter demo and local-client with independently verified Harness evidence; production no-go remains",
   "tasks": [
@@ -798,8 +798,8 @@
       "verification_level": "G2 完整 iOS 原生功能/OS 恢复；模拟器结果不能代签 G3",
       "base_sha": "6a70a94eab758731bfd1468a384247bbfae48a83",
       "started_at": "2026-10-10T18:03:39.398623+00:00",
-      "source_fingerprint": "d5cfbac95eff028116eaf6defa61a76b94e5a5757877063ac77c0bf5b2b055f7",
-      "note": "Actual currentlargeBrowsepassed but oldFitcenters markerundernewoverview; Query fit usesexposedleftlane andgenuine markerregressionfrozen. FullsamecutG2awaitnewquality/Harnessfreeze",
+      "source_fingerprint": "8268376176b4084871af410fa38905f313a6f0a559827b180d64ef14f1077672",
+      "note": "203529 Fit/44marker actual PASS; actual list Stop list heading/search consumes content, seq61 scrollIntoView TV4 times out. Product compact list repair; OSscale/44 requirements unchanged.",
       "coordinator_write_scope": [
         "harness/run.py",
         "harness/tests/test_runner_options.py",
@@ -830,7 +830,11 @@
         "app/test/native_acceptance_stability_test.dart",
         ".agents/skills/flutter-native-acceptance/SKILL.md",
         ".agents/skills/harness-engineering/SKILL.md"
-      ]
+      ],
+      "latest_failed_report": "harness/runs/20261010T203529887672Z-native/attempts/000001/report.json",
+      "latest_failed_sha256": "a8dcbae66f332e1e32b0fdbac80de0bdff15dfc866e42356bdd7b2593df7c6bf",
+      "latest_failed_quality": "harness/runs/20261010T204644113067Z-quality/attempts/000001/report.json",
+      "latest_failed_quality_sha256": "e8798ee25b9f386320d45e8e9fb1316285740d4a0e5f93940352017f164a5eca"
     },
     {
       "id": "E09",
@@ -974,7 +978,7 @@
       "note": "Actual remote Linux CI analyzer exit0 leaves actual own group alive; failclosed blocks; owner repairing bounded realgroup shutdown/OS regressions",
       "returned_at": "2026-10-10T19:22:09.550330+00:00",
       "result_path": "harness/runs/implementation/X04.md",
-      "source_fingerprint": "d5cfbac95eff028116eaf6defa61a76b94e5a5757877063ac77c0bf5b2b055f7",
+      "source_fingerprint": "8268376176b4084871af410fa38905f313a6f0a559827b180d64ef14f1077672",
       "current_frozen_candidate": "c3e05ac1f457ecf7e47bc16d1fdcc229010c1b84f7d67a04b3c3c29714aca30a",
       "quality_report": "harness/runs/20261010T202147347764Z-quality/attempts/000001/report.json",
       "ci_failure": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38083638601"
@@ -1695,9 +1699,14 @@
       "task": "X04",
       "at": "2026-10-10T20:28:57.059340+00:00",
       "event": "Remote Linux CI raw: actualNoissues analyzer exit0 but groupalive; strictHarnessblocked. Retainedall6raw anddelegateowned-groupboundedcleanup."
+    },
+    {
+      "task": "E08/X04",
+      "at": "2026-10-10T21:29:58.967323+00:00",
+      "event": "e851 max N7 actual 3-process PASS; root raw terminal, source identity, actual lease/group/clone and task UDID absence verified. Actual held-request TERM/replay controller launched; full G2 remains pending."
     }
   ],
-  "status": "Frozen integrated cut: real Linux group cleanup and compact Fit; fresh quality then serialized native acceptance",
+  "status": "Current G1/max N7 passed; actual N3 cancellation/replay running",
   "accepted_candidate": {
     "source_head": "6a70a94eab758731bfd1468a384247bbfae48a83",
     "source_fingerprint": "e888779d6b48c5a3aecd002b20f0a21362134594fbb19680562bd535a7cc769b",
@@ -1705,15 +1714,11 @@
     "working_tree_changes": true
   },
   "runtime_observation": {
-    "observed_at": "2026-10-10T20:34:07.006926+00:00",
-    "active_agents": [
-      "/root",
-      "/root/query_development"
-    ],
+    "observed_at": "2026-10-10T21:29:58.967323+00:00",
     "source_writers": [],
     "executor": "/root",
-    "active_run": "fresh quality on d5cfbac95eff028116eaf6defa61a76b94e5a5757877063ac77c0bf5b2b055f7",
-    "note": "All tracked sources frozen; independent OS trials use private copies/lock roots only"
+    "active_run": "harness/runs/implementation/N3-e851-cancel-replay-actual/report.json",
+    "note": "Frozen source; sole root SDK execution; N7 terminal and kernel cleanup independently auditable"
   },
   "evidence_archive": "harness/archive/2026-10-10-engineering.tar.gz",
   "next_task": "X04 and E08 rework",
@@ -1731,6 +1736,17 @@
     "native_rerun": false,
     "production_eligible": false
   },
-  "updated_at": "2026-10-10T20:34:07.006926+00:00",
-  "native_protocol_revision": 6
+  "updated_at": "2026-10-10T21:29:58.967323+00:00",
+  "native_protocol_revision": 6,
+  "source_writers": [],
+  "active_execution": {
+    "candidate": "e85164907c5c0b2d5517c4988624f7975a7eb24a42c3c6da6603033a2d1aab85",
+    "status": "Current G1/max N7 passed; actual N3 cancellation/replay running",
+    "source_writers": [],
+    "sole_sdk_executor": "/root",
+    "helper_sha256": "16a434d5cddecb6b8f212f6801bf36a065c00ab8a2cd3b6727f73fed74cc242c",
+    "previous_native_failure": "harness/runs/20261010T205314408077Z-native/attempts/000001/report.json",
+    "failure_reason": "cached offstage bounds mistaken for actionable row; no actual primary scroll occurred; strict failure retained",
+    "driver_sha256": "1d24f3c3d9ce0570b436dfda4fdeb1b0b6dbd7cd666ec4207559e26ffe0257b2"
+  }
 }

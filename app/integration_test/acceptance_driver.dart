@@ -1519,6 +1519,52 @@ Future<void> _n7(NativeAcceptanceRecorder r) async {
                 as num) >
             0,
       );
+      final keyboardLayoutClock = Stopwatch()..start();
+      Map<String, Object?>? previousKeyboardLayout;
+      Duration? keyboardLayoutQuietSince;
+      await d.waitForSnapshot(
+        'actual OS keyboard layout stable for 500 milliseconds',
+        (s) {
+          final media = nativeObject(s['mediaQuery']);
+          final inset = nativeObject(media['viewInsets'])['bottom'];
+          final bounds = nativeObject(s['bounds']);
+          final rects = <String, Object?>{};
+          var valid = inset is num && inset.isFinite && inset > 0;
+          for (final key in ['failure-note', 'failure-save', 'failure-sheet']) {
+            final rows = bounds[key];
+            if (rows is! List || rows.length != 1 || rows.single is! Map) {
+              valid = false;
+              break;
+            }
+            final rect = nativeObject(rows.single);
+            if (['left', 'top', 'right', 'bottom', 'width', 'height'].any(
+              (field) => rect[field] is! num || !(rect[field] as num).isFinite,
+            )) {
+              valid = false;
+              break;
+            }
+            rects[key] = rect;
+          }
+          if (!valid) {
+            previousKeyboardLayout = null;
+            keyboardLayoutQuietSince = null;
+            return false;
+          }
+          final layout = <String, Object?>{
+            'mediaQuery': media,
+            'bounds': rects,
+          };
+          if (previousKeyboardLayout == null ||
+              !acceptanceEqual(previousKeyboardLayout, layout)) {
+            previousKeyboardLayout = layout;
+            keyboardLayoutQuietSince = keyboardLayoutClock.elapsed;
+            return false;
+          }
+          return keyboardLayoutClock.elapsed - keyboardLayoutQuietSince! >=
+              const Duration(milliseconds: 500);
+        },
+        timeout: NativeWorkbenchDriver.observationDeadline,
+      );
       await d.revealKey('failure-save', alignment: 1);
       final keyboard = await d.waitForSnapshot(
         'full Save exposed above actual OS keyboard',

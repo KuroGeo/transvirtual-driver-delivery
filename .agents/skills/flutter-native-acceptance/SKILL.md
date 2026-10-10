@@ -27,6 +27,8 @@ Ocean Delivery 按 [34项检查合同](../../../harness/project/native-acceptanc
 
 Sliver 的缓存 bounds 不代表 SDK 的 onstage finder 能找到或点击目标。列表保留滚动位置后，用有总时限和次数上限的真实主滚动动作暴露搜索框或目标行，并读取唯一目标的实际 centerHit；随后执行原 reveal/tap 和来源断言。不能清掉产品的滚动/焦点恢复状态、改为假命中或扩大超时来绕过定位失败。
 
+系统输入区首次出现时，正 Insets 仍可能处于动画或焦点重排中。用有期限的只读观察确认真实 Insets 和相关控件矩形稳定，再执行原滚动与可见性检查；保留每次样本，不用固定 sleep、关闭输入区或覆盖 MediaQuery 代替准备条件。竞态原因与修复效果分别注明推断和实测范围。
+
 每项结果使用 passed / failed / blocked / not_run / not_applicable，并填写理由。未执行不能算通过；没有对应版本的原始证据不能复用旧报告。
 
 描述式输入先标 reported/unverified。原始证据清单记录 ID、路径、候选版本、采集者/时间、kind、raw/summary 和文件 hash，摘要必须引用实际原文件，不能循环引用其他摘要证明通过。

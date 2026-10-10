@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "audit_date": "2026-10-11",
+  "audit_date": "2026-10-10T21:29:58.967323+00:00",
   "scope": "X03 strict evidence validator implementation independently accepted; E08/X04 actual acceptance ongoing",
   "production_eligible": false,
   "production_verdict": "no-go",
@@ -186,52 +186,52 @@
     "note": "X03 acceptedhistory retained; reopened fornativeprotocol6 correctiOSflags. ActualN7geometrypassed, full34 andfinalsourcepending."
   },
   "active_candidate_validation": {
-    "scope": "Currentimplementation G1; full34G2pending",
-    "status": "Priorc3G1historical; current Fit/Harness repair awaitingfreshquality",
-    "candidate": "c3e05ac1f457ecf7e47bc16d1fdcc229010c1b84f7d67a04b3c3c29714aca30a",
-    "quality_report": "harness/runs/20261010T202147347764Z-quality/attempts/000001/report.json",
-    "tooling_checks": 146,
-    "flutter_checks": 176,
-    "production_eligible": false
+    "scope": "fresh current G1/max N7/full 34/native cancellation pending",
+    "status": "Current G1 and actual max N7 passed; N3 cancellation/replay running",
+    "candidate": "e85164907c5c0b2d5517c4988624f7975a7eb24a42c3c6da6603033a2d1aab85",
+    "production_eligible": false,
+    "quality_report": "harness/runs/20261010T212118661911Z-quality/attempts/000001/report.json"
   },
   "latest_quality_observation": {
-    "source_fingerprint": "c3e05ac1f457ecf7e47bc16d1fdcc229010c1b84f7d67a04b3c3c29714aca30a",
-    "report": "harness/runs/20261010T202147347764Z-quality/attempts/000001/report.json",
-    "report_sha256": "bb7ed3d0ab190e815c7c66c9bea9dc83b3cacacf19af898c6e07a37d03ef9dad",
-    "tooling_checks": 146,
-    "flutter_checks": 176,
+    "source_fingerprint": "e85164907c5c0b2d5517c4988624f7975a7eb24a42c3c6da6603033a2d1aab85",
+    "report": "harness/runs/20261010T212118661911Z-quality/attempts/000001/report.json",
+    "report_sha256": "1a139cbf5d96fed72f673e784cfc456121e0a9081fbeffa8645446b1a238390c",
+    "tooling_checks": 150,
+    "tooling_skipped": 1,
+    "flutter_checks": 177,
     "status": "passed",
-    "current_source_matches": false
+    "current_source_matches": true
   },
   "e08_latest_observation": {
-    "report": "harness/runs/20261010T195031320652Z-native/attempts/000003/report.json",
-    "report_sha256": "393df48a5398e0dd61e77335830705c1999799741863d147ef17c0f54a75a7b3",
-    "status": "failed",
-    "device_cleaned": true,
-    "passed_checks": [
-      "N7.two-sizes-safearea"
-    ],
-    "facts": {
-      "platform": "ios",
-      "reduceMotion": true,
-      "disableAnimations": false,
-      "textScaleAt16": 3.1176470588235294
-    },
-    "findings": [
-      "overview scroll viewport69.91 shorter than actualBrowse124; tap impossiblewithoutadaptive productrepair"
-    ],
-    "full_g2": false
+    "report": "harness/runs/20261010T212258879884Z-native/attempts/000001/report.json",
+    "candidate": "e85164907c5c0b2d5517c4988624f7975a7eb24a42c3c6da6603033a2d1aab85",
+    "status": "passed",
+    "full_g2": false,
+    "report_sha256": "3f24efd4ce8f23044cf1ec08d3bf2fdeb31cde74309b1a2cf50f888c3aa182d5",
+    "native_sha256": "d51b54433c2dcb3a9d9ae0d8398b8d58fa809e7fbe90a73bfce5ac055ca358e0"
   },
   "latest_ci_observation": {
-    "pr": "https://github.com/KuroGeo/transvirtual-driver-delivery/pull/34",
-    "head_sha": "02bf4bcc1da0506559bfdcde7bd66e7e68032cc9",
-    "candidate": "c3e05ac1f457ecf7e47bc16d1fdcc229010c1b84f7d67a04b3c3c29714aca30a",
-    "run": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38083638601",
-    "status": "failed",
-    "actual_stage": "analyze",
-    "actual_exit_code": 0,
-    "group_alive": true,
-    "raw_archive_directory": "harness/runs/implementation/ci-38083638601-artifacts",
-    "note": "Exit0doesnotproveprocesscleanup; actualfailure retained, repairrunning"
+    "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38086755924",
+    "head": "11cb9261eb1e2eb652548ca35aee446f9a0bfbd6",
+    "status": "passed",
+    "source_fingerprint": "6deac6531c80361d3a3e46e34ecd4bb5f83d5c6bd201378b6787977d769adfe7",
+    "current_source_matches": false,
+    "tooling_checks": 150,
+    "tooling_skipped": 0,
+    "flutter_checks": 177,
+    "independent_review": "harness/runs/implementation/ci-38086755924-independent/review.md",
+    "actual_analyze_wrapper0_tail": {
+      "group_alive_after_wrapper_exit": true,
+      "natural_quiet_wait_seconds": 0.02,
+      "final_group_alive": false,
+      "wrapper_reaped": true,
+      "cleanup_errors": []
+    }
+  },
+  "x04_active_observation": {
+    "candidate": "e85164907c5c0b2d5517c4988624f7975a7eb24a42c3c6da6603033a2d1aab85",
+    "report": "harness/runs/implementation/N3-e851-cancel-replay-actual/report.json",
+    "status": "running",
+    "actual_pass_claimed": false
   }
 }
