@@ -884,13 +884,22 @@ class Validator:
                 alias = {**aliases, "acknowledged_at": "acknowledgedAt", "time_window": "timeWindow"}.get(key, key)
                 _expect(stop.get(alias), time_value(row.get(key)) if key.endswith("_at") else row.get(key), "snapshot stop " + key)
         settings = tables["delivery_settings"]
-        if len(settings) != 1:
-            raise EvidenceError("expected one persisted dataset settings row")
-        row = settings[0]
-        expected_settings = {"datasetId": row["dataset_id"], "online": row["online"] == 1, "viewport": None}
-        valid_viewport = all(type(row[key]) in (int, float) and math.isfinite(row[key]) for key in ("viewport_latitude", "viewport_longitude", "viewport_zoom")) and -90 <= row["viewport_latitude"] <= 90 and -180 <= row["viewport_longitude"] <= 180 and 0 <= row["viewport_zoom"] <= 22
-        if valid_viewport:
-            expected_settings["viewport"] = {"datasetId": row["dataset_id"], "latitude": row["viewport_latitude"], "longitude": row["viewport_longitude"], "zoom": row["viewport_zoom"]}
+        if len(settings) > 1:
+            raise EvidenceError("expected at most one persisted dataset settings row")
+        datasets = _list(tables["datasets"], "actual SQLite datasets")
+        if len(datasets) != 1:
+            raise EvidenceError("expected exactly one current SQLite dataset")
+        dataset_id = _text(_object(datasets[0], "actual SQLite dataset").get("id"), "actual SQLite dataset ID")
+        # loadSettings returns these defaults without inserting a row. Derive
+        # their identity from SQLite, never from the observer's own claim.
+        expected_settings = {"datasetId": dataset_id, "online": True, "viewport": None}
+        if settings:
+            row = settings[0]
+            _expect(row["dataset_id"], dataset_id, "persisted settings current SQLite dataset")
+            expected_settings["online"] = row["online"] == 1
+            valid_viewport = all(type(row[key]) in (int, float) and math.isfinite(row[key]) for key in ("viewport_latitude", "viewport_longitude", "viewport_zoom")) and -90 <= row["viewport_latitude"] <= 90 and -180 <= row["viewport_longitude"] <= 180 and 0 <= row["viewport_zoom"] <= 22
+            if valid_viewport:
+                expected_settings["viewport"] = {"datasetId": dataset_id, "latitude": row["viewport_latitude"], "longitude": row["viewport_longitude"], "zoom": row["viewport_zoom"]}
         _expect(snapshot.get("persistedSettings"), expected_settings, "persisted settings vs actual SQLite")
 
     def native_minimum(self, value):

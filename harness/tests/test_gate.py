@@ -2,10 +2,11 @@ import copy
 import hashlib
 import json
 from pathlib import Path
+import sqlite3
 import tempfile
 import unittest
 
-from harness.gate import CAPABILITIES, GATES, SOURCE_ROOT, Validator, evaluate, evaluate_local
+from harness.gate import CAPABILITIES, EvidenceError, GATES, SOURCE_ROOT, Validator, evaluate, evaluate_local
 
 
 class GateTests(unittest.TestCase):
@@ -116,6 +117,119 @@ class GateTests(unittest.TestCase):
         self.assertFalse(result["allowed"], result)
         self.assertTrue(any(reason in value for value in result["reasons"]), result)
         return result
+
+    def settings_snapshot(self, name, rows=(), datasets=("dataset-fixture",)):
+        """Read genuine SQLite through the immutable evidence reader."""
+        path = self.root / (name + ".sqlite")
+        with sqlite3.connect(path) as connection:
+            connection.executescript("""
+                PRAGMA user_version=2;
+                CREATE TABLE datasets (id TEXT PRIMARY KEY NOT NULL);
+                CREATE TABLE stops (
+                    id TEXT PRIMARY KEY NOT NULL,
+                    dataset_id TEXT NOT NULL REFERENCES datasets(id),
+                    reference TEXT NOT NULL, customer_name TEXT NOT NULL,
+                    address TEXT NOT NULL, latitude REAL NOT NULL,
+                    longitude REAL NOT NULL,
+                    status TEXT NOT NULL CHECK (status IN ('pending','completed','failed')),
+                    reason TEXT, time_window TEXT, note TEXT,
+                    recorded_at INTEGER, operation_id TEXT UNIQUE,
+                    acknowledged_at INTEGER,
+                    UNIQUE(dataset_id,reference), UNIQUE(dataset_id,id)
+                );
+                CREATE TABLE outbox (
+                    seq INTEGER PRIMARY KEY AUTOINCREMENT,
+                    operation_id TEXT NOT NULL UNIQUE, dataset_id TEXT NOT NULL,
+                    stop_id TEXT NOT NULL,
+                    status TEXT NOT NULL CHECK (status IN ('completed','failed')),
+                    reason TEXT, note TEXT, recorded_at INTEGER,
+                    FOREIGN KEY(dataset_id,stop_id) REFERENCES stops(dataset_id,id)
+                );
+                CREATE TABLE delivery_settings (
+                    dataset_id TEXT PRIMARY KEY NOT NULL REFERENCES datasets(id),
+                    online INTEGER NOT NULL DEFAULT 1 CHECK (online IN (0,1)),
+                    viewport_latitude REAL, viewport_longitude REAL, viewport_zoom REAL
+                );
+            """)
+            connection.executemany("INSERT INTO datasets VALUES (?)", [(value,) for value in datasets])
+            connection.execute("""
+                INSERT INTO stops (id,dataset_id,reference,customer_name,address,
+                                   latitude,longitude,status,time_window)
+                VALUES ('stop-fixture','dataset-fixture','fixture-ref','Fixture',
+                        'Fixture address',-33.87,151.21,'pending','09:00–12:00')
+            """)
+            connection.executemany("INSERT INTO delivery_settings VALUES (?,?,?,?,?)", rows)
+        raw = path.read_bytes()
+        validator = Validator(self.manifest, self.fingerprint, self.root)
+        item = validator.raw({"path": path.name, "kind": "sqlite-backup", "sha256": hashlib.sha256(raw).hexdigest()})
+        database = validator.database(item)
+        snapshot = {
+            "outbox": [],
+            "persistedStops": [{"id": "stop-fixture", "status": "pending", "reason": None,
+                                "note": None, "operationId": None, "recordedAt": None,
+                                "acknowledgedAt": None, "timeWindow": "09:00–12:00"}],
+            "persistedSettings": {"datasetId": "dataset-fixture", "online": True, "viewport": None},
+        }
+        self.assertEqual(path.read_bytes(), raw)
+        return validator, snapshot, database
+
+    def test_empty_settings_accept_only_current_sql_dataset_canonical_defaults(self):
+        validator, snapshot, database = self.settings_snapshot("default-settings")
+        self.assertEqual(database["tables"]["delivery_settings"], [])
+        validator.snapshot_database(snapshot, database)
+        for field, value in (
+            ("online", False), ("online", 1),
+            ("datasetId", "forged-dataset"),
+            ("viewport", {"datasetId": "dataset-fixture", "latitude": -33.87,
+                          "longitude": 151.21, "zoom": 15.0}),
+        ):
+            with self.subTest(field=field, value=value):
+                forged = copy.deepcopy(snapshot)
+                forged["persistedSettings"][field] = value
+                with self.assertRaisesRegex(EvidenceError, "persisted settings vs actual SQLite"):
+                    validator.snapshot_database(forged, database)
+
+    def test_settings_require_unambiguous_actual_dataset_and_at_most_one_row(self):
+        for name, datasets, rows, message in (
+            ("missing-dataset", (), (), "actual SQLite datasets"),
+            ("multiple-datasets", ("dataset-fixture", "other"), (), "exactly one current SQLite dataset"),
+            ("multiple-settings", ("dataset-fixture",),
+             (("dataset-fixture", 1, None, None, None), ("other", 0, None, None, None)),
+             "at most one persisted dataset settings row"),
+            ("foreign-settings", ("dataset-fixture",), (("other", 1, None, None, None),),
+             "persisted settings current SQLite dataset"),
+        ):
+            with self.subTest(name=name):
+                validator, snapshot, database = self.settings_snapshot(name, rows, datasets)
+                with self.assertRaisesRegex(EvidenceError, message):
+                    validator.snapshot_database(snapshot, database)
+
+    def test_persisted_settings_retain_online_and_validated_viewport_rules(self):
+        for index, (online, coordinates, viewport) in enumerate((
+            (0, (None, None, None), None),
+            (1, (-33.87, 151.21, 15.0), {"datasetId": "dataset-fixture", "latitude": -33.87,
+                                       "longitude": 151.21, "zoom": 15.0}),
+            (0, (100.0, 151.21, 15.0), None),
+            (1, (-33.87, 151.21, 23.0), None),
+            (1, (-33.87, None, 15.0), None),
+            (1, (float("inf"), 151.21, 15.0), None),
+        )):
+            with self.subTest(online=online, coordinates=coordinates):
+                row = ("dataset-fixture", online, *coordinates)
+                validator, snapshot, database = self.settings_snapshot("persisted-settings-" + str(index), (row,))
+                snapshot["persistedSettings"].update(online=bool(online), viewport=viewport)
+                validator.snapshot_database(snapshot, database)
+                forged = copy.deepcopy(snapshot)
+                forged["persistedSettings"]["online"] = not bool(online)
+                with self.assertRaisesRegex(EvidenceError, "persisted settings vs actual SQLite"):
+                    validator.snapshot_database(forged, database)
+                forged["persistedSettings"]["online"] = bool(online)
+                forged["persistedSettings"]["viewport"] = None if viewport is not None else {
+                    "datasetId": "dataset-fixture", "latitude": -33.87,
+                    "longitude": 151.21, "zoom": 15.0,
+                }
+                with self.assertRaisesRegex(EvidenceError, "persisted settings vs actual SQLite"):
+                    validator.snapshot_database(forged, database)
 
     def test_complete_synthetic_fixture_only_validates_schema(self):
         # A complete full-quality schema can pass its own validator. The old
