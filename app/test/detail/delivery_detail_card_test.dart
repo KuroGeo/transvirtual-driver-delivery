@@ -180,23 +180,135 @@ void main() {
       await tester.pumpWidget(detailHost(model));
       await tapVisible(tester, 'detail-complete');
       expect(repository.stop.status, DeliveryStatus.completed);
-      expect(model.selectedStop!.status, DeliveryStatus.pending);
+      expect(model.selectedStop!.status, DeliveryStatus.completed);
+      expect(model.hasUnrefreshedResult(repository.stop.id), isTrue);
+      expect(model.canRecord, isFalse);
       expect(find.text('Delivery completed'), findsOneWidget);
       expect(find.text('Imported delivery record'), findsNothing);
       expect(find.byKey(const ValueKey('detail-recorded-time')), findsNothing);
       expect(find.byKey(const ValueKey('detail-complete')), findsNothing);
       expect(find.byKey(const ValueKey('detail-fail')), findsNothing);
+      expect(find.text('Saved locally. Reload required.'), findsOneWidget);
+      expect(find.text('Waiting to sync'), findsNothing);
       expect(find.text('Reload details'), findsOneWidget);
       repository.failRefreshAfterSave = false;
-      await tester.ensureVisible(find.text('Reload details'));
-      await tester.tap(find.text('Reload details'));
-      await tester.pumpAndSettle();
+      await tapVisible(tester, 'detail-reload');
       expect(model.selectedStop!.status, DeliveryStatus.completed);
       expect(
         find.byKey(const ValueKey('detail-recorded-time')),
         findsOneWidget,
       );
       expect(repository.submitCalls, 1);
+      await unmountDetail(tester, model);
+    },
+  );
+
+  testWidgets(
+    'committed failure survives close and reopen with only known result facts',
+    (tester) async {
+      final repository = DetailRepositoryFixture()..failRefreshAfterSave = true;
+      final model = await loadedDetail(repository, origin: DetailOrigin.list);
+      await tester.pumpWidget(detailHost(model));
+      await _saveBusinessClosed(tester);
+      expect(model.panel, WorkbenchPanel.detail);
+      expect(find.byType(DeliveryFailureSheet), findsNothing);
+      expect(repository.submitCalls, 1);
+      expect(repository.queue, hasLength(1));
+      expect(repository.stop.operationId, 'detail-operation-1');
+
+      await tapVisible(tester, 'detail-close');
+      expect(model.panel, WorkbenchPanel.list);
+      model.openDetail(repository.stop.id, origin: DetailOrigin.nearest);
+      await tester.pumpAndSettle();
+
+      final known = model.selectedStop!;
+      expect(known.status, DeliveryStatus.failed);
+      expect(known.reason, 'Business closed');
+      expect(known.note, 'No lights on');
+      expect(known.operationId, isNull);
+      expect(known.recordedAt, isNull);
+      expect(known.acknowledgedAt, isNull);
+      expect(model.hasUnrefreshedResult(known.id), isTrue);
+      expect(model.canRecord, isFalse);
+      expect(find.text('Delivery failed'), findsOneWidget);
+      expect(find.text('Business closed'), findsOneWidget);
+      expect(find.text('No lights on'), findsOneWidget);
+      expect(find.text('Saved locally · reload required'), findsOneWidget);
+      expect(find.text('Saved locally. Reload required.'), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('detail-reload-warning')),
+        findsOneWidget,
+      );
+      expect(find.byKey(const ValueKey('detail-complete')), findsNothing);
+      expect(find.byKey(const ValueKey('detail-fail')), findsNothing);
+      expect(find.byKey(const ValueKey('detail-recorded-time')), findsNothing);
+      expect(
+        find.byKey(const ValueKey('detail-acknowledged-time')),
+        findsNothing,
+      );
+      expect(find.text('Waiting to sync'), findsNothing);
+      expect(find.text('Acknowledged'), findsNothing);
+      expect(find.text('No pending update'), findsNothing);
+      expect(find.text('Back to map'), findsOneWidget);
+      await tapVisible(tester, 'detail-return');
+      expect(model.panel, WorkbenchPanel.map);
+      expect(repository.submitCalls, 1);
+      expect(repository.queue, hasLength(1));
+      await unmountDetail(tester, model);
+    },
+  );
+
+  testWidgets(
+    'reload after remount restores repository identity without another event',
+    (tester) async {
+      final repository = DetailRepositoryFixture()..failRefreshAfterSave = true;
+      final model = await loadedDetail(repository);
+      await tester.pumpWidget(detailHost(model));
+      await _saveBusinessClosed(tester);
+      await tapVisible(tester, 'detail-return');
+      model.openDetail(repository.stop.id, origin: DetailOrigin.map);
+      await tester.pumpAndSettle();
+      expect(model.selectedStop!.operationId, isNull);
+      expect(find.text('Saved locally · reload required'), findsOneWidget);
+
+      repository.failRefreshAfterSave = false;
+      await tapVisible(tester, 'detail-reload');
+
+      final stored = model.selectedStop!;
+      expect(model.hasUnrefreshedResult(stored.id), isFalse);
+      expect(model.loadError, isNull);
+      expect(model.canRecord, isTrue);
+      expect(stored.status, DeliveryStatus.failed);
+      expect(stored.reason, 'Business closed');
+      expect(stored.note, 'No lights on');
+      expect(stored.operationId, repository.stop.operationId);
+      expect(stored.operationId, 'detail-operation-1');
+      expect(stored.recordedAt, repository.stop.recordedAt);
+      expect(stored.recordedAt, DateTime.utc(2026, 10, 10, 7, 8));
+      expect(stored.acknowledgedAt, isNull);
+      expect(repository.submitCalls, 1);
+      expect(repository.queue, hasLength(1));
+      final event = repository.queue.single;
+      expect(event.operationId, stored.operationId);
+      expect(event.recordedAt, stored.recordedAt);
+      expect(event.stopId, stored.id);
+      expect(event.status, stored.status);
+      expect(event.reason, stored.reason);
+      expect(event.note, stored.note);
+      expect(find.byKey(const ValueKey('detail-reload-warning')), findsNothing);
+      expect(find.byKey(const ValueKey('detail-reload')), findsNothing);
+      expect(find.text('Waiting to sync'), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('detail-recorded-time')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey('detail-acknowledged-time')),
+        findsNothing,
+      );
+      expect(find.byKey(const ValueKey('detail-complete')), findsNothing);
+      expect(find.byKey(const ValueKey('detail-fail')), findsNothing);
+      expect(model.panel, WorkbenchPanel.detail);
       await unmountDetail(tester, model);
     },
   );
@@ -220,4 +332,15 @@ void main() {
       await unmountDetail(tester, model);
     },
   );
+}
+
+Future<void> _saveBusinessClosed(WidgetTester tester) async {
+  await tapVisible(tester, 'detail-fail');
+  await tapVisible(tester, 'failure-reason-business-closed');
+  await tester.enterText(
+    find.byKey(const ValueKey('failure-note')),
+    '  No lights on  ',
+  );
+  await tester.pumpAndSettle();
+  await tapVisible(tester, 'failure-save');
 }

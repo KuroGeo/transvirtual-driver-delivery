@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+
+import '../ui/delivery/map/delivery_map_workspace.dart';
 
 import '../ui/delivery_screen.dart';
 import '../ui/delivery_view_model.dart';
@@ -11,10 +14,19 @@ class OceanDeliveryApp extends StatefulWidget {
     super.key,
     required this.createViewModel,
     this.demo = false,
+    this.tileProvider,
+    this.mapController,
+    this.tileUrlTemplate = const String.fromEnvironment(
+      'OCEAN_TILE_URL',
+      defaultValue: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    ),
   });
 
   final Future<DeliveryViewModel> Function() createViewModel;
   final bool demo;
+  final TileProvider? tileProvider;
+  final DeliveryMapController? mapController;
+  final String tileUrlTemplate;
 
   @override
   State<OceanDeliveryApp> createState() => _OceanDeliveryAppState();
@@ -24,6 +36,7 @@ class _OceanDeliveryAppState extends State<OceanDeliveryApp> {
   DeliveryViewModel? _viewModel;
   bool _booting = true;
   String? _bootstrapError;
+  Future<void>? _opening;
 
   @override
   void initState() {
@@ -31,7 +44,18 @@ class _OceanDeliveryAppState extends State<OceanDeliveryApp> {
     unawaited(_start());
   }
 
-  Future<void> _start() async {
+  Future<void> _start() {
+    final opening = _opening;
+    if (opening != null) return opening;
+    final future = Future<void>.microtask(
+      _open,
+    ).whenComplete(() => _opening = null);
+    _opening = future;
+    return future;
+  }
+
+  Future<void> _open() async {
+    if (!mounted) return;
     setState(() {
       _booting = true;
       _bootstrapError = null;
@@ -50,7 +74,7 @@ class _OceanDeliveryAppState extends State<OceanDeliveryApp> {
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _bootstrapError = '本地数据库无法打开，请重试。';
+        _bootstrapError = 'Could not open the local database. Try again.';
         _booting = false;
       });
     }
@@ -92,14 +116,21 @@ class _OceanDeliveryAppState extends State<OceanDeliveryApp> {
                       const SizedBox(height: 16),
                       FilledButton(
                         onPressed: _start,
-                        child: const Text('重试打开'),
+                        key: const ValueKey('retry-bootstrap'),
+                        child: const Text('Try again'),
                       ),
                     ],
                   ),
                 ),
               ),
             )
-          : DeliveryScreen(viewModel: _viewModel!, demo: widget.demo),
+          : DeliveryScreen(
+              viewModel: _viewModel!,
+              demo: widget.demo,
+              tileProvider: widget.tileProvider,
+              tileUrlTemplate: widget.tileUrlTemplate,
+              mapController: widget.mapController,
+            ),
     );
   }
 }

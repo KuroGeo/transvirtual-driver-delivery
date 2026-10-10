@@ -38,13 +38,15 @@ class StopStatusBadge extends StatelessWidget {
           children: [
             Icon(deliveryStatusIcon(status), size: 16, color: color),
             const SizedBox(width: 5),
-            Text(
-              deliveryStatusLabel(status),
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                color: status == DeliveryStatus.pending
-                    ? OceanColors.ink
-                    : color,
-                fontWeight: FontWeight.w500,
+            Flexible(
+              child: Text(
+                deliveryStatusLabel(status),
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: status == DeliveryStatus.pending
+                      ? OceanColors.ink
+                      : color,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ],

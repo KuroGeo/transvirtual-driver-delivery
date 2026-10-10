@@ -9,6 +9,7 @@ import 'package:ocean_delivery/ui/delivery_view_model.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../data/repository_fixture.dart';
+import '../map/map_fixture.dart';
 import 'detail_test_fixture.dart';
 
 void main() {
@@ -86,18 +87,21 @@ void main() {
     'real outbox failure keeps selection and draft, retry commits only one result',
     (tester) async {
       final value = (await tester.runAsync(RepositoryFixture.create))!;
-      final model = DeliveryViewModel(
-        repository: value.repository,
-        syncCoordinator: SyncCoordinator(repository: value.repository),
-      );
+      late final DeliveryViewModel model;
       addTearDown(() async {
         await tester.pumpWidget(const SizedBox());
-        await tester.runAsync(() async {
+        await completeFixtureIO(tester, () async {
           await model.close();
           await value.dispose();
-        });
+        }, description: 'actual detail model and SQLite fixture must close');
       });
-      await tester.runAsync(model.load);
+      await completeFixtureIO(tester, () async {
+        model = DeliveryViewModel(
+          repository: value.repository,
+          syncCoordinator: SyncCoordinator(repository: value.repository),
+        );
+        await model.load();
+      }, description: 'actual detail VM creation and file load must finish');
       final stop = model.stops.first;
       model.openDetail(stop.id, origin: DetailOrigin.list);
       await tester.runAsync(() async {

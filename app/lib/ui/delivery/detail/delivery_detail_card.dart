@@ -31,7 +31,11 @@ class _DeliveryDetailCardState extends State<DeliveryDetailCard> {
   bool get _busy => _completing || _failureOpen || widget.viewModel.isSaving;
 
   Future<void> _complete(Stop stop) async {
-    if (_busy || stop.status != DeliveryStatus.pending) return;
+    if (_busy ||
+        !widget.viewModel.canRecord ||
+        stop.status != DeliveryStatus.pending) {
+      return;
+    }
     setState(() => _completing = true);
     final saved = await widget.viewModel.submit(
       stop.id,
@@ -47,7 +51,11 @@ class _DeliveryDetailCardState extends State<DeliveryDetailCard> {
   }
 
   Future<void> _fail(Stop stop) async {
-    if (_busy || stop.status != DeliveryStatus.pending) return;
+    if (_busy ||
+        !widget.viewModel.canRecord ||
+        stop.status != DeliveryStatus.pending) {
+      return;
+    }
     setState(() => _failureOpen = true);
     final result = await showDeliveryFailureSheet(
       context,
@@ -88,12 +96,27 @@ class _DeliveryDetailCardState extends State<DeliveryDetailCard> {
       // A successful submit means the transaction committed even when the
       // subsequent snapshot read failed. Keep that result read-only and never
       // infer its operation ID or timestamp from the widget clock.
-      final staleSnapshot =
+      final localFallback =
           stop.status == DeliveryStatus.pending && accepted != null;
-      final status = staleSnapshot ? accepted.status : stop.status;
-      final reason = staleSnapshot ? accepted.reason : stop.reason;
-      final note = staleSnapshot ? accepted.note : stop.note;
-      final waiting = staleSnapshot || model.awaitsService(stop);
+      final unrefreshedResult = model.hasUnrefreshedResult(stop.id);
+      final staleSnapshot =
+          model.loadError != null || unrefreshedResult || localFallback;
+      final savedResult = accepted != null || unrefreshedResult;
+      final status = localFallback ? accepted.status : stop.status;
+      final reason = localFallback ? accepted.reason : stop.reason;
+      final note = localFallback ? accepted.note : stop.note;
+      // An unread snapshot cannot prove that an outbox event is still waiting
+      // or has been acknowledged. The VM keeps committed facts across remounts.
+      final waiting = !staleSnapshot && model.awaitsService(stop);
+      final syncLabel = staleSnapshot
+          ? savedResult
+                ? 'Saved locally · reload required'
+                : 'Reload required'
+          : waiting
+          ? 'Waiting to sync'
+          : stop.acknowledgedAt != null
+          ? 'Acknowledged'
+          : 'No pending update';
       final fromList = model.detailContext?.origin == DetailOrigin.list;
       final returnLabel = fromList ? 'Back to stops' : 'Back to map';
       final address = stop.address.split(',');
@@ -221,11 +244,7 @@ class _DeliveryDetailCardState extends State<DeliveryDetailCard> {
                           ],
                         ),
                         Text(
-                          waiting
-                              ? 'Waiting to sync'
-                              : stop.acknowledgedAt != null
-                              ? 'Acknowledged'
-                              : 'No pending update',
+                          syncLabel,
                           key: const ValueKey('detail-sync-state'),
                           style: Theme.of(context).textTheme.bodyMedium
                               ?.copyWith(
@@ -242,17 +261,24 @@ class _DeliveryDetailCardState extends State<DeliveryDetailCard> {
                         status: status,
                         reason: reason,
                         note: note,
-                        recordedAt: stop.recordedAt,
-                        acknowledgedAt: stop.acknowledgedAt,
-                        imported: !staleSnapshot && stop.operationId == null,
+                        recordedAt: localFallback ? null : stop.recordedAt,
+                        acknowledgedAt: localFallback
+                            ? null
+                            : stop.acknowledgedAt,
+                        imported:
+                            !unrefreshedResult &&
+                            !localFallback &&
+                            stop.operationId == null,
                       ),
                     ],
-                    if (accepted != null) ...[
+                    if (savedResult) ...[
                       const SizedBox(height: 14),
                       Semantics(
                         liveRegion: true,
                         child: Text(
-                          waiting
+                          staleSnapshot
+                              ? 'Saved locally. Reload required.'
+                              : waiting
                               ? 'Saved locally. Waiting to sync.'
                               : 'Saved locally.',
                           key: const ValueKey('detail-saved'),
@@ -265,11 +291,15 @@ class _DeliveryDetailCardState extends State<DeliveryDetailCard> {
                     ],
                     if (staleSnapshot) ...[
                       const SizedBox(height: 8),
-                      const Text(
-                        'The result was saved, but details could not be refreshed. Reload to view the stored record.',
+                      Text(
+                        savedResult
+                            ? 'The result was saved, but details could not be refreshed. Reload to view the stored record.'
+                            : 'Details could not be refreshed. Reload before recording a delivery.',
+                        key: const ValueKey('detail-reload-warning'),
                       ),
                       TextButton(
-                        onPressed: model.isLoading ? null : model.load,
+                        key: const ValueKey('detail-reload'),
+                        onPressed: _busy || model.isLoading ? null : model.load,
                         child: const Text('Reload details'),
                       ),
                     ],
@@ -287,7 +317,9 @@ class _DeliveryDetailCardState extends State<DeliveryDetailCard> {
                     if (status == DeliveryStatus.pending) ...[
                       FilledButton.icon(
                         key: const ValueKey('detail-complete'),
-                        onPressed: _busy ? null : () => _complete(stop),
+                        onPressed: _busy || !model.canRecord
+                            ? null
+                            : () => _complete(stop),
                         style: _primaryStyle(),
                         icon: const Icon(Icons.check),
                         label: Text(
@@ -300,7 +332,9 @@ class _DeliveryDetailCardState extends State<DeliveryDetailCard> {
                       const SizedBox(height: 8),
                       TextButton(
                         key: const ValueKey('detail-fail'),
-                        onPressed: _busy ? null : () => _fail(stop),
+                        onPressed: _busy || !model.canRecord
+                            ? null
+                            : () => _fail(stop),
                         style: TextButton.styleFrom(
                           foregroundColor: OceanColors.ink,
                           minimumSize: const Size.fromHeight(48),

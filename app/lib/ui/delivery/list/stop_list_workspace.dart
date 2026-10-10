@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../models/delivery.dart';
+import '../../core/brand_icon.dart';
 import '../../core/brand_theme.dart';
 import '../../delivery_view_model.dart';
 import 'stop_status_badge.dart';
@@ -14,11 +15,15 @@ class StopListWorkspace extends StatefulWidget {
     required this.viewModel,
     required this.onOpenStop,
     required this.onClose,
+    this.onSync,
   });
 
   final DeliveryViewModel viewModel;
   final ValueChanged<Stop> onOpenStop;
   final VoidCallback onClose;
+
+  /// Joins the host's direct sync action, including while a run is active.
+  final VoidCallback? onSync;
 
   @override
   State<StopListWorkspace> createState() => _StopListWorkspaceState();
@@ -158,6 +163,18 @@ class _StopListWorkspaceState extends State<StopListWorkspace> {
                     ),
                   ),
                 ),
+                if (widget.onSync != null)
+                  SizedBox.square(
+                    dimension: 44,
+                    child: IconButton(
+                      key: const ValueKey('list-sync'),
+                      tooltip: model.isSyncing
+                          ? 'Syncing saved updates'
+                          : 'Sync saved updates',
+                      onPressed: widget.onSync,
+                      icon: SyncActionIcon(syncing: model.isSyncing),
+                    ),
+                  ),
                 IconButton(
                   key: const ValueKey('close-list'),
                   focusNode: _closeFocus,

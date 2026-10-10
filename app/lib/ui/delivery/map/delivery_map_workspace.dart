@@ -8,6 +8,7 @@ import 'package:latlong2/latlong.dart';
 
 import '../../../models/delivery.dart';
 import '../../../models/workbench.dart';
+import '../../core/brand_icon.dart';
 import '../../core/brand_theme.dart';
 import '../list/stop_status_badge.dart';
 import '../query/workbench_query.dart';
@@ -20,6 +21,65 @@ enum MapTileStatus { loading, ready, error }
 /// Server freshness remains in force; this is not an offline map download.
 Future<void> clearBuiltInTileCache() =>
     BuiltInMapCachingProvider.getOrCreateInstance().destroy(deleteCache: true);
+
+/// Cached images may finish synchronously. Load/prune after the inherited
+/// camera rebuild so flutter_map cannot prune new tiles using the old camera.
+TileUpdateTransformer _frameAlignedTileUpdates() =>
+    TileUpdateTransformer.fromBind((events) {
+      StreamSubscription<TileUpdateEvent>? upstream;
+      TileUpdateEvent? pending;
+      var active = true;
+      var frameQueued = false;
+      var upstreamDone = false;
+      late final StreamController<TileUpdateEvent> output;
+
+      void scheduleFlush() {
+        if (!active || frameQueued || output.isPaused) return;
+        frameQueued = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          frameQueued = false;
+          if (!active || output.isPaused) return;
+          final event = pending;
+          pending = null;
+          if (event != null) output.add(event);
+          if (active && upstreamDone) unawaited(output.close());
+        });
+        WidgetsBinding.instance.scheduleFrame();
+      }
+
+      output = StreamController<TileUpdateEvent>(
+        sync: true,
+        onListen: () {
+          upstream = events.listen(
+            (event) {
+              if (event.wasTriggeredByTap()) return;
+              pending = event;
+              scheduleFlush();
+            },
+            onError: output.addError,
+            onDone: () {
+              upstreamDone = true;
+              if (pending == null) {
+                unawaited(output.close());
+              } else {
+                scheduleFlush();
+              }
+            },
+          );
+        },
+        onPause: () => upstream?.pause(),
+        onResume: () {
+          upstream?.resume();
+          if (pending != null) scheduleFlush();
+        },
+        onCancel: () async {
+          active = false;
+          pending = null;
+          await upstream?.cancel();
+        },
+      );
+      return output.stream;
+    });
 
 /// Keep this controller and the workspace mounted across Toast/card updates.
 /// A provided controller is disposed by its caller after removing the widget.
@@ -34,6 +94,9 @@ class DeliveryMapController {
   void zoomIn() => _workspace?._zoomBy(1);
   void zoomOut() => _workspace?._zoomBy(-1);
   void fitMatches() => _workspace?._fitMatches();
+
+  /// Explicit selection action; call after updating the host's detail padding.
+  void focusStop(Stop stop) => _workspace?._focusStop(stop);
   void locateTestReference() => _workspace?._locate();
   void retryTiles() => _workspace?._retryTiles();
   Future<void> clearTileCache() =>
@@ -62,7 +125,11 @@ class DeliveryMapWorkspace extends StatefulWidget {
     this.tileUrlTemplate = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
     this.tileProvider,
     this.fitPadding = const EdgeInsets.fromLTRB(38, 205, 38, 220),
+    this.fitPaddingBuilder,
     this.toolbarTop = 220,
+    this.showTools = true,
+    this.showTileError = true,
+    this.overlayBuilder,
     this.selectedStopId,
     this.onViewportChanged,
     this.onSync,
@@ -82,7 +149,16 @@ class DeliveryMapWorkspace extends StatefulWidget {
   /// Tests must inject a fixture; a URL may change without replacing the map.
   final TileProvider? tileProvider;
   final EdgeInsets fitPadding;
+
+  /// Evaluated only on explicit fit/focus with the actual area excluding footer.
+  final EdgeInsets Function(BoxConstraints constraints)? fitPaddingBuilder;
   final double toolbarTop;
+  final bool showTools;
+  final bool showTileError;
+
+  /// Host overlays share only the map area; attribution remains outside it.
+  final Widget Function(BuildContext context, BoxConstraints constraints)?
+  overlayBuilder;
   final String? selectedStopId;
   final ValueChanged<MapViewport>? onViewportChanged;
   final VoidCallback? onSync;
@@ -107,12 +183,14 @@ class _DeliveryMapWorkspaceState extends State<DeliveryMapWorkspace> {
 
   late final DeliveryMapController _controller;
   late final bool _ownsController;
+  BoxConstraints? _mapConstraints;
   late TileProvider _provider;
   late _TileProviderHandle _providerHandle;
   late MapViewport? _initialViewport;
   late List<Marker> _markers;
   Map<String, Stop> _stopsById = const {};
   final _tileReset = StreamController<void>.broadcast();
+  late final _tileUpdates = _frameAlignedTileUpdates();
   final _tiles = <TileCoordinates, TileImage>{};
   final _tileImages = <ImageProvider>{};
   Timer? _viewportTimer;
@@ -218,12 +296,19 @@ class _DeliveryMapWorkspaceState extends State<DeliveryMapWorkspace> {
     _fitPoints(_markers.map((marker) => marker.point).toList());
   }
 
+  void _focusStop(Stop stop) =>
+      _fitPoints([LatLng(stop.latitude, stop.longitude)]);
+
   void _fitPoints(List<LatLng> points) {
     if (!_ready || points.isEmpty) return;
+    final constraints = _mapConstraints;
+    final padding = constraints == null
+        ? widget.fitPadding
+        : widget.fitPaddingBuilder?.call(constraints) ?? widget.fitPadding;
     _controller.mapController.fitCamera(
       CameraFit.coordinates(
         coordinates: points,
-        padding: widget.fitPadding,
+        padding: padding,
         minZoom: 0,
         maxZoom: 15,
       ),
@@ -352,113 +437,131 @@ class _DeliveryMapWorkspaceState extends State<DeliveryMapWorkspace> {
       key: const ValueKey('map-workspace'),
       children: [
         Expanded(
-          child: Stack(
-            children: [
-              FlutterMap(
-                key: const ValueKey('delivery-map'),
-                mapController: _controller.mapController,
-                options: MapOptions(
-                  initialCenter: initial == null
-                      ? _defaultCenter
-                      : LatLng(initial.latitude, initial.longitude),
-                  initialZoom: initial?.zoom ?? 11,
-                  minZoom: 0,
-                  maxZoom: 22,
-                  keepAlive: true,
-                  backgroundColor: const Color(0xFFEEE8DC),
-                  interactionOptions: const InteractionOptions(
-                    flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
-                  ),
-                  onMapReady: () {
-                    if (mounted) setState(() => _ready = true);
-                  },
-                  onMapEvent: _mapEvent,
-                ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              _mapConstraints = constraints;
+              return Stack(
+                fit: StackFit.expand,
                 children: [
-                  if (!_tilesPaused)
-                    TileLayer(
-                      key: ValueKey('map-tiles-$_tileGeneration'),
-                      urlTemplate: widget.tileUrlTemplate,
-                      tileProvider: _providerHandle,
-                      userAgentPackageName: 'com.oceandelivery.driver',
+                  FlutterMap(
+                    key: const ValueKey('delivery-map'),
+                    mapController: _controller.mapController,
+                    options: MapOptions(
+                      initialCenter: initial == null
+                          ? _defaultCenter
+                          : LatLng(initial.latitude, initial.longitude),
+                      initialZoom: initial?.zoom ?? 11,
                       minZoom: 0,
                       maxZoom: 22,
-                      maxNativeZoom: 19,
-                      keepBuffer: 1,
-                      panBuffer: 0,
-                      tileDisplay: const TileDisplay.instantaneous(),
-                      evictErrorTileStrategy: EvictErrorTileStrategy.dispose,
-                      reset: _tileReset.stream,
-                      tileBuilder: (_, tileWidget, tile) => _TileObservation(
-                        tile: tile,
-                        onChanged: _observeTile,
-                        child: tileWidget,
+                      keepAlive: true,
+                      backgroundColor: const Color(0xFFEEE8DC),
+                      interactionOptions: const InteractionOptions(
+                        flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
                       ),
-                    ),
-                  MarkerClusterLayerWidget(
-                    options: MarkerClusterLayerOptions(
-                      markers: _markers,
-                      size: const Size(52, 52),
-                      maxClusterRadius: 48,
-                      disableClusteringAtZoom: 14,
-                      markerChildBehavior: true,
-                      centerMarkerOnClick: false,
-                      zoomToBoundsOnClick: false,
-                      spiderfyCluster: false,
-                      showPolygon: false,
-                      animationsOptions: const AnimationsOptions(
-                        zoom: Duration.zero,
-                        fitBound: Duration.zero,
-                        centerMarker: Duration.zero,
-                        spiderfy: Duration.zero,
-                      ),
-                      onClusterTap: (cluster) => _fitPoints(
-                        cluster.mapMarkers
-                            .map((marker) => marker.point)
-                            .toList(),
-                      ),
-                      builder: (_, markers) {
-                        final stops = markers
-                            .map(
-                              (marker) =>
-                                  _stopsById[(marker.key! as ValueKey<String>)
-                                      .value]!,
-                            )
-                            .toList();
-                        return _ClusterBadge(
-                          stops: stops,
-                          onTap: () => _fitPoints(
-                            markers.map((marker) => marker.point).toList(),
-                          ),
-                        );
+                      onMapReady: () {
+                        if (mounted) setState(() => _ready = true);
                       },
+                      onMapEvent: _mapEvent,
                     ),
-                  ),
-                  const MarkerLayer(
-                    markers: [
-                      Marker(
-                        point: _reference,
-                        width: 44,
-                        height: 44,
-                        child: _TestReferenceMarker(),
+                    children: [
+                      if (!_tilesPaused)
+                        TileLayer(
+                          key: ValueKey('map-tiles-$_tileGeneration'),
+                          urlTemplate: widget.tileUrlTemplate,
+                          tileProvider: _providerHandle,
+                          userAgentPackageName: 'com.oceandelivery.driver',
+                          minZoom: 0,
+                          maxZoom: 22,
+                          maxNativeZoom: 19,
+                          keepBuffer: 1,
+                          panBuffer: 0,
+                          tileDisplay: const TileDisplay.instantaneous(),
+                          tileUpdateTransformer: _tileUpdates,
+                          evictErrorTileStrategy:
+                              EvictErrorTileStrategy.dispose,
+                          reset: _tileReset.stream,
+                          tileBuilder: (_, tileWidget, tile) =>
+                              _TileObservation(
+                                tile: tile,
+                                onChanged: _observeTile,
+                                child: tileWidget,
+                              ),
+                        ),
+                      MarkerClusterLayerWidget(
+                        options: MarkerClusterLayerOptions(
+                          markers: _markers,
+                          size: const Size(52, 52),
+                          maxClusterRadius: 48,
+                          disableClusteringAtZoom: 14,
+                          markerChildBehavior: true,
+                          centerMarkerOnClick: false,
+                          zoomToBoundsOnClick: false,
+                          spiderfyCluster: false,
+                          showPolygon: false,
+                          animationsOptions: const AnimationsOptions(
+                            zoom: Duration.zero,
+                            fitBound: Duration.zero,
+                            centerMarker: Duration.zero,
+                            spiderfy: Duration.zero,
+                          ),
+                          onClusterTap: (cluster) => _fitPoints(
+                            cluster.mapMarkers
+                                .map((marker) => marker.point)
+                                .toList(),
+                          ),
+                          builder: (_, markers) {
+                            final stops = markers
+                                .map(
+                                  (marker) =>
+                                      _stopsById[(marker.key!
+                                              as ValueKey<String>)
+                                          .value]!,
+                                )
+                                .toList();
+                            return _ClusterBadge(
+                              stops: stops,
+                              onTap: () => _fitPoints(
+                                markers.map((marker) => marker.point).toList(),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const MarkerLayer(
+                        markers: [
+                          Marker(
+                            point: _reference,
+                            width: 44,
+                            height: 44,
+                            child: _TestReferenceMarker(),
+                          ),
+                        ],
                       ),
                     ],
                   ),
+                  if (widget.showTools)
+                    Positioned(
+                      left: 13,
+                      top: widget.toolbarTop,
+                      child: _toolbar(),
+                    ),
+                  if (widget.showTileError)
+                    Positioned(
+                      top: 12,
+                      left: 13,
+                      right: 13,
+                      child: ValueListenableBuilder<MapTileStatus>(
+                        valueListenable: _controller.tileStatus,
+                        builder: (_, status, _) => status == MapTileStatus.error
+                            ? _errorBanner()
+                            : const SizedBox.shrink(),
+                      ),
+                    ),
+                  if (widget.overlayBuilder != null)
+                    widget.overlayBuilder!(context, constraints),
                 ],
-              ),
-              Positioned(left: 13, top: widget.toolbarTop, child: _toolbar()),
-              Positioned(
-                top: 12,
-                left: 13,
-                right: 13,
-                child: ValueListenableBuilder<MapTileStatus>(
-                  valueListenable: _controller.tileStatus,
-                  builder: (_, status, _) => status == MapTileStatus.error
-                      ? _errorBanner()
-                      : const SizedBox.shrink(),
-                ),
-              ),
-            ],
+              );
+            },
           ),
         ),
         Material(
@@ -506,28 +609,43 @@ class _DeliveryMapWorkspaceState extends State<DeliveryMapWorkspace> {
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        _tool('zoom-in', 'Zoom in', Icons.add, _controller.zoomIn),
-        _tool('zoom-out', 'Zoom out', Icons.remove, _controller.zoomOut),
-        const SizedBox(width: 26, child: Divider(height: 1)),
-        _tool(
-          'fit-stops',
-          'Fit matching stops',
-          Icons.crop_free,
-          widget.result.stops.isEmpty ? null : _controller.fitMatches,
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _tool('zoom-in', 'Zoom in', Icons.add, _controller.zoomIn),
+            _tool('zoom-out', 'Zoom out', Icons.remove, _controller.zoomOut),
+          ],
         ),
-        _tool(
-          'locate-reference',
-          'Locate test reference',
-          Icons.near_me_outlined,
-          _controller.locateTestReference,
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _tool(
+              'fit-stops',
+              'Fit matching stops',
+              Icons.crop_free,
+              widget.result.stops.isEmpty ? null : _controller.fitMatches,
+            ),
+            _tool(
+              'locate-reference',
+              'Locate test reference',
+              Icons.near_me_outlined,
+              _controller.locateTestReference,
+            ),
+          ],
         ),
         if (widget.onSync != null) ...[
-          const SizedBox(width: 26, child: Divider(height: 1)),
-          _tool(
-            'map-sync',
-            widget.syncing ? 'Syncing' : 'Sync saved updates',
-            Icons.sync,
-            widget.syncing ? null : widget.onSync,
+          const SizedBox(width: 88, child: Divider(height: 1)),
+          SizedBox(
+            width: 88,
+            height: 44,
+            child: IconButton(
+              key: const ValueKey('map-sync'),
+              tooltip: widget.syncing
+                  ? 'Syncing saved updates'
+                  : 'Sync saved updates',
+              icon: SyncActionIcon(syncing: widget.syncing),
+              onPressed: _ready ? widget.onSync : null,
+            ),
           ),
         ],
       ],

@@ -1,4 +1,9 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ocean_delivery/data/delivery/delivery_repository.dart';
 import 'package:ocean_delivery/data/delivery/sync_coordinator.dart';
@@ -107,17 +112,58 @@ Widget _host(DeliveryViewModel model) => MaterialApp(
   ),
 );
 
-Future<DeliveryViewModel> _model(WidgetTester tester, int count) async {
-  final repository = _ReviewRepository(count);
-  final model = DeliveryViewModel(
-    repository: repository,
-    syncCoordinator: SyncCoordinator(repository: repository),
+class _ReviewIOValue<T> {
+  const _ReviewIOValue(this.value);
+  final T value;
+}
+
+Future<T> _reviewIO<T>(
+  WidgetTester tester,
+  Future<T> Function() action, {
+  required String description,
+}) async {
+  final result = await tester.runAsync(
+    () async => _ReviewIOValue(
+      await action().timeout(
+        const Duration(seconds: 5),
+        onTimeout: () => throw TimeoutException(description),
+      ),
+    ),
   );
+  expect(result, isNotNull, reason: description);
+  return result!.value;
+}
+
+Future<DeliveryViewModel> _model(WidgetTester tester, int count) async {
+  final model = await _reviewIO(tester, () async {
+    // Preload the approved glyphs before mounting the real list in FakeAsync.
+    // This supplies no navigation or restoration frames and replaces no icon.
+    final paths = Map<String, String>.from(
+      jsonDecode(await rootBundle.loadString('assets/icons.json')) as Map,
+    );
+    for (final source in paths.values) {
+      final picture = await vg.loadPicture(SvgStringLoader(source), null);
+      picture.picture.dispose();
+    }
+    final repository = _ReviewRepository(count);
+    return DeliveryViewModel(
+      repository: repository,
+      syncCoordinator: SyncCoordinator(repository: repository),
+    );
+  }, description: 'held-out fixture and approved glyph setup must finish');
   addTearDown(() async {
     await tester.pumpWidget(const SizedBox.shrink());
-    await model.close();
+    await _reviewIO(
+      tester,
+      model.close,
+      description: 'held-out model and repository must close',
+    );
   });
-  await model.load();
+  await _reviewIO(
+    tester,
+    model.load,
+    description: 'held-out model initial load must finish',
+  );
   model.openList();
   return model;
 }
@@ -177,7 +223,11 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('stop-REVIEW-01')));
     await tester.pumpAndSettle();
     expect(
-      await model.submit('id-REVIEW-01', DeliveryStatus.completed),
+      await _reviewIO(
+        tester,
+        () => model.submit('id-REVIEW-01', DeliveryStatus.completed),
+        description: 'held-out filtered-return completion must commit',
+      ),
       isTrue,
     );
     await tester.pumpAndSettle();

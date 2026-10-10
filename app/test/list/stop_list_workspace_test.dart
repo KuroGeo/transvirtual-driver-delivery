@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ocean_delivery/data/delivery/sync_coordinator.dart';
 import 'package:ocean_delivery/models/delivery.dart';
+import 'package:ocean_delivery/ui/core/brand_icon.dart';
 import 'package:ocean_delivery/ui/core/brand_theme.dart';
 import 'package:ocean_delivery/ui/delivery/list/stop_list_workspace.dart';
 import 'package:ocean_delivery/ui/delivery/list/stop_status_badge.dart';
@@ -9,7 +13,11 @@ import 'package:ocean_delivery/ui/delivery_view_model.dart';
 
 import '../query/query_repository_fixture.dart';
 
-Widget listHost(DeliveryViewModel model, {double textScale = 1}) => MaterialApp(
+Widget listHost(
+  DeliveryViewModel model, {
+  double textScale = 1,
+  VoidCallback? onSync,
+}) => MaterialApp(
   theme: oceanTheme(),
   home: MediaQuery(
     data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
@@ -23,6 +31,7 @@ Widget listHost(DeliveryViewModel model, {double textScale = 1}) => MaterialApp(
                   onOpenStop: (stop) =>
                       model.openDetail(stop.id, origin: DetailOrigin.list),
                   onClose: model.closeList,
+                  onSync: onSync,
                 )
               : model.panel == WorkbenchPanel.detail
               ? Column(
@@ -113,6 +122,90 @@ void main() {
       expect(tester.takeException(), isNull);
       semantics.dispose();
       await closeHost(tester, model);
+    },
+  );
+
+  testWidgets(
+    'list sync joins an active run without opening or changing list context',
+    (tester) async {
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final update = queryUpdate('REF-01');
+      final repository = QueryRepositoryFixture(
+        stops: [queryStop('REF-01', status: DeliveryStatus.completed)],
+        queue: [update],
+      );
+      final response = Completer<Ack>();
+      var sends = 0;
+      final model = DeliveryViewModel(
+        repository: repository,
+        syncCoordinator: SyncCoordinator(
+          repository: repository,
+          transport: FakeSyncTransport(
+            onSend: (_) {
+              sends++;
+              return response.future;
+            },
+          ),
+        ),
+      );
+      final ack = Ack(
+        operationId: update.operationId,
+        datasetId: update.datasetId,
+        stopId: update.stopId,
+      );
+      try {
+        await model.load();
+        model.openList();
+        model.setSearch('REF-01');
+        var syncCalls = 0;
+        final runs = <Future<void>>[];
+        await tester.pumpWidget(
+          listHost(
+            model,
+            textScale: 2,
+            onSync: () {
+              syncCalls++;
+              runs.add(model.sync());
+            },
+          ),
+        );
+        final button = find.byKey(const ValueKey('list-sync'));
+        expect(tester.getSize(button), const Size(44, 44));
+        await tester.tap(button);
+        await tester.pump();
+        expect(model.isSyncing, isTrue);
+        expect(
+          tester.widget<SyncActionIcon>(find.byType(SyncActionIcon)).syncing,
+          isTrue,
+        );
+        await tester.tap(button);
+        await tester.pump(const Duration(milliseconds: 100));
+        expect(syncCalls, 2);
+        expect(sends, 1, reason: 'the second action joins the existing sender');
+        expect(model.panel, WorkbenchPanel.list);
+        expect(model.query.search, 'REF-01');
+        expect(
+          model.queueCount,
+          1,
+          reason: 'busy progress is not acknowledgement',
+        );
+        expect(find.byKey(const ValueKey('stop-REF-01')), findsOneWidget);
+        expect(tester.takeException(), isNull);
+        response.complete(ack);
+        await Future.wait(runs);
+        await tester.pump();
+        expect(model.queueCount, 0);
+        expect(model.isSyncing, isFalse);
+        expect(model.panel, WorkbenchPanel.list);
+        expect(model.query.search, 'REF-01');
+        expect(tester.takeException(), isNull);
+      } finally {
+        if (!response.isCompleted) response.complete(ack);
+        await closeHost(tester, model);
+      }
     },
   );
 
@@ -259,6 +352,7 @@ void main() {
         find.byKey(const ValueKey('close-list')),
       );
       expect(close.focusNode!.hasFocus, isFalse);
+      expect(find.byKey(const ValueKey('list-sync')), findsNothing);
       await tester.tap(find.byKey(const ValueKey('close-list')));
       await tester.pump();
       expect(find.text('Map workspace'), findsOneWidget);

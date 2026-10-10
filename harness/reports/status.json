@@ -1,17 +1,21 @@
 {
   "schema_version": 2,
   "audit_date": "2026-10-10",
-  "scope": "Full prototype Flutter demo/local-client implementation in progress; candidate-bound Harness execution and independent verification",
+  "scope": "Full prototype Flutter workbench G1 and simulator debug build accepted; controlled native UI/OS recovery in progress",
   "production_eligible": false,
   "production_verdict": "no-go",
   "enforcement_deployed": false,
   "current_validation": {
-    "scope": "Component risks plus X01 trace graph/Issue/Skill/source/test mechanical joins; fullUI/native pending",
-    "source_fingerprint": "2d3a58db08ee966c8294c173973e595412033972d3bf369a1d3f38c5d20970fd",
-    "quality_report": "harness/runs/20261010T150812507696Z-quality/report.json",
+    "scope": "E07 formal prototype workbench local G1 and main simulator debug build; full G2 pending",
+    "source_fingerprint": "66832ac3bd04527639bcc69ab5831b50df70bfc600c658109b3785bfbb847609",
+    "quality_report": "harness/runs/20261010T163831230608Z-quality/report.json",
+    "quality_report_sha256": "8f5ef99702baff897df9737f381ea8d3a93a6db1038eee9f53a1388b506fbb66",
+    "build_report": "harness/runs/20261010T163936905230Z-build/report.json",
     "tooling_checks": 61,
-    "flutter_checks": 146,
-    "status": "passed"
+    "flutter_checks": 159,
+    "status": "passed",
+    "native_rerun": false,
+    "production_eligible": false
   },
   "historical_rehearsal": {
     "candidate": {
@@ -46,7 +50,7 @@
     "native_execution": "ios simulator debug three OS processes with test fake"
   },
   "production_gaps": [
-    "Full map workbench and native user acceptance remain incomplete.",
+    "Complete native user acceptance remains pending X02/E08; full workbench host/build accepted.",
     "Physical-device profile/release, applicable resource licensing, signing and authorized delivery require evidence.",
     "PR quality CI passed on the reviewed source; required-check and release enforcement remain undeployed (archived private protection API: 403)."
   ],
@@ -124,16 +128,20 @@
       "E01",
       "X00",
       "E02",
-      "E03"
-    ],
-    "running": [
+      "E03",
       "E05",
       "E06",
-      "E11"
+      "E11",
+      "E04",
+      "X01",
+      "E07"
+    ],
+    "running": [
+      "X02"
     ],
     "task_board": "harness/project/work.json",
     "coordinator": "/root",
-    "note": "Independent implementation/test roles and no-overlap scopes; final UI/native acceptance not yet delivered"
+    "note": "Formal workbench assembled and independent host/build verification accepted; controlled native observation/acceptance next"
   },
   "x00_execution": {
     "candidate": "f9137cb845783c63b0b182be1936c7682d4d3fd5fa061f19e0de79c2da0eadcd",
@@ -159,13 +167,19 @@
       "E06",
       "E11",
       "E04",
-      "X01"
+      "X01",
+      "E07"
     ],
-    "running": [],
+    "running": [
+      "X02"
+    ],
+    "review": [],
+    "independent_testing": [],
     "production_eligible": false
   },
   "active_candidate_validation": {
-    "status": "source-changing; X01 check/quality pending freeze",
-    "scope": "Trace and mechanical joins; no current evidence pass claimed"
+    "status": "passed",
+    "source_fingerprint": "66832ac3bd04527639bcc69ab5831b50df70bfc600c658109b3785bfbb847609",
+    "scope": "Formal workbench G1/debug build. Subsequent source changes require fresh candidate evidence."
   }
 }

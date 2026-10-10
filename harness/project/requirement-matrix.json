@@ -53,6 +53,17 @@
             "demo confirmation cannot alter a separate local-client file or its retry identity"
           ],
           "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "formal factory uses first-mount local tiles, typed origins and isolated default modes",
+            "formal cold App remount resets transients while restoring offline file state and actual gesture viewport"
+          ],
+          "evidence": []
         }
       ],
       "gaps": [
@@ -108,6 +119,17 @@
           "cases": [
             "filtered real list retains Other draft after rollback, then returns with truthful global queue",
             "tile failure and cache-clear failure preserve actual saved result and restored viewport"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "formal automatic enqueue joins one drain and durable pause holds the next immutable event until reconnect",
+            "formal App keeps committed read-only failure facts across card remount until actual Reload succeeds"
           ],
           "evidence": []
         }
@@ -173,6 +195,16 @@
           "level": "G1",
           "cases": [
             "filtered real list retains Other draft after rollback, then returns with truthful global queue"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "formal App keeps committed read-only failure facts across card remount until actual Reload succeeds"
           ],
           "evidence": []
         }
@@ -251,6 +283,18 @@
             "held matching ack plus SQL rollback never reports confirmation and survives reopen before retry"
           ],
           "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "settings save failure retains persisted Online flag and permits retry",
+            "formal automatic enqueue joins one drain and durable pause holds the next immutable event until reconnect",
+            "formal cold App remount resets transients while restoring offline file state and actual gesture viewport"
+          ],
+          "evidence": []
         }
       ],
       "gaps": [
@@ -318,6 +362,18 @@
             "held matching ack plus SQL rollback never reports confirmation and survives reopen before retry"
           ],
           "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "formal direct sync notice preserves camera focus and detail",
+            "formal automatic enqueue joins one drain and durable pause holds the next immutable event until reconnect",
+            "formal App keeps committed read-only failure facts across card remount until actual Reload succeeds"
+          ],
+          "evidence": []
         }
       ],
       "gaps": [
@@ -376,6 +432,20 @@
             "held matching ack plus SQL rollback never reports confirmation and survives reopen before retry"
           ],
           "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "formal factory uses first-mount local tiles, typed origins and isolated default modes",
+            "settings save failure retains persisted Online flag and permits retry",
+            "formal direct sync notice preserves camera focus and detail",
+            "formal automatic enqueue joins one drain and durable pause holds the next immutable event until reconnect",
+            "formal cold App remount resets transients while restoring offline file state and actual gesture viewport"
+          ],
+          "evidence": []
         }
       ],
       "gaps": [
@@ -407,7 +477,9 @@
           "level": "G1",
           "cases": [
             "real map uses original coordinates and shared query membership",
-            "mixed cluster conveys member count/status and tap expands to original stop"
+            "mixed cluster conveys member count/status and tap expands to original stop",
+            "explicit focus uses updated detail padding and overlay leaves footer visible",
+            "cached return, latest rapid focus and detach remain ready (${reducedMotion ? 'reduced motion' : 'normal motion'})"
           ],
           "evidence": []
         },
@@ -418,6 +490,16 @@
           "level": "G1",
           "cases": [
             "tile failure and cache-clear failure preserve actual saved result and restored viewport"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "formal factory uses first-mount local tiles, typed origins and isolated default modes"
           ],
           "evidence": []
         }
@@ -478,6 +560,17 @@
             "tile failure and cache-clear failure preserve actual saved result and restored viewport"
           ],
           "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "formal factory uses first-mount local tiles, typed origins and isolated default modes",
+            "formal cold App remount resets transients while restoring offline file state and actual gesture viewport"
+          ],
+          "evidence": []
         }
       ],
       "gaps": [
@@ -521,6 +614,16 @@
           "level": "G1",
           "cases": [
             "reference heading stays anchored while footer label supports large text"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "formal factory uses first-mount local tiles, typed origins and isolated default modes"
           ],
           "evidence": []
         }
@@ -590,6 +693,18 @@
             "tile failure and cache-clear failure preserve actual saved result and restored viewport"
           ],
           "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "formal factory uses first-mount local tiles, typed origins and isolated default modes",
+            "formal direct sync notice preserves camera focus and detail",
+            "formal App keeps committed read-only failure facts across card remount until actual Reload succeeds"
+          ],
+          "evidence": []
         }
       ],
       "gaps": [
@@ -637,11 +752,11 @@
         {
           "task": "E04",
           "path": "app/test/reliability/formal_workbench_test.dart",
-          "state": "planned",
+          "state": "implemented",
           "level": "G1",
           "cases": [
-            "formal direct sync notice preserves camera focus and detail",
-            "settings save failure retains persisted Online flag and permits retry"
+            "settings save failure retains persisted Online flag and permits retry",
+            "formal direct sync notice preserves camera focus and detail"
           ],
           "evidence": []
         }
@@ -655,7 +770,7 @@
         {
           "task": "E07",
           "level": "G1",
-          "reason": "Formal main direct sync/Toast/settings assembly not implemented yet. Component progress tests do not sign integrated UI."
+          "reason": "Formal assembly/test source implemented; exact candidate quality/build acceptance pending. Source presence alone does not sign acceptance."
         }
       ]
     },
@@ -724,6 +839,17 @@
             "held matching ack plus SQL rollback never reports confirmation and survives reopen before retry"
           ],
           "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "formal factory uses first-mount local tiles, typed origins and isolated default modes",
+            "formal cold App remount resets transients while restoring offline file state and actual gesture viewport"
+          ],
+          "evidence": []
         }
       ],
       "gaps": [
@@ -758,7 +884,9 @@
           "level": "G1",
           "cases": [
             "real fixture tile failure leaves marker action available and Retry recovers",
-            "tile-only clear reloads fixture, preserves camera and query and rejoins calls"
+            "tile-only clear reloads fixture, preserves camera and query and rejoins calls",
+            "explicit focus uses updated detail padding and overlay leaves footer visible",
+            "cached return, latest rapid focus and detach remain ready (${reducedMotion ? 'reduced motion' : 'normal motion'})"
           ],
           "evidence": []
         },
@@ -790,6 +918,16 @@
           "level": "G1",
           "cases": [
             "tile failure and cache-clear failure preserve actual saved result and restored viewport"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "formal factory uses first-mount local tiles, typed origins and isolated default modes"
           ],
           "evidence": []
         }
@@ -847,6 +985,18 @@
           "level": "G1",
           "cases": [
             "390px and 2x text keep failure controls above keyboard without overflow"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "formal factory uses first-mount local tiles, typed origins and isolated default modes",
+            "formal automatic enqueue joins one drain and durable pause holds the next immutable event until reconnect",
+            "formal cold App remount resets transients while restoring offline file state and actual gesture viewport"
           ],
           "evidence": []
         }

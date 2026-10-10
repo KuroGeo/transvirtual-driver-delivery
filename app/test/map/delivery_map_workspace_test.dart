@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -6,6 +8,7 @@ import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:ocean_delivery/models/delivery.dart';
 import 'package:ocean_delivery/models/workbench.dart';
+import 'package:ocean_delivery/ui/core/brand_icon.dart';
 import 'package:ocean_delivery/ui/delivery/map/delivery_map_workspace.dart';
 import 'package:ocean_delivery/ui/delivery/query/workbench_query.dart';
 import 'package:ocean_delivery/ui/delivery/query/workbench_session.dart';
@@ -250,6 +253,378 @@ void main() {
   );
 
   testWidgets(
+    'stock synchronous TileLayer prunes loaded target tiles before camera rebuild',
+    (tester) async {
+      mapTestSize(tester);
+      final provider = await fixtureProvider(tester);
+      final controller = MapController();
+      addTearDown(() async {
+        await tester.pumpWidget(const SizedBox());
+        controller.dispose();
+      });
+      final rendered = <TileCoordinates, TileImage>{};
+      Widget standaloneHost(int revision) => MaterialApp(
+        title: 'Standalone tile fixture revision $revision',
+        home: Scaffold(
+          body: Column(
+            children: [
+              Expanded(
+                child: FlutterMap(
+                  mapController: controller,
+                  options: const MapOptions(
+                    initialCenter: LatLng(-33.884, 151.117),
+                    initialZoom: 11,
+                    minZoom: 0,
+                    maxZoom: 22,
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate:
+                          'http://127.0.0.1/standalone/{z}/{x}/{y}.png',
+                      tileProvider: provider,
+                      minZoom: 0,
+                      maxZoom: 22,
+                      maxNativeZoom: 19,
+                      panBuffer: 0,
+                      keepBuffer: 1,
+                      tileDisplay: const TileDisplay.instantaneous(),
+                      tileBuilder: (_, child, tile) {
+                        rendered[tile.coordinates] = tile;
+                        return child;
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 46),
+            ],
+          ),
+        ),
+      );
+      await tester.pumpWidget(standaloneHost(1));
+      await tester.pumpAndSettle();
+      final firstLayerState = tester.state(find.byType(TileLayer));
+      await tester.pumpWidget(standaloneHost(2));
+      await tester.pump();
+      expect(tester.state(find.byType(TileLayer)), same(firstLayerState));
+      final before = controller.camera;
+      expect(before.zoom, 11);
+      expect(before.center, const LatLng(-33.884, 151.117));
+      await performFixtureUI(tester, () async {
+        controller.fitCamera(
+          CameraFit.coordinates(
+            coordinates: const [LatLng(-33.97, 151.21)],
+            padding: const EdgeInsets.fromLTRB(30, 20, 30, 349.2),
+            minZoom: 0,
+            maxZoom: 15,
+          ),
+        );
+      }, description: 'standalone explicit camera fit must finish');
+      await tester.pumpAndSettle();
+      expect(controller.camera.zoom, 15);
+      final targetTiles = rendered.values.where(
+        (tile) => tile.coordinates.z == 15,
+      );
+      expect(targetTiles, isNotEmpty);
+      final coordinates = targetTiles.map((tile) => tile.coordinates).toSet();
+      final obtained = provider.requestedCoordinates
+          .where((tile) => tile.z == 15)
+          .toList();
+      final resolved = provider.resolvedCoordinates
+          .where((tile) => tile.z == 15)
+          .toList();
+      // Dependency fault characterization, separate from product availability:
+      // first generation resolves synchronously, is pruned, then recreated.
+      expect(obtained.length, coordinates.length * 2);
+      expect(resolved.toSet(), coordinates);
+      expect(resolved.length, coordinates.length);
+      for (final coordinate in coordinates) {
+        expect(obtained.where((tile) => tile == coordinate), hasLength(2));
+      }
+      expect(
+        targetTiles.every(
+          (tile) =>
+              tile.loadStarted == null &&
+              tile.loadFinishedAt == null &&
+              !tile.loadError &&
+              !tile.cancelLoading.isCompleted,
+        ),
+        isTrue,
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  for (final reducedMotion in [false, true]) {
+    testWidgets(
+      'cached return, latest rapid focus and detach remain ready (${reducedMotion ? 'reduced motion' : 'normal motion'})',
+      (tester) async {
+        mapTestSize(tester);
+        final provider = await fixtureProvider(tester);
+        final controller = fixtureController(tester);
+        final first = mapStop('FIRST', latitude: -33.88, longitude: 151.11);
+        final last = mapStop('LAST', latitude: -33.97, longitude: 151.21);
+        final result = mapResult([first, last]);
+        await tester.pumpWidget(
+          mapHost(
+            result: result,
+            provider: provider,
+            controller: controller,
+            showTools: false,
+            disableAnimations: reducedMotion,
+          ),
+        );
+        await tester.pumpAndSettle();
+        await waitForFixtureMap(tester, controller);
+        await performFixtureUI(tester, () async {
+          controller.focusStop(first);
+        }, description: 'first synchronous tile focus must finish');
+        await tester.pumpAndSettle();
+        await waitForFixtureMap(tester, controller);
+        final firstCamera = controller.mapController.camera;
+        final firstCoordinates = provider.requestedCoordinates
+            .where((tile) => tile.z == 15)
+            .toSet();
+        expect(firstCoordinates, isNotEmpty);
+        final firstResolutions = provider.resolvedCoordinates
+            .where(firstCoordinates.contains)
+            .length;
+        expect(firstResolutions, firstCoordinates.length);
+        await performFixtureUI(tester, () async {
+          controller.focusStop(last);
+        }, description: 'second synchronous tile focus must finish');
+        await tester.pumpAndSettle();
+        await waitForFixtureMap(tester, controller);
+        final lastCamera = controller.mapController.camera;
+        final beforeRapid = provider.requestedCoordinates.length;
+        await performFixtureUI(tester, () async {
+          controller.focusStop(first);
+          controller.focusStop(last);
+        }, description: 'two focus actions must join the same next frame');
+        await tester.pumpAndSettle();
+        await waitForFixtureMap(tester, controller);
+        expect(controller.mapController.camera.center, lastCamera.center);
+        expect(controller.mapController.camera.zoom, lastCamera.zoom);
+        expect(
+          provider.requestedCoordinates.length,
+          beforeRapid,
+          reason: 'only the final already-loaded viewport is processed',
+        );
+        expect(
+          find.byKey(const ValueKey('map-stop-LAST')).hitTestable(),
+          findsOneWidget,
+        );
+        await performFixtureUI(tester, () async {
+          controller.focusStop(first);
+        }, description: 'return to the first cached viewport must finish');
+        await tester.pumpAndSettle();
+        await waitForFixtureMap(tester, controller);
+        expect(controller.mapController.camera.center, firstCamera.center);
+        expect(controller.mapController.camera.zoom, firstCamera.zoom);
+        expect(provider.requestedCoordinates.length, greaterThan(beforeRapid));
+        expect(
+          provider.resolvedCoordinates.where(firstCoordinates.contains).length,
+          firstResolutions,
+          reason: 'real ImageCache hits do not invoke loadImage again',
+        );
+        expect(
+          find.byKey(const ValueKey('map-stop-FIRST')).hitTestable(),
+          findsOneWidget,
+        );
+        final beforeDetach = provider.requestedCoordinates.length;
+        await performFixtureUI(
+          tester,
+          () async {
+            controller.focusStop(last);
+            await tester.pumpWidget(const SizedBox());
+          },
+          description: 'remove the map before its queued focus is processed',
+        );
+        await tester.pump(const Duration(milliseconds: 16));
+        expect(provider.requestedCoordinates.length, beforeDetach);
+        expect(provider.disposeCalls, 1);
+        expect(result.stops, hasLength(2));
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  testWidgets(
+    'explicit focus uses updated detail padding and overlay leaves footer visible',
+    (tester) async {
+      mapTestSize(tester);
+      final provider = await fixtureProvider(tester);
+      final controller = fixtureController(tester);
+      final stop = mapStop('DETAIL', latitude: -33.97, longitude: 151.21);
+      final result = mapResult([stop]);
+      BoxConstraints? overlayConstraints;
+      BoxConstraints? fitConstraints;
+      var fits = 0;
+      Widget overlay(BuildContext context, BoxConstraints constraints) {
+        overlayConstraints = constraints;
+        return Positioned(
+          left: 12,
+          right: 12,
+          bottom: 0,
+          child: SizedBox(
+            key: const ValueKey('host-detail-overlay'),
+            height: constraints.maxHeight * .4,
+            child: const Material(child: Center(child: Text('Detail preview'))),
+          ),
+        );
+      }
+
+      await tester.pumpWidget(
+        mapHost(
+          result: result,
+          provider: provider,
+          controller: controller,
+          selectedStopId: stop.id,
+          showTools: false,
+          overlayBuilder: overlay,
+        ),
+      );
+      await tester.pumpAndSettle();
+      final before = controller.mapController.camera;
+      expect(before.center, const LatLng(-33.884, 151.117));
+      expect(before.zoom, 11, reason: 'selection props never auto-focus');
+      await tester.pumpWidget(
+        mapHost(
+          result: result,
+          provider: provider,
+          controller: controller,
+          selectedStopId: stop.id,
+          showTools: false,
+          overlayBuilder: overlay,
+          fitPaddingBuilder: (constraints) {
+            fits++;
+            fitConstraints = constraints;
+            return EdgeInsets.fromLTRB(
+              30,
+              20,
+              30,
+              constraints.maxHeight * .4 + 30,
+            );
+          },
+        ),
+      );
+      await tester.pump();
+      expect(controller.mapController.camera.center, before.center);
+      expect(controller.mapController.camera.zoom, before.zoom);
+      expect(fits, 0, reason: 'padding props never trigger camera actions');
+
+      final layerBefore = tester.state(find.byType(TileLayer));
+      final layerOptions = tester.widget<TileLayer>(find.byType(TileLayer));
+      final events = <MapEvent>[];
+      final updates = <TileUpdateEvent>[];
+      final moved = Completer<MapEventWithMove>();
+      final eventSubscription = controller.mapController.mapEventStream.listen((
+        event,
+      ) {
+        events.add(event);
+        if (event is MapEventWithMove &&
+            event.source == MapEventSource.mapController &&
+            !moved.isCompleted) {
+          moved.complete(event);
+        }
+      });
+      // Observe the exact public transformer used by the mounted TileLayer.
+      // This parallel observer does not change the layer or load a tile.
+      final updateSubscription = controller.mapController.mapEventStream
+          .map((event) => TileUpdateEvent(mapEvent: event))
+          .transform(layerOptions.tileUpdateTransformer)
+          .listen(updates.add);
+      String eventDiagnostics() {
+        final after = controller.mapController.camera;
+        final layer = tester.widget<TileLayer>(find.byType(TileLayer));
+        final layerContext = tester.element(find.byType(TileLayer));
+        final contextualCamera = MapCamera.of(layerContext);
+        final eventStates = events.map(
+          (event) =>
+              '${event.runtimeType}/${event.source}: '
+              '${event.camera.center}@${event.camera.zoom} size=${event.camera.nonRotatedSize}',
+        );
+        final updateStates = updates.map(
+          (event) =>
+              '${event.mapEvent.runtimeType}/${event.mapEvent.source}: '
+              'load=${event.load}, prune=${event.prune}, '
+              '${event.center}@${event.zoom}',
+        );
+        return 'before=${before.center}@${before.zoom} size=${before.nonRotatedSize}; '
+            'after=${after.center}@${after.zoom} size=${after.nonRotatedSize}; '
+            'events=[${eventStates.join('; ')}]; updates=[${updateStates.join('; ')}]; '
+            'sameLayerState=${identical(layerBefore, tester.state(find.byType(TileLayer)))}, '
+            'sameContextController=${identical(MapController.of(layerContext), controller.mapController)}, '
+            'contextCamera=${contextualCamera.center}@${contextualCamera.zoom}; '
+            'layerZoom=${layer.minZoom}..${layer.maxZoom}, '
+            'nativeZoom=${layer.minNativeZoom}..${layer.maxNativeZoom}, '
+            'pan=${layer.panBuffer}, keep=${layer.keepBuffer}, '
+            'defaultTransformer=${identical(layer.tileUpdateTransformer, TileUpdateTransformers.ignoreTapEvents)}, '
+            'providerRequests=${provider.requestedCoordinates.join(', ')}; '
+            'providerResolved=${provider.resolvedCoordinates.join(', ')}';
+      }
+
+      try {
+        // Match the normal UI action boundary; publication and actual tile
+        // readiness below remain separate, required observations.
+        await performFixtureUI(
+          tester,
+          () async {
+            controller.focusStop(stop);
+          },
+          description: 'explicit selected-stop focus must finish its UI action',
+        );
+        final event = await completeFixtureIO(
+          tester,
+          () => moved.future,
+          description: 'explicit focus must publish its actual map move',
+          diagnostics: eventDiagnostics,
+        );
+        expect(event.camera.center, controller.mapController.camera.center);
+        expect(event.camera.zoom, controller.mapController.camera.zoom);
+        await tester.pumpAndSettle();
+        await waitForFixtureMap(
+          tester,
+          controller,
+          diagnostics: eventDiagnostics,
+        );
+      } finally {
+        await completeFixtureIO(tester, () async {
+          await eventSubscription.cancel();
+          await updateSubscription.cancel();
+        }, description: 'focus diagnostic subscriptions must be released');
+      }
+      final mapRect = tester.getRect(
+        find.byKey(const ValueKey('delivery-map')),
+      );
+      final overlayRect = tester.getRect(
+        find.byKey(const ValueKey('host-detail-overlay')),
+      );
+      final marker = find.byKey(const ValueKey('map-stop-DETAIL'));
+      expect(marker.hitTestable(), findsOneWidget);
+      final markerRect = tester.getRect(marker);
+      expect(markerRect.top, greaterThanOrEqualTo(mapRect.top));
+      expect(markerRect.bottom, lessThan(overlayRect.top));
+      expect(controller.mapController.camera.zoom, 15);
+      expect(overlayRect.bottom, mapRect.bottom);
+      expect(overlayConstraints!.maxHeight, mapRect.height);
+      expect(overlayConstraints!.maxWidth, mapRect.width);
+      expect(fits, 1);
+      expect(fitConstraints!.maxWidth, mapRect.width);
+      expect(fitConstraints!.maxHeight, mapRect.height);
+      final footerRect = tester.getRect(
+        find.byKey(const ValueKey('map-attribution')),
+      );
+      expect(footerRect.top, mapRect.bottom);
+      expect(footerRect.bottom, lessThanOrEqualTo(844));
+      expect(find.text('© OpenStreetMap contributors'), findsOneWidget);
+      expect(find.byKey(const ValueKey('zoom-in')), findsNothing);
+      expect(controller.tileStatus.value, MapTileStatus.ready);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
     'same dataset viewport restores once, result and sync updates retain camera',
     (tester) async {
       mapTestSize(tester);
@@ -277,6 +652,7 @@ void main() {
       expect(controller.mapController.camera.zoom, saved.zoom);
       controller.mapController.move(const LatLng(-33.89, 151.15), 13.25);
       final camera = controller.mapController.camera;
+      var syncCalls = 0;
       await tester.pumpWidget(
         mapHost(
           result: mapResult([]),
@@ -284,10 +660,11 @@ void main() {
           controller: controller,
           initialViewport: saved,
           syncing: true,
-          onSync: () {},
+          onSync: () => syncCalls++,
         ),
       );
-      await tester.pumpAndSettle();
+      // Busy sync intentionally animates; bounded pumps retain that behavior.
+      await tester.pump(const Duration(milliseconds: 200));
       expect(controller.mapController.camera.center, camera.center);
       expect(controller.mapController.camera.zoom, camera.zoom);
       expect(
@@ -311,8 +688,34 @@ void main() {
         tester
             .widget<IconButton>(find.byKey(const ValueKey('map-sync')))
             .onPressed,
-        isNull,
+        isNotNull,
       );
+      final sync = find.byKey(const ValueKey('map-sync'));
+      await tester.tap(sync);
+      await tester.pump();
+      expect(syncCalls, 1, reason: 'busy action joins the host sync run');
+      expect(
+        tester.widget<SyncActionIcon>(find.byType(SyncActionIcon)).syncing,
+        isTrue,
+      );
+      final zoomIn = tester.getRect(find.byKey(const ValueKey('zoom-in')));
+      final zoomOut = tester.getRect(find.byKey(const ValueKey('zoom-out')));
+      final fit = tester.getRect(find.byKey(const ValueKey('fit-stops')));
+      final locate = tester.getRect(
+        find.byKey(const ValueKey('locate-reference')),
+      );
+      for (final rect in [zoomIn, zoomOut, fit, locate]) {
+        expect(rect.size, const Size(44, 44));
+      }
+      expect(zoomIn.top, zoomOut.top);
+      expect(zoomOut.left, zoomIn.right);
+      expect(fit.top, zoomIn.bottom);
+      expect(locate.top, fit.top);
+      expect(locate.left, fit.right);
+      expect(tester.getSize(sync), const Size(88, 44));
+      expect(controller.mapController.camera.center, camera.center);
+      expect(controller.mapController.camera.zoom, camera.zoom);
+      expect(tester.takeException(), isNull);
     },
   );
 

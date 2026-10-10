@@ -31,18 +31,21 @@ void main() {
       mapTestSize(tester);
       final sandbox = (await tester.runAsync(DeliveryRiskSandbox.create))!;
       final repository = sandbox.repository(_databaseName);
-      final model = DeliveryViewModel(
-        repository: repository,
-        syncCoordinator: SyncCoordinator(repository: repository),
-      );
+      late final DeliveryViewModel model;
       addTearDown(() async {
         await tester.pumpWidget(const SizedBox());
-        await tester.runAsync(() async {
+        await completeFixtureIO(tester, () async {
           await model.close();
           await sandbox.dispose();
-        });
+        }, description: 'risk list VM and actual file sandbox must close');
       });
-      await tester.runAsync(model.load);
+      await completeFixtureIO(tester, () async {
+        model = DeliveryViewModel(
+          repository: repository,
+          syncCoordinator: SyncCoordinator(repository: repository),
+        );
+        await model.load();
+      }, description: 'risk list VM creation and file load must finish');
       model.setSearch('HARBOUR');
       model.setStatus(DeliveryStatus.pending);
       model.openList();
@@ -123,20 +126,23 @@ void main() {
       provider.fail = true;
       final sandbox = (await tester.runAsync(DeliveryRiskSandbox.create))!;
       final repository = sandbox.repository(_databaseName);
-      final model = DeliveryViewModel(
-        repository: repository,
-        syncCoordinator: SyncCoordinator(repository: repository),
-      );
+      late final DeliveryViewModel model;
       final controller = DeliveryMapController();
       addTearDown(() async {
         await tester.pumpWidget(const SizedBox());
         controller.dispose();
-        await tester.runAsync(() async {
+        await completeFixtureIO(tester, () async {
           await model.close();
           await sandbox.dispose();
-        });
+        }, description: 'risk map VM and actual file sandbox must close');
       });
-      await tester.runAsync(model.load);
+      await completeFixtureIO(tester, () async {
+        model = DeliveryViewModel(
+          repository: repository,
+          syncCoordinator: SyncCoordinator(repository: repository),
+        );
+        await model.load();
+      }, description: 'risk map VM creation and file load must finish');
       final settings = (await tester.runAsync(repository.loadSettings))!;
       final viewport = MapViewport(
         datasetId: settings.datasetId,

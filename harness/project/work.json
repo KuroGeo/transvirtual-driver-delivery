@@ -1,7 +1,7 @@
 {
   "mode": "execute",
   "contract_revision": 5,
-  "source_head": "b83ae4ba561ee5fe3a07693ce3ff5043b4caf4a8",
+  "source_head": "b358e4a78a8d952b2767704e8c15fa2aac8e1e9a",
   "coordinator": "/root",
   "scope": "Implement full prototype/architecture Flutter demo and local-client with independently verified Harness evidence; production no-go remains",
   "tasks": [
@@ -635,8 +635,8 @@
     {
       "id": "E07",
       "role": "coordinator-integration",
-      "status": "planned",
-      "owner_agent_id": null,
+      "status": "accepted",
+      "owner_agent_id": "/root",
       "contract_revision": 5,
       "write_scope": [
         "app/lib/main.dart",
@@ -644,8 +644,13 @@
         "app/lib/ui/delivery_screen.dart",
         "app/lib/ui/delivery_view_model.dart",
         "app/lib/ui/delivery/feedback",
-        "app/lib/diagnostics",
-        "app/integration_test"
+        "app/lib/ui/core/brand_icon.dart",
+        "app/pubspec.yaml",
+        "app/pubspec.lock",
+        "app/assets/licenses",
+        "app/test/ui",
+        "harness/project/contracts.md",
+        "harness/project/requirement-matrix.json"
       ],
       "resource_leases": [],
       "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/25",
@@ -677,12 +682,29 @@
         "R14",
         "R17"
       ],
-      "verification_level": "G1 集成质量 + simulator debug 构建；G2 交 E08"
+      "verification_level": "G1 集成质量 + simulator debug 构建；G2 交 E08",
+      "base_sha": "b358e4a78a8d952b2767704e8c15fa2aac8e1e9a",
+      "source_fingerprint": "2d3a58db08ee966c8294c173973e595412033972d3bf369a1d3f38c5d20970fd",
+      "started_at": "2026-10-10T15:15:40.188145+00:00",
+      "result_path": "harness/runs/implementation/E07.md",
+      "consumer_scope_reassignment": "E07 bounded original prototype selection/layout and stale-result adapters delegated through root; original component owners retain single writer, all changes require integrated revalidation",
+      "test_scope_reassignment": "TE07W is exclusive writer of widget_test.dart; root reviews and runs frozen candidate.",
+      "source_state": "All source frozen; actual3SQLite VM construct+load+close same real zone within original5s, existing assertion/action tails unchanged. Fresh complete quality pending.",
+      "failed_report": "harness/runs/20261010T154306141713Z-quality/report.json",
+      "repair_reason": "E03 returned focus cases progressed; full suite stalls before UI at real SQLite detail and E04 two fixtures: VM tails constructed FakeAsync then awaited in runAsync. Retain exact original business/geometry assertions; repair setup/close IO ownership only.",
+      "failed_targeted_report": "harness/runs/20261010T161126682229Z-test/report.json",
+      "returned_at": "2026-10-10T16:38:31.061052+00:00",
+      "failed_full_report": "harness/runs/20261010T163345463900Z-quality/report.json",
+      "accepted_at": "2026-10-10T16:44:28.120589+00:00",
+      "accepted_candidate": "66832ac3bd04527639bcc69ab5831b50df70bfc600c658109b3785bfbb847609",
+      "quality_report": "harness/runs/20261010T163831230608Z-quality/report.json",
+      "build_report": "harness/runs/20261010T163936905230Z-build/report.json",
+      "review_result": "Combined independent other-author source/evidence review plus root/data peer review of formal/held-out fixture repairs; complete61Harness/159Flutter and same-cut formal-main simulator debug build accepted. No G2 or production sign."
     },
     {
       "id": "X02",
       "role": "harness-engineering",
-      "status": "planned",
+      "status": "ready",
       "owner_agent_id": null,
       "contract_revision": 5,
       "write_scope": [
@@ -1016,6 +1038,178 @@
       "returned_at": "2026-10-10T15:07:02.219423+00:00",
       "accepted_at": "2026-10-10T15:07:02.219423+00:00",
       "review_result": "Read-only six-case formal factory/UI test plan accepted, no E07 implementation/tests/native claim"
+    },
+    {
+      "id": "IE07M",
+      "role": "integration-map-list-adapter",
+      "status": "accepted",
+      "owner_agent_id": "/root/query_development",
+      "base_sha": "b358e4a78a8d952b2767704e8c15fa2aac8e1e9a",
+      "contract_revision": 5,
+      "write_scope": [
+        "app/lib/ui/delivery/map/delivery_map_workspace.dart",
+        "app/lib/ui/delivery/list/stop_list_workspace.dart",
+        "app/test/map/delivery_map_workspace_test.dart",
+        "app/test/list/stop_list_workspace_test.dart",
+        "harness/runs/implementation/E07-map-list.md",
+        "app/test/map/map_fixture.dart",
+        "app/lib/ui/delivery/list/stop_status_badge.dart"
+      ],
+      "resource_leases": [],
+      "result_path": "harness/runs/implementation/E07-map-list.md",
+      "started_at": "2026-10-10T15:15:40.188145+00:00",
+      "returned_at": "2026-10-10T16:27:28.201072+00:00",
+      "repair_reason": "Product 2x overflow/error clipping plus explicit cross-zone async/lazylist test harness failures; retain all actual assertion requirements and five-second waits; source repair then targeted/full revalidation",
+      "failed_report": "harness/runs/20261010T154306141713Z-quality/report.json",
+      "source_state": "All E07 writers frozen; private frame-aligned tile adapter independently reviewed for execution, original focus readiness/geometry assertions retained, actual ImageCache/rapid-focus/detach regressions added. No G1 accepted.",
+      "failed_targeted_report": "harness/runs/20261010T161126682229Z-test/report.json",
+      "accepted_at": "2026-10-10T16:44:28.120589+00:00",
+      "accepted_candidate": "66832ac3bd04527639bcc69ab5831b50df70bfc600c658109b3785bfbb847609",
+      "quality_report": "harness/runs/20261010T163831230608Z-quality/report.json",
+      "build_report": "harness/runs/20261010T163936905230Z-build/report.json",
+      "review_result": "Combined independent other-author source/evidence review plus root/data peer review of formal/held-out fixture repairs; complete61Harness/159Flutter and same-cut formal-main simulator debug build accepted. No G2 or production sign."
+    },
+    {
+      "id": "IE07D",
+      "role": "integration-detail-readonly-adapter",
+      "status": "accepted",
+      "owner_agent_id": "/root/data_development",
+      "base_sha": "b358e4a78a8d952b2767704e8c15fa2aac8e1e9a",
+      "contract_revision": 5,
+      "write_scope": [
+        "app/lib/ui/delivery/detail/delivery_detail_card.dart",
+        "app/test/detail/delivery_detail_card_test.dart",
+        "harness/runs/implementation/E07-detail.md"
+      ],
+      "resource_leases": [],
+      "result_path": "harness/runs/implementation/E07-detail.md",
+      "started_at": "2026-10-10T15:15:40.188145+00:00",
+      "returned_at": "2026-10-10T15:38:48.052743+00:00",
+      "accepted_at": "2026-10-10T16:44:28.120589+00:00",
+      "accepted_candidate": "66832ac3bd04527639bcc69ab5831b50df70bfc600c658109b3785bfbb847609",
+      "quality_report": "harness/runs/20261010T163831230608Z-quality/report.json",
+      "build_report": "harness/runs/20261010T163936905230Z-build/report.json",
+      "review_result": "Combined independent other-author source/evidence review plus root/data peer review of formal/held-out fixture repairs; complete61Harness/159Flutter and same-cut formal-main simulator debug build accepted. No G2 or production sign."
+    },
+    {
+      "id": "TE07F",
+      "role": "independent-formal-testing",
+      "status": "accepted",
+      "owner_agent_id": "/root/requirements_review",
+      "base_sha": "b358e4a78a8d952b2767704e8c15fa2aac8e1e9a",
+      "contract_revision": 5,
+      "write_scope": [
+        "app/test/reliability/formal_workbench_test.dart",
+        "app/test/support/formal_workbench_fixture.dart",
+        "harness/runs/implementation/E07-formal-tests.md",
+        "app/test/review/e03_list_focus_test.dart",
+        "app/test/detail/delivery_failure_sheet_test.dart",
+        "app/test/reliability/workbench_fault_combinations_test.dart"
+      ],
+      "resource_leases": [],
+      "started_at": "2026-10-10T15:26:36.028508+00:00",
+      "dependencies": [
+        "E01",
+        "E05",
+        "E06",
+        "E11",
+        "X01"
+      ],
+      "candidate_task": "E07",
+      "returned_at": "2026-10-10T16:38:31.061052+00:00",
+      "result_path": "harness/runs/implementation/E07-formal-tests.md",
+      "failed_report": "harness/runs/20261010T154306141713Z-quality/report.json",
+      "repair_reason": "E03 returned focus cases progressed; full suite stalls before UI at real SQLite detail and E04 two fixtures: VM tails constructed FakeAsync then awaited in runAsync. Retain exact original business/geometry assertions; repair setup/close IO ownership only.",
+      "source_state": "All source frozen; actual3SQLite VM construct+load+close same real zone within original5s, existing assertion/action tails unchanged. Fresh complete quality pending.",
+      "failed_targeted_report": "harness/runs/20261010T155733377880Z-test/report.json",
+      "targeted_report": "harness/runs/20261010T160408617085Z-test/report.json",
+      "targeted_result": "Allformal6androot8passonsamecandidate; fullquality/buildpending",
+      "failed_full_report": "harness/runs/20261010T163345463900Z-quality/report.json",
+      "accepted_at": "2026-10-10T16:44:28.120589+00:00",
+      "accepted_candidate": "66832ac3bd04527639bcc69ab5831b50df70bfc600c658109b3785bfbb847609",
+      "quality_report": "harness/runs/20261010T163831230608Z-quality/report.json",
+      "build_report": "harness/runs/20261010T163936905230Z-build/report.json",
+      "review_result": "Combined independent other-author source/evidence review plus root/data peer review of formal/held-out fixture repairs; complete61Harness/159Flutter and same-cut formal-main simulator debug build accepted. No G2 or production sign."
+    },
+    {
+      "id": "TE07W",
+      "role": "formal-widget-regression",
+      "status": "accepted",
+      "owner_agent_id": "/root/query_development",
+      "base_sha": "b358e4a78a8d952b2767704e8c15fa2aac8e1e9a",
+      "contract_revision": 5,
+      "write_scope": [
+        "app/test/widget_test.dart",
+        "harness/runs/implementation/E07-widget-tests.md"
+      ],
+      "resource_leases": [],
+      "started_at": "2026-10-10T15:26:36.028508+00:00",
+      "dependencies": [
+        "E01",
+        "E05",
+        "E06",
+        "E11",
+        "X01"
+      ],
+      "candidate_task": "E07",
+      "repair_reason": "Product 2x overflow/error clipping plus explicit cross-zone async/lazylist test harness failures; retain all actual assertion requirements and five-second waits; source repair then targeted/full revalidation",
+      "returned_at": "2026-10-10T16:04:08.348871+00:00",
+      "failed_report": "harness/runs/20261010T154306141713Z-quality/report.json",
+      "source_state": "All source frozen for next targeted23: badgewrap/actualidle/caretouterdrag/ACKsnapshotfence; mapreadyrequirementunchanged with actualtile diagnostics",
+      "failed_targeted_report": "harness/runs/20261010T155733377880Z-test/report.json",
+      "targeted_report": "harness/runs/20261010T160408617085Z-test/report.json",
+      "targeted_result": "Allformal6androot8passonsamecandidate; fullquality/buildpending",
+      "accepted_at": "2026-10-10T16:44:28.120589+00:00",
+      "accepted_candidate": "66832ac3bd04527639bcc69ab5831b50df70bfc600c658109b3785bfbb847609",
+      "quality_report": "harness/runs/20261010T163831230608Z-quality/report.json",
+      "build_report": "harness/runs/20261010T163936905230Z-build/report.json",
+      "review_result": "Combined independent other-author source/evidence review plus root/data peer review of formal/held-out fixture repairs; complete61Harness/159Flutter and same-cut formal-main simulator debug build accepted. No G2 or production sign."
+    },
+    {
+      "id": "RE07V",
+      "role": "integration-static-review",
+      "status": "accepted",
+      "owner_agent_id": "/root/data_development",
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/runs/implementation/E07-root-review.md"
+      ],
+      "resource_leases": [],
+      "started_at": "2026-10-10T15:28:28.011739+00:00",
+      "note": "Read-only review of root authored product; detail excluded from self-acceptance",
+      "static_defects": 3,
+      "geometry_gap": "Long notice/list overlap; root lane repair awaits actual tests",
+      "returned_at": "2026-10-10T15:41:41.998818+00:00",
+      "result_path": "harness/runs/implementation/E07-root-review.md",
+      "accepted_at": "2026-10-10T16:44:28.120589+00:00",
+      "accepted_candidate": "66832ac3bd04527639bcc69ab5831b50df70bfc600c658109b3785bfbb847609",
+      "quality_report": "harness/runs/20261010T163831230608Z-quality/report.json",
+      "build_report": "harness/runs/20261010T163936905230Z-build/report.json",
+      "review_result": "Combined independent other-author source/evidence review plus root/data peer review of formal/held-out fixture repairs; complete61Harness/159Flutter and same-cut formal-main simulator debug build accepted. No G2 or production sign."
+    },
+    {
+      "id": "RE07M",
+      "role": "independent-map-adapter-review",
+      "status": "accepted",
+      "owner_agent_id": "/root/requirements_review",
+      "base_sha": "b358e4a78a8d952b2767704e8c15fa2aac8e1e9a",
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/runs/implementation/E07-map-adapter-review.md"
+      ],
+      "resource_leases": [],
+      "started_at": "2026-10-10T16:17:08.577483+00:00",
+      "depends_on": [
+        "E06"
+      ],
+      "candidate_task": "E07",
+      "result_path": "harness/runs/implementation/E07-map-adapter-review.md",
+      "returned_at": "2026-10-10T16:27:28.201072+00:00",
+      "review_result": "Combined independent other-author source/evidence review plus root/data peer review of formal/held-out fixture repairs; complete61Harness/159Flutter and same-cut formal-main simulator debug build accepted. No G2 or production sign.",
+      "accepted_at": "2026-10-10T16:44:28.120589+00:00",
+      "accepted_candidate": "66832ac3bd04527639bcc69ab5831b50df70bfc600c658109b3785bfbb847609",
+      "quality_report": "harness/runs/20261010T163831230608Z-quality/report.json",
+      "build_report": "harness/runs/20261010T163936905230Z-build/report.json"
     }
   ],
   "resource_leases": [],
@@ -1098,22 +1292,32 @@
       "task": "X01",
       "event": "G1 trace graph/Issue/Skill/source/tests joins accepted; preserved root alias failure and explicit symlink regression; actual CLI negative rejectsX99. Full UI and current delivery gate remainpending.",
       "at": "2026-10-10T15:12:44.921104+00:00"
+    },
+    {
+      "task": "E07",
+      "at": "2026-10-10T16:31:21.819887+00:00",
+      "event": "Map12 positive/regression/stock characterization passed. Full quality timedout180s at +150 pre-mount held-out focus fixture; raw report retained, source cut equal, lease/clone cleanup. No full G1 accepted."
+    },
+    {
+      "task": "E07",
+      "at": "2026-10-10T16:44:28.120589+00:00",
+      "event": "Independent frozen source/raw evidence accepted:61Harness/159Flutter and formal-main simulator debug build, exact66832 source identity,84appfiles verified, realleasesreleased/isolatedcopiescleaned. Preserved fault/repair history; X02 unlocked; full G2 pending."
     }
   ],
-  "status": "X01 accepted; preparing E07 dependency resolution",
+  "status": "E07 formal workbench G1/build accepted; X02 native observation tooling ready",
   "accepted_candidate": {
-    "source_head": "b83ae4ba561ee5fe3a07693ce3ff5043b4caf4a8",
-    "source_fingerprint": "2d3a58db08ee966c8294c173973e595412033972d3bf369a1d3f38c5d20970fd",
-    "scope": "Component G1/E04 independent risks plus X01 trace/negative checks",
-    "working_tree_changes": false
+    "source_head": "b358e4a78a8d952b2767704e8c15fa2aac8e1e9a",
+    "source_fingerprint": "66832ac3bd04527639bcc69ab5831b50df70bfc600c658109b3785bfbb847609",
+    "scope": "Formal prototype workbench G1 plus local-client main simulator debug build",
+    "working_tree_changes": true
   },
   "runtime_observation": {
     "coordinator": "/root",
     "writers": [],
-    "note": "All X01 sources frozen accepted; root prepares E07 dependencies before source writer dispatch"
+    "note": "E07 frozen and accepted; X02 scope/interface contract dispatch next, no device/frontmost action yet."
   },
   "evidence_archive": "harness/archive/2026-10-10-engineering.tar.gz",
-  "next_task": "E07",
+  "next_task": "X02",
   "issue_planning_validation": {
     "status": "passed",
     "candidate": {
@@ -1127,5 +1331,6 @@
     "quality_report_member": "quality-verified/report.json",
     "native_rerun": false,
     "production_eligible": false
-  }
+  },
+  "updated_at": "2026-10-10T16:44:28.120589+00:00"
 }
