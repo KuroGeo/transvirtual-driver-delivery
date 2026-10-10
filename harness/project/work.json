@@ -1,7 +1,7 @@
 {
   "mode": "execute",
   "contract_revision": 5,
-  "source_head": "70e026ea06174e61c604f9dc50d9b384370d7f74",
+  "source_head": "b83ae4ba561ee5fe3a07693ce3ff5043b4caf4a8",
   "coordinator": "/root",
   "scope": "Implement full prototype/architecture Flutter demo and local-client with independently verified Harness evidence; production no-go remains",
   "tasks": [
@@ -595,8 +595,8 @@
     {
       "id": "X01",
       "role": "harness-engineering",
-      "status": "planned",
-      "owner_agent_id": null,
+      "status": "accepted",
+      "owner_agent_id": "/root/harness_review",
       "contract_revision": 5,
       "write_scope": [
         "harness/checks.py",
@@ -618,7 +618,19 @@
         "R05",
         "R17"
       ],
-      "verification_level": "H01/H04；G1 工具正反例"
+      "verification_level": "H01/H04；G1 工具正反例",
+      "base_sha": "b83ae4ba561ee5fe3a07693ce3ff5043b4caf4a8",
+      "source_fingerprint": "edfb6e0270979cf5f251dbe85df73bc145858146ca08c757576092588680a9ee",
+      "result_path": "harness/runs/implementation/X01.md",
+      "started_at": "2026-10-10T14:54:28.772411+00:00",
+      "failed_report": "harness/runs/20261010T150512215376Z-quality/report.json",
+      "review_result": "Independent/root G1:61 Harness/146 Flutter; seven raw logs and equal candidate identity; actual _check valid/invalid exits0/1",
+      "returned_at": "2026-10-10T15:12:44.921104+00:00",
+      "accepted_at": "2026-10-10T15:12:44.921104+00:00",
+      "accepted_candidate": "2d3a58db08ee966c8294c173973e595412033972d3bf369a1d3f38c5d20970fd",
+      "quality_report": "harness/runs/20261010T150812507696Z-quality/report.json",
+      "review": "harness/runs/implementation/X01-review.md",
+      "cli_report": "harness/runs/implementation/X01-cli/report.json"
     },
     {
       "id": "E07",
@@ -969,6 +981,41 @@
       "returned_at": "2026-10-10T14:50:45.663760+00:00",
       "accepted_at": "2026-10-10T14:50:45.663760+00:00",
       "review_result": "Read-only trace schema/negative fixtures/fingerprint preparation accepted; no X01 implementation or pass"
+    },
+    {
+      "id": "RX01M",
+      "role": "independent-trace-matrix-preparation-review",
+      "status": "accepted",
+      "owner_agent_id": "/root/requirements_review",
+      "base_sha": "b83ae4ba561ee5fe3a07693ce3ff5043b4caf4a8",
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/runs/implementation/X01-matrix-review.md"
+      ],
+      "resource_leases": [],
+      "result_path": "harness/runs/implementation/X01-matrix-review.md",
+      "started_at": "2026-10-10T14:56:06.246162+00:00",
+      "returned_at": "2026-10-10T15:00:50.099626+00:00",
+      "accepted_at": "2026-10-10T15:00:50.099626+00:00",
+      "review_result": "17rows/50bindings structurally truthful and correct accountable joins; tool implementation/G1 still pending"
+    },
+    {
+      "id": "PE07T",
+      "role": "independent-testing-preparation",
+      "status": "accepted",
+      "owner_agent_id": "/root/requirements_review",
+      "base_sha": "b83ae4ba561ee5fe3a07693ce3ff5043b4caf4a8",
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/runs/implementation/E07-test-plan.md"
+      ],
+      "result_path": "harness/runs/implementation/E07-test-plan.md",
+      "resource_leases": [],
+      "started_at": "2026-10-10T15:00:50.099626+00:00",
+      "note": "Read-only design only; formal E07 test implementation not authorized untilX01accepted",
+      "returned_at": "2026-10-10T15:07:02.219423+00:00",
+      "accepted_at": "2026-10-10T15:07:02.219423+00:00",
+      "review_result": "Read-only six-case formal factory/UI test plan accepted, no E07 implementation/tests/native claim"
     }
   ],
   "resource_leases": [],
@@ -1041,22 +1088,32 @@
       "task": "E04",
       "event": "Independent component risk G1 accepted: 44 Harness/146 Flutter, preserved single fixture failure, exact candidate and seven stage hashes; no G2 claimed",
       "at": "2026-10-10T14:54:17.567109+00:00"
+    },
+    {
+      "task": "X01",
+      "event": "Source-frozen first quality rejected at tooling stage for macOS symlink root normalization. Logs retained, resources released, source owner repairing without laterbuild or passedclaim.",
+      "at": "2026-10-10T15:07:02.219423+00:00"
+    },
+    {
+      "task": "X01",
+      "event": "G1 trace graph/Issue/Skill/source/tests joins accepted; preserved root alias failure and explicit symlink regression; actual CLI negative rejectsX99. Full UI and current delivery gate remainpending.",
+      "at": "2026-10-10T15:12:44.921104+00:00"
     }
   ],
-  "status": "E04 accepted; dispatching X01",
+  "status": "X01 accepted; preparing E07 dependency resolution",
   "accepted_candidate": {
-    "source_head": "70e026ea06174e61c604f9dc50d9b384370d7f74",
-    "source_fingerprint": "edfb6e0270979cf5f251dbe85df73bc145858146ca08c757576092588680a9ee",
-    "scope": "E00/E01/X00/E02/E03/E05/E06/E11 plus E04 independent component G1; full workbench/native pending",
+    "source_head": "b83ae4ba561ee5fe3a07693ce3ff5043b4caf4a8",
+    "source_fingerprint": "2d3a58db08ee966c8294c173973e595412033972d3bf369a1d3f38c5d20970fd",
+    "scope": "Component G1/E04 independent risks plus X01 trace/negative checks",
     "working_tree_changes": false
   },
   "runtime_observation": {
     "coordinator": "/root",
     "writers": [],
-    "note": "E04 source frozen and accepted; ignored independent report only"
+    "note": "All X01 sources frozen accepted; root prepares E07 dependencies before source writer dispatch"
   },
   "evidence_archive": "harness/archive/2026-10-10-engineering.tar.gz",
-  "next_task": "X01",
+  "next_task": "E07",
   "issue_planning_validation": {
     "status": "passed",
     "candidate": {
