@@ -1,6 +1,6 @@
 # 工程入口
 
-先读 [需求合同](project/mission.md) 与 [接口合同](project/contracts.md)，按 [产品任务图](project/backlog.json) 选择依赖已满足的任务，在 [执行任务板](project/work.json) 分配负责人、写域和审查。任务图保存产品路线，执行板记录具体派工；已通过的可靠性基线可复用，领取任务时按当前候选复核。
+先读 [需求合同](project/mission.md) 与 [接口合同](project/contracts.md)，按 [产品任务图](project/backlog.json) 选择依赖已满足的任务，在 [执行任务板](project/work.json) 分配负责人、写域和审查。[本轮 Issue 拆分与接力](project/issue-plan.md) 说明原型/架构增量、真实父子 Issue 和 Skill/Harness 联动。任务图保存产品路线，执行板记录具体派工；已通过的可靠性基线可复用，领取任务时按当前候选复核。
 
 | 位置 | 职责 |
 | --- | --- |

@@ -1,9 +1,9 @@
 {
-  "mode": "execute",
-  "contract_revision": 3,
-  "source_head": "8e9a7cca9c4360ca07d86e8aa8d196caf88c8c42",
+  "mode": "prepare",
+  "contract_revision": 5,
+  "source_head": "3e0300848fcded055abcc47448c06a165d0472d6",
   "coordinator": "/root",
-  "scope": "Harness execution and native reliability baseline; full product and production release remain separate",
+  "scope": "Issue preparation/publication batch; full product work graph queued for execution, production no-go preserved",
   "tasks": [
     {
       "id": "N01",
@@ -91,6 +91,718 @@
       "result_evidence": {
         "archive_member": "harness/evidence/rehearsal/preservation.json"
       }
+    },
+    {
+      "id": "P00",
+      "role": "coordinator-issue-author",
+      "status": "accepted",
+      "owner_agent_id": "/root",
+      "base_sha": "3e0300848fcded055abcc47448c06a165d0472d6",
+      "source_fingerprint": "4b9b79b0d7a60dfacb0062db53568e1a7efc5fa1459357190aefd5794ef547bb",
+      "contract_revision": 4,
+      "write_scope": [
+        "harness/project",
+        "harness/README.md"
+      ],
+      "resource_leases": [],
+      "result_path": {
+        "archive": "harness/reports/issue-planning-2026-10-10.tar.gz",
+        "archive_member": "issue-planning/coordinator.md"
+      },
+      "started_at": "2026-10-10T12:30:17.637706+00:00",
+      "accepted_at": "2026-10-10T12:50:00.474989+00:00",
+      "accepted_source_fingerprint": "b5050d4731905258653e434db66e2d2bb80db4232ebc03ebde3a373199f68f78"
+    },
+    {
+      "id": "P01",
+      "role": "requirements-review",
+      "status": "accepted",
+      "owner_agent_id": "/root/requirements_review",
+      "base_sha": "3e0300848fcded055abcc47448c06a165d0472d6",
+      "source_fingerprint": "4b9b79b0d7a60dfacb0062db53568e1a7efc5fa1459357190aefd5794ef547bb",
+      "contract_revision": 4,
+      "write_scope": [
+        "harness/runs/issue-planning/requirements.md"
+      ],
+      "resource_leases": [],
+      "result_path": {
+        "archive": "harness/reports/issue-planning-2026-10-10.tar.gz",
+        "archive_member": "issue-planning/requirements.md"
+      },
+      "started_at": "2026-10-10T12:30:17.637706+00:00",
+      "returned_at": "2026-10-10T12:39:45.084872+00:00",
+      "accepted_at": "2026-10-10T12:50:00.474989+00:00",
+      "accepted_source_fingerprint": "b5050d4731905258653e434db66e2d2bb80db4232ebc03ebde3a373199f68f78"
+    },
+    {
+      "id": "P02",
+      "role": "harness-review",
+      "status": "accepted",
+      "owner_agent_id": "/root/harness_review",
+      "base_sha": "3e0300848fcded055abcc47448c06a165d0472d6",
+      "source_fingerprint": "4b9b79b0d7a60dfacb0062db53568e1a7efc5fa1459357190aefd5794ef547bb",
+      "contract_revision": 4,
+      "write_scope": [
+        "harness/runs/issue-planning/harness.md"
+      ],
+      "resource_leases": [],
+      "result_path": {
+        "archive": "harness/reports/issue-planning-2026-10-10.tar.gz",
+        "archive_member": "issue-planning/harness.md"
+      },
+      "started_at": "2026-10-10T12:30:17.637706+00:00",
+      "returned_at": "2026-10-10T12:39:45.084872+00:00",
+      "accepted_at": "2026-10-10T12:50:00.474989+00:00",
+      "accepted_source_fingerprint": "b5050d4731905258653e434db66e2d2bb80db4232ebc03ebde3a373199f68f78"
+    },
+    {
+      "id": "P03",
+      "role": "independent-issue-review",
+      "status": "accepted",
+      "owner_agent_id": "/root/requirements_review",
+      "base_sha": "3e0300848fcded055abcc47448c06a165d0472d6",
+      "source_fingerprint": "98e60e946929c68f387aa83defcea99c947d8d3ae19cfc38ee65f2e4e6718af4",
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/runs/issue-planning/draft-requirements-review.md"
+      ],
+      "resource_leases": [],
+      "result_path": {
+        "archive": "harness/reports/issue-planning-2026-10-10.tar.gz",
+        "archive_member": "issue-planning/draft-requirements-review.md"
+      },
+      "started_at": "2026-10-10T12:39:45.084872+00:00",
+      "accepted_at": "2026-10-10T12:50:00.474989+00:00",
+      "review_result": "19 issue drafts accepted; no product acceptance",
+      "accepted_source_fingerprint": "b5050d4731905258653e434db66e2d2bb80db4232ebc03ebde3a373199f68f78"
+    },
+    {
+      "id": "P04",
+      "role": "independent-issue-review",
+      "status": "accepted",
+      "owner_agent_id": "/root/harness_review",
+      "base_sha": "3e0300848fcded055abcc47448c06a165d0472d6",
+      "source_fingerprint": "98e60e946929c68f387aa83defcea99c947d8d3ae19cfc38ee65f2e4e6718af4",
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/runs/issue-planning/draft-harness-review.md"
+      ],
+      "resource_leases": [],
+      "result_path": {
+        "archive": "harness/reports/issue-planning-2026-10-10.tar.gz",
+        "archive_member": "issue-planning/draft-harness-review.md"
+      },
+      "started_at": "2026-10-10T12:39:45.084872+00:00",
+      "accepted_at": "2026-10-10T12:50:00.474989+00:00",
+      "review_result": "Harness linkage accepted after simulator/trace and integration handoff fixes; production no-go",
+      "accepted_source_fingerprint": "b5050d4731905258653e434db66e2d2bb80db4232ebc03ebde3a373199f68f78"
+    },
+    {
+      "id": "E00",
+      "role": "requirements-and-coordinator",
+      "status": "ready",
+      "owner_agent_id": null,
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/project/mission.md",
+        "harness/project/contracts.md",
+        "harness/project/backlog.json",
+        "harness/project/work.json"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/15",
+      "depends_on": [],
+      "skills": [
+        "engineering-requirements-extract",
+        "engineering-issue-authoring",
+        "agent-engineering-team"
+      ],
+      "requirements": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "R05",
+        "R06",
+        "R07",
+        "R08",
+        "R09",
+        "R10",
+        "R11",
+        "R12",
+        "R13",
+        "R14",
+        "R15",
+        "R16",
+        "R17"
+      ],
+      "verification_level": "G0 合同 + G1 当前候选基线，不证明 G2/G3",
+      "dispatch_condition": "Before running assign owner/base_sha/current fingerprint/result_path/started_at; freeze APIs and reverify baseline"
+    },
+    {
+      "id": "E01",
+      "role": "development-bootstrap",
+      "status": "planned",
+      "owner_agent_id": null,
+      "contract_revision": 5,
+      "write_scope": [
+        "app/pubspec.yaml",
+        "app/pubspec.lock",
+        "app/lib/main.dart",
+        "app/lib/app",
+        "app/lib/ui/core",
+        "app/assets",
+        "app/ios",
+        "app/android"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/16",
+      "depends_on": [
+        "E00"
+      ],
+      "skills": [
+        "flutter-development",
+        "engineering-flutter-testing"
+      ],
+      "requirements": [
+        "R14",
+        "R16"
+      ],
+      "verification_level": "G1 host/widget + iOS simulator debug 构建；原生体验交 E08"
+    },
+    {
+      "id": "X00",
+      "role": "harness-engineering",
+      "status": "planned",
+      "owner_agent_id": null,
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/run.py",
+        "harness/native.py",
+        "harness/tests/test_native.py",
+        "harness/tests/test_state.py",
+        "app/.fvmrc"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/17",
+      "depends_on": [
+        "E01"
+      ],
+      "skills": [
+        "harness-engineering",
+        "engineering-flutter-testing"
+      ],
+      "requirements": [
+        "R16",
+        "R17"
+      ],
+      "verification_level": "H02/H07 工具实跑；debug 构建不代签原生/性能"
+    },
+    {
+      "id": "E02",
+      "role": "development-data",
+      "status": "planned",
+      "owner_agent_id": null,
+      "contract_revision": 5,
+      "write_scope": [
+        "app/lib/models",
+        "app/lib/data/delivery/delivery_repository.dart",
+        "app/lib/data/delivery/sqlite_delivery_repository.dart",
+        "app/lib/data/services",
+        "app/test/data"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/18",
+      "depends_on": [
+        "X00"
+      ],
+      "skills": [
+        "flutter-development",
+        "engineering-flutter-testing"
+      ],
+      "requirements": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "R05",
+        "R12",
+        "R13"
+      ],
+      "verification_level": "G1 host 文件 SQLite/迁移/故障；G4-local 部分，G2 由 E08"
+    },
+    {
+      "id": "E03",
+      "role": "development-query-list",
+      "status": "planned",
+      "owner_agent_id": null,
+      "contract_revision": 5,
+      "write_scope": [
+        "app/lib/ui/delivery_view_model.dart",
+        "app/lib/ui/delivery/query",
+        "app/lib/ui/delivery/list",
+        "app/test/query",
+        "app/test/list"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/19",
+      "depends_on": [
+        "X00"
+      ],
+      "skills": [
+        "flutter-development",
+        "engineering-flutter-testing"
+      ],
+      "requirements": [
+        "R08",
+        "R09",
+        "R10",
+        "R14"
+      ],
+      "verification_level": "G1 unit/widget 查询与列表；G2 地图联动由 E08"
+    },
+    {
+      "id": "E05",
+      "role": "development-sync",
+      "status": "planned",
+      "owner_agent_id": null,
+      "contract_revision": 5,
+      "write_scope": [
+        "app/lib/data/delivery/sync_coordinator.dart",
+        "app/lib/data/services/demo_transport.dart",
+        "app/test/sync"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/20",
+      "depends_on": [
+        "E02"
+      ],
+      "skills": [
+        "flutter-development",
+        "engineering-flutter-testing"
+      ],
+      "requirements": [
+        "R05",
+        "R06",
+        "R11",
+        "R12"
+      ],
+      "verification_level": "G1 Completer/文件库故障与竞争；G2 恢复链由 E08"
+    },
+    {
+      "id": "E11",
+      "role": "development-detail",
+      "status": "planned",
+      "owner_agent_id": null,
+      "contract_revision": 5,
+      "write_scope": [
+        "app/lib/ui/delivery/detail",
+        "app/lib/ui/delivery/failure",
+        "app/test/detail"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/21",
+      "depends_on": [
+        "E02",
+        "E03"
+      ],
+      "skills": [
+        "flutter-development",
+        "engineering-flutter-testing"
+      ],
+      "requirements": [
+        "R02",
+        "R03",
+        "R04",
+        "R10",
+        "R14"
+      ],
+      "verification_level": "G1 widget 用户操作/输入保留；G2 原生返回链由 E08"
+    },
+    {
+      "id": "E06",
+      "role": "development-map",
+      "status": "planned",
+      "owner_agent_id": null,
+      "contract_revision": 5,
+      "write_scope": [
+        "app/lib/ui/delivery/map",
+        "app/test/map"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/22",
+      "depends_on": [
+        "E02",
+        "E03"
+      ],
+      "skills": [
+        "flutter-development",
+        "engineering-flutter-testing"
+      ],
+      "requirements": [
+        "R07",
+        "R08",
+        "R09",
+        "R13",
+        "R14"
+      ],
+      "verification_level": "G1 widget/地图 fixture；G2 禁网/冷启/点选由 E08"
+    },
+    {
+      "id": "E04",
+      "role": "testing",
+      "status": "planned",
+      "owner_agent_id": null,
+      "contract_revision": 5,
+      "write_scope": [
+        "app/test/reliability",
+        "app/test/support",
+        "app/integration_test/support"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/23",
+      "depends_on": [
+        "E05",
+        "E11",
+        "E06"
+      ],
+      "skills": [
+        "engineering-flutter-testing",
+        "engineering-issue-authoring"
+      ],
+      "requirements": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "R05",
+        "R06",
+        "R07",
+        "R08",
+        "R09",
+        "R10",
+        "R11",
+        "R12",
+        "R13",
+        "R14"
+      ],
+      "verification_level": "G1 独立风险回归；G2 只交 fixture 不自签"
+    },
+    {
+      "id": "X01",
+      "role": "harness-engineering",
+      "status": "planned",
+      "owner_agent_id": null,
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/checks.py",
+        "harness/tests/test_checks.py"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/24",
+      "depends_on": [
+        "E04"
+      ],
+      "skills": [
+        "harness-engineering",
+        "engineering-flutter-testing"
+      ],
+      "requirements": [
+        "R01",
+        "R02",
+        "R04",
+        "R05",
+        "R17"
+      ],
+      "verification_level": "H01/H04；G1 工具正反例"
+    },
+    {
+      "id": "E07",
+      "role": "coordinator-integration",
+      "status": "planned",
+      "owner_agent_id": null,
+      "contract_revision": 5,
+      "write_scope": [
+        "app/lib/main.dart",
+        "app/lib/app",
+        "app/lib/ui/delivery_screen.dart",
+        "app/lib/ui/delivery_view_model.dart",
+        "app/lib/ui/delivery/feedback",
+        "app/lib/diagnostics",
+        "app/integration_test"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/25",
+      "depends_on": [
+        "E01",
+        "E05",
+        "E06",
+        "E11",
+        "X01"
+      ],
+      "skills": [
+        "agent-engineering-team",
+        "flutter-development",
+        "engineering-flutter-testing"
+      ],
+      "requirements": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "R05",
+        "R06",
+        "R07",
+        "R08",
+        "R09",
+        "R10",
+        "R11",
+        "R13",
+        "R14",
+        "R17"
+      ],
+      "verification_level": "G1 集成质量 + simulator debug 构建；G2 交 E08"
+    },
+    {
+      "id": "X02",
+      "role": "harness-engineering",
+      "status": "planned",
+      "owner_agent_id": null,
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/native.py",
+        "harness/run.py",
+        "harness/tests/test_native.py",
+        "app/lib/harness_probe.dart"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/26",
+      "depends_on": [
+        "E07"
+      ],
+      "skills": [
+        "harness-engineering",
+        "flutter-native-acceptance",
+        "engineering-flutter-testing"
+      ],
+      "requirements": [
+        "R12",
+        "R15",
+        "R17"
+      ],
+      "verification_level": "H03/H05 观察能力实跑；native 现仅 probe，新产品入口需实现并记录实际命令"
+    },
+    {
+      "id": "E08",
+      "role": "native-acceptance",
+      "status": "planned",
+      "owner_agent_id": null,
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/runs/E08"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/27",
+      "depends_on": [
+        "X02"
+      ],
+      "skills": [
+        "flutter-native-acceptance",
+        "engineering-issue-authoring"
+      ],
+      "requirements": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "R05",
+        "R06",
+        "R07",
+        "R08",
+        "R09",
+        "R10",
+        "R11",
+        "R12",
+        "R13",
+        "R14"
+      ],
+      "verification_level": "G2 完整 iOS 原生功能/OS 恢复；模拟器结果不能代签 G3"
+    },
+    {
+      "id": "E09",
+      "role": "performance",
+      "status": "blocked",
+      "owner_agent_id": null,
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/runs/E09"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/31",
+      "depends_on": [
+        "X02"
+      ],
+      "skills": [
+        "flutter-performance",
+        "engineering-issue-authoring"
+      ],
+      "requirements": [
+        "R15"
+      ],
+      "verification_level": "G3 真机 profile + release；现有 Harness 无性能命令，消费 X02 实际支持的 trace 入口",
+      "blocking_condition": [
+        "目标真机与 profile/release 执行条件尚未取得证据"
+      ]
+    },
+    {
+      "id": "X03",
+      "role": "harness-engineering",
+      "status": "planned",
+      "owner_agent_id": null,
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/gate.py",
+        "harness/tests/test_gate.py"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/28",
+      "depends_on": [
+        "X02",
+        "X01"
+      ],
+      "skills": [
+        "harness-engineering",
+        "engineering-flutter-testing",
+        "engineering-release-handoff"
+      ],
+      "requirements": [
+        "R16",
+        "R17"
+      ],
+      "verification_level": "H06 本地候选证据校验；强制部署由 X05 验证"
+    },
+    {
+      "id": "X05",
+      "role": "harness-engineering",
+      "status": "blocked",
+      "owner_agent_id": null,
+      "contract_revision": 5,
+      "write_scope": [
+        ".github/workflows",
+        "harness/reports/readiness.md",
+        "harness/reports/status.json"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/32",
+      "depends_on": [
+        "X03"
+      ],
+      "skills": [
+        "harness-engineering",
+        "engineering-release-handoff",
+        "engineering-flutter-testing"
+      ],
+      "requirements": [
+        "R16",
+        "R17"
+      ],
+      "verification_level": "H06 实际 CI/发布强制接线；当前未部署",
+      "blocking_condition": [
+        "历史保护 API 403；实际 required checks/强制发布环境需可用权限与配置"
+      ]
+    },
+    {
+      "id": "X04",
+      "role": "harness-engineering",
+      "status": "planned",
+      "owner_agent_id": null,
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/state.py",
+        "harness/tests/test_state.py",
+        "harness/tests/test_native.py",
+        "harness/runs/X04"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/29",
+      "depends_on": [
+        "X02",
+        "X03"
+      ],
+      "skills": [
+        "harness-engineering",
+        "agent-engineering-team",
+        "engineering-flutter-testing",
+        "engineering-issue-authoring"
+      ],
+      "requirements": [
+        "R17"
+      ],
+      "verification_level": "H07/H08 实际生命周期/保留场景"
+    },
+    {
+      "id": "E10",
+      "role": "release-handoff",
+      "status": "planned",
+      "owner_agent_id": null,
+      "contract_revision": 5,
+      "write_scope": [
+        "app/README.md",
+        "README.md",
+        "harness/runs/E10"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/30",
+      "depends_on": [
+        "E08",
+        "X04"
+      ],
+      "skills": [
+        "engineering-release-handoff",
+        "engineering-issue-authoring"
+      ],
+      "requirements": [
+        "R01",
+        "R13",
+        "R16",
+        "R17"
+      ],
+      "verification_level": "G0/G1/G2/本地 G4 + 本地证据包；生产判定独立"
+    },
+    {
+      "id": "E12",
+      "role": "release-handoff",
+      "status": "blocked",
+      "owner_agent_id": null,
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/runs/E12",
+        "app/README.md"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/33",
+      "depends_on": [
+        "E10",
+        "E09",
+        "X05"
+      ],
+      "skills": [
+        "engineering-release-handoff",
+        "harness-engineering",
+        "flutter-native-acceptance",
+        "flutter-performance"
+      ],
+      "requirements": [
+        "R01",
+        "R13",
+        "R15",
+        "R16",
+        "R17"
+      ],
+      "verification_level": "生产 H01–H08 + 适用 G0–G6，当前 no-go",
+      "blocking_condition": [
+        "真机/性能、许可/业务授权、签名/渠道、强制门禁及具体外部发布授权尚未满足"
+      ]
     }
   ],
   "resource_leases": "all run leases released; task-created simulator deleted; clean workspace deleted",
@@ -118,14 +830,39 @@
     {
       "task": "root",
       "event": "same candidate quality,clean-source build and3native processes passed; production gate expectedno-go"
+    },
+    {
+      "task": "P00",
+      "event": "Independent issue reviews accepted after fixes; publishing 19 sub-issues, preserving production no-go",
+      "at": "2026-10-10T12:44:24.915861+00:00"
+    },
+    {
+      "task": "P00",
+      "event": "Accepted parent/sub-issue drafts, remote hierarchy/dependencies/body hashes, and same-candidate Harness quality; full product tasks remain unimplemented",
+      "at": "2026-10-10T12:50:00.474989+00:00"
     }
   ],
-  "status": "Historical accepted reliability baseline; current tasks are assigned here when engineering resumes.",
+  "status": "Issue planning/publication accepted; E00 ready for implementation dispatch; production no-go",
   "accepted_candidate": {
     "source_head": "8e9a7cca9c4360ca07d86e8aa8d196caf88c8c42",
     "source_fingerprint": "89fa4461c961cc287f10665314c9e418da69bcddc721398f12e6c559683c1b25",
     "working_tree_changes": true
   },
-  "runtime_observation": "All three assigned agents completed; verified with collaboration.list_agents after reviews",
-  "evidence_archive": "harness/archive/2026-10-10-engineering.tar.gz"
+  "runtime_observation": "Both independent agents completed; collaboration.list_agents verified. No product agent dispatched.",
+  "evidence_archive": "harness/archive/2026-10-10-engineering.tar.gz",
+  "next_task": "E00",
+  "issue_planning_validation": {
+    "status": "passed",
+    "candidate": {
+      "source_fingerprint": "b5050d4731905258653e434db66e2d2bb80db4232ebc03ebde3a373199f68f78"
+    },
+    "github_parent": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/14",
+    "children": 19,
+    "dependency_edges": 31,
+    "archive": "harness/reports/issue-planning-2026-10-10.tar.gz",
+    "archive_sha256": "a27a8b9cde7f8d5658741721c02287fb5d01b2910800f9c748dc9d0176c2b6df",
+    "quality_report_member": "quality-verified/report.json",
+    "native_rerun": false,
+    "production_eligible": false
+  }
 }
