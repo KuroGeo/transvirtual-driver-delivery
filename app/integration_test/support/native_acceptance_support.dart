@@ -484,21 +484,27 @@ Future<void> acceptanceOpenListStop(
         nativeObject(acceptanceModel(value)['query'])['search'] == reference &&
         nativeObject(value['result'])['matchedCount'] == 1,
   );
-  // SliverList has no element for an offscreen, unbuilt row. Move the actual
-  // primary scroll view until its readonly bounds are present, then use the
-  // existing reveal/tap path. Each drag and observation remains journalled.
+  // SliverList may omit unbuilt rows or retain cached offstage RenderBoxes
+  // that the SDK finder cannot reveal. Move the actual primary scroll view
+  // until the target's real center is hittable, then use the existing
+  // reveal/tap path. Each drag and observation remains journalled.
   final rowKey = 'stop-$reference';
+  bool rowIsExposed() {
+    final rows = nativeObject(searched['bounds'])[rowKey];
+    return rows is List &&
+        rows.length == 1 &&
+        rows.single is Map &&
+        (rows.single as Map)['centerHit'] == true;
+  }
+
   final lookupClock = Stopwatch()..start();
   const maxScrolls = 12;
-  for (
-    var scrolls = 0;
-    !nativeObject(searched['bounds']).containsKey(rowKey);
-    scrolls++
-  ) {
+  for (var scrolls = 0; !rowIsExposed(); scrolls++) {
     nativeRequire(
       scrolls < maxScrolls &&
           lookupClock.elapsed < NativeWorkbenchDriver.observationDeadline,
-      'Lazy list row $reference was not built within 12 drags and 15 seconds.',
+      'Lazy list row $reference was not exposed with a hittable center '
+      'within 12 drags and 15 seconds.',
     );
     await client
         .scrollKey('stop-list-scroll', -160)
@@ -507,7 +513,8 @@ Future<void> acceptanceOpenListStop(
         );
     nativeRequire(
       lookupClock.elapsed < NativeWorkbenchDriver.observationDeadline,
-      'Lazy list row $reference exceeded its 15-second lookup deadline.',
+      'Lazy list row $reference was not exposed with a hittable center '
+      'within its 15-second lookup deadline.',
     );
     searched = await client.snapshot().timeout(
       NativeWorkbenchDriver.observationDeadline - lookupClock.elapsed,
