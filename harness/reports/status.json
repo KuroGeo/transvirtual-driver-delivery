@@ -187,43 +187,42 @@
   },
   "active_candidate_validation": {
     "scope": "fresh current G1/max N7/full 34/native cancellation pending",
-    "status": "Frozen actualobserved deepTV23 target; freshG1 pending",
-    "candidate": "fba6d99e8e4a780fe92810b73b78c4a455948195cc0bb543ea964eed614ca078",
+    "status": "Frozen expecteddoublecamera; freshG1 pending",
+    "candidate": "0926af0ab41179cc59948826b0739b847f57e5675df96b9e86603bcd41d5d9ee",
     "production_eligible": false,
-    "quality_report": "harness/runs/20261010T225319629590Z-quality/attempts/000001/report.json"
+    "quality_report": "harness/runs/20261010T230540434554Z-quality/attempts/000001/report.json"
   },
   "latest_quality_observation": {
-    "source_fingerprint": "f25ddccd38ace3d3deb1850e6533f17f8c5360e240220ea8e27dbc2f06b4fe5e",
-    "report": "harness/runs/20261010T225319629590Z-quality/attempts/000001/report.json",
-    "report_sha256": "0f60de5a4ddb9e21251f717fde4ad37baa32850cd4d8d32b05340d47302dfade",
+    "source_fingerprint": "fba6d99e8e4a780fe92810b73b78c4a455948195cc0bb543ea964eed614ca078",
+    "report": "harness/runs/20261010T230540434554Z-quality/attempts/000001/report.json",
+    "report_sha256": "84a263f4dd65e50e282393f3d2e1015afd93974a94bb226edd508c55865cf48e",
     "tooling_checks": 158,
     "tooling_skipped": 1,
     "flutter_checks": 177,
     "status": "passed",
     "current_source_matches": false,
-    "independent_review": "pending"
+    "independent_review": "harness/runs/implementation/E08-independent-fba6d9-quality-source.json"
   },
   "e08_latest_observation": {
-    "candidate": "1fcf05a58154113ff020294e1766610517157d696c33488d7fb98ac89e453805",
-    "report": "harness/runs/20261010T230058277939Z-native/attempts/000001/report.json",
-    "status": "failed",
+    "candidate": "fba6d99e8e4a780fe92810b73b78c4a455948195cc0bb543ea964eed614ca078",
+    "report": "harness/runs/20261010T231426952172Z-native/attempts/000001/report.json",
+    "status": "native_job_passed_strict_collection_rejected",
     "full_g2": false,
-    "report_sha256": "7ceb53357a58aaaaa6311ad466e938247b3490d75032a3fa590089bedead5565",
-    "native_sha256": "1c3e90f331651acb5d76e80e65e3a7b54105320719b10e4298fe8261baba7929",
-    "failure": "TV29notexposed by original12gestures; actualTV23 exposedat3435.055 Pendingfullrecthit"
+    "report_sha256": "5e0cdc2e74a75432282f815da5ba0801a40baa43a648cd8a020c021a5de6ae77",
+    "reason": "Producerinteger11 vsactualcameradouble11.0"
   },
   "latest_ci_observation": {
-    "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38090820475",
-    "head": "6d63a5fee2982e6d59f409b9361b7595ad18643b",
+    "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38093820321",
+    "head": "dd8e978a5e0d72d5b74e9cfed313a888964c083d",
     "status": "passed",
-    "source_fingerprint": "58fba2fc4452741b0b6f69b8e4972db50e834ab0d21c6ee10e077eb9b11cd0d7",
+    "source_fingerprint": "fba6d99e8e4a780fe92810b73b78c4a455948195cc0bb543ea964eed614ca078",
     "current_source_matches": false,
     "tooling_checks": 158,
     "tooling_skipped": 0,
     "flutter_checks": 177,
-    "independent_review": "harness/runs/implementation/ci-38090820475-independent/review.md",
-    "artifact_sha256": "76e99bc71d260c20756b1672706e8cc7745b9e84207e34886c8d58262ecfbddc",
-    "scope": "Actual exact current58fba2 CI G1; fullG2 pending"
+    "independent_review": "harness/runs/implementation/ci-38093820321-independent/review.md",
+    "artifact_sha256": "7005a93c52ebc27fa4602998867ac8fb7227ee9b29a00c2089495119d8a06a8c",
+    "scope": "Actual currentLinuxCI G1; fullG2pending"
   },
   "x04_active_observation": {
     "candidate": "58fba2fc4452741b0b6f69b8e4972db50e834ab0d21c6ee10e077eb9b11cd0d7",

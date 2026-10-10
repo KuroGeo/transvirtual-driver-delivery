@@ -310,7 +310,7 @@ Future<Map<String, dynamic>> _laterPhase(
           await c.expect('/persistedSettings/viewport', 'eq', null);
           await c.expect('/camera/latitude', 'eq', -33.884);
           await c.expect('/camera/longitude', 'eq', 151.117);
-          await c.expect('/camera/zoom', 'eq', 11);
+          await c.expect('/camera/zoom', 'eq', 11.0);
         } else {
           nativeRequire(
             acceptanceCameraMatches(

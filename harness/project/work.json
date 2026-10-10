@@ -1,7 +1,7 @@
 {
   "mode": "execute",
   "contract_revision": 5,
-  "source_head": "6d63a5fee2982e6d59f409b9361b7595ad18643b",
+  "source_head": "dd8e978a5e0d72d5b74e9cfed313a888964c083d",
   "coordinator": "/root",
   "scope": "Implement full prototype/architecture Flutter demo and local-client with independently verified Harness evidence; production no-go remains",
   "tasks": [
@@ -1724,6 +1724,16 @@
       "task": "E08/X03",
       "at": "2026-10-10T23:04:26.878476+00:00",
       "event": "Actual1fcf12gestures stoppedbeforeTV29; all originalraw retained. ActuallastsnapshotTV23rank25 Pending/fullrect/truehit at3435px provides groundedreachabledeepfixture. Literalidentityrepaironly; budgetsunchanged."
+    },
+    {
+      "task": "E08",
+      "at": "2026-10-10T23:11:00.579909+00:00",
+      "event": "Actualsamefba6N4 all5/3PIDs passed; rootstrictleaf/hash/SQL/kernel/lease/clone/taskUDIDabsence validated. Independentraw review pending; samecutlate-riskN6fault starts beforeN3/fullmatrix."
+    },
+    {
+      "task": "E08/X03",
+      "at": "2026-10-10T23:21:19.502032+00:00",
+      "event": "Actualfba6N5UI/3processjobPASS; authoritativeassertion correctlyrejects expectedinteger11 vsactualdouble11.0. Fixdriverexpectedtypeonly; originalgate/physicalzoom/allpredicates retained, oldpassedjob+strictrejection immutable."
     }
   ],
   "status": "Matrix stopped at actual occluded first-cluster driver locator; bounded repair assigned",
@@ -1734,11 +1744,11 @@
     "working_tree_changes": true
   },
   "runtime_observation": {
-    "observed_at": "2026-10-10T23:05:31.832442+00:00",
+    "observed_at": "2026-10-10T23:21:50.280707+00:00",
     "source_writers": [],
     "executor": "/root",
     "active_run": null,
-    "note": "Sole rootSDK; sourceauthorfrozen"
+    "note": "Sole rootSDK; allauthorsclosed"
   },
   "evidence_archive": "harness/archive/2026-10-10-engineering.tar.gz",
   "next_task": "X04 and E08 rework",
@@ -1756,18 +1766,18 @@
     "native_rerun": false,
     "production_eligible": false
   },
-  "updated_at": "2026-10-10T23:05:31.832442+00:00",
+  "updated_at": "2026-10-10T23:21:50.280707+00:00",
   "native_protocol_revision": 6,
   "source_writers": [],
   "active_execution": {
-    "candidate": "fba6d99e8e4a780fe92810b73b78c4a455948195cc0bb543ea964eed614ca078",
-    "status": "Observedreachabledeep Pendingtarget frozen; standardG1 format/analyze/tests",
+    "candidate": "0926af0ab41179cc59948826b0739b847f57e5675df96b9e86603bcd41d5d9ee",
+    "status": "Onecameraexpecteddoubleliteral frozen; standardG1",
     "source_writers": [],
     "sole_sdk_executor": "/root",
     "helper_sha256": "16a434d5cddecb6b8f212f6801bf36a065c00ab8a2cd3b6727f73fed74cc242c",
     "previous_native_failure": "harness/runs/20261010T205314408077Z-native/attempts/000001/report.json",
     "failure_reason": "cached offstage bounds mistaken for actionable row; no actual primary scroll occurred; strict failure retained",
-    "driver_sha256": "a414cd224bceb58af08f03374c0db979e09263386ffb101ed54e6a85ecb9da63",
+    "driver_sha256": "105c7da66b82a1a85bf5c9778c0ed8ef9783bd2c9a2fd0936eb033f46d23ed77",
     "gate_sha256": "0c710c6d714ce42c6e47aec72a54b51d613475220196459e00b08790f91d8264"
   }
 }
