@@ -1,7 +1,7 @@
 {
   "mode": "execute",
   "contract_revision": 5,
-  "source_head": "f0f836f",
+  "source_head": "f7675d4",
   "coordinator": "/root",
   "scope": "Implement full prototype/architecture Flutter demo and local-client with independently verified Harness evidence; production no-go remains",
   "tasks": [
@@ -1706,7 +1706,7 @@
       "event": "e851 max N7 actual 3-process PASS; root raw terminal, source identity, actual lease/group/clone and task UDID absence verified. Actual held-request TERM/replay controller launched; full G2 remains pending."
     }
   ],
-  "status": "Fresh G1 passed; new-candidate actual N3 cancellation/replay running",
+  "status": "Fresh G1 passed; N2 imported-locator native rerun active",
   "accepted_candidate": {
     "source_head": "6a70a94eab758731bfd1468a384247bbfae48a83",
     "source_fingerprint": "e888779d6b48c5a3aecd002b20f0a21362134594fbb19680562bd535a7cc769b",
@@ -1717,7 +1717,7 @@
     "observed_at": "2026-10-10T21:42:08.390710+00:00",
     "source_writers": [],
     "executor": "/root",
-    "active_run": "harness/runs/implementation/N3-161b9a-cancel-replay-actual/report.json",
+    "active_run": "N2 targeted native run pending announcement",
     "note": "No SDK job active; old N1 native passed but strict gate rejected absent default settings row; authentic raw retained"
   },
   "evidence_archive": "harness/archive/2026-10-10-engineering.tar.gz",
@@ -1740,8 +1740,8 @@
   "native_protocol_revision": 6,
   "source_writers": [],
   "active_execution": {
-    "candidate": "161b9a7414b36082489bae7b20ce4e7d2ad1d2ff1c51520cde82600c29477270",
-    "status": "Fresh G1 passed; new-candidate actual N3 cancellation/replay running",
+    "candidate": "145d263543989cb4b02dd7fa7d3f022cf1dc8744cd6a33eaee692ab3877bf2aa",
+    "status": "Fresh G1 passed; N2 imported-locator native rerun active",
     "source_writers": [],
     "sole_sdk_executor": "/root",
     "helper_sha256": "16a434d5cddecb6b8f212f6801bf36a065c00ab8a2cd3b6727f73fed74cc242c",

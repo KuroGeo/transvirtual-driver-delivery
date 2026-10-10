@@ -187,15 +187,15 @@
   },
   "active_candidate_validation": {
     "scope": "fresh current G1/max N7/full 34/native cancellation pending",
-    "status": "153Harness/177Flutter freshG1 passed; actual new candidate N3 cancellation/replay running",
-    "candidate": "161b9a7414b36082489bae7b20ce4e7d2ad1d2ff1c51520cde82600c29477270",
+    "status": "Fresh153Harness/177Flutter G1 passed; N2 targeted native replay running",
+    "candidate": "145d263543989cb4b02dd7fa7d3f022cf1dc8744cd6a33eaee692ab3877bf2aa",
     "production_eligible": false,
-    "quality_report": "harness/runs/20261010T214209515200Z-quality/attempts/000001/report.json"
+    "quality_report": "harness/runs/20261010T220013315368Z-quality/attempts/000001/report.json"
   },
   "latest_quality_observation": {
-    "source_fingerprint": "161b9a7414b36082489bae7b20ce4e7d2ad1d2ff1c51520cde82600c29477270",
-    "report": "harness/runs/20261010T214209515200Z-quality/attempts/000001/report.json",
-    "report_sha256": "c21ba8171da808ab8dcf81f2706c387be61af4384ed5c2484df60a8111255b13",
+    "source_fingerprint": "145d263543989cb4b02dd7fa7d3f022cf1dc8744cd6a33eaee692ab3877bf2aa",
+    "report": "harness/runs/20261010T220013315368Z-quality/attempts/000001/report.json",
+    "report_sha256": "1d2f1365f0fb8351466057bc3c16b9a068326613fcfb7ffac3ec573b84aab219",
     "tooling_checks": 153,
     "tooling_skipped": 1,
     "flutter_checks": 177,
@@ -211,33 +211,35 @@
     "native_sha256": "d51b54433c2dcb3a9d9ae0d8398b8d58fa809e7fbe90a73bfce5ac055ca358e0"
   },
   "latest_ci_observation": {
-    "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38087856993",
-    "head": "f0f836f1fd642476a9b510950aca9aaecaecf298",
+    "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38088727249",
+    "head": "f7675d4e90453df8a0d116d527894111bc19b5a7",
     "status": "passed",
-    "source_fingerprint": "e85164907c5c0b2d5517c4988624f7975a7eb24a42c3c6da6603033a2d1aab85",
+    "source_fingerprint": "161b9a7414b36082489bae7b20ce4e7d2ad1d2ff1c51520cde82600c29477270",
     "current_source_matches": false,
-    "tooling_checks": 150,
+    "tooling_checks": 153,
     "tooling_skipped": 0,
     "flutter_checks": 177,
-    "independent_review": "harness/runs/implementation/ci-38087856993-independent/review.md",
-    "artifact_sha256": "fa3beebb436eafe88cb7c04ce94be4e54d542f351e6db12763c7086353bd6b56",
-    "report_sha256": "0b8d3f43d08b93c3ece6c085799a0e01e8c1a7cece0ce79f4d2ec12029bb264c",
+    "independent_review": "harness/runs/implementation/ci-38088727249-independent/review.md",
+    "artifact_sha256": "9bc2de144335501c47d83e4fe3f08b72dbf9c5f15b9005cb27c28b083ad4bfd1",
     "scope": "CI G1 only; full E08 pending"
   },
   "x04_active_observation": {
-    "candidate": "e85164907c5c0b2d5517c4988624f7975a7eb24a42c3c6da6603033a2d1aab85",
-    "report": "harness/runs/implementation/N3-e851-cancel-replay-actual/report.json",
+    "candidate": "161b9a7414b36082489bae7b20ce4e7d2ad1d2ff1c51520cde82600c29477270",
+    "report": "harness/runs/implementation/N3-161b9a-cancel-replay-actual/report.json",
     "status": "passed-controller-pending-independent-review",
+    "report_sha256": "8f701ddb225fca3eedf5e334b9a53010c716a62e13a7c10896dacf61fc73c581",
     "actual_pass_claimed": true,
-    "report_sha256": "6e9a978ca9099fb4eb5aed60a136a40d3b35ae4877384797bcc9ce08135954b9",
-    "scope": "Actual first held-request TERM, cleanup, immutable000001 and actual000002 six-check replay; not full local gate"
+    "scope": "Actual first-request TERM/replay; full localgate pending"
   },
   "matrix_latest_observation": {
     "status": "failed",
-    "candidate": "e85164907c5c0b2d5517c4988624f7975a7eb24a42c3c6da6603033a2d1aab85",
-    "report": "harness/runs/implementation/E08-e851-matrix-actual/report.json",
-    "native_job_status": "passed",
-    "validation_error": "expected one persisted dataset settings row",
-    "scope": "Gate repair in progress; no full G2"
+    "candidate": "161b9a7414b36082489bae7b20ce4e7d2ad1d2ff1c51520cde82600c29477270",
+    "report": "harness/runs/implementation/E08-161b9a-matrix-actual/report.json",
+    "passed_jobs": [
+      1,
+      2
+    ],
+    "native_failure": "N2.imported-unknown incorrect detail-saved locator seq162; actual source reason present",
+    "scope": "Driver-only repair; no fullG2"
   }
 }

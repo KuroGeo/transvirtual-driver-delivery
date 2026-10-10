@@ -499,7 +499,7 @@ Future<void> _n2(NativeAcceptanceRecorder r) async {
     'N2.imported-unknown',
     (c) async {
       await acceptanceOpenListStop(d, 'TV-300003');
-      await d.revealKey('detail-saved');
+      await d.revealKey('detail-return', alignment: 1);
       final ref = await c.evidence('source-reason-ui', {
         'text': await d.textLabel('No reason provided in the source record.'),
       });
