@@ -29,7 +29,16 @@ python3 harness/run.py quality --isolated
 
 `integration --target integration_test/<实际文件>.dart --device <显式设备ID>` 是独立的原生测试入口，仅当文件存在且设备已明确分配时执行，不从用户设备自动选取。
 
-macOS + Xcode + CocoaPods + iOS 26.4 runtime：`python3 harness/run.py build` 构建正式启动入口，`native` 构建独立探针，在任务专用模拟器用三个 OS 进程验证保存、重启恢复、模拟串行确认和不重发。`native --scope startup --configuration demo --isolated` 从正式入口验证启动 PID 与截图；它是 startup smoke，不能代签完整 UI 验收。全程 CLI 后台执行，结束仅删除自己创建的设备；debug/fake 结果仅证明本地可靠性。native 子工具须继承 runner 实际持有的 flock FD，直调或伪环境声明不能绕过资源租用。
+macOS + Xcode + iOS 26.4 runtime（当前 Flutter iOS 工程使用 Swift Package Manager）：`python3 harness/run.py build` 构建正式启动入口，`native` 构建独立探针，在任务专用模拟器用三个 OS 进程验证保存、重启恢复、模拟串行确认和不重发。`native --scope startup --configuration demo --isolated` 从正式入口验证启动 PID 与截图；它是 startup smoke，不能代签完整 UI 验收。全程 CLI 后台执行，结束仅删除自己创建的设备；debug/fake 结果仅证明本地可靠性。native 子工具须继承 runner 实际持有的 flock FD，直调或伪环境声明不能绕过资源租用。
+
+完整工作台的原生工具使用固定私有入口 `integration_test/workbench_entry.dart`，挂载正式 App、原生 SQLite 和批准的 CSV；底图从首次挂载起只访问任务 HTTP fixture。只读桥观测候选、实际 VM/PID、每次启动的 session、业务库、地图与界面。所有业务动作通过外部 FlutterDriver 操作真实 UI，宿主负责 OS 终止/重启、SQLite backup、截图和任务设备清理：
+
+```sh
+python3 harness/run.py native --scope workbench --configuration demo --isolated --timeout 600
+python3 harness/run.py native --scope workbench --configuration local-client --isolated --timeout 600
+```
+
+默认 driver 是工具 smoke，验证三进程接线，不签完整产品 G2。独立验收可用 `--driver-target integration_test/<现存验收driver>.dart`；它与配置、私有入口、fixture 一同进入恢复身份。`--fixture legacy-v1-identity-seq` 只供独立 driver，在新任务容器尚无业务库时建立真正的 v1 数据，保留原身份、队列序号和未知历史字段。默认客户端仍使用 UnavailableTransport；demo 的 HTTP ACK 明确标记模拟服务。原生键盘需实际 Insets 与 OS 截图证明，driver 文本模拟另行标记。后台能力不足的项单独记录，不升级到用户前台。
 
 ## 协作、恢复与门禁
 

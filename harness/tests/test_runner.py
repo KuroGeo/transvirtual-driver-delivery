@@ -144,13 +144,15 @@ class RunnerTests(unittest.TestCase):
         application = self.root / "app/build/ios/iphonesimulator/Runner.app"
         application.mkdir(parents=True)
         (application / "Runner").write_bytes(b"test executable")
-        options = {"configuration": "demo", "build_mode": "debug", "ios_target": "simulator"}
+        options = {"configuration": "demo", "build_mode": "debug", "ios_target": "simulator", "entrypoint": "lib/main.dart"}
         output = self.root / "harness/runs/artifacts"
         output.mkdir(parents=True)
         value = run.preserve_artifact(self.root, output, "ios-build", options)
         manifest = json.loads((output / "artifact-ios-build/manifest.json").read_text())
         self.assertEqual(value["sha256"], run.sha(value["path"]))
         self.assertEqual(manifest["files"][0]["sha256"], run.sha(application / "Runner"))
+        self.assertEqual(value["entrypoint"], "lib/main.dart")
+        self.assertEqual(manifest["entrypoint"], "lib/main.dart")
         self.assertFalse(value["signed_for_production"])
 
     def test_resume_cleanup_requires_task_path_and_matching_ownership(self):
@@ -171,7 +173,7 @@ class RunnerTests(unittest.TestCase):
             self.assertEqual(code, 1)
             self.assertIn("busy", output)
         with lease(["app-workspace"], self.root / "held", self.locks) as context:
-            for name in ("run.py", "checks.py", "gate.py", "state.py"):
+            for name in ("run.py", "checks.py", "gate.py", "state.py", "native_workbench.py"):
                 run.shutil.copy2(Path(run.__file__).parent / name, self.root / "harness" / name)
             code = "import json,sys; from harness.run import require_lease_context; require_lease_context(json.loads(sys.argv[1]), __import__('pathlib').Path(sys.argv[2]))"
             log = self.root / "wrapper.log"

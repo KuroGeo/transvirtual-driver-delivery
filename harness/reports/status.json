@@ -1,20 +1,21 @@
 {
   "schema_version": 2,
-  "audit_date": "2026-10-10",
-  "scope": "Full prototype Flutter workbench G1 and simulator debug build accepted; controlled native UI/OS recovery in progress",
+  "audit_date": "2026-10-11",
+  "scope": "FullprototypeAppG1 andcontrollednative toolingsmokes accepted; fullnativeacceptance/evidencegate next",
   "production_eligible": false,
   "production_verdict": "no-go",
   "enforcement_deployed": false,
   "current_validation": {
-    "scope": "E07 formal prototype workbench local G1 and main simulator debug build; full G2 pending",
-    "source_fingerprint": "66832ac3bd04527639bcc69ab5831b50df70bfc600c658109b3785bfbb847609",
-    "quality_report": "harness/runs/20261010T163831230608Z-quality/report.json",
-    "quality_report_sha256": "8f5ef99702baff897df9737f381ea8d3a93a6db1038eee9f53a1388b506fbb66",
-    "build_report": "harness/runs/20261010T163936905230Z-build/report.json",
-    "tooling_checks": 61,
+    "scope": "AcceptedX02 controllednativeworkbench tooling onformalApp; normalmodepair, notfullE08G2",
+    "source_fingerprint": "e888779d6b48c5a3aecd002b20f0a21362134594fbb19680562bd535a7cc769b",
+    "quality_report": "harness/runs/20261010T175151779951Z-quality/report.json",
+    "quality_report_sha256": "f300c10c4d6e31c6e513df2087e1d832846c7d53ff9d3cc7723fa0c6ad7312b3",
+    "demo_native_report": "harness/runs/20261010T175309967471Z-native/report.json",
+    "local_native_report": "harness/runs/20261010T175539527417Z-native/report.json",
+    "tooling_checks": 89,
     "flutter_checks": 159,
     "status": "passed",
-    "native_rerun": false,
+    "native_rerun": true,
     "production_eligible": false
   },
   "historical_rehearsal": {
@@ -134,11 +135,10 @@
       "E11",
       "E04",
       "X01",
-      "E07"
-    ],
-    "running": [
+      "E07",
       "X02"
     ],
+    "running": [],
     "task_board": "harness/project/work.json",
     "coordinator": "/root",
     "note": "Formal workbench assembled and independent host/build verification accepted; controlled native observation/acceptance next"
@@ -168,18 +168,24 @@
       "E11",
       "E04",
       "X01",
-      "E07"
-    ],
-    "running": [
+      "E07",
       "X02"
     ],
+    "running": [],
     "review": [],
     "independent_testing": [],
     "production_eligible": false
   },
   "active_candidate_validation": {
-    "status": "passed",
-    "source_fingerprint": "66832ac3bd04527639bcc69ab5831b50df70bfc600c658109b3785bfbb847609",
-    "scope": "Formal workbench G1/debug build. Subsequent source changes require fresh candidate evidence."
+    "scope": "Bounded64listenacceptcapacity candidate;24actualTCP regression+89Harness159Flutter passed; nativepending",
+    "status": "IndependentX02 accepted G1+bothnormalnative toolingsmokes; fullG2next",
+    "candidate": "e888779d6b48c5a3aecd002b20f0a21362134594fbb19680562bd535a7cc769b",
+    "quality_report": "harness/runs/20261010T175151779951Z-quality/report.json",
+    "tooling_checks": 89,
+    "flutter_checks": 159,
+    "native_report": "harness/runs/20261010T175309967471Z-native/report.json",
+    "production_eligible": false,
+    "demo_native_report": "harness/runs/20261010T175309967471Z-native/report.json",
+    "local_native_report": "harness/runs/20261010T175539527417Z-native/report.json"
   }
 }

@@ -1,7 +1,7 @@
 {
   "mode": "execute",
   "contract_revision": 5,
-  "source_head": "b358e4a78a8d952b2767704e8c15fa2aac8e1e9a",
+  "source_head": "deb89793dc203ad4da29cc3679121aa7bce5d0bb",
   "coordinator": "/root",
   "scope": "Implement full prototype/architecture Flutter demo and local-client with independently verified Harness evidence; production no-go remains",
   "tasks": [
@@ -704,14 +704,17 @@
     {
       "id": "X02",
       "role": "harness-engineering",
-      "status": "ready",
-      "owner_agent_id": null,
+      "status": "accepted",
+      "owner_agent_id": "/root/harness_review",
       "contract_revision": 5,
       "write_scope": [
         "harness/native.py",
+        "harness/native_workbench.py",
         "harness/run.py",
         "harness/tests/test_native.py",
-        "app/lib/harness_probe.dart"
+        "harness/tests/test_native_workbench.py",
+        "harness/runs/implementation/X02.md",
+        "harness/tests/test_runner.py"
       ],
       "resource_leases": [],
       "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/26",
@@ -728,7 +731,32 @@
         "R15",
         "R17"
       ],
-      "verification_level": "H03/H05 观察能力实跑；native 现仅 probe，新产品入口需实现并记录实际命令"
+      "verification_level": "H03 controlled native observations + normal threeOSprocess/lease cleanup; default toolingsmoke only; G2/E08 andG3 remain separate",
+      "base_sha": "deb89793dc203ad4da29cc3679121aa7bce5d0bb",
+      "started_at": "2026-10-10T16:46:17.925393+00:00",
+      "result_path": "harness/runs/implementation/X02.md",
+      "source_fingerprint": "66832ac3bd04527639bcc69ab5831b50df70bfc600c658109b3785bfbb847609",
+      "scope_reassignment": "Bounded X02 native workbench capability requires new orchestrator and private existing-formal UI driver. Python owner excludes Dart integration source (IX02D single writer); no productmain/sharedpub/schema/navigation edits. Original Issue body/hashes preserved.",
+      "coordinator_write_scope": [
+        "harness/project/contracts.md",
+        "harness/README.md"
+      ],
+      "note": "Python author and private Dart author own implementation; root owns contract and CLI documentation, source must freeze before unified quality/native.",
+      "returned_at": "2026-10-10T17:08:07.074486+00:00",
+      "candidate_source_fingerprint": "22be896118f4630dc1e34ee35649cd4647592d3cbabc6172b6737a4224788242",
+      "verification": "PID/app-scoped unified log discovery repair frozen; root freshquality/native required.",
+      "repair_reason": "172217 actualOSlog: currentPID/flutterprefixVMpublication plus privateDartbootstrap missingENV. Immutableprelaunch taskcontainerfile replaces assumedenv; disjointPython/Dart repair, noformalproductchanges.",
+      "source_frozen": true,
+      "reason": "Taskserver bounded64acceptcapacity and24TCPregression sourcefrozen; freshnative mustprove startup.",
+      "accepted_at": "2026-10-10T18:01:49.384208+00:00",
+      "accepted_source_fingerprint": "e888779d6b48c5a3aecd002b20f0a21362134594fbb19680562bd535a7cc769b",
+      "review_result": "Independent actualG1 89Harness159Flutter pluscontrolled iOS threeOSprocesssmokes demo2/0/0 andlocal-client2/2/2; 136rawartifacts and16SQLitebackups verified. Toolingscopeonly notG2.",
+      "review": "harness/runs/implementation/X02-independent-review.md",
+      "evidence": [
+        "harness/runs/20261010T175151779951Z-quality/report.json",
+        "harness/runs/20261010T175309967471Z-native/report.json",
+        "harness/runs/20261010T175539527417Z-native/report.json"
+      ]
     },
     {
       "id": "E08",
@@ -1210,6 +1238,108 @@
       "accepted_candidate": "66832ac3bd04527639bcc69ab5831b50df70bfc600c658109b3785bfbb847609",
       "quality_report": "harness/runs/20261010T163831230608Z-quality/report.json",
       "build_report": "harness/runs/20261010T163936905230Z-build/report.json"
+    },
+    {
+      "id": "IX02D",
+      "role": "native-private-bridge-and-external-driver",
+      "status": "accepted",
+      "owner_agent_id": "/root/query_development",
+      "base_sha": "deb89793dc203ad4da29cc3679121aa7bce5d0bb",
+      "contract_revision": 5,
+      "started_at": "2026-10-10T16:46:17.925393+00:00",
+      "depends_on": [
+        "E07"
+      ],
+      "candidate_task": "X02",
+      "write_scope": [
+        "app/integration_test/workbench_entry.dart",
+        "app/integration_test/workbench_driver.dart",
+        "app/integration_test/support/native_workbench_bridge.dart",
+        "app/integration_test/support/native_driver_support.dart",
+        "harness/runs/implementation/X02-dart.md"
+      ],
+      "resource_leases": [],
+      "result_path": "harness/runs/implementation/X02-dart.md",
+      "skills": [
+        "flutter-native-acceptance",
+        "engineering-flutter-testing"
+      ],
+      "returned_at": "2026-10-10T17:00:59.116648+00:00",
+      "review_result": "Independent actualG1 89Harness159Flutter pluscontrolled iOS threeOSprocesssmokes demo2/0/0 andlocal-client2/2/2; 136rawartifacts and16SQLitebackups verified. Toolingscopeonly notG2.",
+      "mechanical_return_fix": "Original author returned source scope. Root added required braces to private-entry null guard only after independent static finding; formatter parsed; fresh entry hash pending unified quality, original author report preserved.",
+      "repair_reason": "172217 actualOSlog: currentPID/flutterprefixVMpublication plus privateDartbootstrap missingENV. Immutableprelaunch taskcontainerfile replaces assumedenv; disjointPython/Dart repair, noformalproductchanges.",
+      "source_frozen": true,
+      "reason": "Paired exactUTF8 POST framing and bounded rawerror receipt repair frozen; fresh quality/native next.",
+      "accepted_at": "2026-10-10T18:01:49.384208+00:00",
+      "accepted_source_fingerprint": "e888779d6b48c5a3aecd002b20f0a21362134594fbb19680562bd535a7cc769b",
+      "review": "harness/runs/implementation/X02-independent-review.md",
+      "evidence": [
+        "harness/runs/20261010T175151779951Z-quality/report.json",
+        "harness/runs/20261010T175309967471Z-native/report.json",
+        "harness/runs/20261010T175539527417Z-native/report.json"
+      ]
+    },
+    {
+      "id": "PX02R",
+      "role": "independent-native-tool-boundary-and-acceptance-preparation",
+      "status": "accepted",
+      "owner_agent_id": "/root/requirements_review",
+      "base_sha": "deb89793dc203ad4da29cc3679121aa7bce5d0bb",
+      "contract_revision": 5,
+      "started_at": "2026-10-10T16:47:32.355110+00:00",
+      "candidate_task": "X02",
+      "write_scope": [
+        "harness/runs/implementation/X02-independent-review.md",
+        "harness/runs/implementation/E08-plan.md"
+      ],
+      "resource_leases": [],
+      "note": "Read-only draft source review, no acceptance until frozen source quality and actual native smoke.",
+      "returned_at": "2026-10-10T17:04:39.996230+00:00",
+      "result_path": "harness/runs/implementation/X02-independent-review.md",
+      "review_result": "Independent actualG1 89Harness159Flutter pluscontrolled iOS threeOSprocesssmokes demo2/0/0 andlocal-client2/2/2; 136rawartifacts and16SQLitebackups verified. Toolingscopeonly notG2.",
+      "accepted_at": "2026-10-10T18:01:49.384208+00:00",
+      "accepted_source_fingerprint": "e888779d6b48c5a3aecd002b20f0a21362134594fbb19680562bd535a7cc769b",
+      "source_frozen": true,
+      "review": "harness/runs/implementation/X02-independent-review.md",
+      "evidence": [
+        "harness/runs/20261010T175151779951Z-quality/report.json",
+        "harness/runs/20261010T175309967471Z-native/report.json",
+        "harness/runs/20261010T175539527417Z-native/report.json"
+      ]
+    },
+    {
+      "id": "PX03P",
+      "role": "local-evidence-gate-preparation",
+      "status": "review",
+      "owner_agent_id": "/root/data_development",
+      "base_sha": "deb89793dc203ad4da29cc3679121aa7bce5d0bb",
+      "contract_revision": 5,
+      "started_at": "2026-10-10T17:00:59.116648+00:00",
+      "candidate_task": "X03",
+      "write_scope": [
+        "harness/runs/implementation/X03-plan.md"
+      ],
+      "resource_leases": [],
+      "note": "Read-only plan only; X03 implementation not authorized until X02 accepted.",
+      "returned_at": "2026-10-10T17:15:13.385289+00:00",
+      "result_path": "harness/runs/implementation/X03-plan.md",
+      "review_result": "Local-evidence gate preparation returned; no implementation/test/acceptance until X02 accepted."
+    },
+    {
+      "id": "PX04P",
+      "role": "recovery-and-held-out-evaluation-preparation",
+      "status": "review",
+      "owner_agent_id": "/root/query_development",
+      "base_sha": "deb89793dc203ad4da29cc3679121aa7bce5d0bb",
+      "contract_revision": 5,
+      "candidate_task": "X04",
+      "write_scope": [
+        "harness/runs/implementation/X04-plan.md"
+      ],
+      "resource_leases": [],
+      "returned_at": "2026-10-10T17:23:19.258157+00:00",
+      "result_path": "harness/runs/implementation/X04-plan.md",
+      "note": "Read-only prep; real X04 implementation/evaluation awaits X02+X03 accepted."
     }
   ],
   "resource_leases": [],
@@ -1302,22 +1432,52 @@
       "task": "E07",
       "at": "2026-10-10T16:44:28.120589+00:00",
       "event": "Independent frozen source/raw evidence accepted:61Harness/159Flutter and formal-main simulator debug build, exact66832 source identity,84appfiles verified, realleasesreleased/isolatedcopiescleaned. Preserved fault/repair history; X02 unlocked; full G2 pending."
+    },
+    {
+      "task": "X02",
+      "at": "2026-10-10T17:07:25.792027+00:00",
+      "event": "Fresh f720 quality repositorypassed;78Harness2fixture setup failures. Native notrun. Source author repair after job lease/clone cleanup; raw 170656 retained."
+    },
+    {
+      "task": "X02",
+      "at": "2026-10-10T17:13:27.885601+00:00",
+      "event": "cfb718 freshquality78/159passed independently, privatebuildpassed, tasknativeVMURI45sdeadlinefailed; device_cleaned true/sourceunchanged/lease+clonecleaned. Unifiedlogcapture repair delegated; originalraw retained."
+    },
+    {
+      "task": "X02",
+      "at": "2026-10-10T17:25:57.927204+00:00",
+      "event": "22be quality81/159passed; privatebuildpassed; actualunifiedlog+OSfailurePNG pinpointed missingDartlaunchconfig andexact flutter: VMprefix. Nativefailed83.714s; own devicecleaned/logreaderreaped/lease+clonecleaned. Originalrawretained; paired producerconsumerrepair delegated."
+    },
+    {
+      "task": "X02",
+      "event": "Actual173605 demo VM PID97790 and twoUI SQLite saves succeeded; capturePOST fixed-length framing failed. All14rawartifacts hashed, ownUDIDdeleted, lease released17:38:26.296188+00:00; repair producers, preserve strictcollector."
+    },
+    {
+      "task": "X02",
+      "event": "Actual174439 cold map failure: 3 taskloopback TCP resets,9PNG200; initialized30/nativeSQLite fine. report3e52b403a7d0b5052ce38b2312e6a78d162977e3d51f4c5ee1fdfe7e58c23205 preserved, owncleanuptrue. Hostcapacityinvestigation, noUIpredicateweakening."
+    },
+    {
+      "task": "X02",
+      "event": "Independent accepted e888779:89Harness/159Flutter plusdemo3PID2/0/0 andlocal3PID2/2/2; rawhash/SQLite/ownedcleanupverified. NoG2signature."
     }
   ],
-  "status": "E07 formal workbench G1/build accepted; X02 native observation tooling ready",
+  "status": "X02 accepted; full native acceptance and evidencegate ready",
   "accepted_candidate": {
-    "source_head": "b358e4a78a8d952b2767704e8c15fa2aac8e1e9a",
-    "source_fingerprint": "66832ac3bd04527639bcc69ab5831b50df70bfc600c658109b3785bfbb847609",
-    "scope": "Formal prototype workbench G1 plus local-client main simulator debug build",
+    "source_head": "deb89793dc203ad4da29cc3679121aa7bce5d0bb",
+    "source_fingerprint": "e888779d6b48c5a3aecd002b20f0a21362134594fbb19680562bd535a7cc769b",
+    "scope": "G1 and both iOS nativeworkbench toolingsmokes",
     "working_tree_changes": true
   },
   "runtime_observation": {
-    "coordinator": "/root",
-    "writers": [],
-    "note": "E07 frozen and accepted; X02 scope/interface contract dispatch next, no device/frontmost action yet."
+    "observed_at": "2026-10-10T18:01:49.384208+00:00",
+    "active_agents": [
+      "/root"
+    ],
+    "source_writers": [],
+    "note": "IndependentX02 accepted. NextdisjointE08/X03 assignment follows committedcheckpoint."
   },
   "evidence_archive": "harness/archive/2026-10-10-engineering.tar.gz",
-  "next_task": "X02",
+  "next_task": "E08 + X03",
   "issue_planning_validation": {
     "status": "passed",
     "candidate": {
@@ -1332,5 +1492,5 @@
     "native_rerun": false,
     "production_eligible": false
   },
-  "updated_at": "2026-10-10T16:44:28.120589+00:00"
+  "updated_at": "2026-10-10T16:47:32.355110+00:00"
 }

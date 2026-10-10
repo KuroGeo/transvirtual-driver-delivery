@@ -19,8 +19,10 @@ import time
 
 try:
     from . import run as runner
+    from . import native_workbench
 except ImportError:
     import run as runner
+    import native_workbench
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -30,22 +32,37 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--candidate", required=True)
     parser.add_argument("--configuration", choices=["demo", "local-client"], default="local-client")
-    parser.add_argument("--scope", choices=["probe", "startup"], default="probe")
+    parser.add_argument("--scope", choices=["probe", "startup", "workbench"], default="probe")
+    parser.add_argument("--driver-target", help="workbench only: existing private integration_test Dart driver")
+    parser.add_argument("--fixture", choices=[native_workbench.LEGACY], help="workbench only: absent-file genuine v1 prelaunch fixture")
     parser.add_argument("--lease-context", required=True, help="Inherited Harness flock context; use harness/run.py native")
     parser.add_argument("--runtime", default="com.apple.CoreSimulator.SimRuntime.iOS-26-4")
     parser.add_argument("--device-type", default="com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro")
     args = parser.parse_args()
     try:
-        runner.require_lease_context(json.loads(args.lease_context), ROOT, ("app-workspace", "device:ios-task-simulator"))
+        descriptors = runner.require_lease_context(json.loads(args.lease_context), ROOT, ("app-workspace", "device:ios-task-simulator"))
         if runner.checks.fingerprint(ROOT) != args.candidate:
             raise ValueError("native candidate does not match the leased source snapshot")
+        if (args.driver_target or args.fixture) and args.scope != "workbench":
+            raise ValueError("driver/fixture applies only to workbench scope")
+        if args.scope == "workbench":
+            args.driver_target = native_workbench.driver_target(ROOT, args.driver_target)
+            if args.fixture and args.driver_target == native_workbench.DRIVER:
+                raise ValueError("legacy fixture requires an explicit independent driver")
     except (OSError, ValueError, KeyError) as error:
         parser.error(str(error))
+    if args.scope == "workbench":
+        def interrupted_workbench(signum, frame):
+            raise InterruptedError(f"received signal {signum}")
+        signal.signal(signal.SIGTERM, interrupted_workbench)
+        return native_workbench.execute(args, ROOT, descriptors)
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
     application = ROOT / "app/build/ios/iphonesimulator/Runner.app"
     bundle = plistlib.loads((application / "Info.plist").read_bytes())["CFBundleIdentifier"]
     report = {"candidate": args.candidate, "platform": "ios", "device_type": "simulator", "build_mode": "debug", "configuration": args.configuration, "transport": "fake-test-only" if args.scope == "probe" else "configured-formal-entry", "scope": "reliability-probe" if args.scope == "probe" else "startup-smoke", "status": "failed", "process_restart": False, "commands": [], "phases": []}
+    report["tile_source"] = "task-loopback-unavailable" if args.scope == "startup" else "not_applicable"
+    report["entrypoint"] = runner.NATIVE_ENTRIES[args.scope]
     device = None
     def interrupted(signum, frame):
         raise InterruptedError(f"received signal {signum}")

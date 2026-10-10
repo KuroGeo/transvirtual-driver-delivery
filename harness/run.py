@@ -16,14 +16,17 @@ import tempfile
 import time
 
 try:
-    from . import checks, gate, state
+    from . import checks, gate, state, native_workbench
 except ImportError:  # CLI script entrypoint
     import checks
     import gate
     import state
+    import native_workbench
 
 ROOT = checks.ROOT
 RUNS = ROOT / "harness" / "runs"
+NATIVE_ENTRIES = {"probe": "lib/harness_probe.dart", "startup": "lib/main.dart", "workbench": native_workbench.ENTRY}
+STARTUP_TILES = "http://127.0.0.1:1/tiles/{z}/{x}/{y}.png"
 
 
 def sha(path):
@@ -44,6 +47,8 @@ def build_arguments(options):
         # Device builds are unsigned local candidates. Production signing and
         # distribution require the independent release handoff.
         arguments.append("--no-codesign")
+    if options.get("tile_url"):
+        arguments.append("--dart-define=OCEAN_TILE_URL=" + options["tile_url"])
     return arguments
 
 
@@ -77,10 +82,16 @@ def stages(command, run_dir, candidate, manifest=None, targets=None, options=Non
         return [sdk, pub, ("ios-build", build_arguments(options), root / "app")]
     if command == "native":
         scope = options.get("scope", "probe")
-        probe_options = {**options, "entrypoint": "lib/harness_probe.dart" if scope == "probe" else "lib/main.dart"}
+        entrypoint = NATIVE_ENTRIES[scope]
+        probe_options = {**options, "entrypoint": entrypoint, "tile_url": STARTUP_TILES if scope == "startup" else None}
+        native_arguments = [python, "harness/native.py", "--output", str(run_dir / "native"), "--candidate", candidate, "--configuration", options["configuration"], "--scope", scope, "--lease-context", json.dumps(lease_context or {})]
+        if scope == "workbench":
+            native_arguments += ["--driver-target", options.get("driver_target") or native_workbench.DRIVER]
+            if options.get("fixture"):
+                native_arguments += ["--fixture", options["fixture"]]
         return [sdk, pub,
-                ("probe-build" if scope == "probe" else "startup-build", build_arguments(probe_options), root / "app"),
-                ("process-restart" if scope == "probe" else "startup-smoke", [python, "harness/native.py", "--output", str(run_dir / "native"), "--candidate", candidate, "--configuration", options["configuration"], "--scope", scope, "--lease-context", json.dumps(lease_context or {})], root)]
+                ({"probe": "probe-build", "startup": "startup-build", "workbench": "workbench-build"}[scope], build_arguments(probe_options), root / "app"),
+                ({"probe": "process-restart", "startup": "startup-smoke", "workbench": "workbench-smoke"}[scope], native_arguments, root)]
     if command == "gate":
         return [("production-gate", [python, "harness/run.py", "_gate", "--manifest", str(manifest)], ROOT)]
     raise ValueError(command)
@@ -193,9 +204,9 @@ def preserve_artifact(execution_root, run_dir, stage_id, options, expected_finge
         elif path.is_file():
             files.append({"path": path.relative_to(retained).as_posix(), "sha256": sha(path), "bytes": path.stat().st_size})
     archive = Path(shutil.make_archive(str(directory / "Runner"), "gztar", directory, "Runner.app"))
-    value = {"path": str(archive), "sha256": sha(archive), "candidate": {"source_fingerprint": execution_fingerprint}, "files": files, "configuration": options["configuration"], "build_mode": options["build_mode"], "ios_target": options["ios_target"], "signed_for_production": False}
+    value = {"path": str(archive), "sha256": sha(archive), "candidate": {"source_fingerprint": execution_fingerprint}, "files": files, "configuration": options["configuration"], "build_mode": options["build_mode"], "ios_target": options["ios_target"], "entrypoint": options["entrypoint"], "driver_target": options.get("driver_target"), "fixture": options.get("fixture"), "tile_url": options.get("tile_url"), "signed_for_production": False}
     save(directory / "manifest.json", value)
-    return {key: value[key] for key in ("path", "sha256", "candidate", "configuration", "build_mode", "ios_target", "signed_for_production")}
+    return {key: value[key] for key in ("path", "sha256", "candidate", "configuration", "build_mode", "ios_target", "entrypoint", "driver_target", "fixture", "tile_url", "signed_for_production")}
 
 
 def cleanup_previous_isolation(report, source_root):
@@ -244,7 +255,9 @@ def main():
     parser.add_argument("--ios-target", choices=["simulator", "device"], default="simulator", help="Device builds are unsigned local artifacts; no installation")
     parser.add_argument("--entrypoint", default="lib/main.dart", help="Existing Dart entrypoint under app/lib (build only)")
     parser.add_argument("--device", help="Explicit leased device ID for integration; no automatic device selection")
-    parser.add_argument("--scope", choices=["probe", "startup"], default="probe", help="native: narrow reliability probe (default) or formal-entry startup smoke; neither is full UI acceptance")
+    parser.add_argument("--scope", choices=["probe", "startup", "workbench"], default="probe", help="native: reliability probe, formal-entry startup or private workbench tooling smoke; independent product acceptance remains separate")
+    parser.add_argument("--driver-target", help="native workbench only: existing integration_test Dart driver; defaults to tooling smoke")
+    parser.add_argument("--fixture", choices=[native_workbench.LEGACY], help="native workbench only: genuine v1 fixture seeded before first launch")
     parser.add_argument("--isolated", action="store_true", help="Execute a fingerprint-verified clean source copy with locked pub preparation")
     parser.add_argument("--stage-argv", help=argparse.SUPPRESS)
     parser.add_argument("--lease-context", help=argparse.SUPPRESS)
@@ -304,6 +317,18 @@ def main():
         parser.error("--device applies to integration only")
     if args.scope != "probe" and args.command != "native":
         parser.error("--scope applies to native only")
+    if (args.driver_target or args.fixture) and (args.command != "native" or args.scope != "workbench"):
+        parser.error("--driver-target/--fixture apply only to native --scope workbench")
+    if args.command == "native" and args.scope == "workbench":
+        try:
+            args.driver_target = native_workbench.driver_target(ROOT, args.driver_target)
+            if args.fixture and args.driver_target == native_workbench.DRIVER:
+                raise ValueError("legacy fixture requires an explicit independent driver; default smoke assumes a fresh dataset")
+            entry = (ROOT / "app" / native_workbench.ENTRY).resolve()
+            if not entry.is_relative_to(ROOT / "app/integration_test") or not entry.is_file():
+                raise ValueError("private workbench entry must exist inside app/integration_test")
+        except ValueError as error:
+            parser.error(str(error))
     if args.command == "integration" and (not args.device or not args.target):
         parser.error("integration requires explicit --device and --target integration_test/<file.dart>")
     if args.device and (args.device.startswith("-") or not args.device.strip() or any(c.isspace() for c in args.device)):
@@ -315,7 +340,8 @@ def main():
         path = (ROOT / "app" / target).resolve()
         if not path.is_relative_to(test_root) or not path.exists() or args.command == "integration" and (not path.is_file() or path.suffix != ".dart"):
             parser.error(f"test target must exist under {test_root.relative_to(ROOT)}: {target}")
-    options = {"configuration": args.configuration, "build_mode": args.build_mode, "ios_target": args.ios_target, "entrypoint": args.entrypoint, "device": args.device, "scope": args.scope, "targets": args.target, "isolated": args.isolated, "timeout": args.timeout, "manifest": str(args.manifest.resolve()) if args.manifest else None}
+    effective_entrypoint = NATIVE_ENTRIES[args.scope] if args.command == "native" else args.entrypoint
+    options = {"configuration": args.configuration, "build_mode": args.build_mode, "ios_target": args.ios_target, "entrypoint": effective_entrypoint, "tile_url": STARTUP_TILES if args.command == "native" and args.scope == "startup" else None, "device": args.device, "scope": args.scope, "driver_target": args.driver_target, "fixture": args.fixture, "targets": args.target, "isolated": args.isolated, "timeout": args.timeout, "manifest": str(args.manifest.resolve()) if args.manifest else None}
     RUNS.mkdir(exist_ok=True)
     candidate = {"source_fingerprint": checks.fingerprint(ROOT)}
     if args.resume:
@@ -334,7 +360,7 @@ def main():
         stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
         run_dir = RUNS / f"{stamp}-{args.command}"
         run_dir.mkdir()
-        report = {"command": args.command, "candidate": candidate, "options": options, "started_at": stamp, "stages": [], "inputs": {"flutter": json.loads((ROOT / "app/.fvmrc").read_text())["flutter"], "lock_sha256": sha(ROOT / "app/pubspec.lock"), "asset_sha256": sha(ROOT / "app/assets/deliveries.csv"), "entrypoint": args.entrypoint}}
+        report = {"command": args.command, "candidate": candidate, "options": options, "started_at": stamp, "stages": [], "inputs": {"flutter": json.loads((ROOT / "app/.fvmrc").read_text())["flutter"], "lock_sha256": sha(ROOT / "app/pubspec.lock"), "asset_sha256": sha(ROOT / "app/assets/deliveries.csv"), "entrypoint": effective_entrypoint, "driver_target": args.driver_target, "fixture": args.fixture, "tile_url": options["tile_url"]}}
     resources = ["app-workspace" if args.command in {"quality", "test", "integration", "pub", "build", "native", "preflight"} else "repository-checks"]
     if args.command == "native":
         resources.append("device:ios-task-simulator")
@@ -383,7 +409,7 @@ def main():
                         save(run_dir / "report.json", report)
                     code = subprocess_stage(argv, cwd, Path(record["log_path"]), args.timeout, metadata["lock_fds"], on_spawn, metadata)
                     record.update(status="passed" if code == 0 else "failed", exit_code=code, elapsed_seconds=round(time.monotonic() - started, 3), sha256=sha(record["log_path"]))
-                    if code == 0 and stage_id in {"ios-build", "probe-build", "startup-build"}:
+                    if code == 0 and stage_id in {"ios-build", "probe-build", "startup-build", "workbench-build"}:
                         record["artifact"] = preserve_artifact(execution_root, run_dir, stage_id, options, candidate["source_fingerprint"])
                     save(run_dir / "report.json", report)
                     print(f"{stage_id}: {record['status']} ({record['elapsed_seconds']}s); {record['log_path']}", flush=True)

@@ -51,6 +51,16 @@ class NativeCleanupTests(unittest.TestCase):
                 simctl.assert_not_called()
                 self.assertFalse((root / "output").exists())
 
+    def test_direct_workbench_claim_cannot_bypass_leases_or_start_services(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            with patch.object(native, "ROOT", root), patch.object(sys, "argv", ["native", "--scope", "workbench", "--output", str(root / "output"), "--candidate", "test", "--lease-context", "{}"]), patch.object(native.native_workbench, "execute") as execute, patch.object(sys, "stderr", io.StringIO()):
+                with self.assertRaises(SystemExit) as error:
+                    native.main()
+                self.assertEqual(error.exception.code, 2)
+                execute.assert_not_called()
+                self.assertFalse((root / "output").exists())
+
     def test_startup_cleanup_failure_does_not_claim_pass_or_process_recovery(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
