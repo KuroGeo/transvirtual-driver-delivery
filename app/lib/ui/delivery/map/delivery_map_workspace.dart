@@ -569,30 +569,62 @@ class _DeliveryMapWorkspaceState extends State<DeliveryMapWorkspace> {
           child: InkWell(
             key: const ValueKey('map-attribution'),
             onTap: widget.onAttributionTap,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 7),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.near_me_outlined,
-                    size: 13,
-                    color: Color(0xFF376BBA),
-                  ),
-                  const SizedBox(width: 5),
-                  Expanded(
-                    child: Text(
-                      TestReference.label,
-                      style: Theme.of(context).textTheme.labelSmall,
-                    ),
-                  ),
-                  Flexible(
-                    child: Text(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 44),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 13,
+                  vertical: 7,
+                ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final largeText =
+                        MediaQuery.textScalerOf(context).scale(11) > 16;
+                    final caption = Theme.of(context).textTheme.labelSmall
+                        ?.copyWith(fontSize: 11, height: 1.2, letterSpacing: 0);
+                    final reference = Text(TestReference.label, style: caption);
+                    final attribution = Text(
                       '© OpenStreetMap contributors',
-                      textAlign: TextAlign.right,
-                      style: Theme.of(context).textTheme.labelSmall,
-                    ),
-                  ),
-                ],
+                      textAlign: largeText || constraints.maxWidth < 330
+                          ? TextAlign.left
+                          : TextAlign.right,
+                      style: caption,
+                    );
+                    const icon = Icon(
+                      Icons.near_me_outlined,
+                      size: 13,
+                      color: Color(0xFF376BBA),
+                    );
+                    // Give both captions the complete width at large OS sizes,
+                    // rather than forcing them to wrap in competing columns.
+                    // Neither caption overrides the actual system text scaler.
+                    if (largeText || constraints.maxWidth < 330) {
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              icon,
+                              const SizedBox(width: 5),
+                              Expanded(child: reference),
+                            ],
+                          ),
+                          const SizedBox(height: 2),
+                          attribution,
+                        ],
+                      );
+                    }
+                    return Row(
+                      children: [
+                        icon,
+                        const SizedBox(width: 5),
+                        Expanded(child: reference),
+                        Flexible(child: attribution),
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
           ),

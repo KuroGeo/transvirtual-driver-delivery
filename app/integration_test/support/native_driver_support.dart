@@ -5,6 +5,8 @@ import 'dart:io';
 import 'package:flutter_driver/flutter_driver.dart';
 import 'package:path/path.dart' as path;
 
+import 'native_gesture_command.dart';
+
 /// Shared external-driver support. Every app action uses FlutterDriver's
 /// actual UI extension. requestData is used only for readonly observations.
 /// This library starts no children and leaves inherited Harness lease FDs open.
@@ -25,24 +27,65 @@ class NativeDriverOptions {
       'session',
       'baseline',
       'fixture',
+      'scenario',
+      'cold-fixture',
+      'migration-fault',
+      'content-size',
+      'reduce-motion',
+      'initial-tiles',
     };
     final values = <String, String>{};
-    for (var index = 0; index < arguments.length; index += 2) {
+    for (var index = 0; index < arguments.length; index++) {
       final name = arguments[index];
-      if (!name.startsWith('--') || index + 1 == arguments.length) {
+      if (!name.startsWith('--')) {
         throw FormatException('Driver arguments require --name value pairs.');
       }
       final key = name.substring(2);
       if (!allowed.contains(key) || values.containsKey(key)) {
         throw FormatException('Unknown or duplicate driver option: $name');
       }
-      values[key] = arguments[index + 1];
+      if ((key == 'reduce-motion' || key == 'migration-fault') &&
+          (index + 1 == arguments.length ||
+              arguments[index + 1].startsWith('--'))) {
+        values[key] = 'true';
+      } else {
+        if (index + 1 == arguments.length ||
+            arguments[index + 1].startsWith('--')) {
+          throw FormatException('Driver option --$key requires a value.');
+        }
+        values[key] = arguments[++index];
+      }
     }
     final result = NativeDriverOptions._(values);
-    for (final key in allowed.where(
-      (key) => key != 'baseline' && key != 'fixture',
-    )) {
+    const optional = {
+      'baseline',
+      'fixture',
+      'scenario',
+      'cold-fixture',
+      'migration-fault',
+      'content-size',
+      'reduce-motion',
+      'initial-tiles',
+    };
+    for (final key in allowed.difference(optional)) {
       result.required(key);
+    }
+    if (values['scenario'] != null &&
+        !RegExp(r'^N[1-7]$').hasMatch(values['scenario']!)) {
+      throw FormatException('Unknown independent acceptance scenario.');
+    }
+    const choices = {
+      'cold-fixture': ['none', 'viewport-corrupt', 'viewport-nonfinite'],
+      'migration-fault': ['false', 'true'],
+      'content-size': ['large', 'accessibility-extra-extra-extra-large'],
+      'reduce-motion': ['false', 'true'],
+      'initial-tiles': ['normal', '503'],
+    };
+    for (final entry in choices.entries) {
+      final value = values[entry.key];
+      if (value != null && !entry.value.contains(value)) {
+        throw FormatException('Invalid independent option --${entry.key}.');
+      }
     }
     if (!['saved', 'recovered', 'confirmed'].contains(result.phase)) {
       throw FormatException('Unsupported tooling smoke phase.');
@@ -105,6 +148,7 @@ class NativeWorkbenchDriver {
   static const actionDeadline = Duration(seconds: 8);
   static const observationDeadline = Duration(seconds: 15);
   int _actionSequence = 0;
+  int get actionSequence => _actionSequence;
 
   static Future<NativeWorkbenchDriver> connect(
     NativeDriverOptions options,
@@ -143,6 +187,11 @@ class NativeWorkbenchDriver {
         'action': name,
         'stage': 'completed',
         'elapsedMs': clock.elapsedMilliseconds,
+        if (name.startsWith('text-probe:') ||
+            name.startsWith('text-probe-label:') ||
+            name.startsWith('semantics-probe:') ||
+            name == 'tap:double-complete')
+          'response': result,
       });
       return result;
     } catch (error) {
@@ -281,6 +330,67 @@ class NativeWorkbenchDriver {
           timeout: actionDeadline,
         );
       });
+
+  Future<String> textKey(String key) => _action('text-probe:$key', () {
+    return driver.runUnsynchronized(
+      () => driver.getText(find.byValueKey(key), timeout: actionDeadline),
+      timeout: actionDeadline,
+    );
+  });
+
+  Future<String> textLabel(String text) =>
+      _action('text-probe-label:$text', () {
+        return driver.runUnsynchronized(
+          () => driver.getText(find.text(text), timeout: actionDeadline),
+          timeout: actionDeadline,
+        );
+      });
+
+  Future<int> semanticsKey(String key) =>
+      _action('semantics-probe:$key', () async {
+        await driver.setSemantics(true, timeout: actionDeadline);
+        return driver.runUnsynchronized(
+          () => driver.getSemanticsId(
+            find.byValueKey(key),
+            timeout: actionDeadline,
+          ),
+          timeout: actionDeadline,
+        );
+      });
+
+  Future<Map<String, dynamic>> doubleComplete() =>
+      _action('tap:double-complete', () {
+        return driver.runUnsynchronized(
+          () async =>
+              nativeObject(await driver.sendCommand(const DoubleComplete())),
+          timeout: actionDeadline,
+        );
+      });
+
+  /// Immutable per-check raw evidence. Does not replace the phase-final
+  /// capture used by the existing X02 orchestration/identity guard.
+  Future<Map<String, dynamic>> captureNamed(
+    String name,
+    Map<String, dynamic> observed,
+  ) async {
+    nativeRequire(
+      RegExp(r'^[a-z0-9][a-z0-9-]{0,63}$').hasMatch(name),
+      'Named capture must stay within the task phase.',
+    );
+    await writeJson('$name-snapshot.json', observed);
+    final image = await _action('flutter-screenshot:$name', () {
+      return driver.runUnsynchronized(
+        () => driver.screenshot(),
+        timeout: actionDeadline,
+      );
+    });
+    final output = File(path.join(options.output.path, '$name-flutter.png'));
+    nativeRequire(!await output.exists(), 'Named evidence is immutable.');
+    await output.writeAsBytes(image, flush: true);
+    final captured = await fixture('capture', body: {'name': name});
+    await writeJson('$name-host-capture.json', captured);
+    return captured;
+  }
 
   /// Separate reusable native IME observation for independent E08. The real
   /// channel is restored BEFORE a fresh TextField focus. Success requires an

@@ -26,6 +26,8 @@ from harness import run
 UDID = "12345678-1234-1234-1234-123456789012"
 CANDIDATE = "f" * 64
 SESSION = "e" * 48
+RUNTIME = "com.apple.CoreSimulator.SimRuntime.iOS-26-4"
+DEVICE_TYPE = "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro"
 
 
 class WorkbenchTests(unittest.TestCase):
@@ -71,8 +73,8 @@ class WorkbenchTests(unittest.TestCase):
         finally:
             connection.close()
 
-    def session(self, configuration="demo"):
-        for name in ("harness/native.py", "harness/native_workbench.py", "harness/run.py", "app/" + workbench.ENTRY, "app/" + workbench.DRIVER, "app/integration_test/support/native_workbench_bridge.dart", "app/integration_test/support/native_driver_support.dart", "app/pubspec.lock", "app/assets/deliveries.csv"):
+    def session(self, configuration="demo", **options):
+        for name in ("harness/native.py", "harness/native_workbench.py", "harness/run.py", "app/" + workbench.ENTRY, "app/" + workbench.DRIVER, "app/integration_test/acceptance_driver.dart", "app/integration_test/support/native_acceptance_support.dart", "app/integration_test/support/native_workbench_bridge.dart", "app/integration_test/support/native_driver_support.dart", "app/integration_test/support/native_gesture_command.dart", "app/integration_test/support/native_gesture_extension.dart", "app/pubspec.lock", "app/assets/deliveries.csv"):
             path = self.root / name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text("source fixture")
@@ -82,10 +84,17 @@ class WorkbenchTests(unittest.TestCase):
         application = self.root / "app/build/ios/iphonesimulator/Runner.app"
         application.mkdir(parents=True)
         (application / "Info.plist").write_bytes(plistlib.dumps({"CFBundleIdentifier": "dev.task"}))
-        args = argparse.Namespace(output=self.root / "output", driver_target=None, candidate=CANDIDATE, configuration=configuration, runtime="task-runtime", device_type="task-type", fixture=None)
+        self.installed_app = self.root / "Devices" / UDID / "data/Containers/Bundle/Application/task-install/Runner.app"
+        self.installed_app.mkdir(parents=True)
+        (self.installed_app / "Runner").write_bytes(b"installed executable fixture")
+        args = argparse.Namespace(**{"output": self.root / "output", "driver_target": None, "candidate": CANDIDATE, "configuration": configuration, "runtime": RUNTIME, "device_type": DEVICE_TYPE, "fixture": None, **options})
         session = workbench.Workbench(args, self.root, (51, 52))
         session.container = self.container
         return session
+
+    @staticmethod
+    def inventory(kind):
+        return json.dumps({"runtimes": [{"identifier": RUNTIME, "isAvailable": True}]} if kind == "runtimes" else {"devicetypes": [{"identifier": DEVICE_TYPE}]})
 
     @staticmethod
     def launch_fixture():
@@ -108,7 +117,9 @@ class WorkbenchTests(unittest.TestCase):
         session.log_reader = Process()
         session.log_started = 0
         session.log_record = {"argv": ["controlled-unit-stream"]}
-        (directory / "unified.stream.json").write_text(json.dumps(self.unified_event()))
+        (directory / "unified.stream.json").write_text(json.dumps(self.unified_event(
+            processImagePath=str(self.installed_app / "Runner"),
+            senderImagePath=str(self.installed_app / "Frameworks/Flutter.framework/Flutter"))))
 
     def test_unified_vm_discovery_requires_actual_pid_engine_message_and_auth(self):
         valid = self.unified_event()
@@ -164,10 +175,88 @@ class WorkbenchTests(unittest.TestCase):
         self.assertEqual(session.report["commands"][-1]["exit_code"], -15)
         self.assertTrue(session.report["commands"][-1]["reaped"])
 
+    def test_persisted_vm_requires_complete_current_pid_exact_installed_app_and_auth(self):
+        self.session()
+        executable = self.installed_app / "Runner"
+        workbench.installed_bundle(self.installed_app, UDID, "Runner.app", "Runner")
+        valid = self.unified_event(processImagePath=str(executable), senderImagePath=str(self.installed_app / "Frameworks/Flutter.framework/Flutter"))
+        valid["eventMessage"] = "flutter: " + valid["eventMessage"]
+        raw = json.dumps([valid])
+        self.assertEqual(workbench.persisted_vm_uri(raw, 321, "Runner", executable), "http://127.0.0.1:4321/currentToken=/")
+        rejected = [json.dumps([{**valid, "processID": 320}]), raw[:-1], raw[:-2], json.dumps(valid),
+            json.dumps([{**valid, "processImagePath": "/user/Other.app/Runner"}]),
+            json.dumps([{**valid, "senderImagePath": "/user/Flutter.framework/Flutter"}]),
+            json.dumps([{**valid, "eventMessage": "The Dart VM service is listening on http://127.0.0.1:4321/"}]),
+            json.dumps([{**valid, "eventMessage": "other: " + valid["eventMessage"]}])]
+        for text in rejected:
+            with self.subTest(text=text):
+                self.assertIsNone(workbench.persisted_vm_uri(text, 321, "Runner", executable))
+        for path, udid in ((self.installed_app, "other-device"), (self.container, UDID)):
+            with self.assertRaises(ValueError):
+                workbench.installed_bundle(path, udid, "Runner.app", "Runner")
+        linked = self.root / "linked.app"
+        linked.symlink_to(self.installed_app, target_is_directory=True)
+        with self.assertRaises(ValueError):
+            workbench.installed_bundle(linked, UDID, "Runner.app", "Runner")
+
+    def test_lost_startup_stream_uses_retained_task_pid_show_with_same_identity(self):
+        session = self.session()
+        session.device = UDID
+        fixture = self.launch_fixture()
+        calls = []
+        valid = self.unified_event(processImagePath=str(self.installed_app / "Runner"), senderImagePath=str(self.installed_app / "Frameworks/Flutter.framework/Flutter"))
+        def reader(directory):
+            self.fake_log_reader(session, directory)
+            (directory / "unified.stream.json").write_text("Filtering the log data\n[]\n")
+        def command(*arguments, **kwargs):
+            calls.append((arguments, kwargs))
+            if arguments[0] == "get_app_container": return str(self.installed_app)
+            if arguments[0] == "launch": return "dev.task: 321"
+            return json.dumps([valid])
+        with patch.object(session, "command", side_effect=command), patch.object(session, "start_log_reader", side_effect=reader), patch.object(session, "alive", return_value=True):
+            self.assertEqual(session.launch("saved", fixture), (321, "http://127.0.0.1:4321/currentToken=/"))
+        session.stop_log_reader()
+        launch = session.report["launches"][-1]
+        self.assertEqual(launch["vm_discovery_source"], "persisted-show")
+        artifact = launch["vm_discovery_artifact"]
+        self.assertEqual(workbench.digest(session.output / artifact["path"]), artifact["sha256"])
+        show, options = calls[-1]
+        self.assertEqual(show[:4], ("spawn", UDID, "log", "show"))
+        self.assertEqual(show[show.index("--process") + 1], "321")
+        self.assertIn(str(self.installed_app / "Runner"), show[-1])
+        self.assertLessEqual(options["timeout"], 5)
+        self.assertEqual(launch["launch_config"]["session"], session.session)
+
+    def test_persisted_vm_fallback_never_extends_the_original_45_second_deadline(self):
+        session = self.session()
+        session.device = UDID
+        fixture = self.launch_fixture()
+        clock = {"calls": 0, "value": 44}
+        def now():
+            clock["calls"] += 1
+            return 0 if clock["calls"] == 1 else clock["value"]
+        def reader(directory):
+            self.fake_log_reader(session, directory)
+            (directory / "unified.stream.json").write_text("[]")
+        def command(*arguments, **kwargs):
+            if arguments[0] == "get_app_container": return str(self.installed_app)
+            if arguments[0] == "launch": return "dev.task: 321"
+            self.assertLessEqual(kwargs["timeout"], 1)
+            clock["value"] = 46
+            return json.dumps([self.unified_event(processImagePath=str(self.installed_app / "Runner"), senderImagePath=str(self.installed_app / "Frameworks/Flutter.framework/Flutter"))])
+        with patch.object(session, "command", side_effect=command), patch.object(session, "start_log_reader", side_effect=reader), patch.object(session, "alive", return_value=True), patch.object(workbench.time, "monotonic", side_effect=now):
+            with self.assertRaises(TimeoutError):
+                session.launch("saved", fixture)
+        session.stop_log_reader()
+        self.assertNotIn("vm_uri_sha256", session.report["launches"][-1])
+        self.assertTrue((session.output / "saved/discovery-show-01.json").is_file())
+
     def test_vm_discovery_failure_retains_os_diagnostics_with_absent_db(self):
         session = self.session()
         self.database.unlink()
         def command(*arguments, **kwargs):
+            if arguments[0] == "list":
+                return self.inventory(arguments[1])
             if arguments[0] == "create":
                 return UDID
             if arguments[0] == "get_app_container":
@@ -244,6 +333,189 @@ class WorkbenchTests(unittest.TestCase):
             with self.subTest(values=values), self.assertRaises(ValueError):
                 workbench.seed_legacy(*values, output)
         self.assertEqual(self.database.read_bytes(), before)
+
+    def test_acceptance_options_and_actual_device_inventory_fail_closed(self):
+        args = argparse.Namespace(fixture=None)
+        self.assertIsNone(workbench.workbench_options(args, workbench.DRIVER)["scenario"])
+        args.scenario = "N7"
+        with self.assertRaises(ValueError):
+            workbench.workbench_options(args, workbench.DRIVER)
+        independent = "integration_test/acceptance_driver.dart"
+        self.assertEqual(workbench.workbench_options(args, independent)["content_size"], "large")
+        for key, value in (("scenario", "N8"), ("content_size", "huge"), ("reduce_motion", 1), ("initial_tiles", "public"), ("cold_fixture", "foreign-settings"), ("migration_fault", True)):
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                workbench.workbench_options(argparse.Namespace(**{"fixture": None, "scenario": "N7", key: value}), independent)
+        self.assertTrue(workbench.workbench_options(argparse.Namespace(scenario="N6", fixture=workbench.LEGACY, migration_fault=True), independent)["migration_fault"])
+        runtime, types = json.loads(self.inventory("runtimes")), json.loads(self.inventory("devicetypes"))
+        workbench.available_device(RUNTIME, DEVICE_TYPE, runtime, types)
+        for available in (False, 1, None):
+            with self.subTest(available=available), self.assertRaises(ValueError):
+                workbench.available_device(RUNTIME, DEVICE_TYPE, {"runtimes": [{"identifier": RUNTIME, "isAvailable": available}]}, types)
+        for rt, device in (("booted", DEVICE_TYPE), (RUNTIME, "user-device"), (True, DEVICE_TYPE)):
+            with self.subTest(runtime=rt, device=device), self.assertRaises(ValueError):
+                workbench.device_identifiers(rt, device)
+        with self.assertRaises(ValueError):
+            workbench.available_device(RUNTIME, DEVICE_TYPE, runtime, {"devicetypes": []})
+
+    def test_cold_viewport_fixture_preserves_business_online_and_nonfinite_raw_sql(self):
+        with closing(sqlite3.connect(self.database)) as database, database:
+            database.execute("ALTER TABLE stops ADD COLUMN dataset_id TEXT")
+            database.execute("UPDATE stops SET dataset_id='batch'")
+            for name in ("viewport_latitude", "viewport_longitude", "viewport_zoom"):
+                database.execute(f"ALTER TABLE delivery_settings ADD COLUMN {name} REAL")
+        before = workbench.sqlite_snapshot(self.container, "demo", self.root / "before.sqlite")
+        for name in ("viewport-corrupt", "viewport-nonfinite"):
+            with self.subTest(name=name):
+                workbench.cold_settings_fixture(self.container, UDID, "demo", name)
+                after = workbench.sqlite_snapshot(self.container, "demo", self.root / (name + ".sqlite"))
+                for table in ("datasets", "stops", "outbox"):
+                    self.assertEqual(after["tables"][table], before["tables"][table])
+                settings = after["tables"]["delivery_settings"][0]
+                self.assertEqual((settings["dataset_id"], settings["online"]), ("batch", 0))
+                self.assertEqual(settings["viewport_latitude"], "bad" if name == "viewport-corrupt" else {"sqlite_nonfinite": "inf"})
+                json.dumps(after, allow_nan=False)
+        with closing(sqlite3.connect(self.database)) as database:
+            self.assertEqual(database.execute("SELECT viewport_latitude FROM delivery_settings").fetchone()[0], float("inf"))
+        for container, udid, name in ((self.container, "foreign", "viewport-corrupt"), (self.root, UDID, "viewport-corrupt"), (self.container, UDID, "foreign-settings")):
+            with self.assertRaises(ValueError):
+                workbench.cold_settings_fixture(container, udid, "demo", name)
+
+    def test_genuine_migration_abort_capture_then_named_drop_and_retry_preserve_v1(self):
+        session = self.session(scenario="N6", driver_target="integration_test/acceptance_driver.dart", fixture=workbench.LEGACY, migration_fault=True)
+        self.database.unlink()
+        source = self.root / "source.csv"
+        source.write_text("reference,customer_name,address,latitude,longitude,status,time_window\n" + "\n".join(f"REF-{index},Customer{index},Street{index},-33.9,151.1,pending,08:00-10:00" for index in range(30)))
+        workbench.seed_legacy(self.container, UDID, "demo", source, self.root / "legacy")
+        workbench.migration_fault(self.container, UDID, "demo", install=True)
+        session.device, session.session, session.pid, session.active_phase = UDID, SESSION, 321, "saved"
+        session.migration_armed = True
+        session.legacy_baseline = workbench.sqlite_snapshot(self.container, "demo", self.root / "armed.sqlite", legacy=True)
+        def upgrade():
+            with closing(sqlite3.connect(self.database)) as database, database:
+                database.execute("BEGIN")
+                for statement in ("ALTER TABLE stops ADD COLUMN time_window TEXT", "ALTER TABLE stops ADD COLUMN note TEXT", "ALTER TABLE stops ADD COLUMN recorded_at INTEGER", "ALTER TABLE outbox ADD COLUMN note TEXT", "ALTER TABLE outbox ADD COLUMN recorded_at INTEGER", "CREATE TABLE delivery_settings(dataset_id TEXT PRIMARY KEY,online INTEGER,viewport_latitude REAL,viewport_longitude REAL,viewport_zoom REAL)"):
+                    database.execute(statement)
+                database.execute("UPDATE stops SET time_window='08:00-10:00'")
+                database.execute("PRAGMA user_version=2")
+        with self.assertRaises(sqlite3.IntegrityError):
+            upgrade()
+        rollback = workbench.sqlite_snapshot(self.container, "demo", self.root / "rollback.sqlite", legacy=True)
+        for key in ("tables", "schema", "sqlite_sequence"):
+            self.assertEqual(rollback[key], session.legacy_baseline[key])
+        self.assertEqual(rollback["user_version"], 1)
+        with self.assertRaises(ValueError):
+            session.clear_migration_fault()
+        directory = session.output / "saved"
+        directory.mkdir()
+        session.launch_config = workbench.write_launch_config(self.container, UDID, "demo", CANDIDATE, SESSION, self.launch_fixture())
+        snapshot = {"schema": 1, "processId": 321, "candidate": CANDIDATE, "configuration": "demo", "mode": "demo", "session": SESSION,
+            "transport": "controlled-http-simulated", "databasePath": str(self.database), "launchConfigPath": session.launch_config["path"], "launchConfigByteLength": session.launch_config["byte_length"], "launchConfigSchema": 1,
+            "model": None, "outbox": None, "bounds": {"retry-bootstrap": [{"centerHit": True}]}}
+        snapshot_path = directory / "migration-rollback-snapshot.json"
+        workbench.write_json(snapshot_path, snapshot)
+        for changed in ({"processId": 320}, {"model": {"initialized": True}}, {"bounds": {"retry-bootstrap": [{"centerHit": False}]}}, {"bounds": {"reload-data": [{"centerHit": True}]}}, {"launchConfigByteLength": 1}):
+            with self.subTest(changed=changed):
+                workbench.write_json(snapshot_path, {**snapshot, **changed})
+                with self.assertRaises(ValueError):
+                    session.failed_boot_observation()
+        workbench.write_json(snapshot_path, snapshot)
+        (self.database.parent / workbench.JOURNAL).write_text(json.dumps({"source": "repository", "stage": "initialize_failed", "processId": 321, "candidate": CANDIDATE, "configuration": "demo", "session": SESSION}) + "\n")
+        with patch.object(session, "command", side_effect=lambda *args, **kwargs: Path(args[-1]).write_bytes(workbench.TILE)):
+            captured = session.capture("migration-rollback")
+        self.assertEqual(captured["database"]["user_version"], 1)
+        self.assertTrue(session.boot_failure_captured)
+        session.clear_migration_fault()
+        self.assertFalse(session.migration_armed)
+        with closing(sqlite3.connect(self.database)) as database:
+            self.assertEqual(database.execute("SELECT name FROM sqlite_master WHERE name=?", (workbench.MIGRATION_TRIGGER,)).fetchall(), [])
+        upgrade()
+        restored = workbench.sqlite_snapshot(self.container, "demo", self.root / "upgraded.sqlite")
+        self.assertEqual(restored["user_version"], 2)
+        self.assertEqual(workbench.outbox_identities(restored["tables"]["outbox"]), workbench.outbox_identities(rollback["tables"]["outbox"]))
+        self.assertEqual(restored["sqlite_sequence"], rollback["sqlite_sequence"])
+        with self.assertRaises(ValueError):
+            workbench.migration_fault(self.container, UDID, "demo", install=True)
+
+    def test_cold_fixture_waits_for_actual_saved_pid_exit_and_retains_both_backups(self):
+        session = self.session(scenario="N5", driver_target="integration_test/acceptance_driver.dart", cold_fixture="viewport-corrupt")
+        with closing(sqlite3.connect(self.database)) as database, database:
+            database.execute("ALTER TABLE stops ADD COLUMN dataset_id TEXT")
+            database.execute("UPDATE stops SET dataset_id='batch'")
+            for name in ("viewport_latitude", "viewport_longitude", "viewport_zoom"):
+                database.execute(f"ALTER TABLE delivery_settings ADD COLUMN {name} REAL")
+        session.device, session.session, session.pid = UDID, SESSION, 321
+        session.launch_config = workbench.write_launch_config(self.container, UDID, "demo", CANDIDATE, SESSION, self.launch_fixture())
+        original = self.database.read_bytes()
+        with patch.object(session, "alive", return_value=True), self.assertRaises(ValueError):
+            session.prepare_cold_fixture()
+        self.assertEqual(self.database.read_bytes(), original)
+        self.assertFalse((session.output / "cold-before.sqlite").exists())
+        with patch.object(session, "alive", return_value=False):
+            session.prepare_cold_fixture()
+        self.assertEqual(session.report["cold_fixture"]["after_terminated_pid"], 321)
+        self.assertEqual(session.report["cold_fixture"]["before"]["tables"]["outbox"], session.report["cold_fixture"]["after"]["tables"]["outbox"])
+        for artifact in session.report["artifacts"]:
+            self.assertEqual(workbench.digest(session.output / artifact["path"]), artifact["sha256"])
+
+    def test_migration_control_only_drops_one_explicit_armed_fixture(self):
+        dropped = []
+        with workbench.Fixture(self.root, lambda name: {}, lambda fault: None, lambda: dropped.append("named-trigger")) as fixture:
+            for value in ({"migrationFault": "armed"}, {"migrationFault": True}, {"migrationFault": "arbitrary-sql"}):
+                with self.subTest(value=value), self.assertRaises(ValueError):
+                    fixture.control(value)
+            self.assertEqual(dropped, [])
+            self.assertEqual(fixture.control({"migrationFault": "none"})["migrationFault"], "none")
+            self.assertEqual(dropped, ["named-trigger"])
+            with self.assertRaises(ValueError):
+                fixture.control({"migrationFault": "none"})
+        with workbench.Fixture(self.root, lambda name: {}, lambda fault: None) as fixture:
+            with self.assertRaises(ValueError):
+                fixture.control({"migrationFault": "none"})
+
+    def test_os_controls_and_tile503_are_applied_before_launch_not_inferred_as_ui_success(self):
+        session = self.session(scenario="N7", driver_target="integration_test/acceptance_driver.dart", content_size="accessibility-extra-extra-extra-large", reduce_motion=True, initial_tiles="503")
+        calls = []
+        def command(*args, **kwargs):
+            calls.append(args)
+            if args[0] == "list": return self.inventory(args[1])
+            if args[0] == "create": return UDID
+            if args[0] == "get_app_container": return str(self.container)
+            return "attempted task setting"
+        def launch(phase, fixture):
+            self.assertEqual(fixture.state["tiles"], "503")
+            raise RuntimeError("controlled stop after pre-mount fixture verification")
+        with patch.object(session, "command", side_effect=command), patch.object(session, "launch", side_effect=launch), patch.object(sys, "stdout", io.StringIO()):
+            self.assertEqual(session.execute(), 1)
+        self.assertIn(("ui", UDID, "content_size", "accessibility-extra-extra-extra-large"), calls)
+        self.assertIn(("spawn", UDID, "defaults", "write", "com.apple.Accessibility", "ReduceMotionEnabled", "-bool", "YES"), calls)
+        self.assertEqual(session.report["status"], "failed")
+        self.assertIn("not inferred", session.report["os_controls"]["actual_mediaquery_proof"])
+        self.assertIn("app/integration_test/support/native_acceptance_support.dart", session.report["inputs"])
+
+    def test_failed_genuine_v1_boot_cleans_named_trigger_and_device_without_v2_fault_claim(self):
+        session = self.session(scenario="N6", driver_target="integration_test/acceptance_driver.dart", fixture=workbench.LEGACY, migration_fault=True)
+        self.database.unlink()
+        (self.root / "app/assets/deliveries.csv").write_text("reference,customer_name,address,latitude,longitude,status,time_window\n" + "\n".join(f"REF-{index},Customer{index},Street{index},-33.9,151.1,pending,08:00-10:00" for index in range(30)))
+        reference = self.root / "app/test/data/legacy_repository_fixture.dart"
+        reference.parent.mkdir(parents=True)
+        reference.write_text("accepted fixture source")
+        def command(*args, **kwargs):
+            if args[0] == "list": return self.inventory(args[1])
+            if args[0] == "create": return UDID
+            if args[0] == "get_app_container": return str(self.container)
+            return ""
+        with patch.object(session, "command", side_effect=command), patch.object(session, "launch", side_effect=RuntimeError("controlled failure before recovery")), patch.object(sys, "stdout", io.StringIO()):
+            self.assertEqual(session.execute(), 1)
+        self.assertEqual(session.report["status"], "failed")
+        self.assertTrue(session.report["device_cleaned"])
+        self.assertFalse(session.report["migration_fault_cleanup"]["installed"])
+        self.assertEqual(session.report["fault_cleanup"]["status"], "not_applicable")
+        self.assertEqual(session.report["fault_cleanup"]["user_version"], 1)
+        self.assertNotIn("fault_cleanup_error", session.report)
+        with closing(sqlite3.connect(self.database)) as database:
+            self.assertEqual(database.execute("PRAGMA user_version").fetchone()[0], 1)
+            self.assertEqual(database.execute("SELECT name FROM sqlite_master WHERE type='trigger'").fetchall(), [])
+            self.assertEqual(database.execute("SELECT seq FROM outbox ORDER BY seq").fetchall(), [(7,), (11,)])
 
     def test_legacy_seed_rejects_symlink_sidecars_and_unapproved_shape(self):
         source = self.root / "invalid.csv"
@@ -356,6 +628,8 @@ class WorkbenchTests(unittest.TestCase):
         launches = []
         def launch(*arguments, **kwargs):
             self.assertNotIn("env", kwargs)
+            if arguments[0] == "get_app_container":
+                return str(self.installed_app)
             launches.append(json.loads((self.container / "Documents" / workbench.LAUNCH_CONFIG).read_text()))
             stdout = Path(arguments[1].removeprefix("--stdout="))
             stdout.write_text("The Dart VM service is listening on http://127.0.0.1:4321/auth=/\n")
@@ -368,7 +642,7 @@ class WorkbenchTests(unittest.TestCase):
                 session.launch("recovered", fixture)
             self.assertFalse((session.output / "recovered").exists())
             self.assertEqual(session.launch_config["sha256"], workbench.digest(self.container / "Documents" / workbench.LAUNCH_CONFIG))
-            with patch.object(session, "alive", side_effect=[False, True]):
+            with patch.object(session, "alive", side_effect=[False, True, True]):
                 session.launch("recovered", fixture)
             self.assertNotEqual(session.session, first)
             session.stop_log_reader()
@@ -383,7 +657,7 @@ class WorkbenchTests(unittest.TestCase):
         session = self.session()
         session.device = UDID
         fixture = self.launch_fixture()
-        with patch.object(session, "command", return_value="dev.task: 321"), patch.object(session, "start_log_reader", side_effect=lambda directory: self.fake_log_reader(session, directory)), patch.object(session, "alive", return_value=True), patch.object(workbench.time, "monotonic", side_effect=[0, 46]):
+        with patch.object(session, "command", side_effect=lambda *args, **kwargs: str(self.installed_app) if args[0] == "get_app_container" else "dev.task: 321"), patch.object(session, "start_log_reader", side_effect=lambda directory: self.fake_log_reader(session, directory)), patch.object(session, "alive", return_value=True), patch.object(workbench.time, "monotonic", side_effect=[0, 46]):
             with self.assertRaises(TimeoutError):
                 session.launch("saved", fixture)
         session.stop_log_reader()
@@ -401,7 +675,9 @@ class WorkbenchTests(unittest.TestCase):
         class Process:
             returncode = None
             terminated = False
+            timeouts = []
             def wait(self, timeout):
+                self.timeouts.append(timeout)
                 if not self.terminated:
                     raise subprocess.TimeoutExpired("dart driver", timeout)
                 self.returncode = -15
@@ -416,10 +692,34 @@ class WorkbenchTests(unittest.TestCase):
                 session.drive("saved", 321, "http://127.0.0.1:4321/auth=/", fixture)
         self.assertEqual(spawn.call_args.kwargs["pass_fds"], (51, 52))
         self.assertTrue(child.terminated)
+        self.assertEqual(child.timeouts, [180, 5])
         self.assertEqual(child.returncode, -15)
         self.assertIsNone(session.driver_process)
         self.assertEqual(session.report["status"], "failed")
         self.assertNotIn("auth=/", json.dumps(session.report["commands"]))
+
+    def test_independent_driver_forwards_frozen_scenario_and_only_its_extended_deadline(self):
+        session = self.session(scenario="N5", driver_target="integration_test/acceptance_driver.dart", cold_fixture="viewport-corrupt", initial_tiles="503")
+        session.session, session.device = SESSION, UDID
+        (session.output / "saved").mkdir()
+        fixture = self.launch_fixture()
+        session.launch_config = workbench.write_launch_config(self.container, UDID, "demo", CANDIDATE, SESSION, fixture)
+        class Process:
+            returncode = 0
+            def wait(self, timeout):
+                self.timeout = timeout
+                return 0
+            def poll(self):
+                return 0
+        child = Process()
+        with patch.object(workbench.subprocess, "Popen", return_value=child) as spawn, patch.object(workbench, "validate_driver_result", return_value=({}, {})) as validate:
+            session.drive("saved", 321, "http://127.0.0.1:4321/auth=/", fixture)
+        self.assertEqual(child.timeout, 330)
+        argv = spawn.call_args.args[0]
+        for flag, value in (("--scenario", "N5"), ("--content-size", "large"), ("--initial-tiles", "503"), ("--cold-fixture", "viewport-corrupt")):
+            self.assertEqual(argv[argv.index(flag) + 1], value)
+        self.assertEqual(spawn.call_args.kwargs["pass_fds"], (51, 52))
+        self.assertEqual(validate.call_args.args[-1], "N5")
 
     def test_modified_launch_config_blocks_driver_before_child_spawn(self):
         session = self.session()
@@ -438,17 +738,19 @@ class WorkbenchTests(unittest.TestCase):
         def simctl(argv, **kwargs):
             calls.append((argv, kwargs))
             action = argv[2]
+            if action == "list":
+                return subprocess.CompletedProcess(argv, 0, self.inventory(argv[3]), "")
             return subprocess.CompletedProcess(argv, 1 if action == "boot" else 0, UDID if action == "create" else "", "controlled boot failure" if action == "boot" else "")
         with patch.object(workbench.subprocess, "run", side_effect=simctl), patch.object(workbench.os, "kill"), patch("sys.stdout", io.StringIO()):
             self.assertEqual(session.execute(), 1)
-        self.assertEqual([argv[2] for argv, kwargs in calls], ["create", "boot", "shutdown", "delete"])
-        self.assertTrue(all(argv[3] == UDID for argv, kwargs in calls[1:]))
+        self.assertEqual([argv[2] for argv, kwargs in calls], ["list", "list", "create", "boot", "shutdown", "delete"])
+        self.assertTrue(all(argv[3] == UDID for argv, kwargs in calls[3:]))
         self.assertTrue(all(kwargs["pass_fds"] == (51, 52) for argv, kwargs in calls))
         report = json.loads((session.output / "result.json").read_text())
         self.assertEqual(report["status"], "failed")
         self.assertFalse(report["business_acceptance"])
         self.assertTrue(report["device_cleaned"])
-        self.assertEqual(report["commands"][1]["exit_code"], 1)
+        self.assertEqual(report["commands"][3]["exit_code"], 1)
 
     def test_private_driver_and_fixed_build_preserve_public_entrypoint_boundary(self):
         directory = self.root / "app/integration_test"
@@ -550,11 +852,16 @@ class WorkbenchTests(unittest.TestCase):
         (output / "actions.jsonl").write_text(json.dumps({**expected, "action": "actual-ui", "vmProcessId": 321}) + "\n")
         (output / "observations.jsonl").write_text(json.dumps(snapshot) + "\n")
         workbench.write_json(output / "initial-snapshot.json", snapshot)
-        def validate(receipt=result, observation=snapshot):
+        def validate(receipt=result, observation=snapshot, scenario=None):
             workbench.write_json(output / "result.json", receipt)
             workbench.write_json(output / "snapshot.json", observation)
-            return workbench.validate_driver_result(output, "saved", 321, CANDIDATE, "demo", SESSION, self.container, launch_config)
+            return workbench.validate_driver_result(output, "saved", 321, CANDIDATE, "demo", SESSION, self.container, launch_config, scenario)
         self.assertEqual(validate()[0], result)
+        acceptance = {**result, "scope": "e08-native-functional-acceptance", "scenario": "N5"}
+        self.assertEqual(validate(receipt=acceptance, scenario="N5")[0], acceptance)
+        for receipt in (result, {**acceptance, "scope": "x02-tooling-smoke"}, {**acceptance, "scenario": "N4"}):
+            with self.subTest(receipt=receipt), self.assertRaises(ValueError):
+                validate(receipt=receipt, scenario="N5")
         for key, value in (("candidate", "old"), ("processId", 320), ("processId", True), ("configuration", "local-client"), ("session", "old-session"), ("launchConfigPath", str(self.root / "user-config.json")), ("launchConfigByteLength", 1), ("launchConfigByteLength", True), ("launchConfigSchema", True)):
             with self.subTest(key=key, value=value), self.assertRaises(ValueError):
                 validate(observation={**snapshot, key: value})

@@ -14,6 +14,7 @@ import 'package:path/path.dart' as path;
 import 'package:sqflite/sqflite.dart';
 
 import 'support/native_workbench_bridge.dart';
+import 'support/native_gesture_extension.dart';
 
 /// Private task entry. The host writes one immutable task-container launch
 /// configuration before each OS launch. Public main never imports this file.
@@ -21,6 +22,7 @@ Future<void> main() async {
   final ready = Completer<NativeWorkbenchBridge>();
   // Driver binding must exist before the real sqflite platform path lookup.
   enableFlutterDriverExtension(
+    commands: [DoubleCompleteExtension()],
     handler: (command) async {
       if (command != 'snapshot') {
         throw UnsupportedError('Readonly bridge accepts only snapshot.');

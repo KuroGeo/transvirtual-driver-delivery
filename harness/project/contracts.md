@@ -58,6 +58,20 @@ E02 的签名适配写域明确增加 `app/test/ui/fake_delivery_repository.dart
 
 这是执行合同，源码中的具体问题由负责人回报主控协调；不为实现习惯临时扩框架、平台或产品功能。
 
+## E08 / X03 原生验收与证据合同
+
+完整本地功能验收采用 [原生检查合同](native-acceptance-contract.json) 的 revision5：N1–N7 共34个明确检查，与 R01–R14 逐项绑定。默认 probe/startup/workbench smoke 继续保留各自范围，不能提供完整 G2。独立验收 driver 走相同私有工作台入口、正式 App、原生 SQLite、真实 UI 和三次 OS 进程启动；只读 snapshot 不提供业务变更方法。
+
+共享写域分别为：主控维护 run.py/CLI/合同/固定双击手势与聚合交付；原生验收负责人维护 acceptance_driver/native_acceptance_support/native_driver_support；原生宿主负责人维护 native.py/native_workbench.py 与对应回归；门禁负责人维护 gate.py 与对应回归。所有源写入者冻结后才执行 quality/pub/build/native。测试候选验证原目录和隔离副本的前后指纹，原始失败不会被下一次运行覆盖。
+
+独立 driver 明确选择 `--scenario N1..N7`。运行时/设备类型必须存在于实际 CoreSimulator inventory，宿主只创建、设置、终止和删除任务设备。系统 text size 与 Reduce Motion 设置回执不能替代 App 实际 MediaQuery；2x 字号、disableAnimations、OS 键盘 Insets/截图/可点击 Save 区域均须实际观察。iOS 没有 Android hardware Back，表单和来源返回仍需真实 UI 操作。验收阶段上限300秒、宿主 driver330秒，UI 动作8秒、观察条件15秒、产品同步超时5秒；默认 smoke 上限保持原值。
+
+冷启故障只能在 saved PID 已退出、recovered 尚未启动时修改当前任务数据库的 delivery_settings 视口列；保留前后 SQLite backup，并证明 online/批次/站点/outbox/ACK 未变。故障类型为 corrupt 和 nonfinite，不能构造不存在的 viewport_json 或外国批次来替代真实 schema。迁移故障只能在真正的 v1 fixture 上用具名 SQL trigger，失败后保存 v1/schema/seq/业务状态；移除该 trigger 后通过实际 Retry 升级同一文件，不清库。
+
+双击终态检查用私有 `DoubleComplete` 指令：固定查找 detail-complete 的真实中心，在一个 Driver 命令中顺序发送两次 pointer tap，不接受 host 提供 finder/坐标/业务参数；回执记录完成次数与实际间隔，之后验证仅一条不可变结果与 outbox 事件。普通 Driver 点击、文本模拟与实际 OS 键盘分别记录，不替换实现层来让验收通过。
+
+聚合报告绑定原始 runner/collector/编译产物清单、各 phase receipt、action/observation JSONL、只读快照、OS PNG、SQLite backup/projection、事务/coordinator 与 fixture journals；每份引用重新计算 hash。固定检查语义优先于报告中的 passed 字段和自定义断言。`local-gate` 只判定完整本地 G1/G2/资源合同，始终返回 publish_allowed=false；`gate` 仍要求 H01–H08/G0–G6。两种门禁恢复时都重新检查当前外部证据，不能复用旧 passed 日志。生产真机/许可/签名/远端强制接线保持独立门槛。
+
 ## E03 消费 API 冻结（本轮）
 
 `ui/delivery/query/workbench_query.dart` 输出纯 `WorkbenchQuery({search="", DeliveryStatus? status, waitingOnly=false})` 与 `WorkbenchResult(stops, nearest, matchedCount, totalQueueCount, distanceMeters(Stop), awaitsService(Stop))`。`TestReference` 为 latitude=-33.9004、longitude=151.139、headingDegrees=35；查询结果不被地图视口截断。

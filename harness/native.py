@@ -35,6 +35,12 @@ def main():
     parser.add_argument("--scope", choices=["probe", "startup", "workbench"], default="probe")
     parser.add_argument("--driver-target", help="workbench only: existing private integration_test Dart driver")
     parser.add_argument("--fixture", choices=[native_workbench.LEGACY], help="workbench only: absent-file genuine v1 prelaunch fixture")
+    parser.add_argument("--scenario", choices=native_workbench.SCENARIOS)
+    parser.add_argument("--content-size", choices=native_workbench.CONTENT_SIZES, default="large")
+    parser.add_argument("--reduce-motion", action="store_true")
+    parser.add_argument("--initial-tiles", choices=["normal", "503"], default="normal")
+    parser.add_argument("--cold-fixture", choices=native_workbench.COLD_FIXTURES, default="none")
+    parser.add_argument("--migration-fault", action="store_true")
     parser.add_argument("--lease-context", required=True, help="Inherited Harness flock context; use harness/run.py native")
     parser.add_argument("--runtime", default="com.apple.CoreSimulator.SimRuntime.iOS-26-4")
     parser.add_argument("--device-type", default="com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro")
@@ -43,12 +49,17 @@ def main():
         descriptors = runner.require_lease_context(json.loads(args.lease_context), ROOT, ("app-workspace", "device:ios-task-simulator"))
         if runner.checks.fingerprint(ROOT) != args.candidate:
             raise ValueError("native candidate does not match the leased source snapshot")
+        native_workbench.device_identifiers(args.runtime, args.device_type)
+        acceptance = args.scenario or args.content_size != "large" or args.reduce_motion or args.initial_tiles != "normal" or args.cold_fixture != "none" or args.migration_fault
+        if acceptance and args.scope != "workbench":
+            raise ValueError("acceptance controls apply only to workbench scope")
         if (args.driver_target or args.fixture) and args.scope != "workbench":
             raise ValueError("driver/fixture applies only to workbench scope")
         if args.scope == "workbench":
             args.driver_target = native_workbench.driver_target(ROOT, args.driver_target)
             if args.fixture and args.driver_target == native_workbench.DRIVER:
                 raise ValueError("legacy fixture requires an explicit independent driver")
+            native_workbench.workbench_options(args, args.driver_target)
     except (OSError, ValueError, KeyError) as error:
         parser.error(str(error))
     if args.scope == "workbench":
@@ -70,7 +81,7 @@ def main():
 
     def command(*argv, timeout=120):
         started = time.monotonic()
-        result = subprocess.run(["xcrun", "simctl", *argv], text=True, capture_output=True, timeout=timeout)
+        result = subprocess.run(["xcrun", "simctl", *argv], text=True, capture_output=True, timeout=timeout, pass_fds=descriptors)
         report["commands"].append({"argv": ["xcrun", "simctl", *argv], "exit_code": result.returncode, "stdout": result.stdout, "stderr": result.stderr, "elapsed_seconds": round(time.monotonic() - started, 3), "at": datetime.now(timezone.utc).isoformat()})
         (output / "result.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
         if result.returncode:

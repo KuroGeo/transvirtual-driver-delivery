@@ -21,8 +21,12 @@ class NativeCleanupTests(unittest.TestCase):
             application.mkdir(parents=True)
             (application / "Info.plist").write_bytes(plistlib.dumps({"CFBundleIdentifier": "dev.test"}))
             calls = []
+            inherited = []
             def simctl(argv, **kwargs):
                 calls.append(argv)
+                inherited.append(kwargs["pass_fds"])
+                for descriptor in kwargs["pass_fds"]:
+                    os.fstat(descriptor)
                 action = argv[2]
                 if action == "create":
                     return subprocess.CompletedProcess(argv, 0, "task-device\n", "")
@@ -35,6 +39,7 @@ class NativeCleanupTests(unittest.TestCase):
                 with patch.object(native, "ROOT", root), patch.object(sys, "argv", ["native", "--output", str(output), "--candidate", candidate, "--lease-context", json.dumps(context)]), patch.object(native.subprocess, "run", side_effect=simctl), patch.object(sys, "stdout", io.StringIO()):
                     self.assertEqual(native.main(), 1)
             self.assertEqual([argv[2] for argv in calls], ["create", "boot", "shutdown", "delete"])
+            self.assertTrue(all(descriptors == context["lock_fds"] for descriptors in inherited))
             self.assertTrue(all(argv[3] == "task-device" for argv in calls[1:]))
             report = json.loads((output / "result.json").read_text())
             self.assertTrue(report["device_cleaned"])
@@ -60,6 +65,22 @@ class NativeCleanupTests(unittest.TestCase):
                 self.assertEqual(error.exception.code, 2)
                 execute.assert_not_called()
                 self.assertFalse((root / "output").exists())
+
+    def test_acceptance_controls_reject_other_scopes_before_device_or_output(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            with lease(["app-workspace", "device:ios-task-simulator"], root / "run", root / "harness/runs/locks") as context:
+                candidate = native.runner.checks.fingerprint(root)
+                for scope in ("probe", "startup"):
+                    for option in (["--scenario", "N7"], ["--initial-tiles", "503"], ["--reduce-motion"]):
+                        with self.subTest(scope=scope, option=option):
+                            arguments = ["native", "--scope", scope, "--output", str(root / "output"), "--candidate", candidate, "--lease-context", json.dumps(context), *option]
+                            with patch.object(native, "ROOT", root), patch.object(sys, "argv", arguments), patch.object(native.subprocess, "run") as simctl, patch.object(sys, "stderr", io.StringIO()):
+                                with self.assertRaises(SystemExit) as error:
+                                    native.main()
+                                self.assertEqual(error.exception.code, 2)
+                                simctl.assert_not_called()
+                                self.assertFalse((root / "output").exists())
 
     def test_startup_cleanup_failure_does_not_claim_pass_or_process_recovery(self):
         with tempfile.TemporaryDirectory() as directory:

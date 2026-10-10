@@ -1,0 +1,167 @@
+{
+  "schema": 1,
+  "revision": 5,
+  "scope": "E08 full iOS simulator functional acceptance; not G3/production",
+  "cases": {
+    "N1": [
+      "N1.first-import",
+      "N1.offline-two-results",
+      "N1.cold-preservation",
+      "N1.serial-confirmation",
+      "N1.no-resend"
+    ],
+    "N2": [
+      "N2.unavailable",
+      "N2.failure-options",
+      "N2.other-validation",
+      "N2.imported-unknown",
+      "N2.submit-rollback-retry",
+      "N2.terminal-double-tap",
+      "N2.settings-retry"
+    ],
+    "N3": [
+      "N3.wrong-ack",
+      "N3.send-timeout",
+      "N3.ack-rollback",
+      "N3.pause-inflight",
+      "N3.tail-enqueue",
+      "N3.single-owner"
+    ],
+    "N4": [
+      "N4.map-controls",
+      "N4.query-intersection-empty",
+      "N4.reference-nearest",
+      "N4.typed-returns",
+      "N4.notice-context"
+    ],
+    "N5": [
+      "N5.tile-degraded-retry",
+      "N5.cache-only-clear",
+      "N5.valid-viewport-cold",
+      "N5.invalid-viewport-fallback"
+    ],
+    "N6": [
+      "N6.genuine-v1-upgrade",
+      "N6.migration-rollback-retry"
+    ],
+    "N7": [
+      "N7.two-sizes-safearea",
+      "N7.os-keyboard",
+      "N7.text-scale",
+      "N7.reduced-motion-semantics",
+      "N7.platform-back"
+    ]
+  },
+  "requirements": {
+    "R01": [
+      "N1.first-import",
+      "N1.cold-preservation",
+      "N6.genuine-v1-upgrade",
+      "N6.migration-rollback-retry"
+    ],
+    "R02": [
+      "N1.offline-two-results",
+      "N2.terminal-double-tap",
+      "N2.submit-rollback-retry"
+    ],
+    "R03": [
+      "N1.offline-two-results",
+      "N2.failure-options",
+      "N2.other-validation",
+      "N2.imported-unknown",
+      "N6.genuine-v1-upgrade",
+      "N7.os-keyboard"
+    ],
+    "R04": [
+      "N1.offline-two-results",
+      "N2.submit-rollback-retry",
+      "N3.ack-rollback",
+      "N5.tile-degraded-retry"
+    ],
+    "R05": [
+      "N1.serial-confirmation",
+      "N1.no-resend",
+      "N3.wrong-ack",
+      "N3.send-timeout",
+      "N3.ack-rollback",
+      "N6.genuine-v1-upgrade"
+    ],
+    "R06": [
+      "N1.serial-confirmation",
+      "N2.unavailable",
+      "N3.send-timeout",
+      "N3.pause-inflight",
+      "N3.tail-enqueue",
+      "N3.single-owner"
+    ],
+    "R07": [
+      "N4.map-controls",
+      "N5.tile-degraded-retry",
+      "N7.two-sizes-safearea",
+      "N7.text-scale"
+    ],
+    "R08": [
+      "N4.query-intersection-empty",
+      "N5.tile-degraded-retry"
+    ],
+    "R09": [
+      "N4.reference-nearest"
+    ],
+    "R10": [
+      "N1.offline-two-results",
+      "N4.typed-returns",
+      "N4.notice-context",
+      "N7.platform-back"
+    ],
+    "R11": [
+      "N1.serial-confirmation",
+      "N2.settings-retry",
+      "N3.single-owner",
+      "N3.pause-inflight",
+      "N4.notice-context"
+    ],
+    "R12": [
+      "N1.cold-preservation",
+      "N1.no-resend",
+      "N2.unavailable",
+      "N3.wrong-ack",
+      "N3.send-timeout",
+      "N3.ack-rollback",
+      "N5.valid-viewport-cold",
+      "N6.genuine-v1-upgrade"
+    ],
+    "R13": [
+      "N5.tile-degraded-retry",
+      "N5.cache-only-clear",
+      "N5.valid-viewport-cold",
+      "N5.invalid-viewport-fallback",
+      "N1.cold-preservation"
+    ],
+    "R14": [
+      "N4.map-controls",
+      "N4.notice-context",
+      "N5.tile-degraded-retry",
+      "N7.two-sizes-safearea",
+      "N7.os-keyboard",
+      "N7.text-scale",
+      "N7.reduced-motion-semantics",
+      "N7.platform-back"
+    ]
+  },
+  "evidence_policy": {
+    "current_candidate_required": true,
+    "default_tooling_smoke_rejected": true,
+    "independent_product_reviewer_required": true,
+    "typed_ui_actions_required": true,
+    "actual_three_process_same_install_required": true,
+    "both_configurations_required": true,
+    "real_sqlite_backup_required": true,
+    "actual_os_keyboard_insets_and_png_required": true,
+    "two_actual_device_sizes_required": true,
+    "system_text_scale_required": true,
+    "actual_reduced_motion_required": true,
+    "android_hardware_back_on_ios": "not_applicable; typed UI/modal return still required",
+    "http_handler_count_is_coordinator_owner_count": false,
+    "local_validator_publish_allowed": false
+  }
+}

@@ -40,13 +40,22 @@ python3 harness/run.py native --scope workbench --configuration local-client --i
 
 默认 driver 是工具 smoke，验证三进程接线，不签完整产品 G2。独立验收可用 `--driver-target integration_test/<现存验收driver>.dart`；它与配置、私有入口、fixture 一同进入恢复身份。`--fixture legacy-v1-identity-seq` 只供独立 driver，在新任务容器尚无业务库时建立真正的 v1 数据，保留原身份、队列序号和未知历史字段。默认客户端仍使用 UnavailableTransport；demo 的 HTTP ACK 明确标记模拟服务。原生键盘需实际 Insets 与 OS 截图证明，driver 文本模拟另行标记。后台能力不足的项单独记录，不升级到用户前台。
 
+完整原生验收按 [34项检查合同](project/native-acceptance-contract.json) 分组执行；各组实际结果见当前报告，代码存在不等于场景已验收。每个分组选择 `--scenario N1..N7`，报告保留各 phase 的动作、快照、OS PNG 与 SQLite backup。示例：
+
+```sh
+python3 harness/run.py native --scope workbench --driver-target integration_test/acceptance_driver.dart --scenario N1 --configuration demo --isolated --timeout 1200
+python3 harness/run.py native --scope workbench --driver-target integration_test/acceptance_driver.dart --scenario N6 --fixture legacy-v1-identity-seq --migration-fault --configuration demo --isolated --timeout 1200
+```
+
+`--runtime` / `--device-type` 使用实际 CoreSimulator ID；`--content-size` / `--reduce-motion` 只作用于新任务设备，验收仍检查 App 实际 MediaQuery。N5 可选 `--initial-tiles 503 --cold-fixture viewport-corrupt|viewport-nonfinite`，故障只在两个已区分的进程之间修改任务视口设置，不触碰业务行。所有源写入者冻结后再执行这些命令；同一资源上的依赖、构建和设备工作由 Harness 串行租用。
+
 ## 协作、恢复与门禁
 
 [团队 skill](../.agents/skills/agent-engineering-team/SKILL.md) 协调需求提取、Issue、开发、测试、原生验收、性能、Harness 和交付。每次只调用任务所需职能；共享接口、依赖锁、schema、启动装配和 CI 各由一个负责人写，独立职能审查后接受。
 
 运行记录在 `harness/runs/<时间-命令>/`，命令操作由 OS lease 保护。SIGTERM/Ctrl-C 终止子进程并归还锁；同候选可用 `python3 harness/run.py quality --resume harness/runs/<原运行目录>`。恢复核对候选、配置/入口/设备/阶段计划、活 PID、实际锁和日志 hash；不同配置不复用证据，隔离构建产物相关步骤重跑。Agent 是否活跃由协作 runtime 判断。
 
-生产执行 `python3 harness/run.py gate --manifest harness/runs/<交付目录>/manifest.json`。[门禁](gate.py) 校验 H01–H08 / G0–G6、当前候选、原始证据 hash、设备/性能层级、签名与授权。G1 必须引用 `quality-run` 原始报告，并验证前后候选、全部必需阶段及日志 hash。缺证失败是正确结果；CI/发布强制接线未部署，当前生产 **no-go**。
+本地交付执行 `python3 harness/run.py local-gate --manifest <仓库根目录的本地manifest.json>`，判定当前完整 G1/G2/本地资源证据，publish_allowed 始终为 false。生产执行 `python3 harness/run.py gate --manifest <仓库根目录的生产manifest.json>`。[门禁](gate.py) 校验 H01–H08 / G0–G6、当前候选、原始证据 hash、设备/性能层级、签名与授权。所有原始引用都必须处于 manifest 的规范根目录内，不能用 symlink 或目录跳转替代；报告中的实际绝对路径保留原值。G1 必须引用 `quality-run` 原始报告，验证前后候选、全部必需阶段及日志 hash。两种门禁 resume 都重新执行。缺证失败是正确结果；CI/发布强制接线未部署，当前生产 **no-go**。
 
 ## 历史证据
 

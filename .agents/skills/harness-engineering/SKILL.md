@@ -22,6 +22,8 @@ description: Prepare, implement or audit the execution environment and feedback 
 5. 将候选与证据绑定，由 CI/发布流程实际执行门禁。缺失、失败、跳过、未知和旧版本证据默认拒绝要求它的交付；主控不能以文字打分覆盖。门禁未接入/可绕过则仍是缺口。
 6. 用失败反例和独立 Agent 演练验证门禁、取消/恢复、重复派工和证据真实性。修正失败后重跑相关反例，再跑未用于修改的场景；保留成本和边界，不以一次通过推断可靠率。
 
+Ocean Delivery 的 `local-gate` 校验完整当前 G1/G2/本地资源合同并固定 publish_allowed=false；生产 `gate` 仍要求全部 H01–H08/G0–G6。恢复门禁必须重新读取外部原始证据；候选指纹相同不表示日志、数据库备份或产物仍有效。取消/恢复的实际验证交 X04，原生功能交 E08，远端不可绕过的执行路径交 X05；职能间互相消费证据，不互相代签。
+
 ## 上线硬门槛
 
 如果用户要求工程达到 Harness Engineering 才能上线，生产判定须满足当前候选所需八项能力 demonstrated、适用产品 gate 通过及发布授权。任何必要项 planned/partial/blocked 或证据不可复现均为 no-go。准备资料和本地试验可以继续；生产发布任务保持 blocked，不能通过把生产任务改名“本地交付”解锁。

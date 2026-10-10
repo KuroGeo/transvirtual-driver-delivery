@@ -5,7 +5,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from harness.gate import CAPABILITIES, GATES, evaluate
+from harness.gate import CAPABILITIES, GATES, SOURCE_ROOT, Validator, evaluate, evaluate_local
 
 
 class GateTests(unittest.TestCase):
@@ -13,8 +13,8 @@ class GateTests(unittest.TestCase):
 
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
-        self.root = Path(self.temp.name)
-        self.fingerprint = "current-source-fingerprint"
+        self.root = Path(self.temp.name).resolve()
+        self.fingerprint = "a" * 64
         self.manifest = {
             "candidate": {"source_fingerprint": self.fingerprint},
             "enforcement_deployed": True,
@@ -41,12 +41,38 @@ class GateTests(unittest.TestCase):
             "command": "quality",
             "candidate": {"source_fingerprint": self.fingerprint},
             "candidate_after": {"source_fingerprint": self.fingerprint},
+            "execution_candidate_after": {"source_fingerprint": self.fingerprint},
+            "started_at": "2026-10-10T10:00:00+00:00",
+            "finished_at": "2026-10-10T10:01:00+00:00",
+            "execution_root": str(self.root / "execution"),
+            "source_root": str(SOURCE_ROOT),
+            "options": {"configuration": "local-client", "targets": []},
+            "isolation": {"requested": True, "task_owned": True, "cleaned": True, "verified_fingerprint": self.fingerprint},
+            "lease": {"status": "released"},
+            "inputs": {"flutter": json.loads((SOURCE_ROOT / "app/.fvmrc").read_text())["flutter"], "lock_sha256": hashlib.sha256((SOURCE_ROOT / "app/pubspec.lock").read_bytes()).hexdigest(), "asset_sha256": hashlib.sha256((SOURCE_ROOT / "app/assets/deliveries.csv").read_bytes()).hexdigest()},
+            "stage_spec": [],
             "job": {"status": "passed"},
             "stages": [],
         }
-        for stage_id in ("repository", "tooling-tests", "sdk", "format", "analyze", "flutter-tests"):
-            log = self.evidence(f"quality-{stage_id}.log", "raw-log", "synthetic passed stage\n")
-            self.quality["stages"].append({"id": stage_id, "status": "passed", "exit_code": 0, "log_path": log["path"], "sha256": log["sha256"]})
+        commands = {
+            "repository": ["python3", "harness/run.py", "_check"],
+            "tooling-tests": ["python3", "-m", "unittest", "discover", "-s", "harness/tests", "-v"],
+            "sdk": ["python3", "harness/run.py", "_sdk"],
+            "pub": ["flutter", "pub", "get", "--enforce-lockfile"],
+            "format": ["dart", "format", "--output=none", "--set-exit-if-changed", "lib", "test", "integration_test"],
+            "analyze": ["flutter", "analyze", "--no-pub"],
+            "flutter-tests": ["flutter", "test", "--no-pub", "--reporter", "expanded", "--dart-define=OCEAN_MODE=local-client"],
+        }
+        for stage_id, command in commands.items():
+            text = "synthetic passed stage\n"
+            if stage_id == "tooling-tests":
+                text = "Ran 9 tests in 0.02s\n\nOK\n"
+            if stage_id == "flutter-tests":
+                text = "00:01 +9: All tests passed!\n"
+            log = self.evidence(f"quality-{stage_id}.log", "raw-log", text)
+            cwd = self.quality["execution_root"] + ("/app" if stage_id in ("pub", "format", "analyze", "flutter-tests") else "")
+            self.quality["stages"].append({"id": stage_id, "status": "passed", "exit_code": 0, "job_pid": 99, "command": command, "cwd": cwd, "log_path": log["path"], "sha256": log["sha256"]})
+            self.quality["stage_spec"].append({"id": stage_id, "command": command, "cwd": cwd.replace(self.quality["execution_root"], "@workspace")})
         self.entry("G1")["evidence"].append(self.evidence("quality.json", "quality-run", json.dumps(self.quality)))
         artifact = self.evidence("release.bin", "release-artifact", b"synthetic release artifact")
         self.manifest["gates"]["G5"]["evidence"].append(artifact)
@@ -92,7 +118,12 @@ class GateTests(unittest.TestCase):
         return result
 
     def test_complete_synthetic_fixture_only_validates_schema(self):
-        self.assertEqual(evaluate(self.manifest, self.fingerprint, self.root), {"allowed": True, "reasons": []})
+        # A complete full-quality schema can pass its own validator. The old
+        # platform/restart-only native fixture remains insufficient for G2.
+        validator = Validator(self.manifest, self.fingerprint, self.root)
+        item = next(item for item in self.entry("G1")["evidence"] if item["kind"] == "quality-run")
+        self.assertEqual(validator.quality(self.quality, validator.raw(item)), self.quality)
+        self.assert_rejected("native acceptance schema")
 
     def test_every_required_capability_and_gate_rejects_missing_entry(self):
         for group, ids in (("harness", CAPABILITIES), ("gates", GATES)):
@@ -112,7 +143,7 @@ class GateTests(unittest.TestCase):
                         self.assert_rejected(f"{group}.{entry_id}.status", manifest)
 
     def test_candidate_changes_invalidate_all_old_evidence(self):
-        self.assert_rejected("candidate.source_fingerprint", fingerprint="changed-source")
+        self.assert_rejected("candidate.source_fingerprint", fingerprint="b" * 64)
         for group, ids in (("harness", CAPABILITIES), ("gates", GATES)):
             for entry_id in ids:
                 with self.subTest(entry_id=entry_id):
@@ -123,8 +154,8 @@ class GateTests(unittest.TestCase):
     def test_missing_evidence_unknown_files_and_hash_mismatch_fail(self):
         for evidence, expected in (
             ([], "evidence is missing"),
-            ([{"path": "gone.log", "kind": "raw-log", "sha256": "0"}], "cannot read gone.log"),
-            ([{"path": "H01.log", "kind": "raw-log", "sha256": "0"}], "sha256 mismatch"),
+            ([{"path": "gone.log", "kind": "raw-log", "sha256": "0"}], "SHA-256"),
+            ([{"path": "H01.log", "kind": "raw-log", "sha256": "0"}], "SHA-256"),
             ([{"path": "H01.log", "sha256": "0"}], "requires path, sha256 and kind"),
         ):
             with self.subTest(expected=expected):
@@ -149,10 +180,10 @@ class GateTests(unittest.TestCase):
         for change, expected in (
             (lambda r: r.update(candidate={"source_fingerprint": "old-source"}), "candidate is missing or stale"),
             (lambda r: r.update(candidate_after={"source_fingerprint": "changed-source"}), "candidate_after is missing or stale"),
-            (lambda r: r.update(job={"status": "failed"}), "job.status must be passed"),
-            (lambda r: r.update(command="test"), "command must be quality"),
+            (lambda r: r.update(job={"status": "failed"}), "job.status must be 'passed'"),
+            (lambda r: r.update(command="test"), "command must be 'quality'"),
             (lambda r: r.update(stages=r["stages"][:-1]), "required quality stages"),
-            (lambda r: r["stages"][4].update(status="failed", exit_code=1), "status/exit_code"),
+            (lambda r: r["stages"][4].update(status="failed", exit_code=1), "stage status"),
         ):
             with self.subTest(expected=expected):
                 report = copy.deepcopy(self.quality)
@@ -165,9 +196,9 @@ class GateTests(unittest.TestCase):
     def test_quality_requires_original_stage_logs_and_quality_report_kind(self):
         log = self.root / self.quality["stages"][0]["log_path"]
         log.write_text("changed after the run")
-        self.assert_rejected("raw log sha256 mismatch")
+        self.assert_rejected("sha256 mismatch")
         log.unlink()
-        self.assert_rejected("cannot read raw log")
+        self.assert_rejected("cannot read")
         self.entry("G1")["evidence"] = [self.entry("G1")["evidence"][0]]
         self.assert_rejected("G1 requires valid quality-run")
 
@@ -243,6 +274,58 @@ class GateTests(unittest.TestCase):
         self.entry("G5")["evidence"].append(unsigned)
         self.change_report("G6", "delivery-receipt", {"artifact_sha256": unsigned["sha256"]})
         self.assert_rejected("no matching production signature")
+
+    def test_full_quality_rejects_bool_exit_targeted_command_old_inputs_and_incomplete_cleanup(self):
+        item = next(value for value in self.entry("G1")["evidence"] if value["kind"] == "quality-run")
+        mutations = (
+            (lambda r: r["stages"][0].update(exit_code=False), "booleans"),
+            (lambda r: r["options"].update(targets=["test/review/one.dart"]), "full-suite targets"),
+            (lambda r: r["inputs"].update(lock_sha256="0" * 64), "current source input"),
+            (lambda r: r["isolation"].update(cleaned=False), "isolation.cleaned"),
+            (lambda r: r.update(execution_candidate_after={"source_fingerprint": "b" * 64}), "execution_candidate_after"),
+            (lambda r: r["stages"][6]["command"].append("--plain-name=one"), "full quality stage command"),
+        )
+        for mutation, text in mutations:
+            with self.subTest(text=text):
+                report = copy.deepcopy(self.quality)
+                mutation(report)
+                raw = json.dumps(report).encode()
+                (self.root / item["path"]).write_bytes(raw)
+                item["sha256"] = hashlib.sha256(raw).hexdigest()
+                self.assert_rejected(text)
+
+    def test_hash_valid_late_flutter_failure_or_truncated_tooling_completion_rejects(self):
+        item = next(value for value in self.entry("G1")["evidence"] if value["kind"] == "quality-run")
+        for stage_id, text in (("flutter-tests", "00:01 +9: All tests passed!\nunhandled exception after completion\n"), ("tooling-tests", "Ran 9 tests in 0.02s\n")):
+            with self.subTest(stage=stage_id):
+                report = copy.deepcopy(self.quality)
+                stage = next(stage for stage in report["stages"] if stage["id"] == stage_id)
+                original_log = (self.root / stage["log_path"]).read_bytes()
+                (self.root / stage["log_path"]).write_text(text)
+                stage["sha256"] = hashlib.sha256(text.encode()).hexdigest()
+                raw = json.dumps(report).encode()
+                (self.root / item["path"]).write_bytes(raw)
+                item["sha256"] = hashlib.sha256(raw).hexdigest()
+                self.assert_rejected("successful completion")
+                (self.root / stage["log_path"]).write_bytes(original_log)
+
+    def test_local_evaluator_never_returns_a_production_allowed_field(self):
+        self.manifest["delivery_scope"] = "local-demo"
+        self.manifest["enforcement_deployed"] = False
+        result = evaluate_local(self.manifest, self.fingerprint, self.root)
+        self.assertEqual(set(result), {"local_allowed", "publish_allowed", "reasons"})
+        self.assertIs(result["publish_allowed"], False)
+        self.assertIs(result["local_allowed"], False)  # bare G2/tooling smoke
+        self.assertTrue(any("native acceptance schema" in reason for reason in result["reasons"]))
+        self.assert_rejected("enforcement_deployed")
+
+    def test_malformed_top_level_types_return_structured_refusal(self):
+        for manifest in (None, [], True, {"candidate": False}, {"candidate": {"source_fingerprint": self.fingerprint}, "service_mode": True}):
+            with self.subTest(manifest=manifest):
+                self.assertFalse(evaluate(manifest, self.fingerprint, self.root)["allowed"])
+                local = evaluate_local(manifest, self.fingerprint, self.root)
+                self.assertFalse(local["local_allowed"])
+                self.assertIs(local["publish_allowed"], False)
 
     def test_scope_name_cannot_bypass_production_requirements(self):
         self.manifest["delivery_scope"] = "local-demo"

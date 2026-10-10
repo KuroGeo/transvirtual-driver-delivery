@@ -138,7 +138,10 @@
       "E07",
       "X02"
     ],
-    "running": [],
+    "running": [
+      "E08",
+      "X03"
+    ],
     "task_board": "harness/project/work.json",
     "coordinator": "/root",
     "note": "Formal workbench assembled and independent host/build verification accepted; controlled native observation/acceptance next"
@@ -171,14 +174,17 @@
       "E07",
       "X02"
     ],
-    "running": [],
+    "running": [
+      "E08",
+      "X03"
+    ],
     "review": [],
     "independent_testing": [],
     "production_eligible": false
   },
   "active_candidate_validation": {
-    "scope": "Bounded64listenacceptcapacity candidate;24actualTCP regression+89Harness159Flutter passed; nativepending",
-    "status": "IndependentX02 accepted G1+bothnormalnative toolingsmokes; fullG2next",
+    "scope": "Fullnative34checks/evidencevalidator implementation; nofreshG1/G2 yet",
+    "status": "LastacceptedX02 e888; E08/X03 sourcechanging",
     "candidate": "e888779d6b48c5a3aecd002b20f0a21362134594fbb19680562bd535a7cc769b",
     "quality_report": "harness/runs/20261010T175151779951Z-quality/report.json",
     "tooling_checks": 89,

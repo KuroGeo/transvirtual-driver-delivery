@@ -411,73 +411,102 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'ocean delivery',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -1.0,
-                    ),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final largeText =
+                MediaQuery.textScalerOf(context).scale(12) > 20 ||
+                constraints.maxWidth < 300;
+            final brand = Semantics(
+              header: true,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                // The wordmark is decorative. Keep the complete heading in
+                // semantics while business labels retain the OS text scaler.
+                child: const Text(
+                  'ocean delivery',
+                  maxLines: 1,
+                  softWrap: false,
+                  textScaler: TextScaler.noScaling,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -1,
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Sydney · ${model.stops.length} stops',
-                    style: const TextStyle(
-                      color: OceanColors.muted,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox.square(
-              dimension: 44,
-              child: IconButton(
-                key: const ValueKey('open-search'),
-                tooltip: 'Search stops',
-                onPressed: () {
-                  setState(() => _searchOpen = !_searchOpen);
-                  if (_searchOpen) _searchFocus.requestFocus();
-                },
-                icon: const BrandIcon('search'),
-              ),
-            ),
-            OutlinedButton(
-              key: const ValueKey('online-toggle'),
-              onPressed:
-                  model.isLoading ||
-                      model.isChangingOnline ||
-                      model.settings == null
-                  ? null
-                  : () => unawaited(model.setOnline(!model.online)),
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size(76, 44),
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                side: BorderSide(
-                  color: model.online
-                      ? OceanColors.green.withValues(alpha: .3)
-                      : OceanColors.border,
                 ),
               ),
-              child: Text(
-                model.isChangingOnline
-                    ? 'Saving…'
-                    : model.online
-                    ? 'Online'
-                    : 'Offline',
-                style: TextStyle(
-                  color: model.online ? OceanColors.green : OceanColors.muted,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+            );
+            final subtitle = Text(
+              'Sydney · ${model.stops.length} stops',
+              style: const TextStyle(color: OceanColors.muted, fontSize: 12),
+            );
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: largeText
+                          ? brand
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                brand,
+                                const SizedBox(height: 2),
+                                subtitle,
+                              ],
+                            ),
+                    ),
+                    SizedBox.square(
+                      dimension: 44,
+                      child: IconButton(
+                        key: const ValueKey('open-search'),
+                        tooltip: 'Search stops',
+                        onPressed: () {
+                          setState(() => _searchOpen = !_searchOpen);
+                          if (_searchOpen) _searchFocus.requestFocus();
+                        },
+                        icon: const BrandIcon('search'),
+                      ),
+                    ),
+                    OutlinedButton(
+                      key: const ValueKey('online-toggle'),
+                      onPressed:
+                          model.isLoading ||
+                              model.isChangingOnline ||
+                              model.settings == null
+                          ? null
+                          : () => unawaited(model.setOnline(!model.online)),
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(76, 44),
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        side: BorderSide(
+                          color: model.online
+                              ? OceanColors.green.withValues(alpha: .3)
+                              : OceanColors.border,
+                        ),
+                      ),
+                      child: Text(
+                        model.isChangingOnline
+                            ? 'Saving…'
+                            : model.online
+                            ? 'Online'
+                            : 'Offline',
+                        style: TextStyle(
+                          color: model.online
+                              ? OceanColors.green
+                              : OceanColors.muted,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ),
-          ],
+                if (largeText) ...[const SizedBox(height: 2), subtitle],
+              ],
+            );
+          },
         ),
         const SizedBox(height: 8),
         Text(

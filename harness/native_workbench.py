@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -24,6 +25,10 @@ JOURNAL = "native-workbench-journal.jsonl"
 LAUNCH_CONFIG = "native-workbench-launch.json"
 PHASES = ("saved", "recovered", "confirmed")
 LEGACY = "legacy-v1-identity-seq"
+MIGRATION_TRIGGER = "ocean_native_fault_migration_backfill"
+SCENARIOS = tuple(f"N{number}" for number in range(1, 8))
+CONTENT_SIZES = ("large", "accessibility-extra-extra-extra-large")
+COLD_FIXTURES = ("none", "viewport-corrupt", "viewport-nonfinite")
 # A deterministic, valid one-pixel PNG served through the real HTTP tile path.
 def png_chunk(kind, value):
     return struct.pack(">I", len(value)) + kind + value + struct.pack(">I", zlib.crc32(kind + value))
@@ -60,6 +65,31 @@ def driver_target(root, target=None):
     return path.relative_to(root / "app").as_posix()
 
 
+def device_identifiers(runtime, device_type):
+    if not isinstance(runtime, str) or not isinstance(device_type, str) or not re.fullmatch(r"com\.apple\.CoreSimulator\.SimRuntime\.iOS-\d{1,2}-\d{1,2}(?:-\d{1,2})?", runtime) or not re.fullmatch(r"com\.apple\.CoreSimulator\.SimDeviceType\.[A-Za-z0-9-]{1,96}", device_type):
+        raise ValueError("native runtime/device-type must be explicit CoreSimulator iOS identifiers")
+
+
+def available_device(runtime, device_type, runtimes, types):
+    device_identifiers(runtime, device_type)
+    if not isinstance(runtimes, dict) or not isinstance(types, dict) or not isinstance(runtimes.get("runtimes"), list) or not isinstance(types.get("devicetypes"), list) or not any(row.get("identifier") == runtime and row.get("isAvailable") is True for row in runtimes["runtimes"] if isinstance(row, dict)) or not any(row.get("identifier") == device_type for row in types["devicetypes"] if isinstance(row, dict)):
+        raise ValueError("requested task runtime/device-type is absent or unavailable in actual inventory")
+
+
+def workbench_options(args, driver):
+    defaults = {"scenario": None, "content_size": "large", "reduce_motion": False, "initial_tiles": "normal", "cold_fixture": "none", "migration_fault": False}
+    values = {key: getattr(args, key, default) for key, default in defaults.items()}
+    if values["scenario"] is not None and values["scenario"] not in SCENARIOS or values["content_size"] not in CONTENT_SIZES or values["initial_tiles"] not in {"normal", "503"} or values["cold_fixture"] not in COLD_FIXTURES or any(type(values[key]) is not bool for key in ("reduce_motion", "migration_fault")):
+        raise ValueError("native acceptance options outside the frozen enums/types")
+    if (values != defaults) and (values["scenario"] is None or driver == DRIVER):
+        raise ValueError("native acceptance controls require an explicit scenario and independent driver")
+    if values["migration_fault"] and (values["scenario"] != "N6" or args.fixture != LEGACY):
+        raise ValueError("migration fault requires N6 and the genuine v1 fixture")
+    if values["cold_fixture"] != "none" and values["scenario"] != "N5":
+        raise ValueError("cold viewport fixture requires N5")
+    return values
+
+
 def owned_container(path, udid):
     path = Path(path)
     resolved = path.resolve(strict=True)
@@ -69,6 +99,18 @@ def owned_container(path, udid):
     suffix = ("Devices", udid, "data", "Containers", "Data", "Application")
     if not any(parts[index:index + len(suffix)] == suffix and index + len(suffix) + 1 == len(parts) for index in range(len(parts))):
         raise ValueError("app container does not belong to the newly created task simulator")
+    return resolved
+
+
+def installed_bundle(path, udid, application, executable):
+    """Bind VM publication to the exact installed app on the new task device."""
+    path = Path(path)
+    resolved = path.resolve(strict=True)
+    suffix = ("Devices", udid, "data", "Containers", "Bundle", "Application")
+    parts = resolved.parts
+    binary = resolved / executable
+    if path != resolved or not resolved.is_dir() or resolved.name != application or not any(parts[index:index + len(suffix)] == suffix and index + len(suffix) + 2 == len(parts) for index in range(len(parts))) or not binary.is_file() or binary.resolve() != binary:
+        raise ValueError("VM publication requires the exact canonical installed bundle on the task simulator")
     return resolved
 
 
@@ -254,13 +296,45 @@ def seed_legacy(container, udid, configuration, source, output, fixture=LEGACY):
     return receipt
 
 
-def sql_connection(path, writable=False):
+def sql_connection(path, writable=False, versions=(2,)):
     connection = sqlite3.connect(Path(path).as_uri() + ("?mode=rw" if writable else "?mode=ro"), uri=True, timeout=2)
     connection.row_factory = sqlite3.Row
-    if connection.execute("PRAGMA user_version").fetchone()[0] != 2:
+    if connection.execute("PRAGMA user_version").fetchone()[0] not in versions:
         connection.close()
-        raise ValueError("fault/snapshot requires the actual accepted schema v2")
+        raise ValueError("fault/snapshot schema version is outside the explicitly allowed versions")
     return connection
+
+
+def migration_fault(container, udid, configuration, install=False):
+    container = owned_container(container, udid)
+    path = database_path(container, configuration)
+    with closing(sql_connection(path, writable=True, versions=(1,) if install else (1, 2))) as connection, connection:
+        connection.execute(f'DROP TRIGGER IF EXISTS "{MIGRATION_TRIGGER}"')
+        if install:
+            identity = connection.execute("SELECT stop_id FROM outbox WHERE seq=11 AND operation_id='legacy-operation-1' AND dataset_id='legacy-dataset'").fetchone()
+            if not identity:
+                raise ValueError("migration fault requires the exact genuine legacy operation fixture")
+            connection.execute(f'''CREATE TRIGGER "{MIGRATION_TRIGGER}" BEFORE UPDATE ON stops
+                WHEN NEW.id=(SELECT stop_id FROM outbox WHERE seq=11 AND operation_id='legacy-operation-1')
+                BEGIN SELECT RAISE(ABORT, 'task-owned migration backfill failure'); END''')
+    return {"trigger": MIGRATION_TRIGGER, "installed": install, "database": str(path)}
+
+
+def cold_settings_fixture(container, udid, configuration, name):
+    if name not in COLD_FIXTURES[1:]:
+        raise ValueError("unsupported cold viewport fixture")
+    container = owned_container(container, udid)
+    path = database_path(container, configuration)
+    with closing(sql_connection(path, writable=True)) as connection, connection:
+        datasets = connection.execute("SELECT DISTINCT dataset_id FROM stops").fetchall()
+        if len(datasets) != 1:
+            raise ValueError("cold fixture requires the actual single imported dataset")
+        dataset = datasets[0][0]
+        if not connection.execute("SELECT dataset_id FROM delivery_settings WHERE dataset_id=?", (dataset,)).fetchone():
+            raise ValueError("cold fixture requires a persisted current settings row")
+        latitude = "bad" if name == "viewport-corrupt" else float("inf")
+        connection.execute("UPDATE delivery_settings SET viewport_latitude=?,viewport_longitude=0,viewport_zoom=12 WHERE dataset_id=?", (latitude, dataset))
+    return {"fixture": name, "dataset_id": dataset, "scope": "three viewport columns only; online and delivery identities retained"}
 
 
 def sql_fault(container, configuration, fault):
@@ -276,7 +350,7 @@ def sql_fault(container, configuration, fault):
     return {"fault": fault, "database": str(path)}
 
 
-def sqlite_snapshot(container, configuration, output):
+def sqlite_snapshot(container, configuration, output, legacy=False):
     """SQLite backup handles WAL consistently; bounded progress rejects lock hangs."""
     path = database_path(container, configuration)
     destination = Path(output)
@@ -284,14 +358,24 @@ def sqlite_snapshot(container, configuration, output):
     def progress(status, remaining, total):
         if time.monotonic() >= deadline:
             raise TimeoutError("SQLite backup deadline exceeded")
-    with closing(sql_connection(path)) as source, closing(sqlite3.connect(destination)) as target:
+    versions = (1,) if legacy else (2,)
+    with closing(sql_connection(path, versions=versions)) as source, closing(sqlite3.connect(destination)) as target:
         source.backup(target, pages=64, progress=progress, sleep=0.01)
-    with closing(sql_connection(destination)) as backup:
-        tables = {table: [dict(row) for row in backup.execute(f'SELECT * FROM "{table}" ORDER BY {order}')]
-                  for table, order in (("datasets", "id"), ("stops", "id"), ("outbox", "seq"), ("delivery_settings", "dataset_id"))}
+    with closing(sql_connection(destination, versions=versions)) as backup:
+        def scalar(value):
+            return {"sqlite_nonfinite": str(value)} if isinstance(value, float) and not math.isfinite(value) else value
+        names = (("datasets", "id"), ("stops", "id"), ("outbox", "seq")) + (() if legacy else (("delivery_settings", "dataset_id"),))
+        tables = {table: [{key: scalar(value) for key, value in dict(row).items()} for row in backup.execute(f'SELECT * FROM "{table}" ORDER BY {order}')]
+                  for table, order in names}
+        schema = {table: [dict(row) for row in backup.execute(f'PRAGMA table_info("{table}")')] for table, _ in names}
+        version = backup.execute("PRAGMA user_version").fetchone()[0]
+        triggers = [dict(row) for row in backup.execute("SELECT name,sql FROM sqlite_master WHERE type='trigger' ORDER BY name")]
+        sequence = [dict(row) for row in backup.execute("SELECT name,seq FROM sqlite_sequence ORDER BY name")] if backup.execute("SELECT name FROM sqlite_master WHERE name='sqlite_sequence'").fetchone() else []
+        if legacy and backup.execute("SELECT name FROM sqlite_master WHERE name='delivery_settings'").fetchone():
+            raise ValueError("legacy rollback backup unexpectedly contains v2 settings")
         if backup.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
             raise ValueError("native SQLite backup failed integrity check")
-    return {"path": destination.name, "sha256": digest(destination), "tables": tables}
+    return {"path": destination.name, "sha256": digest(destination), "user_version": version, "schema": schema, "triggers": triggers, "sqlite_sequence": sequence, "tables": tables}
 
 
 def outbox_identities(rows, snapshot=False):
@@ -299,7 +383,7 @@ def outbox_identities(rows, snapshot=False):
     return [tuple(row[name] for name in names) for row in rows]
 
 
-def unified_vm_uri(text, pid, executable="Runner"):
+def unified_vm_uri(text, pid, executable="Runner", process_path=None):
     """Decode complete log-stream/show JSON objects, never arbitrary stdout URLs."""
     decoder, offset, candidates = json.JSONDecoder(), 0, set()
     while True:
@@ -314,6 +398,8 @@ def unified_vm_uri(text, pid, executable="Runner"):
         if not isinstance(event, dict) or type(event.get("processID")) is not int or event["processID"] != pid:
             continue
         if not str(event.get("processImagePath", "")).endswith("/" + executable) or not str(event.get("senderImagePath", "")).endswith("/Flutter"):
+            continue
+        if process_path is not None and (event.get("processImagePath") != str(process_path) or event.get("senderImagePath") != str(Path(process_path).parent / "Frameworks/Flutter.framework/Flutter")):
             continue
         message = event.get("eventMessage")
         if not isinstance(message, str):
@@ -334,7 +420,18 @@ def unified_vm_uri(text, pid, executable="Runner"):
     return next(iter(candidates), None)
 
 
-def validate_driver_result(directory, phase, pid, candidate, configuration, session, container, launch_config):
+def persisted_vm_uri(text, pid, executable, process_path):
+    """Persisted log show must be a complete native JSON array, unlike a stream."""
+    try:
+        events = json.loads(text)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(events, list) or not all(isinstance(event, dict) for event in events):
+        return None
+    return unified_vm_uri(text, pid, executable, process_path)
+
+
+def validate_driver_result(directory, phase, pid, candidate, configuration, session, container, launch_config, scenario=None):
     directory = Path(directory)
     result = json.loads((directory / "result.json").read_text())
     snapshot = json.loads((directory / "snapshot.json").read_text())
@@ -345,6 +442,8 @@ def validate_driver_result(directory, phase, pid, candidate, configuration, sess
             raise ValueError(f"{label} candidate/configuration/native PID identity mismatch")
     if result.get("status") != "passed" or result.get("phase") != phase or type(result.get("vmProcessId")) is not int or result["vmProcessId"] != pid:
         raise ValueError("driver failed, wrong phase, or VM PID differs from actual launched process")
+    if scenario is not None and (result.get("scope") != "e08-native-functional-acceptance" or result.get("scenario") != scenario):
+        raise ValueError("independent acceptance result scope/scenario differs from frozen host options")
     if snapshot.get("mode") != configuration or snapshot.get("transport") != ("controlled-http-simulated" if configuration == "demo" else "unavailable-local-client"):
         raise ValueError("readonly snapshot mode/transport differs from native launch")
     if Path(snapshot.get("databasePath", "")).resolve() != database_path(container, configuration):
@@ -375,10 +474,11 @@ class FixtureHTTPServer(ThreadingHTTPServer):
 
 class Fixture:
     """Task-local HTTP fixture. Controls change fixtures, never product/UI state."""
-    def __init__(self, output, capture, fault):
+    def __init__(self, output, capture, fault, migration=None):
         self.output, self.capture, self.fault = Path(output), capture, fault
+        self.migration = migration
         self.token = secrets.token_hex(24)
-        self.state = {"tiles": "normal", "sync": "match", "delayMs": 720, "sqlFault": "none"}
+        self.state = {"tiles": "normal", "sync": "match", "delayMs": 720, "sqlFault": "none", "migrationFault": "armed" if migration else "none"}
         self.requests = []
         self.sync_received = threading.Event()
         self.stopping = threading.Event()
@@ -566,6 +666,10 @@ class Fixture:
                 raise ValueError("fixture control outside allowed bounds")
             if "sqlFault" in value:
                 self.fault(proposed["sqlFault"])
+            if "migrationFault" in value:
+                if value["migrationFault"] != "none" or self.migration is None or self.state["migrationFault"] != "armed":
+                    raise ValueError("only an armed, proof-captured migration fixture can be dropped")
+                self.migration()
             self.state = proposed
             self.record({"kind": "control", "state": proposed.copy()})
             return proposed.copy()
@@ -605,12 +709,17 @@ class Workbench:
         self.output = args.output.resolve()
         self.output.mkdir(parents=True, exist_ok=True)
         self.driver = driver_target(root, args.driver_target)
+        self.options = workbench_options(args, self.driver)
+        device_identifiers(args.runtime, args.device_type)
         self.device = self.container = self.active_phase = self.driver_process = self.session = self.pid = None
         self.log_reader = None
         self.log_streams = []
         self.log_started = self.log_record = None
         self.launch_config = None
+        self.native_executable = None
         self.sql_fault_ever_installed = False
+        self.migration_armed = self.boot_failure_captured = False
+        self.legacy_baseline = None
         self.command_lock = threading.RLock()
         self.report = {"schema": 1, "candidate": args.candidate, "configuration": args.configuration,
                        "platform": "ios", "device_type": "simulator", "build_mode": "debug",
@@ -618,6 +727,7 @@ class Workbench:
                        "transport": "simulated-http-demo" if args.configuration == "demo" else "unavailable",
                        "tile_source": "task-loopback-http-fixture", "status": "failed", "process_restart": False,
                        "entrypoint": ENTRY, "driver_target": self.driver, "fixture_name": args.fixture,
+                       "acceptance_options": self.options,
                        "commands": [], "phases": [], "artifacts": []}
         self.application = self.root / "app/build/ios/iphonesimulator/Runner.app"
         import plistlib
@@ -629,7 +739,11 @@ class Workbench:
         self.report["inputs"] = {name: digest(self.root / name) for name in (
             "harness/native.py", "harness/native_workbench.py", "harness/run.py", "app/" + ENTRY,
             "app/" + self.driver, "app/integration_test/support/native_workbench_bridge.dart",
-            "app/integration_test/support/native_driver_support.dart", "app/pubspec.lock", "app/assets/deliveries.csv")}
+            "app/integration_test/support/native_driver_support.dart", "app/integration_test/support/native_gesture_command.dart",
+            "app/integration_test/support/native_gesture_extension.dart", "app/pubspec.lock", "app/assets/deliveries.csv")}
+        if self.options["scenario"]:
+            name = "app/integration_test/support/native_acceptance_support.dart"
+            self.report["inputs"][name] = digest(self.root / name)
 
     def save(self):
         write_json(self.output / "result.json", self.report)
@@ -664,11 +778,15 @@ class Workbench:
             if not self.active_phase or not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,63}", name):
                 raise ValueError("capture outside active task phase")
             verify_launch_config(self.container, self.device, self.launch_config)
+            legacy = name == "migration-rollback"
+            observation = self.failed_boot_observation() if legacy else None
             target = self.output / self.active_phase / name
             if target.with_suffix(".png").exists() or target.with_suffix(".sqlite").exists():
                 raise ValueError("task capture name already used")
             self.command("io", self.device, "screenshot", str(target.with_suffix(".png")), timeout=30)
-            database = sqlite_snapshot(self.container, self.args.configuration, target.with_suffix(".sqlite"))
+            database = sqlite_snapshot(self.container, self.args.configuration, target.with_suffix(".sqlite"), legacy=legacy)
+            if legacy and (self.legacy_baseline is None or any(database[key] != self.legacy_baseline[key] for key in ("tables", "schema", "sqlite_sequence")) or not any(row["name"] == MIGRATION_TRIGGER for row in database["triggers"])):
+                raise ValueError("actual v1 migration failure changed original rows/schema/sequence or lost the armed trigger")
             write_json(target.with_suffix(".sqlite.json"), database)
             records = [self.artifact(target.with_suffix(suffix), kind) for suffix, kind in ((".png", "os-screenshot"), (".sqlite", "sqlite-backup"), (".sqlite.json", "sqlite-projection"))]
             journal = database_path(self.container, self.args.configuration).parent / JOURNAL
@@ -678,11 +796,64 @@ class Workbench:
             destination.write_bytes(journal.read_bytes())
             events = [json.loads(line) for line in destination.read_text().splitlines()]
             current = [event for event in events if event.get("session") == self.session]
-            if not current or not any(event.get("source") == "repository" for event in current) or any(event.get("processId") != self.pid or event.get("candidate") != self.args.candidate or event.get("configuration") != self.args.configuration for event in current):
+            if not current or not any(event.get("source") == "repository" and (not legacy or event.get("stage") == "initialize_failed") for event in current) or any(event.get("processId") != self.pid or event.get("candidate") != self.args.candidate or event.get("configuration") != self.args.configuration for event in current):
                 raise ValueError("native journal lacks current PID/candidate/configuration/session events")
             records.append(self.artifact(destination, "repository-coordinator-journal"))
+            if legacy:
+                records.append(self.artifact(self.output / self.active_phase / "migration-rollback-snapshot.json", "actual-failed-boot-readonly-observation"))
+                self.boot_failure_captured = True
+                self.report["migration_rollback"] = {"phase": self.active_phase, "processId": self.pid, "session": self.session,
+                    "user_version": database["user_version"], "preserved_v1_rows_schema_sequence": True, "artifacts": records}
             self.save()
-            return {"artifacts": records, "database": database}
+            return {"artifacts": records, "database": database, **({"failed_boot_observation": observation} if legacy else {})}
+
+    def failed_boot_observation(self):
+        if not self.options["migration_fault"] or self.options["scenario"] != "N6" or not self.migration_armed or self.active_phase != "saved":
+            raise ValueError("v1 capture requires the explicit armed N6 first-launch migration fixture")
+        path = self.output / self.active_phase / "migration-rollback-snapshot.json"
+        if path.is_symlink() or not path.is_file() or path.stat().st_size > 8 * 1024 * 1024:
+            raise ValueError("migration capture requires the fixed bounded readonly failed-boot snapshot")
+        value = json.loads(path.read_text())
+        expected = {"schema": 1, "processId": self.pid, "candidate": self.args.candidate, "configuration": self.args.configuration,
+            "mode": self.args.configuration, "session": self.session, "launchConfigPath": self.launch_config["path"],
+            "launchConfigByteLength": self.launch_config["byte_length"], "launchConfigSchema": 1,
+            "transport": "controlled-http-simulated" if self.args.configuration == "demo" else "unavailable-local-client"}
+        if not isinstance(value, dict) or any(type(value.get(key)) is not type(want) or value[key] != want for key, want in expected.items()):
+            raise ValueError("failed-boot observation contains a stale PID/candidate/mode/session/config identity")
+        model = value.get("model")
+        bounds = value.get("bounds")
+        retry = bounds.get("retry-bootstrap", []) if isinstance(bounds, dict) else []
+        if value.get("outbox") is not None or not isinstance(value.get("databasePath"), str) or Path(value["databasePath"]).resolve() != database_path(self.container, self.args.configuration) or model is not None and (not isinstance(model, dict) or model.get("initialized") is not False) or not isinstance(retry, list) or not any(isinstance(row, dict) and row.get("centerHit") is True for row in retry):
+            raise ValueError("v1 capture requires actual uninitialized model and visible/hittable Retry UI")
+        return {"path": path.relative_to(self.output).as_posix(), "sha256": digest(path), "processId": self.pid, "session": self.session}
+
+    def clear_migration_fault(self):
+        if not self.migration_armed or not self.boot_failure_captured:
+            raise ValueError("migration trigger cannot be dropped before actual rollback capture")
+        receipt = migration_fault(self.container, self.device, self.args.configuration)
+        self.migration_armed = False
+        write_json(self.output / "migration-trigger.json", {**receipt, "candidate": self.args.candidate, "processId": self.pid, "session": self.session})
+        self.artifact(self.output / "migration-trigger.json", "named-migration-trigger-drop")
+        self.save()
+
+    def prepare_cold_fixture(self):
+        if self.pid is None or self.alive(self.pid):
+            raise ValueError("cold fixture requires the saved native process to have terminated")
+        verify_launch_config(self.container, self.device, self.launch_config)
+        before = sqlite_snapshot(self.container, self.args.configuration, self.output / "cold-before.sqlite")
+        receipt = cold_settings_fixture(self.container, self.device, self.args.configuration, self.options["cold_fixture"])
+        after = sqlite_snapshot(self.container, self.args.configuration, self.output / "cold-after.sqlite")
+        if any(before["tables"][key] != after["tables"][key] for key in ("datasets", "stops", "outbox")) or before["sqlite_sequence"] != after["sqlite_sequence"]:
+            raise ValueError("cold viewport fixture changed delivery/outbox identities")
+        identity = lambda rows: [(row["dataset_id"], row["online"]) for row in rows]
+        if identity(before["tables"]["delivery_settings"]) != identity(after["tables"]["delivery_settings"]):
+            raise ValueError("cold viewport fixture changed dataset/online settings")
+        write_json(self.output / "cold-before.sqlite.json", before)
+        write_json(self.output / "cold-after.sqlite.json", after)
+        self.report["cold_fixture"] = {**receipt, "after_terminated_pid": self.pid, "before": before, "after": after}
+        for name in ("cold-before.sqlite", "cold-before.sqlite.json", "cold-after.sqlite", "cold-after.sqlite.json"):
+            self.artifact(self.output / name, "task-cold-viewport-fixture")
+        self.save()
 
     @staticmethod
     def alive(pid):
@@ -703,6 +874,8 @@ class Workbench:
     def log_predicate(self):
         # SDK uses these actual unified-log fields. The stream starts before
         # launch; complete JSON records are additionally matched to its new PID.
+        if self.native_executable is not None:
+            return 'eventType = logEvent AND processImagePath == ' + json.dumps(str(self.native_executable))
         return f'eventType = logEvent AND processImagePath ENDSWITH "/{self.executable}"'
 
     def start_log_reader(self, directory):
@@ -775,6 +948,12 @@ class Workbench:
     def launch(self, phase, fixture):
         if self.pid is not None and self.alive(self.pid):
             raise ValueError("previous native PID is still alive; launch configuration cannot be replaced")
+        bundle = installed_bundle(self.command("get_app_container", self.device, self.bundle, "app", timeout=30), self.device, self.application.name, self.executable)
+        executable = bundle / self.executable
+        if self.native_executable is not None and executable != self.native_executable:
+            raise ValueError("same-install relaunch changed the installed task app bundle")
+        self.native_executable = executable
+        self.report["installed_app_bundle"] = str(bundle)
         directory = self.output / phase
         directory.mkdir()
         self.session = secrets.token_hex(24)
@@ -793,7 +972,8 @@ class Workbench:
         self.pid = pid
         self.report.setdefault("launches", []).append({"phase": phase, "processId": pid, "session": self.session,
             "candidate": self.args.candidate, "configuration": self.args.configuration, "launch_config": self.launch_config.copy()})
-        deadline = time.monotonic() + 45
+        started = time.monotonic()
+        deadline, next_show, attempts = started + 45, started, 0
         while time.monotonic() < deadline:
             if not self.alive(pid):
                 raise RuntimeError("native app exited before VM-service connection")
@@ -802,13 +982,39 @@ class Workbench:
             path = directory / "unified.stream.json"
             if path.stat().st_size > 8 * 1024 * 1024:
                 raise ValueError("task unified-log stream exceeded bounded discovery size")
-            uri = unified_vm_uri(path.read_text(errors="replace"), pid, self.executable)
+            uri = unified_vm_uri(path.read_text(errors="replace"), pid, self.executable, self.native_executable)
+            source, evidence = "live-stream", None
+            if not uri and time.monotonic() >= next_show:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    break
+                attempts += 1
+                try:
+                    raw = self.command("spawn", self.device, "log", "show", "--style", "json", "--process", str(pid), "--last", "2m", "--info", "--debug", "--predicate", self.log_predicate(), timeout=min(5, remaining))
+                except (OSError, RuntimeError, subprocess.TimeoutExpired) as error:
+                    self.report["launches"][-1].setdefault("vm_discovery_errors", []).append({"attempt": attempts, "type": type(error).__name__})
+                else:
+                    retained = directory / f"discovery-show-{attempts:02d}.json"
+                    retained.write_text(raw + "\n")
+                    evidence = self.artifact(retained, "task-pid-persisted-vm-discovery")
+                    if retained.stat().st_size > 8 * 1024 * 1024:
+                        raise ValueError("task persisted unified log exceeded bounded discovery size")
+                    uri = persisted_vm_uri(raw, pid, self.executable, self.native_executable)
+                    source = "persisted-show"
+                next_show = time.monotonic() + 2
+            if time.monotonic() >= deadline:
+                break
             if uri:
+                if not self.alive(pid):
+                    raise RuntimeError("native app exited during VM-service discovery")
                 verify_launch_config(self.container, self.device, self.launch_config)
                 self.report["launches"][-1]["vm_uri_sha256"] = hashlib.sha256(uri.encode()).hexdigest()
-                self.report["launches"][-1]["vm_discovery_source"] = "task-device unified log, actual processID/app/Flutter publication"
+                self.report["launches"][-1]["vm_discovery_source"] = source
+                self.report["launches"][-1]["vm_process_image_path"] = str(self.native_executable)
+                if evidence is not None:
+                    self.report["launches"][-1]["vm_discovery_artifact"] = evidence
                 return pid, uri
-            time.sleep(0.1)
+            time.sleep(min(0.1, max(0, deadline - time.monotonic())))
         raise TimeoutError("actual launched process published no authenticated loopback VM URI")
 
     def drive(self, phase, pid, uri, fixture):
@@ -821,12 +1027,18 @@ class Workbench:
             argv.extend(["--baseline", str(self.output / "saved/snapshot.json")])
         if self.args.fixture:
             argv.extend(["--fixture", self.args.fixture])
+        if self.options["scenario"]:
+            for key in ("scenario", "content_size", "initial_tiles", "cold_fixture"):
+                argv.extend(["--" + key.replace("_", "-"), self.options[key]])
+            for key in ("reduce_motion", "migration_fault"):
+                if self.options[key]:
+                    argv.append("--" + key.replace("_", "-"))
         log = directory / "driver.log"
         started = time.monotonic()
         with log.open("w") as stream:
             self.driver_process = subprocess.Popen(argv, cwd=self.root / "app", stdout=stream, stderr=subprocess.STDOUT, pass_fds=self.fds)
             try:
-                code = self.driver_process.wait(timeout=180)
+                code = self.driver_process.wait(timeout=330 if self.options["scenario"] else 180)
             finally:
                 if self.driver_process.poll() is None:
                     self.driver_process.terminate()
@@ -846,11 +1058,14 @@ class Workbench:
         if code:
             raise RuntimeError(f"external driver {phase} failed with exit {code}; inspect raw driver log")
         verify_launch_config(self.container, self.device, self.launch_config)
-        return validate_driver_result(directory, phase, pid, self.args.candidate, self.args.configuration, self.session, self.container, self.launch_config)
+        return validate_driver_result(directory, phase, pid, self.args.candidate, self.args.configuration, self.session, self.container, self.launch_config, self.options["scenario"])
 
     def execute(self):
         pids, saved_ids, recovered_tables = [], None, None
         try:
+            runtimes = json.loads(self.command("list", "runtimes", "--json"))
+            types = json.loads(self.command("list", "devicetypes", "--json"))
+            available_device(self.args.runtime, self.args.device_type, runtimes, types)
             created = self.command("create", "OceanDelivery-Workbench", self.args.device_type, self.args.runtime)
             if not re.fullmatch(r"[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}", created):
                 raise ValueError("simctl create returned an invalid task UDID")
@@ -862,13 +1077,29 @@ class Workbench:
             self.container = owned_container(self.command("get_app_container", self.device, self.bundle, "data"), self.device)
             self.report["data_container"] = str(self.container)
             launch_config_path(self.container, self.device, create=True)
+            if self.options["scenario"]:
+                self.command("ui", self.device, "content_size", self.options["content_size"], timeout=30)
+                content_receipt = self.command("ui", self.device, "content_size", timeout=30)
+                self.report["os_controls"] = {"content_size": self.options["content_size"], "content_size_receipt": content_receipt,
+                    "reduce_motion_requested": self.options["reduce_motion"], "actual_mediaquery_proof": "required from independent UI driver, not inferred from command success"}
+                if self.options["reduce_motion"]:
+                    self.command("spawn", self.device, "defaults", "write", "com.apple.Accessibility", "ReduceMotionEnabled", "-bool", "YES", timeout=30)
+                    self.report["os_controls"]["reduce_motion_defaults_receipt"] = self.command("spawn", self.device, "defaults", "read", "com.apple.Accessibility", "ReduceMotionEnabled", timeout=30)
             if self.args.fixture:
                 self.report["legacy_fixture"] = seed_legacy(self.container, self.device, self.args.configuration, self.root / "app/assets/deliveries.csv", self.output)
                 self.report["legacy_fixture"]["reference_fixture"] = {"path": "app/test/data/legacy_repository_fixture.dart", "sha256": digest(self.root / "app/test/data/legacy_repository_fixture.dart")}
                 write_json(self.output / "legacy-fixture.json", self.report["legacy_fixture"])
                 for name in ("legacy-schema.sql", "legacy-before-launch.sqlite", "legacy-fixture.json"):
                     self.artifact(self.output / name, "genuine-v1-prelaunch-fixture")
-            with Fixture(self.output, self.capture, self.set_sql_fault) as fixture:
+                if self.options["migration_fault"]:
+                    migration_fault(self.container, self.device, self.args.configuration, install=True)
+                    self.migration_armed = True
+                    self.legacy_baseline = sqlite_snapshot(self.container, self.args.configuration, self.output / "legacy-armed.sqlite", legacy=True)
+                    write_json(self.output / "legacy-armed.sqlite.json", self.legacy_baseline)
+                    for name in ("legacy-armed.sqlite", "legacy-armed.sqlite.json"):
+                        self.artifact(self.output / name, "genuine-v1-armed-backfill-fixture")
+            with Fixture(self.output, self.capture, self.set_sql_fault, self.clear_migration_fault if self.options["migration_fault"] else None) as fixture:
+                fixture.control({"tiles": self.options["initial_tiles"]})
                 if self.args.fixture and self.args.configuration == "demo":
                     fixture.control({"sync": "hold"})
                 self.report["fixture"] = {"base_url": fixture.url, "tile_sha256": hashlib.sha256(TILE).hexdigest(), "task_owned": True,
@@ -876,6 +1107,8 @@ class Workbench:
                     "counter_semantics": "active HTTP handlers, including uncancellable requests after logical coordinator timeout; not coordinator owners"}
                 for phase in PHASES:
                     self.active_phase = phase
+                    if phase == "recovered" and self.options["cold_fixture"] != "none":
+                        self.prepare_cold_fixture()
                     pid, uri = self.launch(phase, fixture)
                     pids.append(pid)
                     self.report["process_ids"] = pids.copy()
@@ -931,6 +1164,12 @@ class Workbench:
                 self.report.update(status="failed", log_reader_cleanup_error=str(error))
             self.active_phase = None
             if self.container:
+                if self.migration_armed:
+                    try:
+                        self.report["migration_fault_cleanup"] = migration_fault(self.container, self.device, self.args.configuration)
+                        self.migration_armed = False
+                    except (OSError, ValueError, sqlite3.Error) as error:
+                        self.report.update(status="failed", migration_fault_cleanup_error=str(error))
                 try:
                     sql_fault(self.container, self.args.configuration, "none")
                     self.report["fault_cleanup"] = {"status": "completed", "scope": "named task triggers only"}
@@ -939,7 +1178,22 @@ class Workbench:
                         self.report.update(status="failed", fault_cleanup_error="mode DB disappeared after a task SQL fault was installed")
                     else:
                         self.report["fault_cleanup"] = {"status": "not_applicable", "database_present": False, "reason": "mode DB absent/uninitialized; no task SQL fault was installed"}
-                except (OSError, ValueError, sqlite3.Error) as error:
+                except ValueError as error:
+                    # A real failed v1 initialization cannot have installed a
+                    # v2 delivery/settings fault. Retain that fact separately.
+                    uninitialized = False
+                    if self.options["migration_fault"] and not self.sql_fault_ever_installed:
+                        try:
+                            with closing(sql_connection(database_path(self.container, self.args.configuration), versions=(1, 2))) as connection:
+                                uninitialized = connection.execute("PRAGMA user_version").fetchone()[0] == 1
+                        except (OSError, ValueError, sqlite3.Error):
+                            pass
+                    if self.options["migration_fault"] and uninitialized and not self.sql_fault_ever_installed:
+                        self.report["fault_cleanup"] = {"status": "not_applicable", "database_present": True, "user_version": 1,
+                            "reason": "genuine v1 initialization failed; no v2 task SQL fault was installed"}
+                    else:
+                        self.report.update(status="failed", fault_cleanup_error=str(error))
+                except (OSError, sqlite3.Error) as error:
                     self.report["fault_cleanup_error"] = str(error)
                     self.report["status"] = "failed"
             if self.device:

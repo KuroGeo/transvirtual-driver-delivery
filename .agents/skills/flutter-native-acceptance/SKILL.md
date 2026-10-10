@@ -19,6 +19,8 @@ description: Accept or reject Flutter delivery candidates through native user fl
 
 按 [原生验收方法](references/native-flows.md) 为每个重点需求运行正常、失败、恢复流程。生命周期测试必须真正结束进程并重开同一个安装数据；hot reload/hot restart 不能替代。UI 结果与持久存储/测试端日志相互核对。
 
+Ocean Delivery 按 [34项检查合同](../../../harness/project/native-acceptance-contract.json) 与 [执行入口](../../../harness/README.md) 选择独立 driver 和 scenario。默认原生工具 smoke 不签 G2；所有源写入者冻结后才运行。实际系统设置、MediaQuery、OS 截图、UI 动作、SQLite backup 和进程身份相互绑定；文本模拟不签 OS 键盘，系统设置回执不签实际字号/动画结果。原始失败保留，验收摘要不能改写缺失的动作或生命周期事实。
+
 每项结果使用 passed / failed / blocked / not_run / not_applicable，并填写理由。未执行不能算通过；没有对应版本的原始证据不能复用旧报告。
 
 描述式输入先标 reported/unverified。原始证据清单记录 ID、路径、候选版本、采集者/时间、kind、raw/summary 和文件 hash，摘要必须引用实际原文件，不能循环引用其他摘要证明通过。
