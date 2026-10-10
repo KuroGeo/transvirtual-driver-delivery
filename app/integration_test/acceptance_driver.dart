@@ -1092,13 +1092,33 @@ Future<void> _n4(NativeAcceptanceRecorder r) async {
             scrollDeadline.elapsed < NativeWorkbenchDriver.observationDeadline;
         attempt++
       ) {
-        final row = await d.snapshot();
-        if (nativeObject(row['bounds']).containsKey('stop-TV-300024')) {
-          await d.revealKey('stop-TV-300024');
-          scrolled = await d.snapshot();
+        final row = await d.snapshot().timeout(
+          NativeWorkbenchDriver.observationDeadline - scrollDeadline.elapsed,
+        );
+        final targetRows = nativeObject(row['bounds'])['stop-TV-300024'];
+        final targetExposed =
+            targetRows is List &&
+            targetRows.length == 1 &&
+            targetRows.single is Map &&
+            (targetRows.single as Map)['centerHit'] == true;
+        if (targetExposed) {
+          await d
+              .revealKey('stop-TV-300024')
+              .timeout(
+                NativeWorkbenchDriver.observationDeadline -
+                    scrollDeadline.elapsed,
+              );
+          scrolled = await d.snapshot().timeout(
+            NativeWorkbenchDriver.observationDeadline - scrollDeadline.elapsed,
+          );
           break;
         }
-        await d.scrollKey('stop-list-scroll', -350);
+        await d
+            .scrollKey('stop-list-scroll', -350)
+            .timeout(
+              NativeWorkbenchDriver.observationDeadline -
+                  scrollDeadline.elapsed,
+            );
       }
       if (scrolled == null) {
         throw StateError(

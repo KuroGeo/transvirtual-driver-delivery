@@ -474,8 +474,52 @@ Future<void> acceptanceOpenListStop(
   NativeWorkbenchDriver client,
   String reference,
 ) async {
-  final value = await client.snapshot();
-  if (acceptanceModel(value)['panel'] != 'list') await acceptanceList(client);
+  bool keyIsExposed(Map<String, dynamic> snapshot, String key) {
+    final rows = nativeObject(snapshot['bounds'])[key];
+    return rows is List &&
+        rows.length == 1 &&
+        rows.single is Map &&
+        (rows.single as Map)['centerHit'] == true;
+  }
+
+  var value = await client.snapshot();
+  if (acceptanceModel(value)['panel'] != 'list') {
+    await acceptanceList(client);
+    value = await client.snapshot();
+  }
+  nativeRequire(
+    acceptanceModel(value)['panel'] == 'list',
+    'Search exposure requires the actual list panel.',
+  );
+  // A typed Return preserves the real list offset and focus. Reach its search
+  // control with actual upward drags instead of resetting that saved session.
+  final searchClock = Stopwatch()..start();
+  const maxScrolls = 12;
+  for (var scrolls = 0; !keyIsExposed(value, 'stop-search'); scrolls++) {
+    nativeRequire(
+      scrolls < maxScrolls &&
+          searchClock.elapsed < NativeWorkbenchDriver.observationDeadline,
+      'List search was not exposed with a hittable center '
+      'within 12 drags and 15 seconds.',
+    );
+    await client
+        .scrollKey('stop-list-scroll', 160)
+        .timeout(
+          NativeWorkbenchDriver.observationDeadline - searchClock.elapsed,
+        );
+    nativeRequire(
+      searchClock.elapsed < NativeWorkbenchDriver.observationDeadline,
+      'List search was not exposed with a hittable center '
+      'within its 15-second lookup deadline.',
+    );
+    value = await client.snapshot().timeout(
+      NativeWorkbenchDriver.observationDeadline - searchClock.elapsed,
+    );
+    nativeRequire(
+      acceptanceModel(value)['panel'] == 'list',
+      'Search exposure left the actual list panel.',
+    );
+  }
   await client.enterText('stop-search', reference);
   var searched = await client.waitForSnapshot(
     'list search $reference',
@@ -489,17 +533,8 @@ Future<void> acceptanceOpenListStop(
   // until the target's real center is hittable, then use the existing
   // reveal/tap path. Each drag and observation remains journalled.
   final rowKey = 'stop-$reference';
-  bool rowIsExposed() {
-    final rows = nativeObject(searched['bounds'])[rowKey];
-    return rows is List &&
-        rows.length == 1 &&
-        rows.single is Map &&
-        (rows.single as Map)['centerHit'] == true;
-  }
-
   final lookupClock = Stopwatch()..start();
-  const maxScrolls = 12;
-  for (var scrolls = 0; !rowIsExposed(); scrolls++) {
+  for (var scrolls = 0; !keyIsExposed(searched, rowKey); scrolls++) {
     nativeRequire(
       scrolls < maxScrolls &&
           lookupClock.elapsed < NativeWorkbenchDriver.observationDeadline,

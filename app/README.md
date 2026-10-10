@@ -6,6 +6,8 @@ Flutter 正式入口为 `lib/main.dart`，采用地图优先界面、真实 SQLi
 
 Online 设置和合法地图视口随数据库持久化；冷启重置搜索、临时卡片和列表会话。同步按队列串行执行，仅在匹配身份的确认持久提交后移除 outbox。瓦片错误不阻断业务保存，清地图缓存不清业务数据。真正进程恢复必须重开同一安装文件，不能用 hot reload 或清数据代替。
 
+状态由 `ChangeNotifier` / `Listenable` 驱动：ViewModel 管理查询、面板和短期交互，Repository 管理业务文件、事务与确认队列。当前工作台用明确依赖注入和少量可观察状态，避免为这一范围引入额外状态框架。SQLite 让配送结果与 outbox 同事务提交；串行同步及身份匹配的持久 ACK 让中断后的重试复用原事件。地图瓦片缓存可丢弃，业务文件保留，二者分别管理。
+
 ## 运行配置
 
 缺省或 `--dart-define=OCEAN_MODE=local-client` 选择 UnavailableTransport，界面标记 `Local client · service unavailable`。没有实际服务时保存仍保留本机队列，不显示已上传。业务文件为 `ocean_delivery.sqlite`。
@@ -13,6 +15,16 @@ Online 设置和合法地图视口随数据库持久化；冷启重置搜索、�
 `--dart-define=OCEAN_MODE=demo` 使用模拟确认，界面标记 `Demo · simulated confirmations`，业务文件为独立的 `ocean_delivery-demo.sqlite`。demo 不复用 local-client 队列，也不表示客户结果已上传。
 
 批准的开发样本为 assets/deliveries.csv 的30站原始七列；字体、图标和地图依赖许可保存在 assets/licenses。生产业务数据、地图/瓦片与离线服务的使用条件仍需单独核验。
+
+人工交互演示使用独立检出和明确的任务专用模拟器 UDID，在 app/ 目录运行正式入口。先结束占用相同工作区或设备的 Harness 任务，再选择一种配置；不要自动选取用户正在使用的设备。
+
+```sh
+OCEAN_TASK_DEVICE_UDID='replace-with-task-owned-simulator-UDID'
+flutter run --target lib/main.dart --device-id "$OCEAN_TASK_DEVICE_UDID" --dart-define=OCEAN_MODE=demo
+flutter run --target lib/main.dart --device-id "$OCEAN_TASK_DEVICE_UDID" --dart-define=OCEAN_MODE=local-client
+```
+
+后台自动启动验证用 `python3 harness/run.py native --scope startup --configuration demo --isolated`；local-client 对应替换 configuration。它从正式入口采集启动 PID 与 OS 截图，结束回收任务设备。完整三进程功能验收使用下面的独立 driver。
 
 ## 验证与构建
 
@@ -44,7 +56,7 @@ python3 harness/run.py native --scope workbench --driver-target integration_test
 
 1. 第一分钟：展示地图、查询和列表，进入 Offline，说明参考位置与直线距离。
 2. 第二分钟：完成一个站点，给另一个站点记录失败及 Other 说明；展示 SQLite 结果和对应 outbox 身份。此时是本地 commit。
-3. 第三分钟：查看实际结束进程和同安装重开的两组 PID/截图；结果、备注、队列及 Offline 设置保持。
+3. 第三分钟：查看实际结束进程和同安装重开的两组 PID/截图；结果、Other 原因文本、队列及 Offline 设置保持。此 N1 示例的 note 为 null，不把原因文本称为备注。
 4. 第四分钟：切回 Online，查看串行 HTTP 模拟确认和持久 ACK 后排空；重试复用原 operationId/seq。
 5. 第五分钟：第三个实际进程不再重发。对照 local-client 的 N1：真实服务不可用时队列保留，界面不宣称上传成功。
 
