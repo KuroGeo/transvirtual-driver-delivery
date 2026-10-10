@@ -16,7 +16,7 @@ Flutter 3.44.2 / Dart 3.12.2；`app/` 是客户端，`harness/` 是项目执行�
 
 ## 工具接口
 
-主控维护 `harness/run.py` 与 `checks.py`，提供 preflight/check/quality/build/native/gate、source fingerprint 和实际日志/manifest；不依赖个人 skill 安装路径。独立工程 Agent 维护 `state.py`、`gate.py` 和对应 unittest。运行记录与锁在 runs；工具 lease 用 OS 文件锁，不猜活 Agent 是否已经结束，Agent 写域由主控实际 runtime 核对。
+主控维护 `harness/run.py` 与 `checks.py`，提供 preflight/check/pub/quality/test/build/native/integration/gate、配置化隔离执行、source fingerprint 和实际日志/manifest；不依赖个人 skill 安装路径。独立工程 Agent 维护 `state.py`、`gate.py` 和对应 unittest。运行记录与锁在 runs；工具 lease 用 OS 文件锁，不猜活 Agent 是否已经结束，Agent 写域由主控实际 runtime 核对。
 
 `state.lease(resources, run_dir, lock_root)` 上下文管理器独占资源；`state.validate_resume(report, candidate)` 拒绝候选变化/未释放 lease；实际中断与恢复须实跑。`gate.evaluate(manifest, current_fingerprint, base_dir)` 返回 `{allowed, reasons}`，验证生产所需 H01–H08 / G0–G6、当前候选与原始证据/hash、对应层级和产物；缺失/未知/失败/旧证一律不通过要求它的交付。
 
@@ -57,3 +57,11 @@ E04 独立回归先审组件，再在 E07 集成候选重跑；E08/E09 对精确
 E02 的签名适配写域明确增加 `app/test/ui/fake_delivery_repository.dart` 与 `app/test/ui/delivery_view_model_lifecycle_test.dart`，仅改 submit 参数/快照兼容；E03 的新查询测试写独立目录，不同时改这两个文件。E01 阶段用 `app/lib/app/runtime_configuration.dart` 解析模式（尚未依赖 E02 的新模型），E07 装配时将其映射到 ClientMode，避免 E01→E02 的接口循环。
 
 这是执行合同，源码中的具体问题由负责人回报主控协调；不为实现习惯临时扩框架、平台或产品功能。
+
+## E03 消费 API 冻结（本轮）
+
+`ui/delivery/query/workbench_query.dart` 输出纯 `WorkbenchQuery({search="", DeliveryStatus? status, waitingOnly=false})` 与 `WorkbenchResult(stops, nearest, matchedCount, totalQueueCount, distanceMeters(Stop), awaitsService(Stop))`。`TestReference` 为 latitude=-33.9004、longitude=151.139、headingDegrees=35；查询结果不被地图视口截断。
+
+DeliveryViewModel 暴露 `query/result`、`setSearch/setStatus/setWaitingOnly/resetQuery`；`WorkbenchPanel {map,list,detail}` 和 `DetailOrigin {list,map,nearest}`，通过 `openList/closeList/openDetail(stopId,{required origin})/closeDetail` 操作。`selectedStop` 读取全量 stops；`detailContext` 包含 stopId/origin/列表会话；`listSession` 保存 scrollOffset/focusedReference，经 `rememberListSession` 更新。列表可复用组件 `StopListWorkspace(viewModel:, onOpenStop:, onClose:)` 只发回调，不自行建应用级 Navigator/Repository。
+
+E06/E11/E07 依此消费；E03 开发后主控审查实际 API，签入组件接受记录。视口保存边界为有限 latitude[-90,90]/longitude[-180,180]/zoom[0,22]、当前 dataset；地图使用同一范围，不将合法持久值静默改写。

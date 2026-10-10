@@ -59,11 +59,12 @@ class ControlledRepository extends FakeDeliveryRepository {
     String stopId,
     DeliveryStatus status, {
     String? reason,
+    String? note,
   }) async {
     _use('submit');
     if (!submitStarted.isCompleted) submitStarted.complete();
     await submitGate?.future;
-    await super.submit(stopId, status, reason: reason);
+    await super.submit(stopId, status, reason: reason, note: note);
     events.add('submitted');
   }
 

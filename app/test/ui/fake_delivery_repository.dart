@@ -41,12 +41,14 @@ class FakeDeliveryRepository implements DeliveryRepository {
     String stopId,
     DeliveryStatus status, {
     String? reason,
+    String? note,
   }) async {
     submitCalls += 1;
     if (failSubmit) throw StateError('fixture storage failure');
     final index = stops.indexWhere((stop) => stop.id == stopId);
     final old = stops[index];
     final operationId = 'fixture-operation-$submitCalls';
+    final recordedAt = DateTime.now().toUtc();
     stops[index] = Stop(
       id: old.id,
       reference: old.reference,
@@ -57,6 +59,9 @@ class FakeDeliveryRepository implements DeliveryRepository {
       status: status,
       reason: reason,
       operationId: operationId,
+      timeWindow: old.timeWindow,
+      note: note,
+      recordedAt: recordedAt,
     );
     queue.add(
       PendingUpdate(
@@ -66,6 +71,8 @@ class FakeDeliveryRepository implements DeliveryRepository {
         stopId: stopId,
         status: status,
         reason: reason,
+        note: note,
+        recordedAt: recordedAt,
       ),
     );
   }

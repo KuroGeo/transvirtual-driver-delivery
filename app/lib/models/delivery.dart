@@ -11,6 +11,10 @@ class Stop {
     required this.status,
     this.reason,
     this.operationId,
+    this.timeWindow,
+    this.note,
+    this.recordedAt,
+    this.acknowledgedAt,
   });
 
   final String id;
@@ -22,6 +26,10 @@ class Stop {
   final DeliveryStatus status;
   final String? reason;
   final String? operationId;
+  final String? timeWindow;
+  final String? note;
+  final DateTime? recordedAt;
+  final DateTime? acknowledgedAt;
 }
 
 class PendingUpdate {
@@ -32,6 +40,8 @@ class PendingUpdate {
     required this.stopId,
     required this.status,
     this.reason,
+    this.note,
+    this.recordedAt,
   });
 
   final int seq;
@@ -40,6 +50,8 @@ class PendingUpdate {
   final String stopId;
   final DeliveryStatus status;
   final String? reason;
+  final String? note;
+  final DateTime? recordedAt;
 }
 
 class Ack {

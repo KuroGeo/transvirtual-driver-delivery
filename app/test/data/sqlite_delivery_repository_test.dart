@@ -38,6 +38,11 @@ void main() {
       );
       expect(failed, hasLength(3));
       expect(failed.every((stop) => stop.reason == null), isTrue);
+      expect(failed.every((stop) => stop.note == null), isTrue);
+      expect(stops.first.timeWindow, '08:00-10:00');
+      expect(stops.every((stop) => stop.timeWindow != null), isTrue);
+      expect(stops.every((stop) => stop.recordedAt == null), isTrue);
+      expect(stops.every((stop) => stop.acknowledgedAt == null), isTrue);
       expect(stops.map((stop) => stop.id).toSet(), hasLength(30));
       expect(stops.every((stop) => stop.id != stop.reference), isTrue);
       expect(await value.repository.pendingUpdates(), isEmpty);
@@ -55,6 +60,7 @@ void main() {
         ',Customer B,Test St,-33.8,151.2,pending,10:00-12:00\n',
     'missing customer': 'B,,Test St,-33.8,151.2,pending,10:00-12:00\n',
     'missing address': 'B,Customer B,,-33.8,151.2,pending,10:00-12:00\n',
+    'missing time window': 'B,Customer B,Test St,-33.8,151.2,pending,  \n',
     'invalid latitude': 'B,Customer B,Test St,NaN,151.2,pending,10:00-12:00\n',
     'infinite longitude':
         'B,Customer B,Test St,-33.8,Infinity,pending,10:00-12:00\n',
@@ -86,6 +92,12 @@ void main() {
     'missing coordinate header': header.replaceFirst('latitude', 'lat') + valid,
     'duplicate status header':
         header.replaceFirst('time_window', 'status') + valid,
+    'missing time window header':
+        'reference,customer_name,address,latitude,longitude,status\n'
+        'A,Customer A,Test St,-33.9,151.1,pending\n',
+    'unexpected eighth column':
+        'reference,customer_name,address,latitude,longitude,status,time_window,extra\n'
+        'A,Customer A,Test St,-33.9,151.1,pending,08:00-10:00,unused\n',
   }.entries) {
     test('rejects ${entry.key}', () async {
       final value = await fixture(csv: entry.value);
@@ -256,6 +268,9 @@ void main() {
       expect(after.status, DeliveryStatus.pending);
       expect(after.operationId, isNull);
       expect(after.reason, isNull);
+      expect(after.note, isNull);
+      expect(after.recordedAt, isNull);
+      expect(after.acknowledgedAt, isNull);
       expect(await value.repository.pendingUpdates(), isEmpty);
       await (await value.admin).execute('DROP TRIGGER reject_outbox');
       await value.repository.submit(

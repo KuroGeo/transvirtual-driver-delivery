@@ -3,6 +3,11 @@ import 'package:flutter/foundation.dart';
 import '../data/delivery/delivery_repository.dart';
 import '../data/delivery/sync_coordinator.dart';
 import '../models/delivery.dart';
+import 'delivery/query/workbench_query.dart';
+import 'delivery/query/workbench_session.dart';
+
+export 'delivery/query/workbench_query.dart';
+export 'delivery/query/workbench_session.dart';
 
 class DeliveryViewModel extends ChangeNotifier {
   DeliveryViewModel({required this.repository, required this.syncCoordinator});
@@ -12,6 +17,14 @@ class DeliveryViewModel extends ChangeNotifier {
 
   List<Stop> _stops = const [];
   List<PendingUpdate> _queue = const [];
+  WorkbenchQuery _query = const WorkbenchQuery();
+  WorkbenchResult _result = const WorkbenchQuery().evaluate(
+    stops: const [],
+    queue: const [],
+  );
+  WorkbenchPanel _panel = WorkbenchPanel.map;
+  ListSessionContext _listSession = const ListSessionContext();
+  DetailContext? _detailContext;
   bool _closed = false;
   Future<void>? _loading;
   Future<bool>? _saving;
@@ -28,6 +41,100 @@ class DeliveryViewModel extends ChangeNotifier {
   int get queueCount => _queue.length;
   int get pendingCount =>
       _stops.where((stop) => stop.status == DeliveryStatus.pending).length;
+  WorkbenchQuery get query => _query;
+  WorkbenchResult get result => _result;
+  WorkbenchPanel get panel => _panel;
+  ListSessionContext get listSession => _listSession;
+  DetailContext? get detailContext => _detailContext;
+  Stop? get selectedStop =>
+      _detailContext == null ? null : stopById(_detailContext!.stopId);
+
+  void setSearch(String search) => _setQuery(
+    WorkbenchQuery(
+      search: search,
+      status: _query.status,
+      waitingOnly: _query.waitingOnly,
+    ),
+  );
+
+  void setStatus(DeliveryStatus? status) => _setQuery(
+    WorkbenchQuery(
+      search: _query.search,
+      status: status,
+      waitingOnly: _query.waitingOnly,
+    ),
+  );
+
+  void setWaitingOnly(bool waitingOnly) => _setQuery(
+    WorkbenchQuery(
+      search: _query.search,
+      status: _query.status,
+      waitingOnly: waitingOnly,
+    ),
+  );
+
+  void resetQuery() => _setQuery(const WorkbenchQuery());
+
+  void _setQuery(WorkbenchQuery query) {
+    if (_closed || _query == query) return;
+    _query = query;
+    _deriveResult();
+    _notify();
+  }
+
+  void _deriveResult() {
+    _result = _query.evaluate(stops: _stops, queue: _queue);
+  }
+
+  /// Controllers report session context without rebuilding the workbench.
+  void rememberListSession({
+    required double scrollOffset,
+    String? focusedReference,
+  }) {
+    if (_closed || !scrollOffset.isFinite) return;
+    _listSession = ListSessionContext(
+      scrollOffset: scrollOffset < 0 ? 0 : scrollOffset,
+      focusedReference: focusedReference ?? _listSession.focusedReference,
+    );
+  }
+
+  void openList() {
+    if (_closed) return;
+    _detailContext = null;
+    _panel = WorkbenchPanel.list;
+    _notify();
+  }
+
+  void closeList() {
+    if (_closed) return;
+    _detailContext = null;
+    _panel = WorkbenchPanel.map;
+    _notify();
+  }
+
+  void openDetail(String stopId, {required DetailOrigin origin}) {
+    if (_closed || stopById(stopId) == null) return;
+    _detailContext = DetailContext(
+      stopId: stopId,
+      origin: origin,
+      listSession: origin == DetailOrigin.list ? _listSession : null,
+    );
+    _panel = WorkbenchPanel.detail;
+    saveError = null;
+    _notify();
+  }
+
+  void closeDetail() {
+    if (_closed || _detailContext == null) return;
+    final context = _detailContext!;
+    _panel = context.origin == DetailOrigin.list
+        ? WorkbenchPanel.list
+        : WorkbenchPanel.map;
+    if (context.listSession != null) _listSession = context.listSession!;
+    _detailContext = null;
+    saveError = null;
+    _notify();
+  }
 
   Stop? stopById(String id) {
     for (final stop in _stops) {
@@ -67,10 +174,15 @@ class DeliveryViewModel extends ChangeNotifier {
     }
   }
 
-  Future<bool> submit(String stopId, DeliveryStatus status, {String? reason}) {
+  Future<bool> submit(
+    String stopId,
+    DeliveryStatus status, {
+    String? reason,
+    String? note,
+  }) {
     if (_saving != null || _closed) return Future<bool>.value(false);
     final future = Future<bool>.microtask(
-      () => _submit(stopId, status, reason: reason),
+      () => _submit(stopId, status, reason: reason, note: note),
     ).whenComplete(() => _saving = null);
     _saving = future;
     return future;
@@ -80,6 +192,7 @@ class DeliveryViewModel extends ChangeNotifier {
     String stopId,
     DeliveryStatus status, {
     String? reason,
+    String? note,
   }) async {
     if (_closed) return false;
     isSaving = true;
@@ -88,7 +201,7 @@ class DeliveryViewModel extends ChangeNotifier {
     var saved = false;
     try {
       if (_closed) return false;
-      await repository.submit(stopId, status, reason: reason);
+      await repository.submit(stopId, status, reason: reason, note: note);
       saved = true;
       syncMessage = '已保存到本机，等待服务连接。';
       try {
@@ -154,6 +267,7 @@ class DeliveryViewModel extends ChangeNotifier {
     if (_closed) return;
     _stops = stops;
     _queue = queue;
+    _deriveResult();
     loadError = null;
   }
 

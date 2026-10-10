@@ -80,4 +80,6 @@ List<Object?> updateIdentity(PendingUpdate update) => [
   update.stopId,
   update.status,
   update.reason,
+  update.note,
+  update.recordedAt,
 ];

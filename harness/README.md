@@ -16,24 +16,26 @@
 
 ## 日常命令
 
-Python 3、Flutter **3.44.2** / Dart **3.12.2**；SDK 记录在 `app/.fvmrc`，依赖由 `app/pubspec.lock` 锁定。从仓库根目录首次解析依赖：
+Python 3、Flutter **3.44.2** / Dart **3.12.2**；SDK 记录在 `app/.fvmrc`，依赖由 `app/pubspec.lock` 锁定。从仓库根目录执行，依赖准备与测试使用同一资源租用：
 
 ```sh
-cd app
-flutter pub get --enforce-lockfile
-cd ..
-python3 harness/run.py quality
+python3 harness/run.py pub
+python3 harness/run.py quality --isolated
 ```
 
-`quality` 检查链接、需求覆盖、任务 DAG、Dart 层次依赖、Harness 回归、SDK、格式、静态分析及全部 Flutter host/widget 测试。只检查仓库和 Harness 用 `check`；迭代单个行为用 `test --target test/widget_test.dart`。错误给文件、命令、退出码和原始日志。
+`quality` 检查链接、需求覆盖、任务 DAG、Dart 层次依赖、Harness 回归、SDK、锁定依赖、格式、静态分析及全部 Flutter host/widget 测试。`--isolated` 在候选指纹一致的任务副本执行，同时核对原工作区和执行副本末态；产物保留后只清理自己的副本。只检查仓库和 Harness 用 `check`；迭代单个行为用 `test --target test/widget_test.dart`。错误给文件、命令、退出码和原始日志。
 
-macOS + Xcode + CocoaPods + iOS 26.4 runtime：`python3 harness/run.py build` 构建正式启动入口，`native` 构建独立探针，在任务专用模拟器用三个 OS 进程验证保存、重启恢复、模拟串行确认和不重发。全程 CLI 后台执行，结束仅删除自己创建的设备；debug/fake 结果仅证明本地可靠性。
+配置用 `--configuration demo|local-client`，缺省为 local-client（UnavailableTransport）；demo 的模拟确认使用独立业务库。构建支持 `--build-mode debug|profile|release` 与 `--ios-target simulator|device`，模拟器只支持 debug，device 为本地 unsigned/no-codesign 候选。`--entrypoint lib/<实际文件>.dart` 只能选 app/lib 内现存入口；不自动改正式启动。
+
+`integration --target integration_test/<实际文件>.dart --device <显式设备ID>` 是独立的原生测试入口，仅当文件存在且设备已明确分配时执行，不从用户设备自动选取。
+
+macOS + Xcode + CocoaPods + iOS 26.4 runtime：`python3 harness/run.py build` 构建正式启动入口，`native` 构建独立探针，在任务专用模拟器用三个 OS 进程验证保存、重启恢复、模拟串行确认和不重发。`native --scope startup --configuration demo --isolated` 从正式入口验证启动 PID 与截图；它是 startup smoke，不能代签完整 UI 验收。全程 CLI 后台执行，结束仅删除自己创建的设备；debug/fake 结果仅证明本地可靠性。native 子工具须继承 runner 实际持有的 flock FD，直调或伪环境声明不能绕过资源租用。
 
 ## 协作、恢复与门禁
 
 [团队 skill](../.agents/skills/agent-engineering-team/SKILL.md) 协调需求提取、Issue、开发、测试、原生验收、性能、Harness 和交付。每次只调用任务所需职能；共享接口、依赖锁、schema、启动装配和 CI 各由一个负责人写，独立职能审查后接受。
 
-运行记录在 `harness/runs/<时间-命令>/`，命令操作由 OS lease 保护。SIGTERM/Ctrl-C 终止子进程并归还锁；同候选可用 `python3 harness/run.py quality --resume harness/runs/<原运行目录>`。恢复核对候选、活 PID、实际锁和日志 hash；Agent 是否活跃由协作 runtime 判断。
+运行记录在 `harness/runs/<时间-命令>/`，命令操作由 OS lease 保护。SIGTERM/Ctrl-C 终止子进程并归还锁；同候选可用 `python3 harness/run.py quality --resume harness/runs/<原运行目录>`。恢复核对候选、配置/入口/设备/阶段计划、活 PID、实际锁和日志 hash；不同配置不复用证据，隔离构建产物相关步骤重跑。Agent 是否活跃由协作 runtime 判断。
 
 生产执行 `python3 harness/run.py gate --manifest harness/runs/<交付目录>/manifest.json`。[门禁](gate.py) 校验 H01–H08 / G0–G6、当前候选、原始证据 hash、设备/性能层级、签名与授权。G1 必须引用 `quality-run` 原始报告，并验证前后候选、全部必需阶段及日志 hash。缺证失败是正确结果；CI/发布强制接线未部署，当前生产 **no-go**。
 
