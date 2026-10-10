@@ -1,9 +1,9 @@
 {
-  "mode": "prepare",
+  "mode": "execute",
   "contract_revision": 5,
   "source_head": "3e0300848fcded055abcc47448c06a165d0472d6",
   "coordinator": "/root",
-  "scope": "Issue preparation/publication batch; full product work graph queued for execution, production no-go preserved",
+  "scope": "Implement full prototype/architecture Flutter demo and local-client with independently verified Harness evidence; production no-go remains",
   "tasks": [
     {
       "id": "N01",
@@ -200,8 +200,8 @@
     {
       "id": "E00",
       "role": "requirements-and-coordinator",
-      "status": "ready",
-      "owner_agent_id": null,
+      "status": "accepted",
+      "owner_agent_id": "/root",
       "contract_revision": 5,
       "write_scope": [
         "harness/project/mission.md",
@@ -237,13 +237,21 @@
         "R17"
       ],
       "verification_level": "G0 合同 + G1 当前候选基线，不证明 G2/G3",
-      "dispatch_condition": "Before running assign owner/base_sha/current fingerprint/result_path/started_at; freeze APIs and reverify baseline"
+      "dispatch_condition": "Before running assign owner/base_sha/current fingerprint/result_path/started_at; freeze APIs and reverify baseline",
+      "base_sha": "551332e302877c08132575bca98f19233079bdad",
+      "source_fingerprint": "b5050d4731905258653e434db66e2d2bb80db4232ebc03ebde3a373199f68f78",
+      "result_path": "harness/runs/implementation/E00.md",
+      "started_at": "2026-10-10T13:05:25.777133+00:00",
+      "quality_report": "harness/runs/20261010T131749468312Z-quality/report.json",
+      "review": "harness/runs/implementation/E00-review.md",
+      "accepted_at": "2026-10-10T13:19:27.731143+00:00",
+      "accepted_candidate": "902f159e3c42882ae4a984367b9a6f0f56bfba37e79655c3223b8c322e40a3df"
     },
     {
       "id": "E01",
       "role": "development-bootstrap",
-      "status": "planned",
-      "owner_agent_id": null,
+      "status": "accepted",
+      "owner_agent_id": "/root",
       "contract_revision": 5,
       "write_scope": [
         "app/pubspec.yaml",
@@ -253,7 +261,9 @@
         "app/lib/ui/core",
         "app/assets",
         "app/ios",
-        "app/android"
+        "app/android",
+        "app/test/bootstrap",
+        "app/lib/ui/delivery_screen.dart"
       ],
       "resource_leases": [],
       "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/16",
@@ -268,13 +278,23 @@
         "R14",
         "R16"
       ],
-      "verification_level": "G1 host/widget + iOS simulator debug 构建；原生体验交 E08"
+      "verification_level": "G1 host/widget + iOS simulator debug 构建；原生体验交 E08",
+      "base_sha": "551332e302877c08132575bca98f19233079bdad",
+      "source_fingerprint": "902f159e3c42882ae4a984367b9a6f0f56bfba37e79655c3223b8c322e40a3df",
+      "started_at": "2026-10-10T13:19:27.731143+00:00",
+      "result_path": "harness/runs/implementation/E01.md",
+      "scope_note": "Only runtime mode label in old DeliveryScreen; E07 receives screen for final assembly",
+      "quality_report": "harness/runs/20261010T132203093472Z-quality/report.json",
+      "build_report": "harness/runs/20261010T132212962056Z-build/report.json",
+      "review": "harness/runs/implementation/E01-review.md",
+      "accepted_at": "2026-10-10T13:25:30.406429+00:00",
+      "accepted_candidate": "06e46bddd2f2b0ab8db0bc4c826d3ff47fd882b10e38c2c35e4569193992d9d6"
     },
     {
       "id": "X00",
       "role": "harness-engineering",
-      "status": "planned",
-      "owner_agent_id": null,
+      "status": "running",
+      "owner_agent_id": "/root/harness_review",
       "contract_revision": 5,
       "write_scope": [
         "harness/run.py",
@@ -296,7 +316,11 @@
         "R16",
         "R17"
       ],
-      "verification_level": "H02/H07 工具实跑；debug 构建不代签原生/性能"
+      "verification_level": "H02/H07 工具实跑；debug 构建不代签原生/性能",
+      "base_sha": "551332e302877c08132575bca98f19233079bdad",
+      "source_fingerprint": "06e46bddd2f2b0ab8db0bc4c826d3ff47fd882b10e38c2c35e4569193992d9d6",
+      "started_at": "2026-10-10T13:25:30.406429+00:00",
+      "result_path": "harness/runs/implementation/X00.md"
     },
     {
       "id": "E02",
@@ -309,7 +333,10 @@
         "app/lib/data/delivery/delivery_repository.dart",
         "app/lib/data/delivery/sqlite_delivery_repository.dart",
         "app/lib/data/services",
-        "app/test/data"
+        "app/test/data",
+        "app/test/ui/fake_delivery_repository.dart",
+        "app/test/ui/delivery_view_model_lifecycle_test.dart",
+        "app/lib/data/delivery/delivery_settings_store.dart"
       ],
       "resource_leases": [],
       "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/18",
@@ -805,7 +832,7 @@
       ]
     }
   ],
-  "resource_leases": "all run leases released; task-created simulator deleted; clean workspace deleted",
+  "resource_leases": [],
   "events": [
     {
       "task": "N01",
@@ -840,15 +867,25 @@
       "task": "P00",
       "event": "Accepted parent/sub-issue drafts, remote hierarchy/dependencies/body hashes, and same-candidate Harness quality; full product tasks remain unimplemented",
       "at": "2026-10-10T12:50:00.474989+00:00"
+    },
+    {
+      "task": "E00",
+      "event": "Independent freeze review and exact-candidate quality accepted",
+      "at": "2026-10-10T13:19:27.731143+00:00"
+    },
+    {
+      "task": "E01",
+      "event": "Independent code review, exact-candidate quality and formal main simulator build accepted",
+      "at": "2026-10-10T13:25:30.406429+00:00"
     }
   ],
-  "status": "Issue planning/publication accepted; E00 ready for implementation dispatch; production no-go",
+  "status": "E01 accepted; X00 extending observable isolated configuration execution",
   "accepted_candidate": {
     "source_head": "8e9a7cca9c4360ca07d86e8aa8d196caf88c8c42",
     "source_fingerprint": "89fa4461c961cc287f10665314c9e418da69bcddc721398f12e6c559683c1b25",
     "working_tree_changes": true
   },
-  "runtime_observation": "Both independent agents completed; collaboration.list_agents verified. No product agent dispatched.",
+  "runtime_observation": "Root coordinating implementation; requirements reviewer independently rechecking frozen contract",
   "evidence_archive": "harness/archive/2026-10-10-engineering.tar.gz",
   "next_task": "E00",
   "issue_planning_validation": {

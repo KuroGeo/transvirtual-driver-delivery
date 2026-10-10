@@ -2,7 +2,7 @@
 
 ## 当前范围与来源
 
-用户现已授权依据原型和架构实现完整 Flutter 功能，并要求先拆分、编写和发布父/子 Issues。本轮 mode=prepare，交付可执行任务图与远端 Issue 联动；产品实施按图进入后续 execute 阶段。已有 Harness 与 Flutter 原生可靠性基线复用，外部生产发布仍未授权。见 [本轮拆分与联动](issue-plan.md)。
+用户已授权依据原型和架构实现完整 Flutter 功能；父/子 Issues 已发布并核验，当前 mode=execute。主控在当前会话按依赖派发 sub-agent，已有 Harness 与 Flutter 原生可靠性基线复用，外部生产发布仍未授权。见 [本轮拆分与联动](issue-plan.md)。
 
 后续目标是将原型已有功能交付为可靠 Flutter 客户端。首版不加登录、路线/ETA、产品内 AI 助手、照片/签名、持续后台定位/上传。开发 Agent 团队与产品内 Agent 是两个概念。
 

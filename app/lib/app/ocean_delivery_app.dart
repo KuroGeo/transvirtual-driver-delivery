@@ -4,11 +4,17 @@ import 'package:flutter/material.dart';
 
 import '../ui/delivery_screen.dart';
 import '../ui/delivery_view_model.dart';
+import '../ui/core/brand_theme.dart';
 
 class OceanDeliveryApp extends StatefulWidget {
-  const OceanDeliveryApp({super.key, required this.createViewModel});
+  const OceanDeliveryApp({
+    super.key,
+    required this.createViewModel,
+    this.demo = false,
+  });
 
   final Future<DeliveryViewModel> Function() createViewModel;
+  final bool demo;
 
   @override
   State<OceanDeliveryApp> createState() => _OceanDeliveryAppState();
@@ -70,13 +76,7 @@ class _OceanDeliveryAppState extends State<OceanDeliveryApp> {
     return MaterialApp(
       title: 'Ocean Delivery',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF164C63)),
-        scaffoldBackgroundColor: const Color(0xFFF5F7F8),
-        inputDecorationTheme: const InputDecorationTheme(
-          border: OutlineInputBorder(),
-        ),
-      ),
+      theme: oceanTheme(),
       home: _booting
           ? const Scaffold(body: Center(child: CircularProgressIndicator()))
           : _bootstrapError != null
@@ -99,7 +99,7 @@ class _OceanDeliveryAppState extends State<OceanDeliveryApp> {
                 ),
               ),
             )
-          : DeliveryScreen(viewModel: _viewModel!),
+          : DeliveryScreen(viewModel: _viewModel!, demo: widget.demo),
     );
   }
 }

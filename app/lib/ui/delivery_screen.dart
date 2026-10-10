@@ -10,9 +10,10 @@ String statusLabel(DeliveryStatus status) => switch (status) {
 };
 
 class DeliveryScreen extends StatelessWidget {
-  const DeliveryScreen({super.key, required this.viewModel});
+  const DeliveryScreen({super.key, required this.viewModel, this.demo = false});
 
   final DeliveryViewModel viewModel;
+  final bool demo;
 
   @override
   Widget build(BuildContext context) {
@@ -29,12 +30,18 @@ class DeliveryScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Text(
-                        '本地客户端 · 服务待接入',
-                        style: TextStyle(fontWeight: FontWeight.w600),
+                      Text(
+                        demo
+                            ? 'Demo · simulated acknowledgements'
+                            : '本地客户端 · 服务待接入',
+                        style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 4),
-                      const Text('更新会先保存到本机；当前未连接配送服务。'),
+                      Text(
+                        demo
+                            ? 'Sample deliveries · acknowledgements are simulated.'
+                            : '更新会先保存到本机；当前未连接配送服务。',
+                      ),
                       const SizedBox(height: 12),
                       Wrap(
                         alignment: WrapAlignment.spaceBetween,

@@ -1,6 +1,6 @@
 # 当前实施边界
 
-合同 revision=5。用户授权先发布完整原型 Flutter 的父/子 Issues，并按原型和架构推进功能。已有本地原生可靠性基线作为复用输入；本轮仅完成 Issue 计划，不把完整地图工作台、真实服务、真机性能或生产发布写成已完成。任务来源和执行接力见 [issue-plan](issue-plan.md)。
+合同 revision=5。父/子 Issues 已发布，用户将会话/sub-agent 编排交主控，当前进入完整原型 Flutter 实施。已有本地原生可靠性基线作为复用输入；实现/测试/原生/真机与生产完成分别取证。任务来源和执行接力见 [issue-plan](issue-plan.md)。
 
 Flutter 3.44.2 / Dart 3.12.2；`app/` 是客户端，`harness/` 是项目执行工具与合同，`.agents/skills/` 是职能 skill，`harness/runs/` 是忽略的逐次原始运行记录。产品来源仍在 `docs/` 与 `prototype/`。
 
@@ -38,5 +38,22 @@ Flutter 3.44.2 / Dart 3.12.2；`app/` 是客户端，`harness/` 是项目执行�
 | X01 → X03 → X05 | 事实/依赖/需求映射检查 → 本地 gate 对完整需求/原始性能/资源证据校验 → 实际远端强制接线；本地 validator 通过不代表 enforcement deployed | X04 恢复评测、E10 本地交付、E12 生产门槛 |
 
 E04 独立回归先审组件，再在 E07 集成候选重跑；E08/E09 对精确候选独立签原生/真机层。E10 是新增的本地 demo/client 交付任务，原产品图 E10 的生产责任移入 E12，门槛保留；生产 no-go 不以更名或局部关闭绕过。
+
+## E00 冻结 API（2026-10-10）
+
+- `models/delivery.dart`：Stop 新增可空 `timeWindow, note, recordedAt, acknowledgedAt`，PendingUpdate 新增可空 `note, recordedAt`；时间统一 `DateTime`/UTC，SQL 映射由数据层负责。历史缺失时间/备注保持 null，不编造。
+- `DeliveryRepository.submit(stopId, status, {reason, note})`：note 为可选命名参数；结果/原 operationId/发生时间/note 的不可变快照同事务保存。Other 由表单转换为真实原因后提交，不保存字面 Other。数据负责人同时适配已有测试 Repository 替身签名，查询 Agent 不改该旧测试文件。
+- 新的纯模型 `models/workbench.dart` 定义 `ClientMode { demo, localClient }`、`MapViewport(datasetId, latitude, longitude, zoom)`、`DeliverySettings(datasetId, online, viewport)`；settings 缺失默认 demo online=true，视口 null。loadSettings 初始化后必须返回当前 datasetId，saveViewport 拒绝不同批次视口。connected 不在本轮。地图固定参考位置来自原型配置，须明示 Test reference。
+- `data/delivery/delivery_settings_store.dart` 是独立契约：`Future<DeliverySettings> loadSettings()`, `Future<void> saveOnline(bool)`, `Future<void> saveViewport(MapViewport)`；SqliteDeliveryRepository 同时实现它。ViewModel 通过可选 settingsStore 注入；旧 Repository 替身不必增加设置方法。settings 与业务共库、表与事务分开，保存失败不先宣布持久切换成功。
+- schema v2 增量升级：保 datasetId/stopId/operationId/seq/终态/队列；time_window 仅在已识别 asset 的 reference/名称/地址/坐标匹配时安全回填，其他旧值保 null。旧 note/time 无从恢复不补造。初导入要求原题七列；迁移失败不清库，回滚后可重试。
+- Query/会话由 E03 写：`WorkbenchQuery(search, status, waitingOnly)` 与 `WorkbenchResult(stops, nearest, matchedCount, totalQueueCount)` 位于 UI 查询边界；默认 All/空搜索/Waiting off。list/map/nearest 来源为类型化枚举，会话滚动/选中 reference 保存；冷启不恢复搜索/筛选/临时卡片。UI 不导入 SQLite/CSV。
+- E03 owns DeliveryViewModel 和查询/列表；E11 owns detail/failure，E06 owns map，均通过明确参数/回调消费 ViewModel，不各自新增应用级状态。UI/Map 配置要求先交 E03 或主控，不越界写其文件；E07 接收写域后整合唯一 VM/Coordinator。
+- `SyncCoordinator` 保留 `sync/pause/isRunning`，E05 增加有界 requestTimeout 和纯 Dart 事件监听；进度只统计持久确认。ViewModel 订阅事件更新局部进度 notifier，不在数据层引 Flutter。demo 显式 fake，local-client 默认 unavailable 且 UI 不伪发送/清队列。
+- 显式启动 `--dart-define=OCEAN_MODE=demo`；缺省或 local-client 选择 UnavailableTransport。默认 local-client 保留旧文件名 `ocean_delivery.sqlite`，demo 独立 `ocean_delivery-demo.sqlite`；不复用默认队列给 fake 确认。正式产品仍 `lib/main.dart`，窄 probe 保持独立。E01 仅注入运行模式/品牌壳，E07 接线完整 settings/query/map。
+- iOS simulator 是本轮 G2 首目标，iOS26.4 专用任务设备后台 CLI 操作；真机 profile/release gate 仍 blocked。基础样本30站；性能另加约定密集负载，预算在 E09 指定设备测量前冻结，不能从30站样本预签容量。
+
+共享写域：主控/E01 独占 pubspec/lock/资源/主题/启动装配；E02 独占模型/Repository/schema/settings及旧测试替身签名；E05 之后接协调器/transport；E03/E11/E06 按上述边界并行。构建/安装/依赖操作串行租用 workspace/device，独立 Agent 的 host 测试也走 Harness。
+
+E02 的签名适配写域明确增加 `app/test/ui/fake_delivery_repository.dart` 与 `app/test/ui/delivery_view_model_lifecycle_test.dart`，仅改 submit 参数/快照兼容；E03 的新查询测试写独立目录，不同时改这两个文件。E01 阶段用 `app/lib/app/runtime_configuration.dart` 解析模式（尚未依赖 E02 的新模型），E07 装配时将其映射到 ClientMode，避免 E01→E02 的接口循环。
 
 这是执行合同，源码中的具体问题由负责人回报主控协调；不为实现习惯临时扩框架、平台或产品功能。

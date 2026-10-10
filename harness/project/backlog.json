@@ -215,7 +215,10 @@
         "app/lib/data/delivery/delivery_repository.dart",
         "app/lib/data/delivery/sqlite_delivery_repository.dart",
         "app/lib/data/services",
-        "app/test/data"
+        "app/test/data",
+        "app/test/ui/fake_delivery_repository.dart",
+        "app/test/ui/delivery_view_model_lifecycle_test.dart",
+        "app/lib/data/delivery/delivery_settings_store.dart"
       ],
       "current": "已有 schema v1、事务 outbox、稳定 operationId 和确认逻辑；Stop/importer 未保留 CSV time_window，缺失败备注、持久 online/视口设置和升级路径。",
       "target": "在保留现有事务合同的前提下补字段和 settings；既有安装通过增量升级保留所有配送结果与未确认身份。",
@@ -249,7 +252,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/18",
         "issue_id": 5791323327,
         "state": "open",
-        "body_sha256": "ca68ea56a1bc800e38ef8e3fea8fda093e07b92f827876021bcd8cd6ed276b53",
+        "body_sha256": "36b72d5c193a3aa3718e88e7805ce45924fe9f1a82e7574221467cc37618f2f3",
         "parent_number": 14,
         "blocked_by_numbers": [
           17
