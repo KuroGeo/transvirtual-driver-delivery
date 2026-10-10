@@ -167,8 +167,15 @@
       "E06",
       "E11"
     ],
-    "running": [],
+    "running": [
+      "E04"
+    ],
     "task_board": "harness/project/work.json",
     "coordinator": "/root"
+  },
+  "active_candidate_validation": {
+    "status": "pending",
+    "scope": "Independent E04 tests/support being added; no running execution and no new candidate acceptance",
+    "authoritative_board": "harness/project/work.json"
   }
 }

@@ -1,7 +1,7 @@
 {
   "mode": "execute",
   "contract_revision": 5,
-  "source_head": "d94e9e064fe562d0344e335575c1b95cc7366d69",
+  "source_head": "70e026ea06174e61c604f9dc50d9b384370d7f74",
   "coordinator": "/root",
   "scope": "Implement full prototype/architecture Flutter demo and local-client with independently verified Harness evidence; production no-go remains",
   "tasks": [
@@ -541,13 +541,15 @@
     {
       "id": "E04",
       "role": "testing",
-      "status": "planned",
-      "owner_agent_id": null,
+      "status": "accepted",
+      "owner_agent_id": "/root/requirements_review",
       "contract_revision": 5,
       "write_scope": [
         "app/test/reliability",
         "app/test/support",
-        "app/integration_test/support"
+        "app/integration_test/support",
+        "harness/runs/implementation/E04.md",
+        "harness/runs/implementation/E04-matrix.json"
       ],
       "resource_leases": [],
       "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/23",
@@ -576,7 +578,19 @@
         "R13",
         "R14"
       ],
-      "verification_level": "G1 独立风险回归；G2 只交 fixture 不自签"
+      "verification_level": "G1 独立风险回归；G2 只交 fixture 不自签",
+      "base_sha": "70e026ea06174e61c604f9dc50d9b384370d7f74",
+      "source_fingerprint": "a0cd4c77f71e3fa6342b2919ace236ba7ca71c81700b8fff2acaf40ddac0bc5a",
+      "input_contract_fingerprint": "a0cd4c77f71e3fa6342b2919ace236ba7ca71c81700b8fff2acaf40ddac0bc5a",
+      "result_path": "harness/runs/implementation/E04.md",
+      "started_at": "2026-10-10T14:36:25.229063+00:00",
+      "failed_report": "harness/runs/20261010T144950786686Z-quality/report.json",
+      "review_result": "Root and independent author verified 44 Harness/146 Flutter,7 raw stage hashes, identical source/execution candidate; aggregate default-discovery proof, full formal integration/G2 pending",
+      "returned_at": "2026-10-10T14:54:17.567109+00:00",
+      "accepted_at": "2026-10-10T14:54:17.567109+00:00",
+      "accepted_candidate": "edfb6e0270979cf5f251dbe85df73bc145858146ca08c757576092588680a9ee",
+      "quality_report": "harness/runs/20261010T145142671451Z-quality/report.json",
+      "review": "harness/runs/implementation/E04.md"
     },
     {
       "id": "X01",
@@ -936,6 +950,25 @@
       "accepted_candidate": "a0cd4c77f71e3fa6342b2919ace236ba7ca71c81700b8fff2acaf40ddac0bc5a",
       "quality_report": "harness/runs/20261010T143250780131Z-quality/report.json",
       "review_result": "Independent G1 accepted; full UI/native evidence remains E07/E08"
+    },
+    {
+      "id": "PX01",
+      "role": "harness-preparation",
+      "status": "accepted",
+      "owner_agent_id": "/root/harness_review",
+      "base_sha": "70e026ea06174e61c604f9dc50d9b384370d7f74",
+      "source_fingerprint": "a0cd4c77f71e3fa6342b2919ace236ba7ca71c81700b8fff2acaf40ddac0bc5a",
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/runs/implementation/X01-plan.md"
+      ],
+      "resource_leases": [],
+      "result_path": "harness/runs/implementation/X01-plan.md",
+      "started_at": "2026-10-10T14:37:40.255321+00:00",
+      "note": "Read-only design/feasibility preparation. X01 source implementation not authorized until E04 accepted.",
+      "returned_at": "2026-10-10T14:50:45.663760+00:00",
+      "accepted_at": "2026-10-10T14:50:45.663760+00:00",
+      "review_result": "Read-only trace schema/negative fixtures/fingerprint preparation accepted; no X01 implementation or pass"
     }
   ],
   "resource_leases": [],
@@ -998,22 +1031,32 @@
       "task": "E05/E06/E11",
       "event": "Independent G1 accepted after preserved failure/repair cycle: 44 Harness and142 Flutter; all seven stage raw hashes independently verified; exact origin/execution identity and lease cleanup. Native/full integration pending.",
       "at": "2026-10-10T14:35:38.072019+00:00"
+    },
+    {
+      "task": "E04",
+      "event": "Fresh isolated quality 44 Harness/145 Flutter passed,1 held-out fixture key failure. Root dispatched test-only repair; no product fault hidden or pass claimed.",
+      "at": "2026-10-10T14:50:45.663760+00:00"
+    },
+    {
+      "task": "E04",
+      "event": "Independent component risk G1 accepted: 44 Harness/146 Flutter, preserved single fixture failure, exact candidate and seven stage hashes; no G2 claimed",
+      "at": "2026-10-10T14:54:17.567109+00:00"
     }
   ],
-  "status": "Eight components accepted; independent E04 risk verification next",
+  "status": "E04 accepted; dispatching X01",
   "accepted_candidate": {
-    "source_head": "d94e9e064fe562d0344e335575c1b95cc7366d69",
-    "source_fingerprint": "a0cd4c77f71e3fa6342b2919ace236ba7ca71c81700b8fff2acaf40ddac0bc5a",
-    "scope": "E00/E01/X00/E02/E03/E05/E06/E11 component G1; full workbench/native pending",
-    "working_tree_changes": true
+    "source_head": "70e026ea06174e61c604f9dc50d9b384370d7f74",
+    "source_fingerprint": "edfb6e0270979cf5f251dbe85df73bc145858146ca08c757576092588680a9ee",
+    "scope": "E00/E01/X00/E02/E03/E05/E06/E11 plus E04 independent component G1; full workbench/native pending",
+    "working_tree_changes": false
   },
   "runtime_observation": {
     "coordinator": "/root",
     "writers": [],
-    "note": "No active execution; accepted exact component cut"
+    "note": "E04 source frozen and accepted; ignored independent report only"
   },
   "evidence_archive": "harness/archive/2026-10-10-engineering.tar.gz",
-  "next_task": "E04",
+  "next_task": "X01",
   "issue_planning_validation": {
     "status": "passed",
     "candidate": {
