@@ -1,0 +1,74 @@
+{
+  "schema_version": 2,
+  "audit_date": "2026-10-10",
+  "scope": "Engineering skills, executable Harness and Flutter local reliability baseline",
+  "production_eligible": false,
+  "production_verdict": "no-go",
+  "enforcement_deployed": false,
+  "current_validation": {
+    "status": "passed",
+    "candidate": {
+      "source_fingerprint": "4b9b79b0d7a60dfacb0062db53568e1a7efc5fa1459357190aefd5794ef547bb"
+    },
+    "finished_at": "2026-10-10T11:46:17.946192+00:00",
+    "report_sha256": "8afa1f4fe3124b293ea1fdd3e7c709658284c9fe137a0aebfdb230a6d3f98c4d",
+    "checks": [
+      "repository links / requirement coverage / dependency DAG / Dart layers",
+      "33 Harness regressions",
+      "Flutter 3.44.2 / locked dependencies",
+      "format: no changes",
+      "analyze: no issues",
+      "52 Flutter host / SQLite / widget tests"
+    ],
+    "skills": {
+      "validated": 9,
+      "installed_files_verified": 32,
+      "validator": "uv run --with pyyaml python /Users/yeyufeng/.codex/skills/.system/skill-creator/scripts/quick_validate.py <skill>"
+    },
+    "native_rerun": false,
+    "app_source_unchanged": 16,
+    "archive": "harness/reports/verification.tar.gz",
+    "archive_sha256": "6ca9db22314d9f4077575e470024a91457b8fa41a5c7929214c772e3acb04c8d",
+    "report_member": "quality/report.json",
+    "source_manifest_member": "source-manifest.json",
+    "review_member": "review/independent-reviews.json",
+    "scope": "Reviewed PR source; local quality. Native evidence remains historical."
+  },
+  "historical_rehearsal": {
+    "candidate": {
+      "source_head": "8e9a7cca9c4360ca07d86e8aa8d196caf88c8c42",
+      "source_fingerprint": "89fa4461c961cc287f10665314c9e418da69bcddc721398f12e6c559683c1b25",
+      "working_tree_changes": true
+    },
+    "verdict": "passed",
+    "archive": "harness/archive/2026-10-10-engineering.tar.gz",
+    "archive_sha256": "d3b7fc7275f7672a050f346449d4e9d8e726bea2e6997eada8c29f253cb45f59",
+    "audit_member": "harness/status.json",
+    "summary_member": "harness/rehearsal.md",
+    "capabilities": {
+      "H01": "demonstrated",
+      "H02": "demonstrated",
+      "H03": "partial",
+      "H04": "demonstrated",
+      "H05": "partial",
+      "H06": "blocked",
+      "H07": "demonstrated",
+      "H08": "demonstrated"
+    },
+    "gates": {
+      "G0": "passed",
+      "G1": "passed",
+      "G2": "partial",
+      "G3": "not_run",
+      "G4": "partial",
+      "G5": "not_run",
+      "G6": "not_run"
+    },
+    "native_execution": "ios simulator debug three OS processes with test fake"
+  },
+  "production_gaps": [
+    "Full map workbench and native user acceptance remain incomplete.",
+    "Physical-device profile/release, applicable resource licensing, signing and authorized delivery require evidence.",
+    "Remote CI is being verified in this PR; required-check and release enforcement remain undeployed (archived private protection API: 403)."
+  ]
+}

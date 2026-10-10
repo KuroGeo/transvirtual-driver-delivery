@@ -1,0 +1,3 @@
+interface:
+  display_name: "Flutter Performance"
+  short_description: "Measure Flutter startup, slow frames and memory on real devices"

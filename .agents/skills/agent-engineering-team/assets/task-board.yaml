@@ -1,0 +1,7 @@
+schema_version: 1
+mode: prepare
+mission: harness/project/mission.md
+contract_revision: 1
+concurrency_limit: 1
+shared_file_owner: coordinator
+tasks: []

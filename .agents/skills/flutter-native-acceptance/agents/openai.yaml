@@ -1,0 +1,3 @@
+interface:
+  display_name: "Flutter Native Acceptance"
+  short_description: "Verify Flutter user flows and process recovery on native targets"
