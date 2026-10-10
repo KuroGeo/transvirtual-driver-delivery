@@ -220,6 +220,16 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                                     showTileError: false,
                                     fitPaddingBuilder: (area) {
                                       if (!detail) {
+                                        if (_compact(context, area)) {
+                                          // Compact overview occupies the
+                                          // same right lane as the detail.
+                                          return EdgeInsets.fromLTRB(
+                                            8,
+                                            170,
+                                            math.max(0, area.maxWidth - 106),
+                                            24,
+                                          );
+                                        }
                                         return const EdgeInsets.fromLTRB(
                                           35,
                                           35,

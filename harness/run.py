@@ -374,37 +374,69 @@ def subprocess_stage(argv, cwd, log, timeout, lock_fds, on_spawn, lease_context=
     finally:
         cleanup_started = time.monotonic()
         if process is not None:
+            def group_state():
+                # This group was created by our own Popen(start_new_session).
+                # A zero wrapper exit does not mean all descendants exited.
+                process.poll()
+                try:
+                    os.killpg(process.pid, 0)
+                except ProcessLookupError:
+                    return False
+                except PermissionError:
+                    return True
+                except OSError as error:
+                    receipt["cleanup_errors"].append({"type": type(error).__name__, "message": str(error)})
+                    return None
+                return True
+
+            def wait_group(deadline):
+                while True:
+                    alive = group_state()
+                    if alive is None or alive is False and process.returncode is not None:
+                        return alive
+                    remaining = deadline - time.monotonic()
+                    if remaining <= 0:
+                        return alive
+                    time.sleep(min(0.02, remaining))
+
+            def signal_group(kind, field):
+                try:
+                    os.killpg(process.pid, kind)
+                    receipt[field] = True
+                except ProcessLookupError:
+                    receipt[field] = False
+
             try:
                 if process.poll() is None:
                     receipt["termination_requested_at"] = datetime.now(timezone.utc).isoformat()
-                    try:
-                        os.killpg(process.pid, signal.SIGTERM)
-                        receipt["term_sent"] = True
-                    except ProcessLookupError:
-                        receipt["term_sent"] = False
-                    try:
-                        process.wait(timeout=cleanup_grace)
-                    except subprocess.TimeoutExpired:
-                        try:
-                            os.killpg(process.pid, signal.SIGKILL)
-                            receipt["kill_sent"] = True
-                        except ProcessLookupError:
-                            receipt["kill_sent"] = False
-                        process.wait(timeout=5)
+                    signal_group(signal.SIGTERM, "term_sent")
+                    alive = wait_group(cleanup_started + cleanup_grace)
+                    if alive is True or process.poll() is None:
+                        signal_group(signal.SIGKILL, "kill_sent")
+                        wait_group(time.monotonic() + 5)
+                else:
+                    # The wrapper can exit slightly before a detached analyzer
+                    # descendant. Permit natural quiescence, then clean only
+                    # our group. Normal exits get at most five seconds total,
+                    # even when a native cancellation has a 150-second grace.
+                    budget = min(cleanup_grace, 5)
+                    deadline = cleanup_started + budget
+                    receipt["post_exit_cleanup_budget_seconds"] = budget
+                    receipt["group_alive_after_wrapper_exit"] = group_state()
+                    quiet_started = time.monotonic()
+                    alive = wait_group(min(deadline, quiet_started + min(1, budget * 0.4)))
+                    receipt["natural_quiet_wait_seconds"] = round(time.monotonic() - quiet_started, 3)
+                    if alive is True:
+                        receipt["termination_requested_at"] = datetime.now(timezone.utc).isoformat()
+                        signal_group(signal.SIGTERM, "term_sent")
+                        alive = wait_group(deadline - min(1, budget * 0.2))
+                        if alive is True:
+                            signal_group(signal.SIGKILL, "kill_sent")
+                            wait_group(deadline)
             except (OSError, subprocess.TimeoutExpired, InterruptedError, KeyboardInterrupt) as error:
                 receipt["cleanup_errors"].append({"type": type(error).__name__, "message": str(error)})
             receipt.update(returncode=process.poll(), wrapper_reaped=process.returncode is not None)
-            try:
-                os.killpg(process.pid, 0)
-            except ProcessLookupError:
-                receipt["group_alive"] = False
-            except PermissionError:
-                receipt["group_alive"] = True
-            except OSError as error:
-                receipt["group_alive"] = None
-                receipt["cleanup_errors"].append({"type": type(error).__name__, "message": str(error)})
-            else:
-                receipt["group_alive"] = True
+            receipt["group_alive"] = group_state()
         receipt["finished_at"] = datetime.now(timezone.utc).isoformat()
         receipt["cleanup_elapsed_seconds"] = round(time.monotonic() - cleanup_started, 3)
         if on_finish is not None:
@@ -413,7 +445,7 @@ def subprocess_stage(argv, cwd, log, timeout, lock_fds, on_spawn, lease_context=
             except BaseException:
                 if primary is None:
                     raise
-        if primary is None and (receipt["cleanup_errors"] or not receipt["wrapper_reaped"] or receipt.get("group_alive") is True):
+        if primary is None and (receipt["cleanup_errors"] or not receipt["wrapper_reaped"] or receipt.get("group_alive") is not False):
             raise RuntimeError("stage cleanup/reap is incomplete; inspect completion receipt")
 
 

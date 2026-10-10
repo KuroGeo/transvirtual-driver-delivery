@@ -1,7 +1,7 @@
 {
   "mode": "execute",
   "contract_revision": 5,
-  "source_head": "02608127fd2cd42286d7eb4e6d4b357b8a3ac394",
+  "source_head": "02bf4bcc1da0506559bfdcde7bd66e7e68032cc9",
   "coordinator": "/root",
   "scope": "Implement full prototype/architecture Flutter demo and local-client with independently verified Harness evidence; production no-go remains",
   "tasks": [
@@ -798,8 +798,8 @@
       "verification_level": "G2 完整 iOS 原生功能/OS 恢复；模拟器结果不能代签 G3",
       "base_sha": "6a70a94eab758731bfd1468a384247bbfae48a83",
       "started_at": "2026-10-10T18:03:39.398623+00:00",
-      "source_fingerprint": "e888779d6b48c5a3aecd002b20f0a21362134594fbb19680562bd535a7cc769b",
-      "note": "Readonly stable case boundaries plus adaptiveoverview and approved-font geometrytests passedG1; allsourcefrozen finalcutfull34pending",
+      "source_fingerprint": "d5cfbac95eff028116eaf6defa61a76b94e5a5757877063ac77c0bf5b2b055f7",
+      "note": "Actual currentlargeBrowsepassed but oldFitcenters markerundernewoverview; Query fit usesexposedleftlane andgenuine markerregressionfrozen. FullsamecutG2awaitnewquality/Harnessfreeze",
       "coordinator_write_scope": [
         "harness/run.py",
         "harness/tests/test_runner_options.py",
@@ -942,7 +942,7 @@
     {
       "id": "X04",
       "role": "harness-engineering",
-      "status": "review",
+      "status": "running",
       "owner_agent_id": "/root/harness_review",
       "contract_revision": 5,
       "write_scope": [
@@ -971,12 +971,13 @@
       "verification_level": "H07/H08 实际生命周期/保留场景",
       "source_frozen": true,
       "started_at": "2026-10-10T19:12:17.131419+00:00",
-      "note": "Currentcut21realOS+16authenticcleanup heldouts independentlypassed; roottrueN3heldHTTPcancel/replay pending.",
+      "note": "Actual remote Linux CI analyzer exit0 leaves actual own group alive; failclosed blocks; owner repairing bounded realgroup shutdown/OS regressions",
       "returned_at": "2026-10-10T19:22:09.550330+00:00",
       "result_path": "harness/runs/implementation/X04.md",
-      "source_fingerprint": "45151988e0c042ec45de02797ffda4c1a56924910af13884f07f416a61228d73",
+      "source_fingerprint": "d5cfbac95eff028116eaf6defa61a76b94e5a5757877063ac77c0bf5b2b055f7",
       "current_frozen_candidate": "c3e05ac1f457ecf7e47bc16d1fdcc229010c1b84f7d67a04b3c3c29714aca30a",
-      "quality_report": "harness/runs/20261010T202147347764Z-quality/attempts/000001/report.json"
+      "quality_report": "harness/runs/20261010T202147347764Z-quality/attempts/000001/report.json",
+      "ci_failure": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38083638601"
     },
     {
       "id": "E10",
@@ -1689,9 +1690,14 @@
       "task": "E08",
       "at": "2026-10-10T20:23:26.914878+00:00",
       "event": "ActualBrowse clipping + viewportcoherence race and regressionRenderFlex preserved; finalInter/adaptiveheader/stablecapture source currentc3e G1passed146Harness176Flutter; maxN7 actualVM rerun"
+    },
+    {
+      "task": "X04",
+      "at": "2026-10-10T20:28:57.059340+00:00",
+      "event": "Remote Linux CI raw: actualNoissues analyzer exit0 but groupalive; strictHarnessblocked. Retainedall6raw anddelegateowned-groupboundedcleanup."
     }
   ],
-  "status": "Current frozen G1 passed; E08 maxN7 native real UI running; X04 actualcancel/replay next",
+  "status": "Frozen integrated cut: real Linux group cleanup and compact Fit; fresh quality then serialized native acceptance",
   "accepted_candidate": {
     "source_head": "6a70a94eab758731bfd1468a384247bbfae48a83",
     "source_fingerprint": "e888779d6b48c5a3aecd002b20f0a21362134594fbb19680562bd535a7cc769b",
@@ -1699,17 +1705,15 @@
     "working_tree_changes": true
   },
   "runtime_observation": {
-    "observed_at": "2026-10-10T20:23:26.914878+00:00",
+    "observed_at": "2026-10-10T20:34:07.006926+00:00",
     "active_agents": [
       "/root",
-      "/root/e08_acceptance_review",
       "/root/query_development"
     ],
     "source_writers": [],
     "executor": "/root",
-    "active_run": "harness/runs/20261010T202250904043Z-native/attempts/000001/report.json",
-    "source_fingerprint": "c3e05ac1f457ecf7e47bc16d1fdcc229010c1b84f7d67a04b3c3c29714aca30a",
-    "note": "All tracked source frozen; actual SDK/native serialized; independent OS tests private copies"
+    "active_run": "fresh quality on d5cfbac95eff028116eaf6defa61a76b94e5a5757877063ac77c0bf5b2b055f7",
+    "note": "All tracked sources frozen; independent OS trials use private copies/lock roots only"
   },
   "evidence_archive": "harness/archive/2026-10-10-engineering.tar.gz",
   "next_task": "X04 and E08 rework",
@@ -1727,6 +1731,6 @@
     "native_rerun": false,
     "production_eligible": false
   },
-  "updated_at": "2026-10-10T20:23:26.914878+00:00",
+  "updated_at": "2026-10-10T20:34:07.006926+00:00",
   "native_protocol_revision": 6
 }

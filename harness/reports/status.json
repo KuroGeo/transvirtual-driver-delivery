@@ -187,7 +187,7 @@
   },
   "active_candidate_validation": {
     "scope": "Currentimplementation G1; full34G2pending",
-    "status": "G1passed,nativeinprogress",
+    "status": "Priorc3G1historical; current Fit/Harness repair awaitingfreshquality",
     "candidate": "c3e05ac1f457ecf7e47bc16d1fdcc229010c1b84f7d67a04b3c3c29714aca30a",
     "quality_report": "harness/runs/20261010T202147347764Z-quality/attempts/000001/report.json",
     "tooling_checks": 146,
@@ -201,7 +201,7 @@
     "tooling_checks": 146,
     "flutter_checks": 176,
     "status": "passed",
-    "current_source_matches": true
+    "current_source_matches": false
   },
   "e08_latest_observation": {
     "report": "harness/runs/20261010T195031320652Z-native/attempts/000003/report.json",
@@ -221,5 +221,17 @@
       "overview scroll viewport69.91 shorter than actualBrowse124; tap impossiblewithoutadaptive productrepair"
     ],
     "full_g2": false
+  },
+  "latest_ci_observation": {
+    "pr": "https://github.com/KuroGeo/transvirtual-driver-delivery/pull/34",
+    "head_sha": "02bf4bcc1da0506559bfdcde7bd66e7e68032cc9",
+    "candidate": "c3e05ac1f457ecf7e47bc16d1fdcc229010c1b84f7d67a04b3c3c29714aca30a",
+    "run": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38083638601",
+    "status": "failed",
+    "actual_stage": "analyze",
+    "actual_exit_code": 0,
+    "group_alive": true,
+    "raw_archive_directory": "harness/runs/implementation/ci-38083638601-artifacts",
+    "note": "Exit0doesnotproveprocesscleanup; actualfailure retained, repairrunning"
   }
 }

@@ -54,6 +54,20 @@ void main() {
       expect(tester.getSize(browse).height, greaterThan(100));
       _expectEntryExposed(tester);
 
+      await tapFormalControl(tester, 'fit-stops');
+      await waitForFixtureMap(tester, map);
+      _expectMatchExposed(tester);
+      expect(model.selectedStop, isNull);
+      await tapFormalControl(tester, 'map-stop-TV-300002');
+      expect(model.panel, WorkbenchPanel.detail);
+      expect(model.detailContext!.origin, DetailOrigin.map);
+      expect(model.selectedStop!.reference, 'TV-300002');
+      await tapFormalControl(tester, 'detail-close');
+      expect(model.panel, WorkbenchPanel.map);
+      await waitForFixtureMap(tester, map);
+      _expectMatchExposed(tester);
+      _expectEntryExposed(tester);
+
       await tapFormalControl(tester, 'nearest-stop');
       expect(model.panel, WorkbenchPanel.detail);
       expect(model.detailContext!.origin, DetailOrigin.nearest);
@@ -187,5 +201,30 @@ void _expectEntryExposed(WidgetTester tester) {
     final tool = find.byKey(ValueKey(key));
     expect(tool.hitTestable(), findsOneWidget, reason: key);
     expect(bounds.overlaps(tester.getRect(tool)), isFalse, reason: key);
+  }
+}
+
+void _expectMatchExposed(WidgetTester tester) {
+  final marker = find.byKey(const ValueKey('map-stop-TV-300002'));
+  final bounds = tester.getRect(marker);
+  final map = tester.getRect(find.byKey(const ValueKey('delivery-map')));
+  expect(marker.hitTestable(), findsOneWidget, reason: '$bounds inside $map');
+  expect(tester.getSize(marker), const Size(44, 44));
+  expect(map.contains(bounds.topLeft), isTrue);
+  expect(map.contains(bounds.bottomRight), isTrue);
+  for (final key in [
+    'delivery-overview',
+    'zoom-in',
+    'zoom-out',
+    'fit-stops',
+    'locate-reference',
+    'map-sync',
+    'map-attribution',
+  ]) {
+    expect(
+      bounds.overlaps(tester.getRect(find.byKey(ValueKey(key)))),
+      isFalse,
+      reason: 'Matching marker hidden by $key',
+    );
   }
 }
