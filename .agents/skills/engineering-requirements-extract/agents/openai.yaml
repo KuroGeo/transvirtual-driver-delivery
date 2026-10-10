@@ -1,0 +1,3 @@
+interface:
+  display_name: "Engineering Requirements Extract"
+  short_description: "Extract testable requirements from prototypes and architecture"

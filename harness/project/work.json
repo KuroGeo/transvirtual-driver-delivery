@@ -1,0 +1,131 @@
+{
+  "mode": "execute",
+  "contract_revision": 3,
+  "source_head": "8e9a7cca9c4360ca07d86e8aa8d196caf88c8c42",
+  "coordinator": "/root",
+  "scope": "Harness execution and native reliability baseline; full product and production release remain separate",
+  "tasks": [
+    {
+      "id": "N01",
+      "role": "native-data",
+      "status": "accepted",
+      "owner_agent_id": "/root/native_data",
+      "base_sha": "8e9a7cca9c4360ca07d86e8aa8d196caf88c8c42",
+      "contract_revision": 3,
+      "write_scope": [
+        "app/lib/models",
+        "app/lib/data/delivery",
+        "app/test/data",
+        "app/test/sync"
+      ],
+      "resource_leases": [],
+      "result_path": {
+        "archive_member": "harness/runs/n01-result.md"
+      },
+      "started_at": "2026-10-10T10:54:17.495595+00:00",
+      "input_contract_fingerprint": "9fa588d388f559179741a8e730c5c40a16220dae945d633352c4d5495d7c1404",
+      "review": {
+        "archive_member": "harness/runs/n01-independent-review.md"
+      },
+      "accepted_candidate": "89fa4461c961cc287f10665314c9e418da69bcddc721398f12e6c559683c1b25",
+      "result_evidence": {
+        "archive_member": "harness/evidence/rehearsal/preservation.json"
+      }
+    },
+    {
+      "id": "N02",
+      "role": "native-app",
+      "status": "accepted",
+      "owner_agent_id": "/root/native_app",
+      "base_sha": "8e9a7cca9c4360ca07d86e8aa8d196caf88c8c42",
+      "contract_revision": 3,
+      "write_scope": [
+        "app/lib/main.dart",
+        "app/lib/app",
+        "app/lib/ui",
+        "app/lib/harness_probe.dart",
+        "app/test/ui",
+        "app/test/widget_test.dart",
+        "app/README.md"
+      ],
+      "resource_leases": [],
+      "result_path": {
+        "archive_member": "harness/runs/n02-result.md"
+      },
+      "started_at": "2026-10-10T10:54:17.495595+00:00",
+      "input_contract_fingerprint": "9fa588d388f559179741a8e730c5c40a16220dae945d633352c4d5495d7c1404",
+      "review": {
+        "archive_member": "harness/runs/n02-independent-review.md"
+      },
+      "accepted_candidate": "89fa4461c961cc287f10665314c9e418da69bcddc721398f12e6c559683c1b25",
+      "repair": {
+        "archive_member": "harness/evidence/rehearsal/ui-repair.md"
+      },
+      "result_evidence": {
+        "archive_member": "harness/evidence/rehearsal/preservation.json"
+      }
+    },
+    {
+      "id": "T01",
+      "role": "harness-controls",
+      "status": "accepted",
+      "owner_agent_id": "/root/harness_controls",
+      "base_sha": "8e9a7cca9c4360ca07d86e8aa8d196caf88c8c42",
+      "contract_revision": 3,
+      "write_scope": [
+        "harness/state.py",
+        "harness/gate.py",
+        "harness/tests/test_state.py",
+        "harness/tests/test_gate.py"
+      ],
+      "resource_leases": [],
+      "result_path": {
+        "archive_member": "harness/runs/t01-20261010T105746Z/result.json"
+      },
+      "started_at": "2026-10-10T10:54:17.495595+00:00",
+      "input_contract_fingerprint": "9fa588d388f559179741a8e730c5c40a16220dae945d633352c4d5495d7c1404",
+      "review": {
+        "archive_member": "harness/runs/t01-independent-review-20261010T110155Z/review.md"
+      },
+      "accepted_candidate": "89fa4461c961cc287f10665314c9e418da69bcddc721398f12e6c559683c1b25",
+      "result_evidence": {
+        "archive_member": "harness/evidence/rehearsal/preservation.json"
+      }
+    }
+  ],
+  "resource_leases": "all run leases released; task-created simulator deleted; clean workspace deleted",
+  "events": [
+    {
+      "task": "N01",
+      "event": "independent review accepted baseline;39/39 host plus9 held-out pass"
+    },
+    {
+      "task": "N02",
+      "event": "rework: wait in-flight operations before repository close"
+    },
+    {
+      "task": "T01",
+      "event": "tooling review:3 reproduced integration flaws; fixes under independent retest"
+    },
+    {
+      "task": "N02",
+      "event": "repair reviewed: 5 lifecycle +8widget pass; full52 suite verified byroot"
+    },
+    {
+      "task": "T01",
+      "event": "4 reproduced runner/control flaws fixed; held-out ignoreTERM and actualresume passed;28 tool suite verified"
+    },
+    {
+      "task": "root",
+      "event": "same candidate quality,clean-source build and3native processes passed; production gate expectedno-go"
+    }
+  ],
+  "status": "Historical accepted reliability baseline; current tasks are assigned here when engineering resumes.",
+  "accepted_candidate": {
+    "source_head": "8e9a7cca9c4360ca07d86e8aa8d196caf88c8c42",
+    "source_fingerprint": "89fa4461c961cc287f10665314c9e418da69bcddc721398f12e6c559683c1b25",
+    "working_tree_changes": true
+  },
+  "runtime_observation": "All three assigned agents completed; verified with collaboration.list_agents after reviews",
+  "evidence_archive": "harness/archive/2026-10-10-engineering.tar.gz"
+}

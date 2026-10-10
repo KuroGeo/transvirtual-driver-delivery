@@ -1,0 +1,93 @@
+{
+  "kind": "local_skill_installation",
+  "automatic_discovery": "default_enabled",
+  "new_session_discovery_required": true,
+  "skills": [
+    {
+      "skill": "agent-engineering-team",
+      "destination": "~/.codex/skills/agent-engineering-team",
+      "files": {
+        "SKILL.md": "e502fa2abdf59dc4e0a7af13685022284c7e3770eb0fb061c2b1ff43077d9df6",
+        "agents/openai.yaml": "08c3f27b6089223e07920e7feecb7516a036eadef0beda83a37112dbb17795dd",
+        "assets/result-template.md": "e82988c6b480bdf8f4ef256d3799792f5a5442f1e8b8bc9adb8e0a151d127b4e",
+        "assets/task-board.yaml": "235a2b310cbddf420b7b8e16bd854e50a76e89c82cbf45e835bc744b3f69a190",
+        "references/team-protocol.md": "858895d78d0e3f99233f871a07cf562fc9deb3df6675ccaed2a3a9bacf37f7ba",
+        "references/work-orders.md": "549b94ec52e40f706d17e2f43eabd56b25c530667f1d1431ac2fbb22f2129e1f"
+      }
+    },
+    {
+      "skill": "engineering-flutter-testing",
+      "destination": "~/.codex/skills/engineering-flutter-testing",
+      "files": {
+        "SKILL.md": "1519031dd3ed9125ef4cba9abf5f99f69a6a8c89f87c493ee8422dda8300e00f"
+      }
+    },
+    {
+      "skill": "engineering-issue-authoring",
+      "destination": "~/.codex/skills/engineering-issue-authoring",
+      "files": {
+        "SKILL.md": "9febab30b8c251fa0aaa5e469b85e891b75daf0e85ae4f1e0399666ce99f7ac2",
+        "agents/openai.yaml": "f45eb3fff78c0c6b0009158c3b9bfe1c34637c2e1905df2ad4e6a188138175bf",
+        "assets/issue-template.md": "979950317d4a948be939f0367bcdd92cc9612c640d14ad6a863de455e5e260d5",
+        "references/issue-standard.md": "245caeca52fa8477adf585c0ec1a5ca1dd48128c38da13939d9618fdfa6a3ece"
+      }
+    },
+    {
+      "skill": "engineering-release-handoff",
+      "destination": "~/.codex/skills/engineering-release-handoff",
+      "files": {
+        "SKILL.md": "d525625fc6472bbadd9558b0b4e880ed72c395efa2daeb6e12ca7daa5dad1894",
+        "agents/openai.yaml": "f90965a4edf5463fbbe9fa080574a0ac98e9e6959372385d4e225de22e44b4c7",
+        "assets/handoff-template.md": "b74cc95079b87710234fca5ea726cacb1c92da8e1a57e9122e5d9af3cfb9bc2d",
+        "references/gates.md": "8fd9298c7a135f506c91a8eb60656101348981ec37568894c3df6841c6d4735a"
+      }
+    },
+    {
+      "skill": "engineering-requirements-extract",
+      "destination": "~/.codex/skills/engineering-requirements-extract",
+      "files": {
+        "SKILL.md": "5f99363b8a9e9b21a295be17b2619b4e21b69e1b8c692f0e2d6de94a0e89b030",
+        "agents/openai.yaml": "bd49aa47e3a9b12a840912ed69ba0678b419bb464fc0fbb6cbd401afd3fd859b",
+        "assets/requirements-template.md": "34cd9db3d5c03fbba6cd400ddba4f5028c98c39c26e838eee31cded8a14b93e1",
+        "references/extraction.md": "c3413e1a4944232bfcf1d33d4dba9f5bc3846a74e7550b2256b44929c102074e"
+      }
+    },
+    {
+      "skill": "flutter-development",
+      "destination": "~/.codex/skills/flutter-development",
+      "files": {
+        "SKILL.md": "131d406993606c53ec9db5c229c390febf24df933f7f4db9d02aa93e0acc52a6"
+      }
+    },
+    {
+      "skill": "flutter-native-acceptance",
+      "destination": "~/.codex/skills/flutter-native-acceptance",
+      "files": {
+        "SKILL.md": "61585aaef90c5ce1a95256d1ce6073e3d984a55a57892dcb7c10cd5f1b67c3c2",
+        "agents/openai.yaml": "de8fb65d9d6c557b7a5afa1200b26d4a0955b751dad200b32905ae9402887202",
+        "assets/acceptance-template.md": "5632afa07cc7d8f91171ed1256d1ad84d88eb1403de175a1e5b7169b15189609",
+        "references/native-flows.md": "c42728f622b52a038e6c2e54be310e3faae293ba0db367cde5dd1959c64d3938"
+      }
+    },
+    {
+      "skill": "flutter-performance",
+      "destination": "~/.codex/skills/flutter-performance",
+      "files": {
+        "SKILL.md": "420c61e4958dbbfdebd4b402fc1e59a5ae361d87b3f5e38188413604aac5bf99",
+        "agents/openai.yaml": "098fb12efcb07e3614ade86d8a1096cfd80136f03cb72c0f0abc9e710b9f782a",
+        "assets/performance-template.md": "c729f84ea9e9e956afe54888c20c8ea57c84dee1057d28ea913723bc4510b7c0",
+        "references/profiling.md": "4967e3cca3fc903b1163107015daa591e15392ed602e49a13e8d658ea07f90ce"
+      }
+    },
+    {
+      "skill": "harness-engineering",
+      "destination": "~/.codex/skills/harness-engineering",
+      "files": {
+        "SKILL.md": "5f672ba8063e04ca5e629c04c6a348f3089488d5c2c3e9eed89c93302a718f4a",
+        "agents/openai.yaml": "9b996700f70deae4408dd32fcbfaee0a7f677ee1a676de7597043de31ed006c2",
+        "assets/audit-template.md": "31e61a042a85ab142e9356c67cf84b747e017b045b392ccced01d8444939821b",
+        "references/readiness.md": "bbb5e006df0818d82db973160dc54f8f94ef4d7bcdfed55250393d11c8fb0004"
+      }
+    }
+  ]
+}

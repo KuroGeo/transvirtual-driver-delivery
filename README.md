@@ -34,7 +34,11 @@ python3 prototype/serve.py
 
 ## 范围
 
-这是可操作的浏览器设计原型。同步目标为应用内 fake，没有真实服务端上传；距离为直线距离，未接入 GPS / 罗盘、路网导航或 ETA。Flutter 应用、Android / iOS 设备运行与正式题目提交材料仍属于后续实现范围。原始题目和数据保存在 `docs/assignment/`，本次不修改附件。
+这是可操作的浏览器设计原型。同步目标为应用内 fake，没有真实服务端上传；距离为直线距离，未接入 GPS / 罗盘、路网导航或 ETA。Flutter 本地可靠性基线现位于 `app/`；完整地图产品与正式交付继续按任务图推进。原始题目和数据保存在 `docs/assignment/`，本次不修改附件。
+
+## Agent 工程团队
+
+[工程执行入口](harness/README.md) 提供需求提取、提 Issue、开发、测试、原生验收、Flutter 性能与交付的职能分工，以及总控/Harness skill、任务依赖和关闭标准。[Harness 审计](harness/reports/readiness.md) 记录实际可执行能力及尚缺的生产门槛；本地试跑与生产发布分别判定。
 
 ## 客户端架构方案
 

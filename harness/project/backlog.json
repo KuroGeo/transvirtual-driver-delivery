@@ -1,0 +1,362 @@
+{
+  "schema_version": 1,
+  "mode": "execute",
+  "contract_revision": 4,
+  "source_baseline": "8e9a7cc",
+  "concurrency_limit": 4,
+  "coordinator": "/root",
+  "shared_file_owner": "coordinator",
+  "external_issue_publication": "not_authorized",
+  "tasks": [
+    {
+      "id": "E00",
+      "title": "核验环境并冻结接口与运行配置",
+      "role": "requirements-and-coordinator",
+      "status": "planned",
+      "depends_on": [],
+      "requirements": [
+        "R01",
+        "R05",
+        "R15",
+        "R16",
+        "R17"
+      ],
+      "write_scope": [
+        "harness/project/mission.md",
+        "harness/project/contracts.md",
+        "harness/project/work.json"
+      ],
+      "done_when": "实际平台、SDK、接口责任和预算状态可追踪"
+    },
+    {
+      "id": "E01",
+      "title": "Flutter 最小原生启动和依赖锁定",
+      "role": "development",
+      "status": "planned",
+      "depends_on": [
+        "E00"
+      ],
+      "requirements": [
+        "R16"
+      ],
+      "write_scope": [
+        "app/pubspec.yaml",
+        "app/pubspec.lock",
+        "app/lib/app",
+        "app/android",
+        "app/ios"
+      ],
+      "done_when": "指定原生目标最小启动，记录实际 SDK/lock；启动负责人独占共享配置"
+    },
+    {
+      "id": "E02",
+      "title": "原子导入、终态提交与 SQLite outbox 恢复",
+      "role": "development-data",
+      "status": "planned",
+      "depends_on": [
+        "X00"
+      ],
+      "requirements": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "R05"
+      ],
+      "write_scope": [
+        "app/lib/models",
+        "app/lib/data/delivery",
+        "app/test/data"
+      ],
+      "done_when": "文件库重开、提交/确认故障、非法和重复提交通过，稳定身份与未确认结果保留"
+    },
+    {
+      "id": "E03",
+      "title": "工作台状态、列表详情与失败表单",
+      "role": "development-ui",
+      "status": "planned",
+      "depends_on": [
+        "X00"
+      ],
+      "requirements": [
+        "R03",
+        "R08",
+        "R09",
+        "R10",
+        "R14"
+      ],
+      "write_scope": [
+        "app/lib/ui",
+        "app/test/widget_test.dart"
+      ],
+      "done_when": "冻结 Repository 替身验证查询/返回/保存反馈，真实接线在 E07"
+    },
+    {
+      "id": "E04",
+      "title": "独立故障回归和测试配置",
+      "role": "testing",
+      "status": "planned",
+      "depends_on": [
+        "X00"
+      ],
+      "requirements": [
+        "R01",
+        "R02",
+        "R04",
+        "R05",
+        "R06",
+        "R12"
+      ],
+      "write_scope": [
+        "app/test/reliability",
+        "app/test/support"
+      ],
+      "done_when": "正常/失败/恢复断言齐全，不与开发者测试文件重叠；实际实现执行在 E07"
+    },
+    {
+      "id": "E05",
+      "title": "串行同步、稳定身份和配置真实表达",
+      "role": "development-sync",
+      "status": "planned",
+      "depends_on": [
+        "E02"
+      ],
+      "requirements": [
+        "R05",
+        "R06",
+        "R11",
+        "R12"
+      ],
+      "write_scope": [
+        "app/lib/data/delivery/sync_coordinator.dart",
+        "app/test/sync"
+      ],
+      "done_when": "fake/unavailable 区分，错配/确认写失败保留，重复触发只有一个循环"
+    },
+    {
+      "id": "E06",
+      "title": "地图聚合、最近站点、视口和品牌体验",
+      "role": "development-map",
+      "status": "planned",
+      "depends_on": [
+        "E03"
+      ],
+      "requirements": [
+        "R07",
+        "R08",
+        "R09",
+        "R13",
+        "R14"
+      ],
+      "write_scope": [
+        "app/lib/ui/delivery/map",
+        "app/assets",
+        "app/test/map"
+      ],
+      "done_when": "坐标/状态/查询一致，底图失败业务可用，署名可见，不新增同步抽屉"
+    },
+    {
+      "id": "E07",
+      "title": "集成客户端、同步反馈与质量 gate",
+      "role": "coordinator-integration",
+      "status": "planned",
+      "depends_on": [
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "X01"
+      ],
+      "requirements": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "R05",
+        "R06",
+        "R07",
+        "R08",
+        "R09",
+        "R10",
+        "R11",
+        "R13",
+        "R14",
+        "R17"
+      ],
+      "write_scope": [
+        "app/lib/app",
+        "app/lib/ui/delivery",
+        "app/lib/diagnostics",
+        "app/integration_test"
+      ],
+      "done_when": "精确候选通过格式/分析/关键测试和目标构建，结构化业务错误/事件与受控观测入口可用；共享文件在工作 Agent 归还后改"
+    },
+    {
+      "id": "E08",
+      "title": "独立原生验收及真实进程恢复",
+      "role": "native-acceptance",
+      "status": "planned",
+      "depends_on": [
+        "X02"
+      ],
+      "requirements": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "R05",
+        "R06",
+        "R07",
+        "R08",
+        "R09",
+        "R10",
+        "R11",
+        "R12",
+        "R13",
+        "R14"
+      ],
+      "write_scope": [
+        "harness/runs/E08"
+      ],
+      "done_when": "用户链/故障恢复有版本/设备/进程证据，缺陷回开发；缺目标设备保持 blocked"
+    },
+    {
+      "id": "E09",
+      "title": "真机性能基线与热点回归",
+      "role": "performance",
+      "status": "planned",
+      "depends_on": [
+        "X02"
+      ],
+      "requirements": [
+        "R15"
+      ],
+      "write_scope": [
+        "harness/runs/E09"
+      ],
+      "done_when": "明确设备/容量/预算，profile trace 与 release 复核；缺硬件保持 blocked"
+    },
+    {
+      "id": "E10",
+      "title": "数据恢复、资源许可与发布准备",
+      "role": "release-handoff",
+      "status": "planned",
+      "depends_on": [
+        "X03",
+        "X04",
+        "E08",
+        "E09"
+      ],
+      "requirements": [
+        "R01",
+        "R13",
+        "R16",
+        "R17"
+      ],
+      "write_scope": [
+        "harness/runs/E10",
+        "app/README.md",
+        "harness/runs/E10/manifest.json"
+      ],
+      "done_when": "文档/manifest 可预备；生产 accepted 必须 H01–H08 demonstrated、E08/E09 与适用 G0–G6 通过；未达标保持 blocked，外部发布另按授权"
+    },
+    {
+      "id": "X00",
+      "title": "可复现原生执行环境与隔离工具入口",
+      "role": "harness-engineering",
+      "status": "planned",
+      "depends_on": [
+        "E01"
+      ],
+      "requirements": [
+        "R17"
+      ],
+      "write_scope": [
+        "harness/run.py",
+        "app/.fvmrc"
+      ],
+      "done_when": "干净工作树按锁定 SDK/依赖实际启动和快速检查；隔离测试数据/服务、设备租用与保留业务数据清理可验证"
+    },
+    {
+      "id": "X01",
+      "title": "架构数据边界和仓库事实机械检查",
+      "role": "harness-engineering",
+      "status": "planned",
+      "depends_on": [
+        "X00",
+        "E02",
+        "E04"
+      ],
+      "requirements": [
+        "R01",
+        "R02",
+        "R04",
+        "R05",
+        "R17"
+      ],
+      "write_scope": [
+        "harness/checks.py",
+        "harness/tests/test_checks.py"
+      ],
+      "done_when": "依赖/状态/事务/确认身份和文档覆盖检查实际运行；故意违反样例被拒绝，日志给具体修复入口；复用测试职能 fixture"
+    },
+    {
+      "id": "X02",
+      "title": "Agent 可读取的原生操作与业务观测",
+      "role": "harness-engineering",
+      "status": "planned",
+      "depends_on": [
+        "E07"
+      ],
+      "requirements": [
+        "R12",
+        "R15",
+        "R17"
+      ],
+      "write_scope": [
+        "harness/native.py",
+        "app/lib/harness_probe.dart"
+      ],
+      "done_when": "实际驱动目标 UI/进程、读取业务失败/同步事件/持久状态和 trace；候选绑定，缺产品观测入口交 E07 返工再过质量 gate，不越界改实现"
+    },
+    {
+      "id": "X03",
+      "title": "候选证据与生产门禁的实际接线",
+      "role": "harness-engineering",
+      "status": "planned",
+      "depends_on": [
+        "X02",
+        "X01"
+      ],
+      "requirements": [
+        "R16",
+        "R17"
+      ],
+      "write_scope": [
+        "harness/gate.py",
+        ".github/workflows/quality.yml"
+      ],
+      "done_when": "缺失/未知/失败/跳过/旧版本/错层证据实际被拒绝；核实 required checks 与发布路径，未接入不写 enforced"
+    },
+    {
+      "id": "X04",
+      "title": "中断恢复、资源重入和独立 Agent 回归",
+      "role": "harness-engineering",
+      "status": "planned",
+      "depends_on": [
+        "X02",
+        "X03"
+      ],
+      "requirements": [
+        "R17"
+      ],
+      "write_scope": [
+        "harness/state.py",
+        "harness/tests"
+      ],
+      "done_when": "真正取消/恢复，检查活负责人/diff/租用且无重复写入；保留场景和门禁反例实跑，记录成本与失败后最小修正"
+    }
+  ],
+  "purpose": "Full-product reference plan; reuse completed reliability baseline after checking current candidate. This is not the live task board."
+}

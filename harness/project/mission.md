@@ -1,0 +1,59 @@
+# 工程任务合同 v4
+
+## 当前范围与来源
+
+本次 mode=execute：用户授权补可执行 Harness 并整理目录。实现必要的 Flutter 原生可靠性基线、工具/检查/恢复/评测；产品完整地图工作台仍按实施图推进，外部 issues/发布未授权。
+
+后续目标是将原型已有功能交付为可靠 Flutter 客户端。首版不加登录、路线/ETA、产品内 AI 助手、照片/签名、持续后台定位/上传。开发 Agent 团队与产品内 Agent 是两个概念。
+
+| 来源 | 用途 |
+| --- | --- |
+| [原题](../../docs/assignment/brief.en.txt) / [CSV](../../docs/assignment/deliveries.csv) | 30 站：24 pending、3 completed、3 failed；原题时间盒仅 take-home 模式 |
+| [当前原型](../../prototype/README.md) | 已有功能和受控数据条件 |
+| [直接同步](../../prototype/direct-sync-design.md) | 替代旧同步抽屉；Toast、最近项 |
+| [按来源返回](../../prototype/origin-return-design.md) | 替代旧返回行为 |
+| [架构](../../docs/solution-design.md) | MVVM/Repository/SQLite outbox/串行确认/地图与发布边界 |
+
+用户修正优先，最新交互修正优于旧图面。原型是交互合同，不复制 localStorage/fake 延时作为原生生产实现。架构文档的 SDK/依赖是选型来源；当前已解析依赖由 app/pubspec.lock 与 app/.fvmrc 锁定。
+
+## 重点功能与工程环节
+
+| ID | 合同 / 可观察结果 | 最低证据 / 职能 |
+| --- | --- | --- |
+| R01 | 首导入整份校验，失败无半批次；冷启不重导，升级不清结果 | 文件 SQLite 故障/重开；开发＋测试 |
+| R02 | pending 仅到 completed/failed，终态逻辑层拒改；双击至多一结果/outbox | 业务/数据库回归；开发＋测试 |
+| R03 | 新失败 trim 原因必填，Other 说明必填；初始失败标来源未提供 | unit/widget＋原生；测试＋验收 |
+| R04 | 结果与不可变 outbox 同事务，commit 后 Saved；失败保留原值/输入 | 故障注入＋原生；测试＋验收 |
+| R05 | operationId 提交时落盘，重试不换；匹配确认后同事务记录并移队列 | 错配/重复/未知 ack、确认写失败；测试 |
+| R06 | 一个 seq 串行循环；失败/超时保留；暂停不发下一条，finally 释放 | 协调器回归＋目标设备；测试＋验收 |
+| R07 | 地图为主页，原坐标落点，可点击聚合；状态颜色/符号/名称一致 | widget/原生图面和点选；开发＋验收 |
+| R08 | 搜索/状态/等待取交集，地图列表最近项一致；总队列与匹配数区分 | 查询合同/UI 联动；测试＋验收 |
+| R09 | 固定位置明示测试参考，Haversine 直线距离，不改原数据，稳定 tie-break | 算法＋原生；测试＋验收 |
+| R10 | 列表→详情→列表恢复搜索/筛选/滚动；地图/最近项详情回地图；系统返回一致 | widget＋原生操作；验收 |
+| R11 | 左按钮直接同步，Toast 表达进度/离线/失败/完成；不加同步抽屉，不抢焦点/镜头 | 原生状态链/视觉；验收 |
+| R12 | 离线多结果→真正终止进程→重开保留原因/身份/队列→在线按配置恢复 | 原生进程记录＋持久数据；验收 |
+| R13 | 无底图不阻塞浏览/保存；恢复有效视口；清瓦片缓存不清业务 | 原生禁网/冷启/缓存缺失；验收 |
+| R14 | 沿用品牌/图标，390×844 为设计参考，native 适配 SafeArea/键盘/文字缩放/减少动效 | 原生图面/操作/语义；验收 |
+| R15 | 约定设备/容量下启动、UI/raster、内存符合明确预算 | 真机 profile＋release 复核；性能 |
+| R16 | 候选质量/原生/适用升级/许可/发布产物与运行说明可追溯，外部交付独立取证 | G0–G6 manifest；交付 |
+| R17 | 用户要求 Harness Engineering 达标才上线；上下文、执行环境、观察反馈、机械边界、故障闭环、门禁、恢复和评测真实可验证 | H01–H08 当前候选/环境证据；Harness＋主控＋交付 |
+
+## 运行配置
+
+| 配置 | 数据 / transport | 同步结果与完成层级 |
+| --- | --- | --- |
+| demo / take-home | CSV＋受控 Fake/Mock；应用内 online 开关 | 模拟确认落盘后移队列，明示 demo；不证明真实上传 |
+| local-client | 授权本地来源或明示测试来源＋UnavailableTransport | 结果落盘、待服务；联网不伪确认；本地客户端交付 |
+| connected（后续范围） | 授权业务数据＋真实 Source/Transport 与访问权限 | 有真实持久接受和幂等证据，才声称真实同步 |
+
+后续产品目标为原型功能一致的 demo 与可靠 local-client 边界；当前只实现用于检验 Harness 的本地可靠性切片。应用内 online 不等于 OS 网络或底图可用；配送终态、待确认、服务模式、地图状态独立。测试数据不自动送真实服务；未接定位的商业界面隐藏距离/当前位置或明确参考位置。
+
+## 接口和所有权
+
+启动时主控冻结纯 Dart Dataset/Stop/PendingUpdate 身份，Repository 读取/终态提交/取下一项/确认语义，SyncTransport 单次 ack/error，SyncCoordinator 生命周期，ViewModel 查询/返回来源，以及 MapView 配置/视口事件。当前可靠性基线具体接口见 [contracts](contracts.md)；地图/查询等未实现接口在对应开发任务冻结。
+
+数据开发 owns schema/提交和确认；协调器通过 Repository 而非 SQL；UI 不持有数据库或 HTTP 循环；模型不带 Widget/MapController/SQL row。合同变更后通知消费者并重验。
+
+网页 78/78 仅 browser 历史证据。G1 宿主质量、G2 原生功能、G3 真机/性能、G4 数据与资源、G5 正式发布准备、G6 外部交付分开记录；缺设备/服务/签名时保留真实层级。
+
+R17 是工程准入，不增加产品功能。见 [Harness 审计](../reports/readiness.md)；当前生产 no-go。后续自主开发须补实际环境/门禁/恢复能力，准备试跑不得代签上线资格。

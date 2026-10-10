@@ -1,0 +1,32 @@
+name: Engineering quality
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          flutter-version: '3.44.2'
+          channel: stable
+          cache: true
+      - name: Resolve locked dependencies
+        working-directory: app
+        run: flutter pub get --enforce-lockfile
+      - name: Run repository and Flutter gates
+        run: python3 harness/run.py quality
+      - name: Preserve candidate and failure logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: engineering-quality-${{ github.sha }}
+          path: harness/runs/
+          retention-days: 7
