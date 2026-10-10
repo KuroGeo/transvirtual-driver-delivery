@@ -35,3 +35,7 @@ python3 prototype/serve.py
 ## 范围
 
 这是可操作的浏览器设计原型。同步目标为应用内 fake，没有真实服务端上传；距离为直线距离，未接入 GPS / 罗盘、路网导航或 ETA。Flutter 应用、Android / iOS 设备运行与正式题目提交材料仍属于后续实现范围。原始题目和数据保存在 `docs/assignment/`，本次不修改附件。
+
+## 客户端架构方案
+
+[Ocean Delivery 客户端 MVP 架构设计技术报告](docs/solution-design.md) 定义商业产品初始客户端的范围、Flutter 分层与选型取舍、本地可靠性、地图授权、性能和冷启动缓存，以及后端、用户系统、路径规划与 AI Agent 的分阶段接入。报告用于指导后续开发；移动端构建、联调和真机验收在对应实施阶段完成。
