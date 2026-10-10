@@ -577,7 +577,7 @@ class Validator:
             verified[key] = actual["sha256"]
             self.native_artifacts[key] = (actual["sha256"], report)
         report["_verified_artifacts"] = verified
-        return {**report, "_evidence_owner": report_item["path_object"].parent}
+        return {**report, "_evidence_owner": report_item["path_object"].parent, "_collector_item": report_item}
 
     def native_command(self, command):
         command = _object(command, "native actual command")
@@ -1182,7 +1182,7 @@ class Validator:
                 failed = _object(_json(value["artifacts"][check["rollback_snapshot"]]["raw"], "migration failure snapshot"), "migration failure snapshot")
                 self.identity(failed, check)
                 require(failed.get("model") is None or failed["model"].get("initialized") is False, "failed initialization unavailable")
-                tapped("retry-bootstrap")
+                tapped("reload-data")
                 stage("initialize_failed")
         elif check_id == "N7.two-sizes-safearea":
             samples = self.native_samples(check, value["artifacts"], same_identity=False)
@@ -1274,25 +1274,95 @@ class Validator:
             if not any("write" in command["argv"] and "YES" in command["argv"] for command in matching) or not any("read" in command["argv"] and command.get("stdout", "").strip() == "1" for command in matching):
                 raise EvidenceError("actual OS reduced-motion write/read receipt missing")
 
+    def native_saved_baseline(self, value):
+        """Read the original saved phase end, not an earlier business case."""
+        from datetime import datetime
+        run = value["run"]
+        owner = run["_evidence_owner"]
+        original = run["_collector_item"]
+        collector_item = self.raw({"path": str(original["path_object"]), "sha256": original["sha256"], "kind": original["kind"]})
+        collector = self.report(collector_item, {"schema": 1, "configuration": run["configuration"]})
+        _expect(collector.get("launches"), run["launches"], "saved baseline original collector launches")
+        references = _list(collector.get("artifacts"), "original saved phase inventory")
+        def read(name, kind):
+            path = self.path("saved/" + name, owner)
+            matches = [ref for ref in references if self.path(ref.get("path"), owner) == path]
+            if len(matches) != 1:
+                raise EvidenceError("original collector must contain exactly one saved/" + name)
+            ref = matches[0]
+            _expect(ref.get("candidate"), self.fingerprint, "saved endpoint inventory candidate")
+            _expect(ref.get("kind"), kind, "saved endpoint original kind")
+            item = self.raw(ref, owner)
+            _expect(run["_verified_artifacts"].get(str(path)), item["sha256"], "saved endpoint original collector binding")
+            return item
+        launches = [launch for launch in run["launches"] if launch.get("phase") == "saved"]
+        if len(launches) != 1:
+            raise EvidenceError("saved baseline requires exactly one actual saved launch")
+        launch = launches[0]
+        snapshot = _object(_json(read("snapshot.json", "driver-raw-evidence")["raw"], "saved phase-end snapshot"), "saved snapshot")
+        self.identity(snapshot, launch)
+        self.identity(value["after"], launch)
+        for field, expected in (("schema", 1), ("mode", run["configuration"]),
+                                ("transport", "controlled-http-simulated" if run["configuration"] == "demo" else "unavailable-local-client"),
+                                ("databasePath", run["data_container"] + "/Documents/" + ("ocean_delivery-demo.sqlite" if run["configuration"] == "demo" else "ocean_delivery.sqlite"))):
+            _expect(snapshot.get(field), expected, "saved phase-end " + field)
+        config = launch["launch_config"]
+        for field, key in (("launchConfigPath", "path"), ("launchConfigByteLength", "byte_length"), ("launchConfigSchema", "schema")):
+            _expect(snapshot.get(field), config[key], "saved phase-end " + field)
+        result = self.report(read("result.json", "driver-raw-evidence"), {"schema": 1, "revision": NATIVE_REVISION, "phase": "saved", "scope": "e08-native-functional-acceptance"})
+        self.identity(result, {**launch, "vmProcessId": launch["processId"]}, vm=True)
+        observations = self.jsonl(read("observations.jsonl", "driver-raw-evidence"))
+        for observation in observations:
+            self.identity(observation, launch)
+        if not any(_equal(snapshot, observation) for observation in observations):
+            raise EvidenceError("saved phase-end snapshot missing from original observations")
+        end = datetime.fromisoformat(_text(snapshot.get("observedAt"), "saved phase-end observedAt").replace("Z", "+00:00"))
+        previous = datetime.fromisoformat(_text(value["after"].get("observedAt"), "offline case observedAt").replace("Z", "+00:00"))
+        if end < previous:
+            raise EvidenceError("saved phase-end baseline precedes offline result case")
+        sql = read("phase-final.sqlite", "sqlite-backup")
+        database = self.database(sql)
+        projection = _object(_json(read("phase-final.sqlite.json", "sqlite-projection")["raw"], "saved phase-end SQL projection"), "saved SQL projection")
+        for field, expected in (("sha256", sql["sha256"]), ("tables", database["tables"]), ("user_version", database["version"]),
+                                ("schema", database["schema"]), ("triggers", database["triggers"]),
+                                ("sqlite_sequence", [{"name": name, "seq": seq} for name, seq in sorted(database["sequences"].items())])):
+            _expect(projection.get(field), expected, "saved phase-end actual SQL projection " + field)
+        self.snapshot_database(snapshot, database)
+        _expect(snapshot.get("stops"), snapshot.get("persistedStops"), "saved phase-end complete model vs durable stops")
+        model = _object(snapshot.get("model"), "saved phase-end model")
+        _expect(model.get("initialized"), True, "saved phase-end initialized model")
+        _expect(model.get("queueCount"), len(database["tables"]["outbox"]), "saved phase-end queue vs SQL")
+        current = [event for event in self.jsonl(read("phase-final.journal.jsonl", "repository-coordinator-journal")) if event.get("session") == launch["session"]]
+        if not current or not any(event.get("source") == "repository" for event in current):
+            raise EvidenceError("saved phase-end current repository journal missing")
+        for event in current:
+            self.identity(event, launch)
+        return snapshot
+
     def native_cross_checks(self, checked):
-        saved = checked["N1.offline-two-results"]["after"]
+        first = checked["N1.first-import"]["run"]
+        for key in ("N1.offline-two-results", "N1.cold-preservation", "N1.serial-confirmation", "N1.no-resend"):
+            _expect(checked[key]["run"], first, "N1 same actual installation/run")
+        offline = checked["N1.offline-two-results"]
+        saved = self.native_saved_baseline(offline)
         recovered = checked["N1.cold-preservation"]["after"]
-        for field in ("outbox", "persistedStops", "persistedSettings"):
+        for field in ("outbox", "persistedStops", "stops"):
+            _expect(saved.get(field), offline["after"].get(field), "saved phase-end immutable results " + field)
+        for field in ("outbox", "persistedStops", "stops", "persistedSettings"):
             _expect(recovered.get(field), saved.get(field), "actual cold preserved " + field)
+        from datetime import datetime
+        if datetime.fromisoformat(recovered["observedAt"].replace("Z", "+00:00")) <= datetime.fromisoformat(saved["observedAt"].replace("Z", "+00:00")):
+            raise EvidenceError("actual cold snapshot must follow saved phase end")
         nearest = checked["N4.reference-nearest"]
         observations = self.jsonl(nearest["artifacts"][nearest["check"]["observations"]])
         # Source return occurs after this check and before subsequent typed-return
         # checks; original observation journal retains the actual intermediate UI.
-        from datetime import datetime
         selected_at = datetime.fromisoformat(nearest["after"]["observedAt"].replace("Z", "+00:00"))
         if not any(observation.get("model", {}).get("panel") == "map" and observation.get("model", {}).get("selected") is None and datetime.fromisoformat(observation["observedAt"].replace("Z", "+00:00")) > selected_at for observation in observations):
             raise EvidenceError("actual nearest-origin return to map observation missing")
         all_actions = self.jsonl(nearest["artifacts"][nearest["check"]["actions"]])
         if not any(event.get("action") in ("tap:detail-return", "tap:detail-close") and event.get("stage") == "completed" and datetime.fromisoformat(event["observedAt"].replace("Z", "+00:00")) > selected_at for event in all_actions):
             raise EvidenceError("actual nearest typed close/return UI action missing")
-        first = checked["N1.first-import"]["run"]
-        for key in ("N1.offline-two-results", "N1.cold-preservation", "N1.serial-confirmation", "N1.no-resend"):
-            _expect(checked[key]["run"], first, "N1 same actual installation/run")
         confirmation = checked["N1.serial-confirmation"]
         raw = confirmation["artifacts"][confirmation["check"]["fixture"]]
         if confirmation["run"]["_verified_artifacts"].get(str(raw["path_object"])) != raw["sha256"]:

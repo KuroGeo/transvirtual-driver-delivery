@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "audit_date": "2026-10-10T21:34:15.438208+00:00",
+  "audit_date": "2026-10-10T22:10:20.942968+00:00",
   "scope": "X03 strict evidence validator implementation independently accepted; E08/X04 actual acceptance ongoing",
   "production_eligible": false,
   "production_verdict": "no-go",
@@ -187,8 +187,8 @@
   },
   "active_candidate_validation": {
     "scope": "fresh current G1/max N7/full 34/native cancellation pending",
-    "status": "Fresh153Harness/177Flutter G1 passed; N2 targeted native replay running",
-    "candidate": "145d263543989cb4b02dd7fa7d3f022cf1dc8744cd6a33eaee692ab3877bf2aa",
+    "status": "Source frozen; fresh G1/full native pending",
+    "candidate": "58fba2fc4452741b0b6f69b8e4972db50e834ab0d21c6ee10e077eb9b11cd0d7",
     "production_eligible": false,
     "quality_report": "harness/runs/20261010T220013315368Z-quality/attempts/000001/report.json"
   },
@@ -200,7 +200,7 @@
     "tooling_skipped": 1,
     "flutter_checks": 177,
     "status": "passed",
-    "current_source_matches": true
+    "current_source_matches": false
   },
   "e08_latest_observation": {
     "report": "harness/runs/20261010T212258879884Z-native/attempts/000001/report.json",
@@ -211,17 +211,17 @@
     "native_sha256": "d51b54433c2dcb3a9d9ae0d8398b8d58fa809e7fbe90a73bfce5ac055ca358e0"
   },
   "latest_ci_observation": {
-    "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38088727249",
-    "head": "f7675d4e90453df8a0d116d527894111bc19b5a7",
+    "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38089860289",
+    "head": "3fffe84fe5b30abeac8982e2dac295d9aae64811",
     "status": "passed",
-    "source_fingerprint": "161b9a7414b36082489bae7b20ce4e7d2ad1d2ff1c51520cde82600c29477270",
+    "source_fingerprint": "145d263543989cb4b02dd7fa7d3f022cf1dc8744cd6a33eaee692ab3877bf2aa",
     "current_source_matches": false,
     "tooling_checks": 153,
     "tooling_skipped": 0,
     "flutter_checks": 177,
-    "independent_review": "harness/runs/implementation/ci-38088727249-independent/review.md",
-    "artifact_sha256": "9bc2de144335501c47d83e4fe3f08b72dbf9c5f15b9005cb27c28b083ad4bfd1",
-    "scope": "CI G1 only; full E08 pending"
+    "independent_review": "harness/runs/implementation/ci-38089860289-independent/review.md",
+    "artifact_sha256": "45348baeae337dfff4cf6356552971e2edf187034724414a9a0a7b6bfd99989d",
+    "scope": "Actual exact historical 145d G1, no fullG2"
   },
   "x04_active_observation": {
     "candidate": "161b9a7414b36082489bae7b20ce4e7d2ad1d2ff1c51520cde82600c29477270",
@@ -241,5 +241,27 @@
     ],
     "native_failure": "N2.imported-unknown incorrect detail-saved locator seq162; actual source reason present",
     "scope": "Driver-only repair; no fullG2"
+  },
+  "n2_targeted_observation": {
+    "candidate": "145d263543989cb4b02dd7fa7d3f022cf1dc8744cd6a33eaee692ab3877bf2aa",
+    "report": "/Users/yeyufeng/.codex/worktrees/5bde/transvirtual-driver-delivery/harness/runs/20261010T220135657468Z-native/attempts/000001/report.json",
+    "sha256": "2462cde5124e10e51b7b05aaba8bc8f102f8edee56bf9e13fec0db83fe4805d3",
+    "native_sha256": "8e2411f6d9ab6288b948bc5c38bf561ea16242529b9086afda45a7e565213eb9",
+    "status": "passed",
+    "device": {
+      "argv": [
+        "xcrun",
+        "simctl",
+        "list",
+        "devices",
+        "--json"
+      ],
+      "exit_code": 0,
+      "task_udid": "E618FBE8-1A84-49FA-A001-B0EEB1631B2A",
+      "absent": true,
+      "stdout_sha256": "92a9df3df462a8882d9df2f1b3ba289fc3b954ad8f3ebbbb7c94fd54c6754d09"
+    },
+    "terminal_proof": "raw stages/reaped/groups/lease/clones/actual kernel resume passed",
+    "independent_review": "N2 historical145d actual7checks54assertions accepted by /root/e08_acceptance_review"
   }
 }

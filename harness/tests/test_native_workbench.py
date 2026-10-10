@@ -412,10 +412,10 @@ class WorkbenchTests(unittest.TestCase):
         session.launch_config = workbench.write_launch_config(self.container, UDID, "demo", CANDIDATE, SESSION, self.launch_fixture())
         snapshot = {"schema": 1, "processId": 321, "candidate": CANDIDATE, "configuration": "demo", "mode": "demo", "session": SESSION,
             "transport": "controlled-http-simulated", "databasePath": str(self.database), "launchConfigPath": session.launch_config["path"], "launchConfigByteLength": session.launch_config["byte_length"], "launchConfigSchema": 1,
-            "model": None, "outbox": None, "bounds": {"retry-bootstrap": [{"centerHit": True}]}}
+            "model": None, "outbox": None, "bounds": {"reload-data": [{"centerHit": True}]}}
         snapshot_path = directory / "migration-rollback-snapshot.json"
         workbench.write_json(snapshot_path, snapshot)
-        for changed in ({"processId": 320}, {"model": {"initialized": True}}, {"bounds": {"retry-bootstrap": [{"centerHit": False}]}}, {"bounds": {"reload-data": [{"centerHit": True}]}}, {"launchConfigByteLength": 1}):
+        for changed in ({"processId": 320}, {"model": {"initialized": True}}, {"bounds": {"reload-data": [{"centerHit": False}]}}, {"bounds": {"retry-bootstrap": [{"centerHit": True}]}}, {"launchConfigByteLength": 1}):
             with self.subTest(changed=changed):
                 workbench.write_json(snapshot_path, {**snapshot, **changed})
                 with self.assertRaises(ValueError):

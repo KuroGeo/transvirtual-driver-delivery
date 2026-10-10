@@ -822,7 +822,7 @@ class Workbench:
             raise ValueError("failed-boot observation contains a stale PID/candidate/mode/session/config identity")
         model = value.get("model")
         bounds = value.get("bounds")
-        retry = bounds.get("retry-bootstrap", []) if isinstance(bounds, dict) else []
+        retry = bounds.get("reload-data", []) if isinstance(bounds, dict) else []
         if value.get("outbox") is not None or not isinstance(value.get("databasePath"), str) or Path(value["databasePath"]).resolve() != database_path(self.container, self.args.configuration) or model is not None and (not isinstance(model, dict) or model.get("initialized") is not False) or not isinstance(retry, list) or not any(isinstance(row, dict) and row.get("centerHit") is True for row in retry):
             raise ValueError("v1 capture requires actual uninitialized model and visible/hittable Retry UI")
         return {"path": path.relative_to(self.output).as_posix(), "sha256": digest(path), "processId": self.pid, "session": self.session}

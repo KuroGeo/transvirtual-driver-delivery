@@ -1706,7 +1706,7 @@
       "event": "e851 max N7 actual 3-process PASS; root raw terminal, source identity, actual lease/group/clone and task UDID absence verified. Actual held-request TERM/replay controller launched; full G2 remains pending."
     }
   ],
-  "status": "Fresh G1 passed; N2 imported-locator native rerun active",
+  "status": "Source frozen; fresh G1 then final N3 TERM/replay and twelve-job native matrix",
   "accepted_candidate": {
     "source_head": "6a70a94eab758731bfd1468a384247bbfae48a83",
     "source_fingerprint": "e888779d6b48c5a3aecd002b20f0a21362134594fbb19680562bd535a7cc769b",
@@ -1714,11 +1714,11 @@
     "working_tree_changes": true
   },
   "runtime_observation": {
-    "observed_at": "2026-10-10T21:42:08.390710+00:00",
+    "observed_at": "2026-10-10T22:16:00.223006+00:00",
     "source_writers": [],
     "executor": "/root",
-    "active_run": "N2 targeted native run pending announcement",
-    "note": "No SDK job active; old N1 native passed but strict gate rejected absent default settings row; authentic raw retained"
+    "active_run": null,
+    "note": "Only current frozen source can sign final evidence"
   },
   "evidence_archive": "harness/archive/2026-10-10-engineering.tar.gz",
   "next_task": "X04 and E08 rework",
@@ -1736,17 +1736,17 @@
     "native_rerun": false,
     "production_eligible": false
   },
-  "updated_at": "2026-10-10T21:42:08.390710+00:00",
+  "updated_at": "2026-10-10T22:16:00.223006+00:00",
   "native_protocol_revision": 6,
   "source_writers": [],
   "active_execution": {
-    "candidate": "145d263543989cb4b02dd7fa7d3f022cf1dc8744cd6a33eaee692ab3877bf2aa",
-    "status": "Fresh G1 passed; N2 imported-locator native rerun active",
+    "candidate": "58fba2fc4452741b0b6f69b8e4972db50e834ab0d21c6ee10e077eb9b11cd0d7",
+    "status": "Source frozen; fresh G1 then final N3 TERM/replay and twelve-job native matrix",
     "source_writers": [],
     "sole_sdk_executor": "/root",
     "helper_sha256": "16a434d5cddecb6b8f212f6801bf36a065c00ab8a2cd3b6727f73fed74cc242c",
     "previous_native_failure": "harness/runs/20261010T205314408077Z-native/attempts/000001/report.json",
     "failure_reason": "cached offstage bounds mistaken for actionable row; no actual primary scroll occurred; strict failure retained",
-    "driver_sha256": "1d24f3c3d9ce0570b436dfda4fdeb1b0b6dbd7cd666ec4207559e26ffe0257b2"
+    "driver_sha256": "510efe629fbd55171f52c434b5642bbbcc7c7cf051ccbb70c49a9f4efb37eb2d"
   }
 }

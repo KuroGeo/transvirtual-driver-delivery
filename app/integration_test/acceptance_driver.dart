@@ -983,7 +983,7 @@ Future<void> _n4(NativeAcceptanceRecorder r) async {
     'N4.query-intersection-empty',
     (c) async {
       await acceptanceList(d);
-      await d.enterText('stop-search', 'Coastal');
+      await d.enterText('stop-search', 'Coastal Electronics');
       await d.tapKey('filter-pending');
       final pending = await d.waitForSnapshot(
         'search/status shared intersection',
@@ -1317,7 +1317,7 @@ Future<void> _migrationRollback(NativeAcceptanceRecorder r) async {
     (s) =>
         (s['model'] == null || acceptanceModel(s)['initialized'] == false) &&
         s['outbox'] == null &&
-        nativeObject(s['bounds']).containsKey('retry-bootstrap'),
+        nativeObject(s['bounds']).containsKey('reload-data'),
   );
   await r.check(
     'N6.migration-rollback-retry',
@@ -1337,7 +1337,7 @@ Future<void> _migrationRollback(NativeAcceptanceRecorder r) async {
           'saved/migration-rollback-snapshot.json';
       c.metadata['legacy_before_sqlite'] = 'legacy-before-launch.sqlite';
       await d.fixture('control', body: {'migrationFault': 'none'});
-      await d.tapKey('retry-bootstrap');
+      await d.tapKey('reload-data');
       await acceptanceReady(d);
     },
     (c) async {

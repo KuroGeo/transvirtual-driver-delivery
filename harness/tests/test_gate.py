@@ -231,6 +231,239 @@ class GateTests(unittest.TestCase):
                 with self.assertRaisesRegex(EvidenceError, "persisted settings vs actual SQLite"):
                     validator.snapshot_database(forged, database)
 
+    def saved_phase_fixture(self):
+        count = getattr(self, "phase_fixture_count", 0)
+        self.phase_fixture_count = count + 1
+        prefix = "phase-fixture-" + str(count)
+        validator, snapshot, _ = self.settings_snapshot(prefix, (("dataset-fixture", 0, -33.87, 151.21, 16.0),))
+        sql_path = self.root / (prefix + ".sqlite")
+        with sqlite3.connect(sql_path) as connection:
+            connection.execute("UPDATE stops SET status='completed',operation_id='operation-fixture',recorded_at=1700000000000")
+            connection.execute("INSERT INTO outbox VALUES (7,'operation-fixture','dataset-fixture','stop-fixture','completed',NULL,NULL,1700000000000)")
+        owner = self.root / (prefix + "-native")
+        (owner / "saved").mkdir(parents=True)
+        refs = []
+        def artifact(name, kind, value):
+            if isinstance(value, (dict, list)):
+                value = json.dumps(value)
+            ref = self.evidence(owner.name + "/" + name, kind, value)
+            original = {**ref, "path": name, "candidate": self.fingerprint}
+            refs.append(original)
+            return validator.raw(original, owner)
+        sql = artifact("saved/phase-final.sqlite", "sqlite-backup", sql_path.read_bytes())
+        database = validator.database(sql)
+        container = str(self.root / "installation")
+        launches = []
+        for phase, pid in (("saved", 101), ("recovered", 102), ("confirmed", 103)):
+            launches.append({"phase": phase, "processId": pid, "session": "session-" + phase,
+                             "candidate": self.fingerprint, "configuration": "demo",
+                             "launch_config": {"path": container + "/Documents/native-workbench-launch.json",
+                                               "byte_length": 321, "schema": 1}})
+        launch = launches[0]
+        snapshot.update({key: launch[key] for key in ("processId", "session", "candidate", "configuration")})
+        snapshot.update(schema=1, mode="demo", transport="controlled-http-simulated",
+                        databasePath=container + "/Documents/ocean_delivery-demo.sqlite",
+                        launchConfigPath=launch["launch_config"]["path"], launchConfigByteLength=321,
+                        launchConfigSchema=1, observedAt="2026-10-10T10:00:02Z",
+                        model={"initialized": True, "queueCount": 1},
+                        camera={"latitude": -33.87, "longitude": 151.21, "zoom": 16.0})
+        snapshot["persistedStops"][0].update(status="completed", operationId="operation-fixture", recordedAt="2023-11-14T22:13:20.000Z")
+        snapshot["stops"] = copy.deepcopy(snapshot["persistedStops"])
+        snapshot["outbox"] = [{"seq": 7, "operationId": "operation-fixture", "datasetId": "dataset-fixture",
+                               "stopId": "stop-fixture", "status": "completed", "reason": None,
+                               "note": None, "recordedAt": "2023-11-14T22:13:20.000Z"}]
+        snapshot["persistedSettings"].update(online=False, viewport={"datasetId": "dataset-fixture", "latitude": -33.87, "longitude": 151.21, "zoom": 16.0})
+        offline = copy.deepcopy(snapshot)
+        offline["observedAt"] = "2026-10-10T10:00:01Z"
+        offline["persistedSettings"]["viewport"]["zoom"] = 15.0
+        offline["camera"]["zoom"] = 15.0
+        artifact("saved/snapshot.json", "driver-raw-evidence", snapshot)
+        artifact("saved/result.json", "driver-raw-evidence", {**launch, "schema": 1, "revision": 6,
+                 "status": "passed", "scope": "e08-native-functional-acceptance", "vmProcessId": 101})
+        artifact("saved/observations.jsonl", "driver-raw-evidence", "\n".join(json.dumps(row) for row in (offline, snapshot)) + "\n")
+        artifact("saved/phase-final.sqlite.json", "sqlite-projection", {
+            "path": "phase-final.sqlite", "sha256": sql["sha256"], "user_version": 2,
+            "tables": database["tables"], "schema": database["schema"], "triggers": database["triggers"],
+            "sqlite_sequence": [{"name": name, "seq": seq} for name, seq in sorted(database["sequences"].items())],
+        })
+        artifact("saved/phase-final.journal.jsonl", "repository-coordinator-journal", json.dumps({
+            **{key: launch[key] for key in ("processId", "session", "candidate", "configuration")},
+            "source": "repository", "stage": "submit_committed",
+        }) + "\n")
+        nearest_artifacts = {
+            "observations": artifact("saved/nearest-observations.jsonl", "driver-raw-evidence", json.dumps({"observedAt": "2026-10-10T10:00:05Z", "model": {"panel": "map", "selected": None}}) + "\n"),
+            "actions": artifact("saved/nearest-actions.jsonl", "driver-raw-evidence", json.dumps({"observedAt": "2026-10-10T10:00:05Z", "action": "tap:detail-close", "stage": "completed"}) + "\n"),
+        }
+        body = {key: snapshot["outbox"][0][key] for key in ("operationId", "datasetId", "stopId", "status", "reason", "note", "recordedAt")}
+        fixture = artifact("fixture-requests.jsonl", "task-controlled-requests", "\n".join(json.dumps(row) for row in (
+            {"kind": "sync", "seq": 1, "body": body},
+            {"kind": "sync-response", "requestSeq": 1, "emitted": True, "ack": {key: body[key] for key in ("operationId", "datasetId", "stopId")}},
+        )) + "\n")
+        collector = {"schema": 1, "status": "passed", "candidate": self.fingerprint,
+                     "configuration": "demo", "platform": "ios", "entrypoint": "integration_test/workbench_entry.dart",
+                     "scope": "workbench-tooling-smoke", "business_acceptance": False,
+                     "data_container": container, "launches": launches, "artifacts": refs}
+        item = validator.raw(self.evidence(owner.name + "/result.json", "raw-native-collector", json.dumps(collector)))
+        inventory = validator.native_inventory(item)
+        run = {**collector, "_evidence_owner": owner, "_collector_item": item,
+               "_verified_artifacts": {name: ref["sha256"] for name, ref in inventory.items()}}
+        recovered = copy.deepcopy(snapshot)
+        recovered.update({key: launches[1][key] for key in ("processId", "session", "candidate", "configuration")})
+        recovered["observedAt"] = "2026-10-10T10:00:03Z"
+        checked = {name: {"run": run} for name in ("N1.first-import", "N1.no-resend")}
+        checked["N1.offline-two-results"] = {"run": run, "after": offline}
+        checked["N1.cold-preservation"] = {"run": run, "after": recovered}
+        checked["N1.serial-confirmation"] = {"run": run, "check": {"fixture": "requests"},
+                                             "artifacts": {"requests": fixture}, "journal": [{"stage": "ack_committed", "operationId": "operation-fixture"}]}
+        checked["N4.reference-nearest"] = {"check": {"observations": "observations", "actions": "actions"},
+                                           "artifacts": nearest_artifacts, "after": {"observedAt": "2026-10-10T10:00:04Z"}}
+        return validator, checked
+
+    def test_cold_preservation_uses_genuine_phase_end_after_later_camera_change(self):
+        validator, checked = self.saved_phase_fixture()
+        self.assertEqual(checked["N1.offline-two-results"]["after"]["persistedSettings"]["viewport"]["zoom"], 15.0)
+        baseline = validator.native_saved_baseline(checked["N1.offline-two-results"])
+        self.assertEqual(baseline["persistedSettings"]["viewport"]["zoom"], 16.0)
+        validator.native_cross_checks(checked)
+
+    def test_cold_preservation_still_rejects_changed_full_state_and_wrong_installation(self):
+        for field, mutation in (
+            ("persistedSettings", lambda s: s["persistedSettings"]["viewport"].update(zoom=15.0)),
+            ("outbox", lambda s: s["outbox"][0].update(operationId="changed")),
+            ("persistedStops", lambda s: s["persistedStops"][0].update(address="lost full address")),
+            ("stops", lambda s: s["stops"].clear()),
+        ):
+            with self.subTest(field=field):
+                validator, checked = self.saved_phase_fixture()
+                mutation(checked["N1.cold-preservation"]["after"])
+                with self.assertRaisesRegex(EvidenceError, "actual cold preserved " + field):
+                    validator.native_cross_checks(checked)
+        validator, checked = self.saved_phase_fixture()
+        checked["N1.cold-preservation"]["run"] = {**checked["N1.cold-preservation"]["run"], "data_container": "another-install"}
+        with self.assertRaisesRegex(EvidenceError, "same actual installation/run"):
+            validator.native_cross_checks(checked)
+
+    def test_saved_baseline_rejects_unbound_or_edited_endpoints_and_wrong_phase_identity(self):
+        for change, message in (
+            (lambda v: v["run"]["_verified_artifacts"].pop(str(v["run"]["_evidence_owner"] / "saved/snapshot.json")), "original collector binding"),
+            (lambda v: (v["run"]["_evidence_owner"] / "saved/snapshot.json").write_text("{}"), "sha256 mismatch"),
+            (lambda v: v["after"].update(processId=102), "processId identity"),
+            (lambda v: v["after"].update(session="session-recovered"), "session identity"),
+            (lambda v: v["after"].update(configuration="local-client"), "configuration identity"),
+            (lambda v: v["after"].update(observedAt="2026-10-10T10:00:09Z"), "precedes offline result"),
+        ):
+            with self.subTest(message=message):
+                validator, checked = self.saved_phase_fixture()
+                value = checked["N1.offline-two-results"]
+                change(value)
+                with self.assertRaisesRegex(EvidenceError, message):
+                    validator.native_saved_baseline(value)
+
+    def rewrite_phase_evidence(self, validator, value, name, mutation):
+        """Hash-valid negative fixture changes, not a real acceptance receipt."""
+        run = value["run"]
+        owner = run["_evidence_owner"]
+        path = owner / name
+        document = json.loads(path.read_bytes())
+        mutation(document)
+        raw = json.dumps(document).encode()
+        path.write_bytes(raw)
+        collector = json.loads(run["_collector_item"]["raw"])
+        next(ref for ref in collector["artifacts"] if ref["path"] == name)["sha256"] = hashlib.sha256(raw).hexdigest()
+        collector_path = run["_collector_item"]["path_object"]
+        raw_collector = json.dumps(collector).encode()
+        collector_path.write_bytes(raw_collector)
+        run["_collector_item"] = validator.raw({"path": str(collector_path), "kind": "raw-native-collector", "sha256": hashlib.sha256(raw_collector).hexdigest()})
+        run["artifacts"] = collector["artifacts"]
+        run["_verified_artifacts"][str(path)] = hashlib.sha256(raw).hexdigest()
+
+    def test_hash_valid_saved_snapshot_still_requires_actual_sql_and_phase_identity(self):
+        for name, mutation, message in (
+            ("saved/snapshot.json", lambda s: s.update(processId=102), "processId identity"),
+            ("saved/snapshot.json", lambda s: s.update(databasePath="/another-app/ocean_delivery-demo.sqlite"), "databasePath"),
+            ("saved/result.json", lambda r: r.update(vmProcessId=102), "vmProcessId identity"),
+            ("saved/result.json", lambda r: r.update(status="failed"), "status must be 'passed'"),
+            ("saved/phase-final.sqlite.json", lambda p: p["tables"]["delivery_settings"][0].update(viewport_zoom=17.0), "actual SQL projection tables"),
+        ):
+            with self.subTest(name=name, message=message):
+                validator, checked = self.saved_phase_fixture()
+                value = checked["N1.offline-two-results"]
+                self.rewrite_phase_evidence(validator, value, name, mutation)
+                with self.assertRaisesRegex(EvidenceError, message):
+                    validator.native_saved_baseline(value)
+        validator, checked = self.saved_phase_fixture()
+        value = checked["N1.offline-two-results"]
+        collector = json.loads(value["run"]["_collector_item"]["raw"])
+        owner = value["run"]["_evidence_owner"]
+        (owner / "saved/initial-snapshot.json").write_bytes((owner / "saved/snapshot.json").read_bytes())
+        next(ref for ref in collector["artifacts"] if ref["path"] == "saved/snapshot.json")["path"] = "saved/initial-snapshot.json"
+        original = value["run"]["_collector_item"]
+        raw = json.dumps(collector).encode()
+        original["path_object"].write_bytes(raw)
+        value["run"]["_collector_item"] = validator.raw({"path": str(original["path_object"]), "kind": original["kind"], "sha256": hashlib.sha256(raw).hexdigest()})
+        with self.assertRaisesRegex(EvidenceError, "exactly one saved/snapshot.json"):
+            validator.native_saved_baseline(value)
+
+    def migration_retry_fixture(self):
+        path = self.root / "legacy-retry.sqlite"
+        with sqlite3.connect(path) as connection:
+            connection.executescript("""
+                PRAGMA user_version=1;
+                CREATE TABLE datasets(id TEXT PRIMARY KEY NOT NULL);
+                CREATE TABLE stops(id TEXT PRIMARY KEY, dataset_id TEXT, reference TEXT,
+                    customer_name TEXT,address TEXT,latitude REAL,longitude REAL,status TEXT,
+                    reason TEXT,operation_id TEXT,acknowledged_at INTEGER);
+                CREATE TABLE outbox(seq INTEGER PRIMARY KEY AUTOINCREMENT,
+                    operation_id TEXT,dataset_id TEXT,stop_id TEXT,status TEXT,reason TEXT);
+                INSERT INTO datasets VALUES ('legacy-dataset');
+                INSERT INTO stops VALUES ('legacy-stop','legacy-dataset','native-fixture',
+                    'Legacy','Legacy address',0,0,'failed','  Historical reason  ','legacy-op',NULL);
+                INSERT INTO outbox VALUES (7,'legacy-op','legacy-dataset','legacy-stop','failed','  Historical reason  ');
+                INSERT INTO outbox VALUES (22,'deleted-op','legacy-dataset','legacy-stop','completed',NULL);
+                DELETE FROM outbox WHERE seq=22;
+            """)
+        validator = Validator(self.manifest, self.fingerprint, self.root)
+        legacy = validator.raw(self.evidence("legacy-before.sqlite", "sqlite-backup", path.read_bytes()))
+        rollback = validator.raw(self.evidence("legacy-rollback.sqlite", "sqlite-backup", path.read_bytes()))
+        with sqlite3.connect(path) as connection:
+            connection.executescript("""
+                ALTER TABLE stops ADD COLUMN time_window TEXT;
+                ALTER TABLE stops ADD COLUMN note TEXT;
+                ALTER TABLE stops ADD COLUMN recorded_at INTEGER;
+                ALTER TABLE outbox ADD COLUMN note TEXT;
+                ALTER TABLE outbox ADD COLUMN recorded_at INTEGER;
+                CREATE TABLE delivery_settings(dataset_id TEXT PRIMARY KEY,online INTEGER,
+                    viewport_latitude REAL,viewport_longitude REAL,viewport_zoom REAL);
+                PRAGMA user_version=2;
+            """)
+        upgraded = validator.raw(self.evidence("legacy-upgraded.sqlite", "sqlite-backup", path.read_bytes()))
+        identity = {"processId": 101, "candidate": self.fingerprint, "configuration": "demo", "session": "migration-session"}
+        failed = validator.raw(self.evidence("migration-failed.json", "failed-boot-snapshot", json.dumps({**identity, "model": {"initialized": False}, "outbox": None})))
+        return validator, {"check": {**identity, "id": "N6.migration-rollback-retry", "transport": "controlled-http-simulated",
+                                     "legacy_before_sqlite": "legacy", "rollback_sqlite": "rollback", "rollback_snapshot": "failed"},
+                           "before": {}, "after": {"model": {}}, "database": validator.database(upgraded),
+                           "artifacts": {"legacy": legacy, "rollback": rollback, "failed": failed},
+                           "actions": ["tap:reload-data"], "journal": [{"stage": "initialize_failed"}]}
+
+    def test_migration_retry_uses_actual_reload_action_and_preserves_raw_rollback_guards(self):
+        validator, value = self.migration_retry_fixture()
+        validator.native_minimum(value)
+        value["actions"] = ["tap:retry-bootstrap"]
+        with self.assertRaisesRegex(EvidenceError, "actual UI tap reload-data"):
+            validator.native_minimum(value)
+        value["actions"] = ["tap:reload-data"]
+        value["database"]["tables"]["outbox"][0]["reason"] = "lost historical reason"
+        with self.assertRaisesRegex(EvidenceError, "legacy immutable reason"):
+            validator.native_minimum(value)
+        value["database"]["tables"]["outbox"][0]["reason"] = "  Historical reason  "
+        path = value["artifacts"]["rollback"]["path_object"]
+        with sqlite3.connect(path) as connection:
+            connection.execute("UPDATE stops SET reason='changed during failed migration'")
+        raw = path.read_bytes()
+        value["artifacts"]["rollback"] = validator.raw({"path": str(path), "kind": "sqlite-backup", "sha256": hashlib.sha256(raw).hexdigest()})
+        with self.assertRaisesRegex(EvidenceError, "rollback preserves v1 tables"):
+            validator.native_minimum(value)
+
     def test_complete_synthetic_fixture_only_validates_schema(self):
         # A complete full-quality schema can pass its own validator. The old
         # platform/restart-only native fixture remains insufficient for G2.
