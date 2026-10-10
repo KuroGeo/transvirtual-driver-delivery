@@ -477,13 +477,49 @@ Future<void> acceptanceOpenListStop(
   final value = await client.snapshot();
   if (acceptanceModel(value)['panel'] != 'list') await acceptanceList(client);
   await client.enterText('stop-search', reference);
-  await client.waitForSnapshot(
+  var searched = await client.waitForSnapshot(
     'list search $reference',
     (value) =>
         acceptanceModel(value)['panel'] == 'list' &&
         nativeObject(acceptanceModel(value)['query'])['search'] == reference &&
         nativeObject(value['result'])['matchedCount'] == 1,
   );
+  // SliverList has no element for an offscreen, unbuilt row. Move the actual
+  // primary scroll view until its readonly bounds are present, then use the
+  // existing reveal/tap path. Each drag and observation remains journalled.
+  final rowKey = 'stop-$reference';
+  final lookupClock = Stopwatch()..start();
+  const maxScrolls = 12;
+  for (
+    var scrolls = 0;
+    !nativeObject(searched['bounds']).containsKey(rowKey);
+    scrolls++
+  ) {
+    nativeRequire(
+      scrolls < maxScrolls &&
+          lookupClock.elapsed < NativeWorkbenchDriver.observationDeadline,
+      'Lazy list row $reference was not built within 12 drags and 15 seconds.',
+    );
+    await client
+        .scrollKey('stop-list-scroll', -160)
+        .timeout(
+          NativeWorkbenchDriver.observationDeadline - lookupClock.elapsed,
+        );
+    nativeRequire(
+      lookupClock.elapsed < NativeWorkbenchDriver.observationDeadline,
+      'Lazy list row $reference exceeded its 15-second lookup deadline.',
+    );
+    searched = await client.snapshot().timeout(
+      NativeWorkbenchDriver.observationDeadline - lookupClock.elapsed,
+    );
+    nativeRequire(
+      acceptanceModel(searched)['panel'] == 'list' &&
+          nativeObject(acceptanceModel(searched)['query'])['search'] ==
+              reference &&
+          nativeObject(searched['result'])['matchedCount'] == 1,
+      'Lazy row lookup lost its unique actual list query for $reference.',
+    );
+  }
   await client.revealKey('stop-$reference');
   await client.tapKey('stop-$reference');
   await client.waitForSnapshot(

@@ -148,101 +148,127 @@ class _StopListWorkspaceState extends State<StopListWorkspace> {
       color: OceanColors.cream,
       borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 14, 12, 12),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    'Stop list',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: -0.6,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final compact =
+              constraints.maxHeight < 400 ||
+              MediaQuery.textScalerOf(context).scale(14) > 22;
+          return Column(
+            children: [
+              Padding(
+                padding: compact
+                    ? const EdgeInsets.fromLTRB(20, 6, 12, 6)
+                    : const EdgeInsets.fromLTRB(20, 14, 12, 12),
+                child: Row(
+                  children: [
+                    if (compact)
+                      const Spacer()
+                    else
+                      Expanded(child: _title(context)),
+                    if (widget.onSync != null)
+                      SizedBox.square(
+                        dimension: 44,
+                        child: IconButton(
+                          key: const ValueKey('list-sync'),
+                          tooltip: model.isSyncing
+                              ? 'Syncing saved updates'
+                              : 'Sync saved updates',
+                          onPressed: widget.onSync,
+                          icon: SyncActionIcon(syncing: model.isSyncing),
+                        ),
+                      ),
+                    IconButton(
+                      key: const ValueKey('close-list'),
+                      focusNode: _closeFocus,
+                      tooltip: 'Back to map',
+                      onPressed: widget.onClose,
+                      icon: const Icon(Icons.close, size: 21),
                     ),
-                  ),
+                  ],
                 ),
-                if (widget.onSync != null)
-                  SizedBox.square(
-                    dimension: 44,
-                    child: IconButton(
-                      key: const ValueKey('list-sync'),
-                      tooltip: model.isSyncing
-                          ? 'Syncing saved updates'
-                          : 'Sync saved updates',
-                      onPressed: widget.onSync,
-                      icon: SyncActionIcon(syncing: model.isSyncing),
-                    ),
-                  ),
-                IconButton(
-                  key: const ValueKey('close-list'),
-                  focusNode: _closeFocus,
-                  tooltip: 'Back to map',
-                  onPressed: widget.onClose,
-                  icon: const Icon(Icons.close, size: 21),
+              ),
+              const Divider(height: 1),
+              Expanded(
+                child: CustomScrollView(
+                  key: const ValueKey('stop-list-scroll'),
+                  controller: _scroll,
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  slivers: [
+                    // Keep the complete OS-scaled heading with the searchable
+                    // content. Only the return/sync actions need a fixed budget.
+                    if (compact)
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                          child: _title(context),
+                        ),
+                      ),
+                    SliverToBoxAdapter(child: _queryControls(context, model)),
+                    if (model.isLoading && model.stops.isEmpty)
+                      const SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Center(child: CircularProgressIndicator()),
+                      )
+                    else if (model.loadError != null)
+                      SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: _empty(
+                          context,
+                          title: 'Stops could not be loaded',
+                          message: 'Your saved deliveries stay on this device.',
+                          action: 'Retry',
+                          onPressed: model.load,
+                        ),
+                      )
+                    else if (result.stops.isEmpty)
+                      SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: _empty(
+                          context,
+                          title: 'No matching stops',
+                          message: 'Try another search or clear your filters.',
+                          action: 'Clear search and filters',
+                          onPressed: model.resetQuery,
+                        ),
+                      )
+                    else
+                      SliverList.builder(
+                        itemCount: result.stops.length,
+                        itemBuilder: (context, index) {
+                          final stop = result.stops[index];
+                          return _StopRow(
+                            key: ValueKey('stop-${stop.reference}'),
+                            stop: stop,
+                            distance: result.distanceMeters(stop)!,
+                            waiting: result.awaitsService(stop),
+                            focusNode: _focusFor(stop),
+                            onPressed: () => _open(stop),
+                          );
+                        },
+                      ),
+                    const SliverToBoxAdapter(child: SizedBox(height: 20)),
+                  ],
                 ),
-              ],
-            ),
-          ),
-          const Divider(height: 1),
-          Expanded(
-            child: CustomScrollView(
-              key: const ValueKey('stop-list-scroll'),
-              controller: _scroll,
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              slivers: [
-                SliverToBoxAdapter(child: _queryControls(context, model)),
-                if (model.isLoading && model.stops.isEmpty)
-                  const SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: Center(child: CircularProgressIndicator()),
-                  )
-                else if (model.loadError != null)
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: _empty(
-                      context,
-                      title: 'Stops could not be loaded',
-                      message: 'Your saved deliveries stay on this device.',
-                      action: 'Retry',
-                      onPressed: model.load,
-                    ),
-                  )
-                else if (result.stops.isEmpty)
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: _empty(
-                      context,
-                      title: 'No matching stops',
-                      message: 'Try another search or clear your filters.',
-                      action: 'Clear search and filters',
-                      onPressed: model.resetQuery,
-                    ),
-                  )
-                else
-                  SliverList.builder(
-                    itemCount: result.stops.length,
-                    itemBuilder: (context, index) {
-                      final stop = result.stops[index];
-                      return _StopRow(
-                        key: ValueKey('stop-${stop.reference}'),
-                        stop: stop,
-                        distance: result.distanceMeters(stop)!,
-                        waiting: result.awaitsService(stop),
-                        focusNode: _focusFor(stop),
-                        onPressed: () => _open(stop),
-                      );
-                    },
-                  ),
-                const SliverToBoxAdapter(child: SizedBox(height: 20)),
-              ],
-            ),
-          ),
-        ],
+              ),
+            ],
+          );
+        },
       ),
     );
   }
+
+  Widget _title(BuildContext context) => Semantics(
+    header: true,
+    child: Text(
+      'Stop list',
+      key: const ValueKey('list-title'),
+      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+        fontWeight: FontWeight.w600,
+        letterSpacing: -0.6,
+      ),
+    ),
+  );
 
   Widget _queryControls(BuildContext context, DeliveryViewModel model) {
     return Padding(

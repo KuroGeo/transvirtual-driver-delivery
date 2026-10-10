@@ -275,22 +275,49 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                                       children: [
                                         if (_listMounted)
                                           Positioned.fill(
-                                            top: 112,
+                                            // List mode hides the map tools;
+                                            // compact layouts can use that
+                                            // space for actual list content.
+                                            top: _compact(context, area)
+                                                ? 12
+                                                : 112,
                                             left: 8,
                                             right: 8,
                                             child: Offstage(
                                               offstage: !list,
                                               child: ExcludeFocus(
                                                 excluding: !list,
-                                                child: StopListWorkspace(
-                                                  viewModel: model,
-                                                  onClose: model.closeList,
-                                                  onOpenStop: (stop) => _open(
-                                                    stop,
-                                                    DetailOrigin.list,
-                                                  ),
-                                                  onSync: () =>
-                                                      unawaited(model.sync()),
+                                                child: Column(
+                                                  children: [
+                                                    if (_compact(context, area))
+                                                      ClipRect(
+                                                        key: const ValueKey(
+                                                          'list-feedback-viewport',
+                                                        ),
+                                                        child: list
+                                                            ? _feedback(
+                                                                true,
+                                                                area.maxHeight *
+                                                                    .18,
+                                                              )
+                                                            : const SizedBox.shrink(),
+                                                      ),
+                                                    Expanded(
+                                                      child: StopListWorkspace(
+                                                        viewModel: model,
+                                                        onClose:
+                                                            model.closeList,
+                                                        onOpenStop: (stop) =>
+                                                            _open(
+                                                              stop,
+                                                              DetailOrigin.list,
+                                                            ),
+                                                        onSync: () => unawaited(
+                                                          model.sync(),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
                                             ),
@@ -341,9 +368,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                                               onClose: model.closeDetail,
                                             ),
                                           ),
-                                        if (list ||
-                                            detail ||
-                                            !_compact(context, area))
+                                        if (detail || !_compact(context, area))
                                           Positioned(
                                             top: 12,
                                             left: list ? 20 : 114,

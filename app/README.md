@@ -33,3 +33,31 @@ python3 harness/run.py build --configuration demo --isolated
 默认 probe/startup/workbench 是各自的工具或启动 smoke。完整本地功能由独立 acceptance_driver 与 [34项原生检查合同](../harness/project/native-acceptance-contract.json) 判定；没有实际执行与独立审查的组保持未验收。OS 键盘、字号、Reduce Motion 需要实际 Insets/MediaQuery/截图，文本模拟和设置命令成功不能代签。
 
 完整原生运行命令、故障 fixture、恢复与门禁规则见 Harness 入口。iOS simulator 功能、真机 profile/release、实际后端、签名、远端强制门禁与生产发布分别取证；当前生产 no-go。
+
+## 约五分钟演示顺序
+
+使用 N1 的当前原生证据或重新执行以下命令。Harness 创建专用设备并通过真实 UI 操作，OS 终止后重开同一安装，结束回收自己的设备；它不会打开或抢占用户的 Simulator 窗口。
+
+```sh
+python3 harness/run.py native --scope workbench --driver-target integration_test/acceptance_driver.dart --scenario N1 --configuration demo --isolated --runtime com.apple.CoreSimulator.SimRuntime.iOS-26-4 --device-type com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro --timeout 1200
+```
+
+1. 第一分钟：展示地图、查询和列表，进入 Offline，说明参考位置与直线距离。
+2. 第二分钟：完成一个站点，给另一个站点记录失败及 Other 说明；展示 SQLite 结果和对应 outbox 身份。此时是本地 commit。
+3. 第三分钟：查看实际结束进程和同安装重开的两组 PID/截图；结果、备注、队列及 Offline 设置保持。
+4. 第四分钟：切回 Online，查看串行 HTTP 模拟确认和持久 ACK 后排空；重试复用原 operationId/seq。
+5. 第五分钟：第三个实际进程不再重发。对照 local-client 的 N1：真实服务不可用时队列保留，界面不宣称上传成功。
+
+每次原始动作、OS PNG、SQLite backup、事件和进程身份位于该次 `attempts/<编号>/native/`。完整检查与最终交付状态以 [迭代报告](../harness/reports/iteration-2026-10-11.md) 和实际门禁为准。
+
+## 升级与故障恢复
+
+升级从真实 v1 文件迁移到当前 schema，保留 dataset/stop/operation 身份、队列 seq 与未知历史原因；迁移失败回滚到原版本，保留文件并允许实际 Retry。不要通过删数据库处理升级失败，也不要假设旧客户端能读新 schema。生产回退方案仍需发布任务确认。
+
+业务保存失败保留表单，确认事务失败保留 outbox，只有持久化匹配 ACK 后移除；重新发送使用原身份。清地图缓存只清瓦片，合法 viewport 随业务文件恢复，损坏或非有限视口回退到可用地图。详细反例在 N2/N3/N5/N6 原生组与 host 回归中分别验证。
+
+## AI 使用记录
+
+本迭代的 Flutter、测试与 Harness 代码由 Codex 主控及分工子 Agent 生成、审查和修复；产品原型、附件与架构取舍来自仓库既有资料和用户指令。没有将生成代码标为人工手写。主控维护任务板和资源串行执行，独立验收者读取源码与原始证据。
+
+实际发现过地图遮挡、最大字号内容裁切、截图与 viewport 落盘时序不一致，以及 Linux 分析退出后子进程仍存活。失败记录保留，修复增加相应行为回归后重新执行。完整修复过程与测试范围在迭代报告，不以生成代码或测试数量代替验收。
