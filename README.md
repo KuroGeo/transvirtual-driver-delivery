@@ -5,7 +5,7 @@
 A map-first Flutter driver workbench built from the assignment's 30 Sydney stops. Find a delivery, record its outcome offline, restart the app, and reconnect to watch the pending queue receive **simulated confirmations**.
 
 <p align="center">
-  <a href="assets/readme/showcase.png"><img src="assets/readme/showcase.png" alt="Ocean Delivery: real Flutter iOS simulator captures of the map workbench and delivery list" width="100%"></a>
+  <a href="assets/readme/showcase.png"><img src="docs/report/media/showcase.webp" alt="Ocean Delivery: real Flutter iOS simulator captures of the map workbench and delivery list" width="100%"></a>
 </p>
 
 [Live presentation](https://kurogeo.github.io/transvirtual-driver-delivery/) · [Offline report](docs/report/index.html) · [Flutter implementation](app/README.md) · [Architecture decisions](docs/solution-design.md) · [Evidence & limits](harness/reports/large-text-repair.md)
@@ -36,7 +36,11 @@ To view your dedicated device, open Simulator yourself and select **Ocean Delive
 
 The Release includes an already built **arm64 iOS simulator debug Demo** and installation instructions. It is a convenience artifact, not an iPhone IPA or a production-signed build. The source above is the canonical development entry point.
 
-## Five-minute walkthrough
+## Recorded demo · 82 seconds
+
+[Watch the compressed native video in the report](https://kurogeo.github.io/transvirtual-driver-delivery/#demo). It shows two Offline saves, actual OS process restarts, durable recovery and simulated matching confirmations. The recording uses the instrumented native workbench entrypoint with controlled HTTP; the formal app entrypoint remains the run command above. No voiceover, so it can be narrated during the interview. [Recording proof](docs/report/media/demo-proof.json).
+
+## Optional live walkthrough
 
 | Time | Action | Expected result |
 | --- | --- | --- |
@@ -110,11 +114,11 @@ Authentication, real backend integration, push and route optimization remain out
 <summary><b>More real Flutter screenshots</b></summary>
 
 <table>
-<tr><td align="center"><b>Delivery detail</b><br><img src="assets/readme/screenshots/delivery-detail.png" width="280" alt="Address, time window and result controls"></td><td align="center"><b>Required failure reason</b><br><img src="assets/readme/screenshots/failure-form.png" width="280" alt="Failure reason form before submission"></td></tr>
-<tr><td align="center"><b>Offline failure record</b><br><img src="assets/readme/screenshots/failure-record.png" width="280" alt="Persisted reason and waiting-to-sync state"></td><td align="center"><b>Completed record</b><br><img src="assets/readme/screenshots/completed-record.png" width="280" alt="Local result and simulated confirmation times"></td></tr>
+<tr><td align="center"><b>Delivery detail</b><br><img src="docs/report/media/delivery-detail.webp" width="280" alt="Address, time window and result controls"></td><td align="center"><b>Required failure reason</b><br><img src="docs/report/media/failure-form.webp" width="280" alt="Failure reason form before submission"></td></tr>
+<tr><td align="center"><b>Offline failure record</b><br><img src="docs/report/media/failure-record.webp" width="280" alt="Persisted reason and waiting-to-sync state"></td><td align="center"><b>Completed record</b><br><img src="docs/report/media/completed-record.webp" width="280" alt="Local result and simulated confirmation times"></td></tr>
 </table>
 
-Original PNGs and editable promotional material: [assets/readme](assets/readme/README.md).
+Screens shown above are compressed WebP copies. Original PNGs and editable promotional material: [assets/readme](assets/readme/README.md).
 
 </details>
 

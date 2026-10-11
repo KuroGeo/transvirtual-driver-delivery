@@ -1,6 +1,6 @@
 # Ocean Delivery interview presentation
 
-Open [index.html](index.html) directly in a browser. The font and six original simulator screenshots are embedded; no server, npm install or network is required to read the report. Evidence links lead to the public source repository and its merged PRs.
+Open [index.html](index.html) directly in a browser. The compressed WOFF2 font and six WebP copies of original simulator screenshots are embedded; no server, npm install or network is required to read the report. The 82-second H.264 demo is a separate `media/ocean-delivery-demo.mp4` file; keep the `media` folder next to the HTML for offline playback. Evidence links lead to the public source repository and its merged PRs.
 
 Published presentation: [GitHub Pages](https://kurogeo.github.io/transvirtual-driver-delivery/) · [Part 03: human/AI collaboration](https://kurogeo.github.io/transvirtual-driver-delivery/#journey).
 
@@ -26,6 +26,12 @@ To export a committed report for a GitHub Pages artifact:
 python3 docs/report/stage_pages.py /absolute/path/to/report-export
 ```
 
-The export copies the standalone HTML, selected collaboration excerpts, commit stats and AI note; its PR index omits full bodies and raw chat records. It does not publish the application, original mail or assignment attachments. The pinned `.github/workflows/report-pages.yml` workflow deploys this allowlist from `main`. The source repository is public by George's explicit request, and the site uses `KuroGeo/transvirtual-driver-delivery`.
+The export copies the HTML, compressed demo/poster, curated recording proof and transcript, selected collaboration excerpts, commit stats and AI note; its PR index omits full bodies and raw chat records. It does not publish the application, original mail or assignment attachments. The pinned `.github/workflows/report-pages.yml` workflow deploys this allowlist from `main`. The source repository is public by George's explicit request, and the site uses `KuroGeo/transvirtual-driver-delivery`.
 
 The report snapshots application/source history at `bebda787284fed5f9d5fb4acc36cd174fad7ab75`. This presentation/README packaging change adds no Flutter behavior. The Release's manifest binds the submission commit, reused simulator build, SDK, archive bytes and exclusions separately; it does not relabel earlier native evidence as current full-matrix acceptance.
+
+## Compressed media
+
+Original PNGs and the raw native recording are retained. Web copies use WebP; Inter is embedded as WOFF2. The video uses H.264 / yuv420p / MP4 faststart at 1080p and 30 fps. It has no audio, allowing live narration. The player preloads metadata only, so reading the report does not load the whole video. [Image compression receipts](media/image-compression.json) · [Video proof and encoding receipts](media/demo-proof.json).
+
+The native recording reuses a hash-verified 84-file workbench simulator package and drives real UI controls across three system processes. Input text is Flutter Driver emulated; ACKs come from the task HTTP fixture. This is an additional demonstration, not a new full native acceptance result. Raw logs, task secrets, original recording and temporary project assets are kept out of the Pages export.
