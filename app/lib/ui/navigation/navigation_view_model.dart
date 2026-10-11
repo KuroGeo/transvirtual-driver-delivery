@@ -176,7 +176,11 @@ class NavigationViewModel extends ChangeNotifier {
     } else if (value != null && !value.isUsableAt(clock())) {
       _locationStatus = LocationStatus.stale;
     } else {
-      _origin = value;
+      if (value != null) {
+        // A fix arriving after the user selected a map is a changed start,
+        // just like a manual selection. Revoke the older no-origin handoff.
+        _changeOrigin(value);
+      }
       _locationStatus = result.status;
     }
     notifyListeners();
