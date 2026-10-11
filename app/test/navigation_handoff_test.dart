@@ -91,6 +91,67 @@ void main() {
     },
   );
 
+  test(
+    'synchronous loading invalidation prevents a supplier dispatch',
+    () async {
+      final port = fixtures.RoadPort(
+        (_) async => ThirdPartyRouteResponse.success(fixtures.road()),
+      );
+      final value = model(
+        routes: RouteRepository(port: port, clock: () => fixtures.now),
+      );
+      value.addListener(() {
+        if (value.routeStatus == RoutePreviewStatus.loading) value.invalidate();
+      });
+      await value.confirmManualStart(fixtures.originCoordinate);
+      expect(port.requests, isEmpty);
+      expect(value.routeStatus, RoutePreviewStatus.invalidated);
+    },
+  );
+
+  test(
+    'synchronous loading invalidation prevents a location dispatch',
+    () async {
+      final location = FixGateway(
+        () async =>
+            const LocationResult.failure(LocationStatus.permissionDenied),
+      );
+      final value = model(location: location);
+      value.addListener(() {
+        if (value.locationStatus == LocationStatus.loading) value.invalidate();
+      });
+      await value.useMyLocation();
+      expect(location.calls, 0);
+      expect(value.locationStatus, LocationStatus.invalidated);
+    },
+  );
+
+  test(
+    'synchronous input replacement dispatches only the newer snapshot',
+    () async {
+      final port = fixtures.RoadPort(
+        (_) async =>
+            const ThirdPartyRouteResponse.failure(RouteFailure.noRoute),
+      );
+      final value = model(
+        routes: RouteRepository(port: port, clock: () => fixtures.now),
+      );
+      var replaced = false;
+      const replacement = RouteCoordinate(-33.88, 151.19);
+      value.addListener(() {
+        if (!replaced && value.routeStatus == RoutePreviewStatus.loading) {
+          replaced = true;
+          unawaited(value.confirmManualStart(replacement));
+        }
+      });
+      await value.confirmManualStart(fixtures.originCoordinate);
+      await Future<void>.delayed(Duration.zero);
+      expect(port.requests, hasLength(1));
+      expect(port.requests.single.origin, replacement);
+      expect(value.origin!.coordinate, replacement);
+    },
+  );
+
   for (final status in [
     LocationStatus.permissionDenied,
     LocationStatus.permissionDeniedForever,

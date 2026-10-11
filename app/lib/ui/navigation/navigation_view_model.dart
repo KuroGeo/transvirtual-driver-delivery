@@ -100,19 +100,23 @@ class NavigationViewModel extends ChangeNotifier {
     if (!_guard()) return;
     final revision = _inputRevision;
     final sequence = ++_routeSequence;
+    final request = RouteRequest(
+      scope: scope,
+      target: target,
+      inputRevision: revision,
+      requestId: 'navigation-$sequence',
+      origin: _origin,
+      departureAt: clock(),
+    );
     _clearRoute();
     _routeStatus = RoutePreviewStatus.loading;
     notifyListeners();
-    final outcome = await routes.preview(
-      RouteRequest(
-        scope: scope,
-        target: target,
-        inputRevision: revision,
-        requestId: 'navigation-$sequence',
-        origin: _origin,
-        departureAt: clock(),
-      ),
-    );
+    // A synchronous listener may change origin/session while rendering loading.
+    // Recheck before any supplier call, with the already captured input.
+    if (!_guard() || revision != _inputRevision || sequence != _routeSequence) {
+      return;
+    }
+    final outcome = await routes.preview(request);
     if (!_guard() || revision != _inputRevision || sequence != _routeSequence) {
       return;
     }
@@ -156,6 +160,7 @@ class NavigationViewModel extends ChangeNotifier {
     final revision = _inputRevision;
     _locationStatus = LocationStatus.loading;
     notifyListeners();
+    if (!_guard() || revision != _inputRevision) return;
     LocationResult result;
     try {
       result = await location.currentLocation().timeout(operationTimeout);
