@@ -4,9 +4,12 @@ import 'package:csv/csv.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../../models/delivery.dart';
+import '../../models/workbench.dart';
 import 'delivery_repository.dart';
+import 'delivery_settings_store.dart';
 
-class SqliteDeliveryRepository implements DeliveryRepository {
+class SqliteDeliveryRepository
+    implements DeliveryRepository, DeliverySettingsStore {
   SqliteDeliveryRepository({
     required this.databaseFactory,
     required this.path,
@@ -20,6 +23,7 @@ class SqliteDeliveryRepository implements DeliveryRepository {
   final void Function(Map<String, Object?>)? eventSink;
 
   Database? _database;
+  String? _datasetId;
   Future<void>? _initializing;
 
   @override
@@ -37,16 +41,23 @@ class SqliteDeliveryRepository implements DeliveryRepository {
   }
 
   Future<void> _openAndImport() async {
-    final database = await databaseFactory.openDatabase(
-      path,
-      options: OpenDatabaseOptions(
-        version: 1,
-        onConfigure: (database) => database.execute('PRAGMA foreign_keys = ON'),
-        onCreate: _createSchema,
-      ),
-    );
+    Database? database;
     try {
-      final existing = await database.query('datasets', limit: 1);
+      database = await databaseFactory.openDatabase(
+        path,
+        options: OpenDatabaseOptions(
+          version: 2,
+          onConfigure: (database) =>
+              database.execute('PRAGMA foreign_keys = ON'),
+          onCreate: _createSchema,
+          onUpgrade: _upgradeSchema,
+        ),
+      );
+      final existing = await database.query(
+        'datasets',
+        orderBy: 'rowid',
+        limit: 1,
+      );
       if (existing.isEmpty) {
         // Parse the entire source before starting the short import transaction.
         final stops = _parseCsv(await loadCsv());
@@ -64,16 +75,20 @@ class SqliteDeliveryRepository implements DeliveryRepository {
               'longitude': stop.longitude,
               'status': stop.status.name,
               'reason': stop.reason,
+              'time_window': stop.timeWindow,
             });
           }
         });
+        _datasetId = datasetId;
         _emit('import_committed', count: stops.length);
       } else {
+        _datasetId = existing.single['id'] as String;
         _emit('database_reopened');
       }
       _database = database;
     } catch (_) {
-      await database.close();
+      await database?.close();
+      _datasetId = null;
       _emit('initialize_failed');
       rethrow;
     }
@@ -96,6 +111,9 @@ class SqliteDeliveryRepository implements DeliveryRepository {
         longitude REAL NOT NULL,
         status TEXT NOT NULL CHECK (status IN ('pending', 'completed', 'failed')),
         reason TEXT,
+        time_window TEXT,
+        note TEXT,
+        recorded_at INTEGER,
         operation_id TEXT UNIQUE,
         acknowledged_at INTEGER,
         UNIQUE (dataset_id, reference),
@@ -110,9 +128,61 @@ class SqliteDeliveryRepository implements DeliveryRepository {
         stop_id TEXT NOT NULL,
         status TEXT NOT NULL CHECK (status IN ('completed', 'failed')),
         reason TEXT,
+        note TEXT,
+        recorded_at INTEGER,
         FOREIGN KEY (dataset_id, stop_id) REFERENCES stops(dataset_id, id)
       )
     ''');
+    await _createSettingsSchema(database);
+  }
+
+  static Future<void> _createSettingsSchema(DatabaseExecutor database) async {
+    await database.execute('''
+      CREATE TABLE delivery_settings (
+        dataset_id TEXT PRIMARY KEY NOT NULL REFERENCES datasets(id),
+        online INTEGER NOT NULL DEFAULT 1 CHECK (online IN (0, 1)),
+        viewport_latitude REAL,
+        viewport_longitude REAL,
+        viewport_zoom REAL
+      )
+    ''');
+  }
+
+  Future<void> _upgradeSchema(
+    Database database,
+    int oldVersion,
+    int newVersion,
+  ) async {
+    if (oldVersion < 2) {
+      // sqflite wraps onUpgrade and user_version in one transaction. A failed
+      // source read or SQL write therefore leaves the v1 file ready to retry.
+      final source = _parseCsv(await loadCsv());
+      await database.execute('ALTER TABLE stops ADD COLUMN time_window TEXT');
+      await database.execute('ALTER TABLE stops ADD COLUMN note TEXT');
+      await database.execute(
+        'ALTER TABLE stops ADD COLUMN recorded_at INTEGER',
+      );
+      await database.execute('ALTER TABLE outbox ADD COLUMN note TEXT');
+      await database.execute(
+        'ALTER TABLE outbox ADD COLUMN recorded_at INTEGER',
+      );
+      await _createSettingsSchema(database);
+      for (final stop in source) {
+        await database.update(
+          'stops',
+          {'time_window': stop.timeWindow},
+          where: '''reference = ? AND customer_name = ? AND address = ?
+            AND latitude = ? AND longitude = ?''',
+          whereArgs: [
+            stop.reference,
+            stop.customerName,
+            stop.address,
+            stop.latitude,
+            stop.longitude,
+          ],
+        );
+      }
+    }
   }
 
   @override
@@ -127,6 +197,7 @@ class SqliteDeliveryRepository implements DeliveryRepository {
     String stopId,
     DeliveryStatus status, {
     String? reason,
+    String? note,
   }) async {
     if (status == DeliveryStatus.pending) {
       throw ArgumentError.value(
@@ -136,6 +207,10 @@ class SqliteDeliveryRepository implements DeliveryRepository {
       );
     }
     final savedReason = status == DeliveryStatus.failed ? reason?.trim() : null;
+    final trimmedNote = note?.trim();
+    final savedNote = status == DeliveryStatus.failed && trimmedNote != ''
+        ? trimmedNote
+        : null;
     if (status == DeliveryStatus.failed &&
         (savedReason == null || savedReason.isEmpty)) {
       throw ArgumentError('A failed delivery requires a reason');
@@ -151,11 +226,14 @@ class SqliteDeliveryRepository implements DeliveryRepository {
           whereArgs: [stopId],
         );
         if (rows.isEmpty) throw StateError('The stop does not exist');
+        final recordedAt = DateTime.now().toUtc().millisecondsSinceEpoch;
         final changed = await transaction.update(
           'stops',
           {
             'status': status.name,
             'reason': savedReason,
+            'note': savedNote,
+            'recorded_at': recordedAt,
             'operation_id': operationId,
           },
           where: 'id = ? AND status = ?',
@@ -170,6 +248,8 @@ class SqliteDeliveryRepository implements DeliveryRepository {
           'stop_id': stopId,
           'status': status.name,
           'reason': savedReason,
+          'note': savedNote,
+          'recorded_at': recordedAt,
         });
       });
     } catch (_) {
@@ -201,7 +281,7 @@ class SqliteDeliveryRepository implements DeliveryRepository {
         if (matching.isEmpty) return false;
         final changed = await transaction.update(
           'stops',
-          {'acknowledged_at': DateTime.now().millisecondsSinceEpoch},
+          {'acknowledged_at': DateTime.now().toUtc().millisecondsSinceEpoch},
           where: 'id = ? AND dataset_id = ? AND operation_id = ?',
           whereArgs: [ack.stopId, ack.datasetId, ack.operationId],
         );
@@ -231,11 +311,98 @@ class SqliteDeliveryRepository implements DeliveryRepository {
   }
 
   @override
+  Future<DeliverySettings> loadSettings() async {
+    await initialize();
+    final datasetId = _datasetId!;
+    final rows = await _database!.query(
+      'delivery_settings',
+      where: 'dataset_id = ?',
+      whereArgs: [datasetId],
+    );
+    if (rows.isEmpty) return DeliverySettings(datasetId: datasetId);
+    final row = rows.single;
+    final latitude = row['viewport_latitude'];
+    final longitude = row['viewport_longitude'];
+    final zoom = row['viewport_zoom'];
+    MapViewport? viewport;
+    if (latitude is num && longitude is num && zoom is num) {
+      final candidate = MapViewport(
+        datasetId: datasetId,
+        latitude: latitude.toDouble(),
+        longitude: longitude.toDouble(),
+        zoom: zoom.toDouble(),
+      );
+      if (_validViewport(candidate)) viewport = candidate;
+    }
+    return DeliverySettings(
+      datasetId: datasetId,
+      online: row['online'] != 0,
+      viewport: viewport,
+    );
+  }
+
+  @override
+  Future<void> saveOnline(bool online) async {
+    await initialize();
+    await _saveSettings({'online': online ? 1 : 0});
+  }
+
+  @override
+  Future<void> saveViewport(MapViewport viewport) async {
+    if (!_validViewport(viewport)) {
+      throw ArgumentError.value(viewport, 'viewport', 'Invalid map viewport');
+    }
+    await initialize();
+    if (viewport.datasetId != _datasetId) {
+      throw ArgumentError.value(
+        viewport.datasetId,
+        'datasetId',
+        'The viewport belongs to a different dataset',
+      );
+    }
+    await _saveSettings({
+      'viewport_latitude': viewport.latitude,
+      'viewport_longitude': viewport.longitude,
+      'viewport_zoom': viewport.zoom,
+    });
+  }
+
+  Future<void> _saveSettings(Map<String, Object?> values) async {
+    final datasetId = _datasetId!;
+    await _database!.transaction((transaction) async {
+      final changed = await transaction.update(
+        'delivery_settings',
+        values,
+        where: 'dataset_id = ?',
+        whereArgs: [datasetId],
+      );
+      if (changed == 0) {
+        await transaction.insert('delivery_settings', {
+          'dataset_id': datasetId,
+          ...values,
+        });
+      }
+    });
+  }
+
+  static bool _validViewport(MapViewport viewport) =>
+      viewport.latitude.isFinite &&
+      viewport.latitude >= -90 &&
+      viewport.latitude <= 90 &&
+      viewport.longitude.isFinite &&
+      viewport.longitude >= -180 &&
+      viewport.longitude <= 180 &&
+      viewport.zoom.isFinite &&
+      viewport.zoom >= 0 &&
+      viewport.zoom <= 22;
+
+  @override
   Future<void> close() async {
     final underway = _initializing;
     if (underway != null) await underway;
     final database = _database;
     _database = null;
+    _datasetId = null;
     await database?.close();
   }
 
@@ -272,8 +439,10 @@ class SqliteDeliveryRepository implements DeliveryRepository {
       'latitude',
       'longitude',
       'status',
+      'time_window',
     ];
-    if (headers.toSet().length != headers.length ||
+    if (headers.length != requiredFields.length ||
+        headers.toSet().length != headers.length ||
         requiredFields.any((field) => !headers.contains(field))) {
       throw const FormatException('The source headers are invalid');
     }
@@ -287,7 +456,11 @@ class SqliteDeliveryRepository implements DeliveryRepository {
       final reference = field('reference');
       final customerName = field('customer_name');
       final address = field('address');
-      if (reference.isEmpty || customerName.isEmpty || address.isEmpty) {
+      final timeWindow = field('time_window');
+      if (reference.isEmpty ||
+          customerName.isEmpty ||
+          address.isEmpty ||
+          timeWindow.isEmpty) {
         throw const FormatException('A source row is missing a required value');
       }
       if (!references.add(reference)) {
@@ -311,7 +484,6 @@ class SqliteDeliveryRepository implements DeliveryRepository {
       if (status.isEmpty) {
         throw const FormatException('A source status is invalid');
       }
-      final sourceReason = headers.contains('reason') ? field('reason') : null;
       stops.add(
         Stop(
           id: _newId('stop'),
@@ -321,9 +493,7 @@ class SqliteDeliveryRepository implements DeliveryRepository {
           latitude: latitude,
           longitude: longitude,
           status: status.single,
-          reason: sourceReason == null || sourceReason.isEmpty
-              ? null
-              : sourceReason,
+          timeWindow: timeWindow,
         ),
       );
     }
@@ -377,6 +547,10 @@ class SqliteDeliveryRepository implements DeliveryRepository {
     status: DeliveryStatus.values.byName(row['status'] as String),
     reason: row['reason'] as String?,
     operationId: row['operation_id'] as String?,
+    timeWindow: row['time_window'] as String?,
+    note: row['note'] as String?,
+    recordedAt: _dateFromRow(row['recorded_at']),
+    acknowledgedAt: _dateFromRow(row['acknowledged_at']),
   );
 
   static PendingUpdate _updateFromRow(Map<String, Object?> row) =>
@@ -387,5 +561,11 @@ class SqliteDeliveryRepository implements DeliveryRepository {
         stopId: row['stop_id'] as String,
         status: DeliveryStatus.values.byName(row['status'] as String),
         reason: row['reason'] as String?,
+        note: row['note'] as String?,
+        recordedAt: _dateFromRow(row['recorded_at']),
       );
+
+  static DateTime? _dateFromRow(Object? value) => value == null
+      ? null
+      : DateTime.fromMillisecondsSinceEpoch(value as int, isUtc: true);
 }

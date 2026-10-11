@@ -1,9 +1,9 @@
 {
   "mode": "execute",
-  "contract_revision": 3,
-  "source_head": "8e9a7cca9c4360ca07d86e8aa8d196caf88c8c42",
+  "contract_revision": 5,
+  "source_head": "cae7fca40760e67567c3e29d39b9b295ffa002e5",
   "coordinator": "/root",
-  "scope": "Harness execution and native reliability baseline; full product and production release remain separate",
+  "scope": "Implement full prototype/architecture Flutter demo and local-client with independently verified Harness evidence; production no-go remains",
   "tasks": [
     {
       "id": "N01",
@@ -91,9 +91,1789 @@
       "result_evidence": {
         "archive_member": "harness/evidence/rehearsal/preservation.json"
       }
+    },
+    {
+      "id": "P00",
+      "role": "coordinator-issue-author",
+      "status": "accepted",
+      "owner_agent_id": "/root",
+      "base_sha": "3e0300848fcded055abcc47448c06a165d0472d6",
+      "source_fingerprint": "4b9b79b0d7a60dfacb0062db53568e1a7efc5fa1459357190aefd5794ef547bb",
+      "contract_revision": 4,
+      "write_scope": [
+        "harness/project",
+        "harness/README.md"
+      ],
+      "resource_leases": [],
+      "result_path": {
+        "archive": "harness/reports/issue-planning-2026-10-10.tar.gz",
+        "archive_member": "issue-planning/coordinator.md"
+      },
+      "started_at": "2026-10-10T12:30:17.637706+00:00",
+      "accepted_at": "2026-10-10T12:50:00.474989+00:00",
+      "accepted_source_fingerprint": "b5050d4731905258653e434db66e2d2bb80db4232ebc03ebde3a373199f68f78"
+    },
+    {
+      "id": "P01",
+      "role": "requirements-review",
+      "status": "accepted",
+      "owner_agent_id": "/root/requirements_review",
+      "base_sha": "3e0300848fcded055abcc47448c06a165d0472d6",
+      "source_fingerprint": "4b9b79b0d7a60dfacb0062db53568e1a7efc5fa1459357190aefd5794ef547bb",
+      "contract_revision": 4,
+      "write_scope": [
+        "harness/runs/issue-planning/requirements.md"
+      ],
+      "resource_leases": [],
+      "result_path": {
+        "archive": "harness/reports/issue-planning-2026-10-10.tar.gz",
+        "archive_member": "issue-planning/requirements.md"
+      },
+      "started_at": "2026-10-10T12:30:17.637706+00:00",
+      "returned_at": "2026-10-10T12:39:45.084872+00:00",
+      "accepted_at": "2026-10-10T12:50:00.474989+00:00",
+      "accepted_source_fingerprint": "b5050d4731905258653e434db66e2d2bb80db4232ebc03ebde3a373199f68f78"
+    },
+    {
+      "id": "P02",
+      "role": "harness-review",
+      "status": "accepted",
+      "owner_agent_id": "/root/harness_review",
+      "base_sha": "3e0300848fcded055abcc47448c06a165d0472d6",
+      "source_fingerprint": "4b9b79b0d7a60dfacb0062db53568e1a7efc5fa1459357190aefd5794ef547bb",
+      "contract_revision": 4,
+      "write_scope": [
+        "harness/runs/issue-planning/harness.md"
+      ],
+      "resource_leases": [],
+      "result_path": {
+        "archive": "harness/reports/issue-planning-2026-10-10.tar.gz",
+        "archive_member": "issue-planning/harness.md"
+      },
+      "started_at": "2026-10-10T12:30:17.637706+00:00",
+      "returned_at": "2026-10-10T12:39:45.084872+00:00",
+      "accepted_at": "2026-10-10T12:50:00.474989+00:00",
+      "accepted_source_fingerprint": "b5050d4731905258653e434db66e2d2bb80db4232ebc03ebde3a373199f68f78"
+    },
+    {
+      "id": "P03",
+      "role": "independent-issue-review",
+      "status": "accepted",
+      "owner_agent_id": "/root/requirements_review",
+      "base_sha": "3e0300848fcded055abcc47448c06a165d0472d6",
+      "source_fingerprint": "98e60e946929c68f387aa83defcea99c947d8d3ae19cfc38ee65f2e4e6718af4",
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/runs/issue-planning/draft-requirements-review.md"
+      ],
+      "resource_leases": [],
+      "result_path": {
+        "archive": "harness/reports/issue-planning-2026-10-10.tar.gz",
+        "archive_member": "issue-planning/draft-requirements-review.md"
+      },
+      "started_at": "2026-10-10T12:39:45.084872+00:00",
+      "accepted_at": "2026-10-10T12:50:00.474989+00:00",
+      "review_result": "19 issue drafts accepted; no product acceptance",
+      "accepted_source_fingerprint": "b5050d4731905258653e434db66e2d2bb80db4232ebc03ebde3a373199f68f78"
+    },
+    {
+      "id": "P04",
+      "role": "independent-issue-review",
+      "status": "accepted",
+      "owner_agent_id": "/root/harness_review",
+      "base_sha": "3e0300848fcded055abcc47448c06a165d0472d6",
+      "source_fingerprint": "98e60e946929c68f387aa83defcea99c947d8d3ae19cfc38ee65f2e4e6718af4",
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/runs/issue-planning/draft-harness-review.md"
+      ],
+      "resource_leases": [],
+      "result_path": {
+        "archive": "harness/reports/issue-planning-2026-10-10.tar.gz",
+        "archive_member": "issue-planning/draft-harness-review.md"
+      },
+      "started_at": "2026-10-10T12:39:45.084872+00:00",
+      "accepted_at": "2026-10-10T12:50:00.474989+00:00",
+      "review_result": "Harness linkage accepted after simulator/trace and integration handoff fixes; production no-go",
+      "accepted_source_fingerprint": "b5050d4731905258653e434db66e2d2bb80db4232ebc03ebde3a373199f68f78"
+    },
+    {
+      "id": "E00",
+      "role": "requirements-and-coordinator",
+      "status": "accepted",
+      "owner_agent_id": "/root",
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/project/mission.md",
+        "harness/project/contracts.md",
+        "harness/project/backlog.json",
+        "harness/project/work.json"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/15",
+      "depends_on": [],
+      "skills": [
+        "engineering-requirements-extract",
+        "engineering-issue-authoring",
+        "agent-engineering-team"
+      ],
+      "requirements": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "R05",
+        "R06",
+        "R07",
+        "R08",
+        "R09",
+        "R10",
+        "R11",
+        "R12",
+        "R13",
+        "R14",
+        "R15",
+        "R16",
+        "R17"
+      ],
+      "verification_level": "G0 合同 + G1 当前候选基线，不证明 G2/G3",
+      "dispatch_condition": "Before running assign owner/base_sha/current fingerprint/result_path/started_at; freeze APIs and reverify baseline",
+      "base_sha": "551332e302877c08132575bca98f19233079bdad",
+      "source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "result_path": "harness/runs/implementation/E00.md",
+      "started_at": "2026-10-10T13:05:25.777133+00:00",
+      "quality_report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+      "review": "harness/runs/implementation/E00-review.md",
+      "accepted_at": "2026-10-10T13:19:27.731143+00:00",
+      "accepted_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "historical_component_return_before_final_delivery": {
+        "source_fingerprint": "b5050d4731905258653e434db66e2d2bb80db4232ebc03ebde3a373199f68f78",
+        "quality_report": "harness/runs/20261010T131749468312Z-quality/report.json",
+        "result_path": "harness/runs/implementation/E00.md"
+      },
+      "current_frozen_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "current_source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+      "current_executor": "/root",
+      "source_frozen": true,
+      "github_state": "closed",
+      "current_result": "harness/reports/iteration-2026-10-11.md",
+      "note": "Current local scope accepted; actual remote closed. Physical/production responsibilities remain separate."
+    },
+    {
+      "id": "E01",
+      "role": "development-bootstrap",
+      "status": "accepted",
+      "owner_agent_id": "/root",
+      "contract_revision": 5,
+      "write_scope": [
+        "app/pubspec.yaml",
+        "app/pubspec.lock",
+        "app/lib/main.dart",
+        "app/lib/app",
+        "app/lib/ui/core",
+        "app/assets",
+        "app/ios",
+        "app/android",
+        "app/test/bootstrap",
+        "app/lib/ui/delivery_screen.dart"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/16",
+      "depends_on": [
+        "E00"
+      ],
+      "skills": [
+        "flutter-development",
+        "engineering-flutter-testing"
+      ],
+      "requirements": [
+        "R14",
+        "R16"
+      ],
+      "verification_level": "G1 host/widget + iOS simulator debug 构建；原生体验交 E08",
+      "base_sha": "551332e302877c08132575bca98f19233079bdad",
+      "source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "started_at": "2026-10-10T13:19:27.731143+00:00",
+      "result_path": "harness/runs/implementation/E01.md",
+      "scope_note": "Only runtime mode label in old DeliveryScreen; E07 receives screen for final assembly",
+      "quality_report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+      "build_report": "harness/runs/20261010T132212962056Z-build/report.json",
+      "review": "harness/runs/implementation/E01-review.md",
+      "accepted_at": "2026-10-10T13:25:30.406429+00:00",
+      "accepted_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "historical_component_return_before_final_delivery": {
+        "source_fingerprint": "902f159e3c42882ae4a984367b9a6f0f56bfba37e79655c3223b8c322e40a3df",
+        "quality_report": "harness/runs/20261010T132203093472Z-quality/report.json",
+        "result_path": "harness/runs/implementation/E01.md"
+      },
+      "current_frozen_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "current_source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+      "current_executor": "/root",
+      "source_frozen": true,
+      "github_state": "closed",
+      "current_result": "harness/reports/iteration-2026-10-11.md",
+      "note": "Current local scope accepted; actual remote closed. Physical/production responsibilities remain separate."
+    },
+    {
+      "id": "X00",
+      "role": "harness-engineering",
+      "status": "accepted",
+      "owner_agent_id": "/root/harness_review",
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/run.py",
+        "harness/native.py",
+        "harness/tests/test_native.py",
+        "harness/tests/test_state.py",
+        "app/.fvmrc",
+        "harness/tests/test_runner.py"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/17",
+      "depends_on": [
+        "E01"
+      ],
+      "skills": [
+        "harness-engineering",
+        "engineering-flutter-testing"
+      ],
+      "requirements": [
+        "R16",
+        "R17"
+      ],
+      "verification_level": "H02/H07 工具实跑；debug 构建不代签原生/性能",
+      "base_sha": "96411173231cbaefa6db2a7eb84a7a888cf97afc",
+      "source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "started_at": "2026-10-10T13:25:30.406429+00:00",
+      "result_path": "harness/runs/implementation/X00.md",
+      "accepted_at": "2026-10-10T13:46:22.424481+00:00",
+      "accepted_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "quality_report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+      "startup_report": "harness/runs/20261010T133748741624Z-native/report.json",
+      "native_report": "harness/runs/20261010T134039604972Z-native/report.json",
+      "review": "harness/runs/implementation/X00-review.md",
+      "historical_component_return_before_final_delivery": {
+        "source_fingerprint": "06e46bddd2f2b0ab8db0bc4c826d3ff47fd882b10e38c2c35e4569193992d9d6",
+        "quality_report": "harness/runs/20261010T133719234906Z-quality/report.json",
+        "result_path": "harness/runs/implementation/X00.md"
+      },
+      "current_frozen_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "current_source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+      "current_executor": "/root",
+      "source_frozen": true,
+      "github_state": "closed",
+      "current_result": "harness/reports/iteration-2026-10-11.md",
+      "note": "Current local scope accepted; actual remote closed. Physical/production responsibilities remain separate."
+    },
+    {
+      "id": "E02",
+      "role": "development-data",
+      "status": "accepted",
+      "owner_agent_id": "/root/data_development",
+      "contract_revision": 5,
+      "write_scope": [
+        "app/lib/models",
+        "app/lib/data/delivery/delivery_repository.dart",
+        "app/lib/data/delivery/sqlite_delivery_repository.dart",
+        "app/lib/data/services",
+        "app/test/data",
+        "app/test/ui/fake_delivery_repository.dart",
+        "app/test/ui/delivery_view_model_lifecycle_test.dart",
+        "app/lib/data/delivery/delivery_settings_store.dart"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/18",
+      "depends_on": [
+        "X00"
+      ],
+      "skills": [
+        "flutter-development",
+        "engineering-flutter-testing"
+      ],
+      "requirements": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "R05",
+        "R12",
+        "R13"
+      ],
+      "verification_level": "G1 host 文件 SQLite/迁移/故障；G4-local 部分，G2 由 E08",
+      "base_sha": "57ab7c67a8a34072139e2e1716c5ebd875bf4846",
+      "source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "started_at": "2026-10-10T13:46:57.383435+00:00",
+      "result_path": "harness/runs/implementation/E02.md",
+      "returned_at": "2026-10-10T13:56:00.148056+00:00",
+      "review_candidate": "e670b22a3c85338437e78b8b9b24a3ce6612c2bf2723fd231636e3ac38d72ad0",
+      "repair": "Analyze braces lint fixed by E02 owner; first failed run preserved; candidate retest pending",
+      "quality_report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+      "accepted_at": "2026-10-10T14:04:32.297202+00:00",
+      "accepted_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "review": "harness/runs/implementation/E02-review.md",
+      "historical_component_return_before_final_delivery": {
+        "source_fingerprint": "f9137cb845783c63b0b182be1936c7682d4d3fd5fa061f19e0de79c2da0eadcd",
+        "quality_report": "harness/runs/20261010T140235572848Z-quality/report.json",
+        "result_path": "harness/runs/implementation/E02.md"
+      },
+      "current_frozen_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "current_source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+      "current_executor": "/root",
+      "source_frozen": true,
+      "github_state": "closed",
+      "current_result": "harness/reports/iteration-2026-10-11.md",
+      "note": "Current local scope accepted; actual remote closed. Physical/production responsibilities remain separate."
+    },
+    {
+      "id": "E03",
+      "role": "development-query-list",
+      "status": "accepted",
+      "owner_agent_id": "/root/query_development",
+      "contract_revision": 5,
+      "write_scope": [
+        "app/lib/ui/delivery_view_model.dart",
+        "app/lib/ui/delivery/query",
+        "app/lib/ui/delivery/list",
+        "app/test/query",
+        "app/test/list"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/19",
+      "depends_on": [
+        "X00"
+      ],
+      "skills": [
+        "flutter-development",
+        "engineering-flutter-testing"
+      ],
+      "requirements": [
+        "R08",
+        "R09",
+        "R10",
+        "R14"
+      ],
+      "verification_level": "G1 unit/widget 查询与列表；G2 地图联动由 E08",
+      "base_sha": "57ab7c67a8a34072139e2e1716c5ebd875bf4846",
+      "source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "started_at": "2026-10-10T13:46:57.383435+00:00",
+      "result_path": "harness/runs/implementation/E03.md",
+      "returned_at": "2026-10-10T13:56:00.148217+00:00",
+      "review_candidate": "e670b22a3c85338437e78b8b9b24a3ce6612c2bf2723fd231636e3ac38d72ad0",
+      "quality_report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+      "repair": "Author test driver/semantics repaired, product source unchanged; actual unified quality pending",
+      "accepted_at": "2026-10-10T14:04:32.297202+00:00",
+      "accepted_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "review": "harness/runs/implementation/E03-review.md",
+      "historical_component_return_before_final_delivery": {
+        "source_fingerprint": "f9137cb845783c63b0b182be1936c7682d4d3fd5fa061f19e0de79c2da0eadcd",
+        "quality_report": "harness/runs/20261010T140235572848Z-quality/report.json",
+        "result_path": "harness/runs/implementation/E03.md"
+      },
+      "current_frozen_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "current_source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+      "current_executor": "/root",
+      "source_frozen": true,
+      "github_state": "closed",
+      "current_result": "harness/reports/iteration-2026-10-11.md",
+      "note": "Current local scope accepted; actual remote closed. Physical/production responsibilities remain separate."
+    },
+    {
+      "id": "E05",
+      "role": "development-sync",
+      "status": "accepted",
+      "owner_agent_id": "/root/harness_review",
+      "contract_revision": 5,
+      "write_scope": [
+        "app/lib/data/delivery/sync_coordinator.dart",
+        "app/lib/data/services/demo_transport.dart",
+        "app/test/sync"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/20",
+      "depends_on": [
+        "E02"
+      ],
+      "skills": [
+        "flutter-development",
+        "engineering-flutter-testing"
+      ],
+      "requirements": [
+        "R05",
+        "R06",
+        "R11",
+        "R12"
+      ],
+      "verification_level": "G1 Completer/文件库故障与竞争；G2 恢复链由 E08",
+      "base_sha": "d94e9e064fe562d0344e335575c1b95cc7366d69",
+      "source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "started_at": "2026-10-10T14:04:53.696775+00:00",
+      "result_path": "harness/runs/implementation/E05.md",
+      "returned_at": "2026-10-10T14:19:10.329054+00:00",
+      "review_result": "Independent G1 accepted; full UI/native evidence remains E07/E08",
+      "accepted_at": "2026-10-10T14:35:38.072019+00:00",
+      "accepted_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "quality_report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+      "review_path": "harness/runs/implementation/E05-review.md",
+      "historical_component_return_before_final_delivery": {
+        "source_fingerprint": "ff870eb9d80a051573f29de44942925ea338bb362266997a92f846360d429f79",
+        "quality_report": "harness/runs/20261010T143250780131Z-quality/report.json",
+        "result_path": "harness/runs/implementation/E05.md",
+        "review_result": "Independent G1 accepted; full UI/native evidence remains E07/E08"
+      },
+      "current_frozen_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "current_source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+      "current_executor": "/root",
+      "source_frozen": true,
+      "github_state": "closed",
+      "current_result": "harness/reports/iteration-2026-10-11.md",
+      "note": "Current local scope accepted; actual remote closed. Physical/production responsibilities remain separate."
+    },
+    {
+      "id": "E11",
+      "role": "development-detail",
+      "status": "accepted",
+      "owner_agent_id": "/root/data_development",
+      "contract_revision": 5,
+      "write_scope": [
+        "app/lib/ui/delivery/detail",
+        "app/lib/ui/delivery/failure",
+        "app/test/detail"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/21",
+      "depends_on": [
+        "E02",
+        "E03"
+      ],
+      "skills": [
+        "flutter-development",
+        "engineering-flutter-testing"
+      ],
+      "requirements": [
+        "R02",
+        "R03",
+        "R04",
+        "R10",
+        "R14"
+      ],
+      "verification_level": "G1 widget 用户操作/输入保留；G2 原生返回链由 E08",
+      "base_sha": "d94e9e064fe562d0344e335575c1b95cc7366d69",
+      "source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "started_at": "2026-10-10T14:04:53.696775+00:00",
+      "result_path": "harness/runs/implementation/E11.md",
+      "returned_at": "2026-10-10T14:32:50.496667+00:00",
+      "review_result": "Independent G1 accepted; full UI/native evidence remains E07/E08",
+      "repair": "Fresh quality142809 completed139pass3failed: E06 two test SemanticsHandle lifetime errors; E11 large text keyboard visible button geometry551.92>524. Root requests evidence-based repair.",
+      "repair_started_at": "2026-10-10T14:29:20.972766+00:00",
+      "accepted_at": "2026-10-10T14:35:38.072019+00:00",
+      "accepted_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "quality_report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+      "review_path": "harness/runs/implementation/E11-review.md",
+      "historical_component_return_before_final_delivery": {
+        "source_fingerprint": "ff870eb9d80a051573f29de44942925ea338bb362266997a92f846360d429f79",
+        "quality_report": "harness/runs/20261010T143250780131Z-quality/report.json",
+        "result_path": "harness/runs/implementation/E11.md",
+        "review_result": "Independent G1 accepted; full UI/native evidence remains E07/E08"
+      },
+      "current_frozen_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "current_source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+      "current_executor": "/root",
+      "source_frozen": true,
+      "github_state": "closed",
+      "current_result": "harness/reports/iteration-2026-10-11.md",
+      "note": "Current local scope accepted; actual remote closed. Physical/production responsibilities remain separate."
+    },
+    {
+      "id": "E06",
+      "role": "development-map",
+      "status": "accepted",
+      "owner_agent_id": "/root/query_development",
+      "contract_revision": 5,
+      "write_scope": [
+        "app/lib/ui/delivery/map",
+        "app/test/map"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/22",
+      "depends_on": [
+        "E02",
+        "E03"
+      ],
+      "skills": [
+        "flutter-development",
+        "engineering-flutter-testing"
+      ],
+      "requirements": [
+        "R07",
+        "R08",
+        "R09",
+        "R13",
+        "R14"
+      ],
+      "verification_level": "G1 widget/地图 fixture；G2 禁网/冷启/点选由 E08",
+      "base_sha": "d94e9e064fe562d0344e335575c1b95cc7366d69",
+      "source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "started_at": "2026-10-10T14:04:53.696775+00:00",
+      "result_path": "harness/runs/implementation/E06.md",
+      "returned_at": "2026-10-10T14:32:50.496667+00:00",
+      "review_result": "Independent G1 accepted; full UI/native evidence remains E07/E08",
+      "repair": "Fresh quality142809 completed139pass3failed: E06 two test SemanticsHandle lifetime errors; E11 large text keyboard visible button geometry551.92>524. Root requests evidence-based repair.",
+      "repair_started_at": "2026-10-10T14:29:20.972766+00:00",
+      "accepted_at": "2026-10-10T14:35:38.072019+00:00",
+      "accepted_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "quality_report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+      "review_path": "harness/runs/implementation/E06-review.md",
+      "historical_component_return_before_final_delivery": {
+        "source_fingerprint": "ff870eb9d80a051573f29de44942925ea338bb362266997a92f846360d429f79",
+        "quality_report": "harness/runs/20261010T143250780131Z-quality/report.json",
+        "result_path": "harness/runs/implementation/E06.md",
+        "review_result": "Independent G1 accepted; full UI/native evidence remains E07/E08"
+      },
+      "current_frozen_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "current_source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+      "current_executor": "/root",
+      "source_frozen": true,
+      "github_state": "closed",
+      "current_result": "harness/reports/iteration-2026-10-11.md",
+      "note": "Current local scope accepted; actual remote closed. Physical/production responsibilities remain separate."
+    },
+    {
+      "id": "E04",
+      "role": "testing",
+      "status": "accepted",
+      "owner_agent_id": "/root/requirements_review",
+      "contract_revision": 5,
+      "write_scope": [
+        "app/test/reliability",
+        "app/test/support",
+        "app/integration_test/support",
+        "harness/runs/implementation/E04.md",
+        "harness/runs/implementation/E04-matrix.json"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/23",
+      "depends_on": [
+        "E05",
+        "E11",
+        "E06"
+      ],
+      "skills": [
+        "engineering-flutter-testing",
+        "engineering-issue-authoring"
+      ],
+      "requirements": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "R05",
+        "R06",
+        "R07",
+        "R08",
+        "R09",
+        "R10",
+        "R11",
+        "R12",
+        "R13",
+        "R14"
+      ],
+      "verification_level": "G1 独立风险回归；G2 只交 fixture 不自签",
+      "base_sha": "70e026ea06174e61c604f9dc50d9b384370d7f74",
+      "source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "input_contract_fingerprint": "a0cd4c77f71e3fa6342b2919ace236ba7ca71c81700b8fff2acaf40ddac0bc5a",
+      "result_path": "harness/runs/implementation/E04.md",
+      "started_at": "2026-10-10T14:36:25.229063+00:00",
+      "failed_report": "harness/runs/20261010T144950786686Z-quality/report.json",
+      "review_result": "Root and independent author verified 44 Harness/146 Flutter,7 raw stage hashes, identical source/execution candidate; aggregate default-discovery proof, full formal integration/G2 pending",
+      "returned_at": "2026-10-10T14:54:17.567109+00:00",
+      "accepted_at": "2026-10-10T14:54:17.567109+00:00",
+      "accepted_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "quality_report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+      "review": "harness/runs/implementation/E04.md",
+      "historical_component_return_before_final_delivery": {
+        "source_fingerprint": "a0cd4c77f71e3fa6342b2919ace236ba7ca71c81700b8fff2acaf40ddac0bc5a",
+        "quality_report": "harness/runs/20261010T145142671451Z-quality/report.json",
+        "result_path": "harness/runs/implementation/E04.md",
+        "review_result": "Root and independent author verified 44 Harness/146 Flutter,7 raw stage hashes, identical source/execution candidate; aggregate default-discovery proof, full formal integration/G2 pending"
+      },
+      "current_frozen_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "current_source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+      "current_executor": "/root",
+      "source_frozen": true,
+      "github_state": "closed",
+      "current_result": "harness/reports/iteration-2026-10-11.md",
+      "note": "Current local scope accepted; actual remote closed. Physical/production responsibilities remain separate."
+    },
+    {
+      "id": "X01",
+      "role": "harness-engineering",
+      "status": "accepted",
+      "owner_agent_id": "/root/harness_review",
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/checks.py",
+        "harness/tests/test_checks.py"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/24",
+      "depends_on": [
+        "E04"
+      ],
+      "skills": [
+        "harness-engineering",
+        "engineering-flutter-testing"
+      ],
+      "requirements": [
+        "R01",
+        "R02",
+        "R04",
+        "R05",
+        "R17"
+      ],
+      "verification_level": "H01/H04；G1 工具正反例",
+      "base_sha": "b83ae4ba561ee5fe3a07693ce3ff5043b4caf4a8",
+      "source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "result_path": "harness/runs/implementation/X01.md",
+      "started_at": "2026-10-10T14:54:28.772411+00:00",
+      "failed_report": "harness/runs/20261010T150512215376Z-quality/report.json",
+      "review_result": "Independent/root G1:61 Harness/146 Flutter; seven raw logs and equal candidate identity; actual _check valid/invalid exits0/1",
+      "returned_at": "2026-10-10T15:12:44.921104+00:00",
+      "accepted_at": "2026-10-10T15:12:44.921104+00:00",
+      "accepted_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "quality_report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+      "review": "harness/runs/implementation/X01-review.md",
+      "cli_report": "harness/runs/implementation/X01-cli/report.json",
+      "historical_component_return_before_final_delivery": {
+        "source_fingerprint": "edfb6e0270979cf5f251dbe85df73bc145858146ca08c757576092588680a9ee",
+        "quality_report": "harness/runs/20261010T150812507696Z-quality/report.json",
+        "result_path": "harness/runs/implementation/X01.md",
+        "review_result": "Independent/root G1:61 Harness/146 Flutter; seven raw logs and equal candidate identity; actual _check valid/invalid exits0/1"
+      },
+      "current_frozen_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "current_source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+      "current_executor": "/root",
+      "source_frozen": true,
+      "github_state": "closed",
+      "current_result": "harness/reports/iteration-2026-10-11.md",
+      "note": "Current local scope accepted; actual remote closed. Physical/production responsibilities remain separate."
+    },
+    {
+      "id": "E07",
+      "role": "coordinator-integration",
+      "status": "accepted",
+      "owner_agent_id": "/root",
+      "contract_revision": 5,
+      "write_scope": [
+        "app/lib/main.dart",
+        "app/lib/app",
+        "app/lib/ui/delivery_screen.dart",
+        "app/lib/ui/delivery_view_model.dart",
+        "app/lib/ui/delivery/feedback",
+        "app/lib/ui/core/brand_icon.dart",
+        "app/pubspec.yaml",
+        "app/pubspec.lock",
+        "app/assets/licenses",
+        "app/test/ui",
+        "harness/project/contracts.md",
+        "harness/project/requirement-matrix.json"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/25",
+      "depends_on": [
+        "E01",
+        "E05",
+        "E06",
+        "E11",
+        "X01"
+      ],
+      "skills": [
+        "agent-engineering-team",
+        "flutter-development",
+        "engineering-flutter-testing"
+      ],
+      "requirements": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "R05",
+        "R06",
+        "R07",
+        "R08",
+        "R09",
+        "R10",
+        "R11",
+        "R13",
+        "R14",
+        "R17"
+      ],
+      "verification_level": "G1 集成质量 + simulator debug 构建；G2 交 E08",
+      "base_sha": "b358e4a78a8d952b2767704e8c15fa2aac8e1e9a",
+      "source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "started_at": "2026-10-10T15:15:40.188145+00:00",
+      "result_path": "harness/runs/implementation/E07.md",
+      "consumer_scope_reassignment": "E07 bounded original prototype selection/layout and stale-result adapters delegated through root; original component owners retain single writer, all changes require integrated revalidation",
+      "test_scope_reassignment": "TE07W is exclusive writer of widget_test.dart; root reviews and runs frozen candidate.",
+      "source_state": "All source frozen; actual3SQLite VM construct+load+close same real zone within original5s, existing assertion/action tails unchanged. Fresh complete quality pending.",
+      "failed_report": "harness/runs/20261010T154306141713Z-quality/report.json",
+      "repair_reason": "E03 returned focus cases progressed; full suite stalls before UI at real SQLite detail and E04 two fixtures: VM tails constructed FakeAsync then awaited in runAsync. Retain exact original business/geometry assertions; repair setup/close IO ownership only.",
+      "failed_targeted_report": "harness/runs/20261010T161126682229Z-test/report.json",
+      "returned_at": "2026-10-10T16:38:31.061052+00:00",
+      "failed_full_report": "harness/runs/20261010T163345463900Z-quality/report.json",
+      "accepted_at": "2026-10-10T16:44:28.120589+00:00",
+      "accepted_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "quality_report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+      "build_report": "harness/runs/20261010T163936905230Z-build/report.json",
+      "review_result": "Combined independent other-author source/evidence review plus root/data peer review of formal/held-out fixture repairs; complete61Harness/159Flutter and same-cut formal-main simulator debug build accepted. No G2 or production sign.",
+      "historical_component_return_before_final_delivery": {
+        "source_fingerprint": "2d3a58db08ee966c8294c173973e595412033972d3bf369a1d3f38c5d20970fd",
+        "quality_report": "harness/runs/20261010T163831230608Z-quality/report.json",
+        "result_path": "harness/runs/implementation/E07.md",
+        "review_result": "Combined independent other-author source/evidence review plus root/data peer review of formal/held-out fixture repairs; complete61Harness/159Flutter and same-cut formal-main simulator debug build accepted. No G2 or production sign."
+      },
+      "current_frozen_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "current_source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+      "current_executor": "/root",
+      "source_frozen": true,
+      "github_state": "closed",
+      "current_result": "harness/reports/iteration-2026-10-11.md",
+      "note": "Current local scope accepted; actual remote closed. Physical/production responsibilities remain separate."
+    },
+    {
+      "id": "X02",
+      "role": "harness-engineering",
+      "status": "accepted",
+      "owner_agent_id": "/root/harness_review",
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/native.py",
+        "harness/native_workbench.py",
+        "harness/run.py",
+        "harness/tests/test_native.py",
+        "harness/tests/test_native_workbench.py",
+        "harness/runs/implementation/X02.md",
+        "harness/tests/test_runner.py"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/26",
+      "depends_on": [
+        "E07"
+      ],
+      "skills": [
+        "harness-engineering",
+        "flutter-native-acceptance",
+        "engineering-flutter-testing"
+      ],
+      "requirements": [
+        "R12",
+        "R15",
+        "R17"
+      ],
+      "verification_level": "H03 controlled native observations + normal threeOSprocess/lease cleanup; default toolingsmoke only; G2/E08 andG3 remain separate",
+      "base_sha": "deb89793dc203ad4da29cc3679121aa7bce5d0bb",
+      "started_at": "2026-10-10T16:46:17.925393+00:00",
+      "result_path": "harness/runs/implementation/X02.md",
+      "source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "scope_reassignment": "Bounded X02 native workbench capability requires new orchestrator and private existing-formal UI driver. Python owner excludes Dart integration source (IX02D single writer); no productmain/sharedpub/schema/navigation edits. Original Issue body/hashes preserved.",
+      "coordinator_write_scope": [
+        "harness/project/contracts.md",
+        "harness/README.md"
+      ],
+      "note": "Current local scope accepted; actual remote closed. Physical/production responsibilities remain separate.",
+      "returned_at": "2026-10-10T17:08:07.074486+00:00",
+      "candidate_source_fingerprint": "22be896118f4630dc1e34ee35649cd4647592d3cbabc6172b6737a4224788242",
+      "verification": "PID/app-scoped unified log discovery repair frozen; root freshquality/native required.",
+      "repair_reason": "172217 actualOSlog: currentPID/flutterprefixVMpublication plus privateDartbootstrap missingENV. Immutableprelaunch taskcontainerfile replaces assumedenv; disjointPython/Dart repair, noformalproductchanges.",
+      "source_frozen": true,
+      "reason": "Taskserver bounded64acceptcapacity and24TCPregression sourcefrozen; freshnative mustprove startup.",
+      "accepted_at": "2026-10-10T18:01:49.384208+00:00",
+      "accepted_source_fingerprint": "e888779d6b48c5a3aecd002b20f0a21362134594fbb19680562bd535a7cc769b",
+      "review_result": "Independent actualG1 89Harness159Flutter pluscontrolled iOS threeOSprocesssmokes demo2/0/0 andlocal-client2/2/2; 136rawartifacts and16SQLitebackups verified. Toolingscopeonly notG2.",
+      "review": "harness/runs/implementation/X02-independent-review.md",
+      "evidence": [
+        "harness/runs/20261010T175151779951Z-quality/report.json",
+        "harness/runs/20261010T175309967471Z-native/report.json",
+        "harness/runs/20261010T175539527417Z-native/report.json"
+      ],
+      "historical_component_return_before_final_delivery": {
+        "source_fingerprint": "66832ac3bd04527639bcc69ab5831b50df70bfc600c658109b3785bfbb847609",
+        "result_path": "harness/runs/implementation/X02.md",
+        "review_result": "Independent actualG1 89Harness159Flutter pluscontrolled iOS threeOSprocesssmokes demo2/0/0 andlocal-client2/2/2; 136rawartifacts and16SQLitebackups verified. Toolingscopeonly notG2."
+      },
+      "current_frozen_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "current_source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+      "quality_report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+      "current_executor": "/root",
+      "accepted_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "github_state": "closed",
+      "current_result": "harness/reports/iteration-2026-10-11.md"
+    },
+    {
+      "id": "E08",
+      "role": "native-acceptance",
+      "status": "accepted",
+      "owner_agent_id": "/root/requirements_review",
+      "contract_revision": 5,
+      "write_scope": [
+        "app/integration_test/acceptance_driver.dart",
+        "app/integration_test/support/native_acceptance_support.dart",
+        "app/integration_test/support/native_driver_support.dart",
+        "harness/runs/implementation/E08"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/27",
+      "depends_on": [
+        "X02"
+      ],
+      "skills": [
+        "flutter-native-acceptance",
+        "engineering-issue-authoring"
+      ],
+      "requirements": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "R05",
+        "R06",
+        "R07",
+        "R08",
+        "R09",
+        "R10",
+        "R11",
+        "R12",
+        "R13",
+        "R14"
+      ],
+      "verification_level": "G2 完整 iOS 原生功能/OS 恢复；模拟器结果不能代签 G3",
+      "base_sha": "6a70a94eab758731bfd1468a384247bbfae48a83",
+      "started_at": "2026-10-10T18:03:39.398623+00:00",
+      "source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "note": "Current local scope accepted; actual remote closed. Physical/production responsibilities remain separate.",
+      "coordinator_write_scope": [
+        "harness/run.py",
+        "harness/tests/test_runner_options.py",
+        "app/integration_test/workbench_entry.dart",
+        "app/integration_test/support/native_gesture_command.dart",
+        "app/integration_test/support/native_gesture_extension.dart",
+        "harness/project/contracts.md",
+        "harness/project/native-acceptance-contract.json",
+        "harness/README.md",
+        "app/README.md"
+      ],
+      "coordinator_source_frozen": true,
+      "coordinator_source_frozen_at": "2026-10-10T18:33:17.093588+00:00",
+      "source_frozen": true,
+      "returned_at": "2026-10-10T18:36:42.279179+00:00",
+      "result_path": "harness/runs/implementation/E08.md",
+      "frozen_source_hashes": {
+        "app/integration_test/acceptance_driver.dart": "b0dd5362972afe8a955871d80294569306d040d3c3669e8a819674ce1cf2fbfb",
+        "app/integration_test/support/native_acceptance_support.dart": "4512131a3156679ac1597163d78a6e6a61ed72e6bed19a05564a47bd7a2a33c7",
+        "app/integration_test/support/native_driver_support.dart": "bc48b523bd86082fc67bd393780ef8e1e416954ad518c0f4a07003881d356ea7"
+      },
+      "native_protocol_revision": 6,
+      "current_frozen_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "quality_report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+      "independent_reviewer": "/root/e08_acceptance_review",
+      "coordinator_current_repair_scope": [
+        "app/integration_test/support/native_acceptance_support.dart",
+        "app/test/native_acceptance_stability_test.dart",
+        ".agents/skills/flutter-native-acceptance/SKILL.md",
+        ".agents/skills/harness-engineering/SKILL.md"
+      ],
+      "latest_failed_report": "harness/runs/20261010T203529887672Z-native/attempts/000001/report.json",
+      "latest_failed_sha256": "a8dcbae66f332e1e32b0fdbac80de0bdff15dfc866e42356bdd7b2593df7c6bf",
+      "latest_failed_quality": "harness/runs/20261010T204644113067Z-quality/attempts/000001/report.json",
+      "latest_failed_quality_sha256": "e8798ee25b9f386320d45e8e9fb1316285740d4a0e5f93940352017f164a5eca",
+      "latest_current_snapshot_history": {
+        "owner_agent_id": "/root/requirements_review",
+        "current_frozen_candidate": "c3e05ac1f457ecf7e47bc16d1fdcc229010c1b84f7d67a04b3c3c29714aca30a",
+        "source_fingerprint": "8268376176b4084871af410fa38905f313a6f0a559827b180d64ef14f1077672",
+        "quality_report": "harness/runs/20261010T202147347764Z-quality/attempts/000001/report.json",
+        "note": "203529 Fit/44marker actual PASS; actual list Stop list heading/search consumes content, seq61 scrollIntoView TV4 times out. Product compact list repair; OSscale/44 requirements unchanged."
+      },
+      "current_source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+      "quality_current": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+      "ci_current": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38102904327",
+      "current_executor": "/root",
+      "current_observed_at": "2026-10-11T02:11:43.914698+00:00",
+      "current_independent_reviewer": "/root/e08_acceptance_review",
+      "accepted_at": "2026-10-11T02:42:10.589661+00:00",
+      "accepted_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "github_state": "closed",
+      "current_evidence": [
+        "harness/runs/implementation/E08-independent-381730f-full34-reviewer-metadata.json",
+        "harness/runs/implementation/E08-independent-381730f-full-aggregate-verdict.json"
+      ],
+      "historical_component_return_before_final_delivery": {
+        "source_fingerprint": "8268376176b4084871af410fa38905f313a6f0a559827b180d64ef14f1077672",
+        "quality_report": "harness/runs/20261010T232159589094Z-quality/attempts/000001/report.json",
+        "result_path": "harness/runs/implementation/E08.md",
+        "frozen_source_hashes": {
+          "app/integration_test/acceptance_driver.dart": "b0dd5362972afe8a955871d80294569306d040d3c3669e8a819674ce1cf2fbfb",
+          "app/integration_test/support/native_acceptance_support.dart": "4512131a3156679ac1597163d78a6e6a61ed72e6bed19a05564a47bd7a2a33c7",
+          "app/integration_test/support/native_driver_support.dart": "bc48b523bd86082fc67bd393780ef8e1e416954ad518c0f4a07003881d356ea7"
+        }
+      },
+      "current_result": "harness/reports/iteration-2026-10-11.md",
+      "github_close_comment": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/27#issuecomment-6104794912"
+    },
+    {
+      "id": "E09",
+      "role": "performance",
+      "status": "blocked",
+      "owner_agent_id": null,
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/runs/E09"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/31",
+      "depends_on": [
+        "X02"
+      ],
+      "skills": [
+        "flutter-performance",
+        "engineering-issue-authoring"
+      ],
+      "requirements": [
+        "R15"
+      ],
+      "verification_level": "G3 真机 profile + release；现有 Harness 无性能命令，消费 X02 实际支持的 trace 入口",
+      "blocking_condition": [
+        "目标真机与 profile/release 执行条件尚未取得证据"
+      ],
+      "github_state": "open"
+    },
+    {
+      "id": "X03",
+      "role": "harness-engineering",
+      "status": "accepted",
+      "owner_agent_id": "/root/data_development",
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/gate.py",
+        "harness/tests/test_gate.py",
+        "harness/tests/test_gate_native.py",
+        "harness/runs/implementation/X03.md"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/28",
+      "depends_on": [
+        "X02",
+        "X01"
+      ],
+      "skills": [
+        "harness-engineering",
+        "engineering-flutter-testing",
+        "engineering-release-handoff"
+      ],
+      "requirements": [
+        "R16",
+        "R17"
+      ],
+      "verification_level": "H06 本地候选证据校验；强制部署由 X05 验证",
+      "base_sha": "6a70a94eab758731bfd1468a384247bbfae48a83",
+      "started_at": "2026-10-10T18:03:39.398623+00:00",
+      "note": "Current local scope accepted; actual remote closed. Physical/production responsibilities remain separate.",
+      "source_frozen": true,
+      "returned_at": "2026-10-10T18:44:58.234389+00:00",
+      "result_path": "harness/runs/implementation/X03.md",
+      "frozen_hashes": {
+        "harness/gate.py": "730aa5e27a9c1497045da9b731601410aaa04e5ad64f79d0d89cb34b6d9b415e",
+        "harness/tests/test_gate.py": "3ca1a5c20f80d94e1cd542bf70693288acf92c25187e63d712ead151cd943adf",
+        "harness/tests/test_gate_native.py": "7e1c7bb852fb21aec558abfde65be267080869588aeb8d6af746afd46165746f"
+      },
+      "accepted_at": "2026-10-11T02:42:10.589661+00:00",
+      "accepted_source_fingerprint": "4c98b970dae12aa2fbe3c3a0fe9d83b8e84289b08b16a158cfe9e747a687de22",
+      "quality_report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+      "review": "harness/runs/implementation/X03-independent-review.md",
+      "review_result": "Strict validator implementation accepted130Harness159Flutter+99independentgate outcomes. ActualfullE08/local-gatepasspending, noproduction.",
+      "github_close_comment": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/28#issuecomment-6104795290",
+      "github_state": "closed",
+      "native_protocol_revision": 6,
+      "github_protocol6_comment": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/28#issuecomment-6101367131",
+      "repair_reason": "Correct pinnedFlutter iOS OSmotion observation in native protocol6; retain previous strictimplementation acceptance history.",
+      "current_frozen_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "latest_current_snapshot_history": {
+        "owner_agent_id": "/root/data_development",
+        "current_frozen_candidate": "c3e05ac1f457ecf7e47bc16d1fdcc229010c1b84f7d67a04b3c3c29714aca30a",
+        "quality_report": "harness/runs/20261010T202147347764Z-quality/attempts/000001/report.json",
+        "note": "Native6 gate current source accepted independent 2 controls+32negatives. Actual full34 localgate pending."
+      },
+      "current_source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+      "quality_current": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+      "ci_current": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38102904327",
+      "current_executor": "/root",
+      "current_observed_at": "2026-10-11T02:11:43.914698+00:00",
+      "current_independent_reviewer": "/root/e08_acceptance_review",
+      "current_source_authors": [
+        "/root/data_development",
+        "/root/query_development"
+      ],
+      "accepted_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "current_evidence": [
+        "harness/runs/implementation/E08-independent-381730f-actual-localgate-010.json",
+        "harness/runs/implementation/E08-independent-381730f-actual-production-refusal.json"
+      ],
+      "historical_component_return_before_final_delivery": {
+        "quality_report": "harness/runs/20261010T202147347764Z-quality/attempts/000001/report.json",
+        "result_path": "harness/runs/implementation/X03.md",
+        "review_result": "Strict validator implementation accepted130Harness159Flutter+99independentgate outcomes. ActualfullE08/local-gatepasspending, noproduction."
+      },
+      "source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "current_result": "harness/reports/iteration-2026-10-11.md"
+    },
+    {
+      "id": "X05",
+      "role": "harness-engineering",
+      "status": "blocked",
+      "owner_agent_id": null,
+      "contract_revision": 5,
+      "write_scope": [
+        ".github/workflows",
+        "harness/reports/readiness.md",
+        "harness/reports/status.json"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/32",
+      "depends_on": [
+        "X03"
+      ],
+      "skills": [
+        "harness-engineering",
+        "engineering-release-handoff",
+        "engineering-flutter-testing"
+      ],
+      "requirements": [
+        "R16",
+        "R17"
+      ],
+      "verification_level": "H06 实际 CI/发布强制接线；当前未部署",
+      "blocking_condition": [
+        "历史保护 API 403；实际 required checks/强制发布环境需可用权限与配置"
+      ],
+      "github_state": "open"
+    },
+    {
+      "id": "X04",
+      "role": "harness-engineering",
+      "status": "accepted",
+      "owner_agent_id": "/root",
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/run.py",
+        "harness/state.py",
+        "harness/tests/test_runner.py",
+        "harness/tests/test_state.py",
+        "harness/tests/test_runner_options.py",
+        "harness/tests/test_recovery.py"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/29",
+      "depends_on": [
+        "X02",
+        "X03"
+      ],
+      "skills": [
+        "harness-engineering",
+        "agent-engineering-team",
+        "engineering-flutter-testing",
+        "engineering-issue-authoring"
+      ],
+      "requirements": [
+        "R17"
+      ],
+      "verification_level": "H07/H08 实际生命周期/保留场景",
+      "source_frozen": true,
+      "started_at": "2026-10-10T19:12:17.131419+00:00",
+      "note": "Current local scope accepted; actual remote closed. Physical/production responsibilities remain separate.",
+      "returned_at": "2026-10-10T19:22:09.550330+00:00",
+      "result_path": "harness/runs/implementation/X04.md",
+      "source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "current_frozen_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "quality_report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+      "ci_failure": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38083638601",
+      "latest_current_snapshot_history": {
+        "owner_agent_id": "/root/harness_review",
+        "current_frozen_candidate": "c3e05ac1f457ecf7e47bc16d1fdcc229010c1b84f7d67a04b3c3c29714aca30a",
+        "source_fingerprint": "8268376176b4084871af410fa38905f313a6f0a559827b180d64ef14f1077672",
+        "quality_report": "harness/runs/20261010T202147347764Z-quality/attempts/000001/report.json",
+        "note": "Actual remote Linux CI analyzer exit0 leaves actual own group alive; failclosed blocks; owner repairing bounded realgroup shutdown/OS regressions"
+      },
+      "independent_reviewer": "/root/query_development",
+      "current_source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+      "quality_current": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+      "ci_current": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38102904327",
+      "current_executor": "/root",
+      "current_observed_at": "2026-10-11T02:11:43.914698+00:00",
+      "current_independent_reviewer": "/root/query_development",
+      "accepted_at": "2026-10-11T02:42:10.589661+00:00",
+      "accepted_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "github_state": "closed",
+      "current_evidence": [
+        "harness/runs/implementation/X04-current381730-41-and-CI-binding.json",
+        "harness/runs/implementation/E08-independent-381730f-X04-private41-LinuxCI-originals.json",
+        "harness/runs/implementation/N3-381730-cancel-replay-actual/report.json",
+        "harness/runs/implementation/E08-independent-381730f-N3-runtime-verdict.json",
+        "harness/runs/implementation/E08-independent-381730f-actual-localgate-010.json"
+      ],
+      "historical_component_return_before_final_delivery": {
+        "source_fingerprint": "8268376176b4084871af410fa38905f313a6f0a559827b180d64ef14f1077672",
+        "quality_report": "harness/runs/20261010T202147347764Z-quality/attempts/000001/report.json",
+        "result_path": "harness/runs/implementation/X04.md"
+      },
+      "current_result": "harness/reports/iteration-2026-10-11.md",
+      "github_close_comment": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/29#issuecomment-6104795684"
+    },
+    {
+      "id": "E10",
+      "role": "release-handoff",
+      "status": "accepted",
+      "owner_agent_id": "/root",
+      "contract_revision": 5,
+      "write_scope": [
+        "app/README.md",
+        "README.md",
+        "harness/runs/E10"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/30",
+      "depends_on": [
+        "E08",
+        "X04"
+      ],
+      "skills": [
+        "engineering-release-handoff",
+        "engineering-issue-authoring"
+      ],
+      "requirements": [
+        "R01",
+        "R13",
+        "R16",
+        "R17"
+      ],
+      "verification_level": "G0/G1/G2/本地 G4 + 本地证据包；生产判定独立",
+      "latest_current_snapshot_history": {
+        "owner_agent_id": null
+      },
+      "current_frozen_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "source_frozen": true,
+      "independent_reviewer": "/root/query_development",
+      "note": "Current complete local handoff accepted from genuine independent product and package scopes; no production eligibility.",
+      "current_source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+      "quality_current": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+      "ci_current": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38102904327",
+      "current_executor": "/root",
+      "current_observed_at": "2026-10-11T02:11:43.914698+00:00",
+      "packager_author": "/root/requirements_review",
+      "current_independent_reviewer": "/root/query_development",
+      "historical_component_return_before_final_delivery": {},
+      "source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "quality_report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+      "current_archive": "harness/runs/E10/381730-local-handoff/index.json",
+      "accepted_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "github_state": "closed",
+      "current_result": "harness/reports/iteration-2026-10-11.md",
+      "github_close_comment": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/30#issuecomment-6104796001",
+      "accepted_at": "2026-10-11T02:59:18.750923+00:00",
+      "current_evidence": [
+        "harness/runs/implementation/E10-381730-local-handoff-root-decision/report.json",
+        "harness/runs/implementation/E10-381730-archive-nonauthor-review/archive-mechanical-observation.json",
+        "harness/runs/E10/381730-local-handoff/index.json"
+      ],
+      "current_independent_review_roles": {
+        "product_G2": "/root/e08_acceptance_review, product/driver/gate nonauthor",
+        "archive": "/root/query_development, packager/generator nonauthor; prior parser/UI author",
+        "packager_config_author": "/root/requirements_review"
+      }
+    },
+    {
+      "id": "E12",
+      "role": "release-handoff",
+      "status": "blocked",
+      "owner_agent_id": null,
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/runs/E12",
+        "app/README.md"
+      ],
+      "resource_leases": [],
+      "issue_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/33",
+      "depends_on": [
+        "E10",
+        "E09",
+        "X05"
+      ],
+      "skills": [
+        "engineering-release-handoff",
+        "harness-engineering",
+        "flutter-native-acceptance",
+        "flutter-performance"
+      ],
+      "requirements": [
+        "R01",
+        "R13",
+        "R15",
+        "R16",
+        "R17"
+      ],
+      "verification_level": "生产 H01–H08 + 适用 G0–G6，当前 no-go",
+      "blocking_condition": [
+        "真机/性能、许可/业务授权、签名/渠道、强制门禁及具体外部发布授权尚未满足"
+      ],
+      "github_state": "open"
+    },
+    {
+      "id": "RE02E03",
+      "role": "independent-component-review",
+      "status": "accepted",
+      "owner_agent_id": "/root/requirements_review",
+      "base_sha": "57ab7c67a8a34072139e2e1716c5ebd875bf4846",
+      "contract_revision": 5,
+      "write_scope": [
+        "app/test/review/e03_list_focus_test.dart",
+        "harness/runs/implementation/E02-review.md",
+        "harness/runs/implementation/E03-review.md"
+      ],
+      "resource_leases": [],
+      "result_path": "harness/runs/implementation/E03-review.md",
+      "started_at": "2026-10-10T13:58:00.859430+00:00",
+      "note": "Held-out lazy focus restoration on system/back callback without incidental animation frames; master executes after source freeze.",
+      "accepted_at": "2026-10-10T14:04:32.297202+00:00",
+      "accepted_candidate": "ff870eb9d80a051573f29de44942925ea338bb362266997a92f846360d429f79",
+      "quality_report": "harness/runs/20261010T140235572848Z-quality/report.json"
+    },
+    {
+      "id": "RE05E06E11",
+      "role": "independent-component-review",
+      "status": "accepted",
+      "owner_agent_id": "/root/requirements_review",
+      "base_sha": "d94e9e064fe562d0344e335575c1b95cc7366d69",
+      "contract_revision": 5,
+      "source_fingerprint": "ff870eb9d80a051573f29de44942925ea338bb362266997a92f846360d429f79",
+      "write_scope": [
+        "harness/runs/implementation/E05-review.md",
+        "harness/runs/implementation/E06-review.md",
+        "harness/runs/implementation/E11-review.md",
+        "harness/runs/implementation/E04-matrix-draft.json"
+      ],
+      "resource_leases": [],
+      "result_path": "harness/runs/implementation/E05-review.md",
+      "started_at": "2026-10-10T14:19:10.329054+00:00",
+      "note": "Independent component repair review; may draft source->existing-test evidence map for E04, no E04 test implementation before dependency acceptance.",
+      "accepted_at": "2026-10-10T14:35:38.072019+00:00",
+      "accepted_candidate": "a0cd4c77f71e3fa6342b2919ace236ba7ca71c81700b8fff2acaf40ddac0bc5a",
+      "quality_report": "harness/runs/20261010T143250780131Z-quality/report.json",
+      "review_result": "Independent G1 accepted; full UI/native evidence remains E07/E08"
+    },
+    {
+      "id": "PX01",
+      "role": "harness-preparation",
+      "status": "accepted",
+      "owner_agent_id": "/root/harness_review",
+      "base_sha": "70e026ea06174e61c604f9dc50d9b384370d7f74",
+      "source_fingerprint": "a0cd4c77f71e3fa6342b2919ace236ba7ca71c81700b8fff2acaf40ddac0bc5a",
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/runs/implementation/X01-plan.md"
+      ],
+      "resource_leases": [],
+      "result_path": "harness/runs/implementation/X01-plan.md",
+      "started_at": "2026-10-10T14:37:40.255321+00:00",
+      "note": "Read-only design/feasibility preparation. X01 source implementation not authorized until E04 accepted.",
+      "returned_at": "2026-10-10T14:50:45.663760+00:00",
+      "accepted_at": "2026-10-10T14:50:45.663760+00:00",
+      "review_result": "Read-only trace schema/negative fixtures/fingerprint preparation accepted; no X01 implementation or pass"
+    },
+    {
+      "id": "RX01M",
+      "role": "independent-trace-matrix-preparation-review",
+      "status": "accepted",
+      "owner_agent_id": "/root/requirements_review",
+      "base_sha": "b83ae4ba561ee5fe3a07693ce3ff5043b4caf4a8",
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/runs/implementation/X01-matrix-review.md"
+      ],
+      "resource_leases": [],
+      "result_path": "harness/runs/implementation/X01-matrix-review.md",
+      "started_at": "2026-10-10T14:56:06.246162+00:00",
+      "returned_at": "2026-10-10T15:00:50.099626+00:00",
+      "accepted_at": "2026-10-10T15:00:50.099626+00:00",
+      "review_result": "17rows/50bindings structurally truthful and correct accountable joins; tool implementation/G1 still pending"
+    },
+    {
+      "id": "PE07T",
+      "role": "independent-testing-preparation",
+      "status": "accepted",
+      "owner_agent_id": "/root/requirements_review",
+      "base_sha": "b83ae4ba561ee5fe3a07693ce3ff5043b4caf4a8",
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/runs/implementation/E07-test-plan.md"
+      ],
+      "result_path": "harness/runs/implementation/E07-test-plan.md",
+      "resource_leases": [],
+      "started_at": "2026-10-10T15:00:50.099626+00:00",
+      "note": "Read-only design only; formal E07 test implementation not authorized untilX01accepted",
+      "returned_at": "2026-10-10T15:07:02.219423+00:00",
+      "accepted_at": "2026-10-10T15:07:02.219423+00:00",
+      "review_result": "Read-only six-case formal factory/UI test plan accepted, no E07 implementation/tests/native claim"
+    },
+    {
+      "id": "IE07M",
+      "role": "integration-map-list-adapter",
+      "status": "accepted",
+      "owner_agent_id": "/root/query_development",
+      "base_sha": "b358e4a78a8d952b2767704e8c15fa2aac8e1e9a",
+      "contract_revision": 5,
+      "write_scope": [
+        "app/lib/ui/delivery/map/delivery_map_workspace.dart",
+        "app/lib/ui/delivery/list/stop_list_workspace.dart",
+        "app/test/map/delivery_map_workspace_test.dart",
+        "app/test/list/stop_list_workspace_test.dart",
+        "harness/runs/implementation/E07-map-list.md",
+        "app/test/map/map_fixture.dart",
+        "app/lib/ui/delivery/list/stop_status_badge.dart"
+      ],
+      "resource_leases": [],
+      "result_path": "harness/runs/implementation/E07-map-list.md",
+      "started_at": "2026-10-10T15:15:40.188145+00:00",
+      "returned_at": "2026-10-10T16:27:28.201072+00:00",
+      "repair_reason": "Product 2x overflow/error clipping plus explicit cross-zone async/lazylist test harness failures; retain all actual assertion requirements and five-second waits; source repair then targeted/full revalidation",
+      "failed_report": "harness/runs/20261010T154306141713Z-quality/report.json",
+      "source_state": "All E07 writers frozen; private frame-aligned tile adapter independently reviewed for execution, original focus readiness/geometry assertions retained, actual ImageCache/rapid-focus/detach regressions added. No G1 accepted.",
+      "failed_targeted_report": "harness/runs/20261010T161126682229Z-test/report.json",
+      "accepted_at": "2026-10-10T16:44:28.120589+00:00",
+      "accepted_candidate": "66832ac3bd04527639bcc69ab5831b50df70bfc600c658109b3785bfbb847609",
+      "quality_report": "harness/runs/20261010T163831230608Z-quality/report.json",
+      "build_report": "harness/runs/20261010T163936905230Z-build/report.json",
+      "review_result": "Combined independent other-author source/evidence review plus root/data peer review of formal/held-out fixture repairs; complete61Harness/159Flutter and same-cut formal-main simulator debug build accepted. No G2 or production sign."
+    },
+    {
+      "id": "IE07D",
+      "role": "integration-detail-readonly-adapter",
+      "status": "accepted",
+      "owner_agent_id": "/root/data_development",
+      "base_sha": "b358e4a78a8d952b2767704e8c15fa2aac8e1e9a",
+      "contract_revision": 5,
+      "write_scope": [
+        "app/lib/ui/delivery/detail/delivery_detail_card.dart",
+        "app/test/detail/delivery_detail_card_test.dart",
+        "harness/runs/implementation/E07-detail.md"
+      ],
+      "resource_leases": [],
+      "result_path": "harness/runs/implementation/E07-detail.md",
+      "started_at": "2026-10-10T15:15:40.188145+00:00",
+      "returned_at": "2026-10-10T15:38:48.052743+00:00",
+      "accepted_at": "2026-10-10T16:44:28.120589+00:00",
+      "accepted_candidate": "66832ac3bd04527639bcc69ab5831b50df70bfc600c658109b3785bfbb847609",
+      "quality_report": "harness/runs/20261010T163831230608Z-quality/report.json",
+      "build_report": "harness/runs/20261010T163936905230Z-build/report.json",
+      "review_result": "Combined independent other-author source/evidence review plus root/data peer review of formal/held-out fixture repairs; complete61Harness/159Flutter and same-cut formal-main simulator debug build accepted. No G2 or production sign."
+    },
+    {
+      "id": "TE07F",
+      "role": "independent-formal-testing",
+      "status": "accepted",
+      "owner_agent_id": "/root/requirements_review",
+      "base_sha": "b358e4a78a8d952b2767704e8c15fa2aac8e1e9a",
+      "contract_revision": 5,
+      "write_scope": [
+        "app/test/reliability/formal_workbench_test.dart",
+        "app/test/support/formal_workbench_fixture.dart",
+        "harness/runs/implementation/E07-formal-tests.md",
+        "app/test/review/e03_list_focus_test.dart",
+        "app/test/detail/delivery_failure_sheet_test.dart",
+        "app/test/reliability/workbench_fault_combinations_test.dart"
+      ],
+      "resource_leases": [],
+      "started_at": "2026-10-10T15:26:36.028508+00:00",
+      "dependencies": [
+        "E01",
+        "E05",
+        "E06",
+        "E11",
+        "X01"
+      ],
+      "candidate_task": "E07",
+      "returned_at": "2026-10-10T16:38:31.061052+00:00",
+      "result_path": "harness/runs/implementation/E07-formal-tests.md",
+      "failed_report": "harness/runs/20261010T154306141713Z-quality/report.json",
+      "repair_reason": "E03 returned focus cases progressed; full suite stalls before UI at real SQLite detail and E04 two fixtures: VM tails constructed FakeAsync then awaited in runAsync. Retain exact original business/geometry assertions; repair setup/close IO ownership only.",
+      "source_state": "All source frozen; actual3SQLite VM construct+load+close same real zone within original5s, existing assertion/action tails unchanged. Fresh complete quality pending.",
+      "failed_targeted_report": "harness/runs/20261010T155733377880Z-test/report.json",
+      "targeted_report": "harness/runs/20261010T160408617085Z-test/report.json",
+      "targeted_result": "Allformal6androot8passonsamecandidate; fullquality/buildpending",
+      "failed_full_report": "harness/runs/20261010T163345463900Z-quality/report.json",
+      "accepted_at": "2026-10-10T16:44:28.120589+00:00",
+      "accepted_candidate": "66832ac3bd04527639bcc69ab5831b50df70bfc600c658109b3785bfbb847609",
+      "quality_report": "harness/runs/20261010T163831230608Z-quality/report.json",
+      "build_report": "harness/runs/20261010T163936905230Z-build/report.json",
+      "review_result": "Combined independent other-author source/evidence review plus root/data peer review of formal/held-out fixture repairs; complete61Harness/159Flutter and same-cut formal-main simulator debug build accepted. No G2 or production sign."
+    },
+    {
+      "id": "TE07W",
+      "role": "formal-widget-regression",
+      "status": "accepted",
+      "owner_agent_id": "/root/query_development",
+      "base_sha": "b358e4a78a8d952b2767704e8c15fa2aac8e1e9a",
+      "contract_revision": 5,
+      "write_scope": [
+        "app/test/widget_test.dart",
+        "harness/runs/implementation/E07-widget-tests.md"
+      ],
+      "resource_leases": [],
+      "started_at": "2026-10-10T15:26:36.028508+00:00",
+      "dependencies": [
+        "E01",
+        "E05",
+        "E06",
+        "E11",
+        "X01"
+      ],
+      "candidate_task": "E07",
+      "repair_reason": "Product 2x overflow/error clipping plus explicit cross-zone async/lazylist test harness failures; retain all actual assertion requirements and five-second waits; source repair then targeted/full revalidation",
+      "returned_at": "2026-10-10T16:04:08.348871+00:00",
+      "failed_report": "harness/runs/20261010T154306141713Z-quality/report.json",
+      "source_state": "All source frozen for next targeted23: badgewrap/actualidle/caretouterdrag/ACKsnapshotfence; mapreadyrequirementunchanged with actualtile diagnostics",
+      "failed_targeted_report": "harness/runs/20261010T155733377880Z-test/report.json",
+      "targeted_report": "harness/runs/20261010T160408617085Z-test/report.json",
+      "targeted_result": "Allformal6androot8passonsamecandidate; fullquality/buildpending",
+      "accepted_at": "2026-10-10T16:44:28.120589+00:00",
+      "accepted_candidate": "66832ac3bd04527639bcc69ab5831b50df70bfc600c658109b3785bfbb847609",
+      "quality_report": "harness/runs/20261010T163831230608Z-quality/report.json",
+      "build_report": "harness/runs/20261010T163936905230Z-build/report.json",
+      "review_result": "Combined independent other-author source/evidence review plus root/data peer review of formal/held-out fixture repairs; complete61Harness/159Flutter and same-cut formal-main simulator debug build accepted. No G2 or production sign."
+    },
+    {
+      "id": "RE07V",
+      "role": "integration-static-review",
+      "status": "accepted",
+      "owner_agent_id": "/root/data_development",
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/runs/implementation/E07-root-review.md"
+      ],
+      "resource_leases": [],
+      "started_at": "2026-10-10T15:28:28.011739+00:00",
+      "note": "Read-only review of root authored product; detail excluded from self-acceptance",
+      "static_defects": 3,
+      "geometry_gap": "Long notice/list overlap; root lane repair awaits actual tests",
+      "returned_at": "2026-10-10T15:41:41.998818+00:00",
+      "result_path": "harness/runs/implementation/E07-root-review.md",
+      "accepted_at": "2026-10-10T16:44:28.120589+00:00",
+      "accepted_candidate": "66832ac3bd04527639bcc69ab5831b50df70bfc600c658109b3785bfbb847609",
+      "quality_report": "harness/runs/20261010T163831230608Z-quality/report.json",
+      "build_report": "harness/runs/20261010T163936905230Z-build/report.json",
+      "review_result": "Combined independent other-author source/evidence review plus root/data peer review of formal/held-out fixture repairs; complete61Harness/159Flutter and same-cut formal-main simulator debug build accepted. No G2 or production sign."
+    },
+    {
+      "id": "RE07M",
+      "role": "independent-map-adapter-review",
+      "status": "accepted",
+      "owner_agent_id": "/root/requirements_review",
+      "base_sha": "b358e4a78a8d952b2767704e8c15fa2aac8e1e9a",
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/runs/implementation/E07-map-adapter-review.md"
+      ],
+      "resource_leases": [],
+      "started_at": "2026-10-10T16:17:08.577483+00:00",
+      "depends_on": [
+        "E06"
+      ],
+      "candidate_task": "E07",
+      "result_path": "harness/runs/implementation/E07-map-adapter-review.md",
+      "returned_at": "2026-10-10T16:27:28.201072+00:00",
+      "review_result": "Combined independent other-author source/evidence review plus root/data peer review of formal/held-out fixture repairs; complete61Harness/159Flutter and same-cut formal-main simulator debug build accepted. No G2 or production sign.",
+      "accepted_at": "2026-10-10T16:44:28.120589+00:00",
+      "accepted_candidate": "66832ac3bd04527639bcc69ab5831b50df70bfc600c658109b3785bfbb847609",
+      "quality_report": "harness/runs/20261010T163831230608Z-quality/report.json",
+      "build_report": "harness/runs/20261010T163936905230Z-build/report.json"
+    },
+    {
+      "id": "IX02D",
+      "role": "native-private-bridge-and-external-driver",
+      "status": "accepted",
+      "owner_agent_id": "/root/query_development",
+      "base_sha": "deb89793dc203ad4da29cc3679121aa7bce5d0bb",
+      "contract_revision": 5,
+      "started_at": "2026-10-10T16:46:17.925393+00:00",
+      "depends_on": [
+        "E07"
+      ],
+      "candidate_task": "X02",
+      "write_scope": [
+        "app/integration_test/workbench_entry.dart",
+        "app/integration_test/workbench_driver.dart",
+        "app/integration_test/support/native_workbench_bridge.dart",
+        "app/integration_test/support/native_driver_support.dart",
+        "harness/runs/implementation/X02-dart.md"
+      ],
+      "resource_leases": [],
+      "result_path": "harness/runs/implementation/X02-dart.md",
+      "skills": [
+        "flutter-native-acceptance",
+        "engineering-flutter-testing"
+      ],
+      "returned_at": "2026-10-10T17:00:59.116648+00:00",
+      "review_result": "Independent actualG1 89Harness159Flutter pluscontrolled iOS threeOSprocesssmokes demo2/0/0 andlocal-client2/2/2; 136rawartifacts and16SQLitebackups verified. Toolingscopeonly notG2.",
+      "mechanical_return_fix": "Original author returned source scope. Root added required braces to private-entry null guard only after independent static finding; formatter parsed; fresh entry hash pending unified quality, original author report preserved.",
+      "repair_reason": "172217 actualOSlog: currentPID/flutterprefixVMpublication plus privateDartbootstrap missingENV. Immutableprelaunch taskcontainerfile replaces assumedenv; disjointPython/Dart repair, noformalproductchanges.",
+      "source_frozen": true,
+      "reason": "Paired exactUTF8 POST framing and bounded rawerror receipt repair frozen; fresh quality/native next.",
+      "accepted_at": "2026-10-10T18:01:49.384208+00:00",
+      "accepted_source_fingerprint": "e888779d6b48c5a3aecd002b20f0a21362134594fbb19680562bd535a7cc769b",
+      "review": "harness/runs/implementation/X02-independent-review.md",
+      "evidence": [
+        "harness/runs/20261010T175151779951Z-quality/report.json",
+        "harness/runs/20261010T175309967471Z-native/report.json",
+        "harness/runs/20261010T175539527417Z-native/report.json"
+      ]
+    },
+    {
+      "id": "PX02R",
+      "role": "independent-native-tool-boundary-and-acceptance-preparation",
+      "status": "accepted",
+      "owner_agent_id": "/root/requirements_review",
+      "base_sha": "deb89793dc203ad4da29cc3679121aa7bce5d0bb",
+      "contract_revision": 5,
+      "started_at": "2026-10-10T16:47:32.355110+00:00",
+      "candidate_task": "X02",
+      "write_scope": [
+        "harness/runs/implementation/X02-independent-review.md",
+        "harness/runs/implementation/E08-plan.md"
+      ],
+      "resource_leases": [],
+      "note": "Read-only draft source review, no acceptance until frozen source quality and actual native smoke.",
+      "returned_at": "2026-10-10T17:04:39.996230+00:00",
+      "result_path": "harness/runs/implementation/X02-independent-review.md",
+      "review_result": "Independent actualG1 89Harness159Flutter pluscontrolled iOS threeOSprocesssmokes demo2/0/0 andlocal-client2/2/2; 136rawartifacts and16SQLitebackups verified. Toolingscopeonly notG2.",
+      "accepted_at": "2026-10-10T18:01:49.384208+00:00",
+      "accepted_source_fingerprint": "e888779d6b48c5a3aecd002b20f0a21362134594fbb19680562bd535a7cc769b",
+      "source_frozen": true,
+      "review": "harness/runs/implementation/X02-independent-review.md",
+      "evidence": [
+        "harness/runs/20261010T175151779951Z-quality/report.json",
+        "harness/runs/20261010T175309967471Z-native/report.json",
+        "harness/runs/20261010T175539527417Z-native/report.json"
+      ]
+    },
+    {
+      "id": "PX03P",
+      "role": "local-evidence-gate-preparation",
+      "status": "accepted",
+      "owner_agent_id": "/root/data_development",
+      "base_sha": "deb89793dc203ad4da29cc3679121aa7bce5d0bb",
+      "contract_revision": 5,
+      "started_at": "2026-10-10T17:00:59.116648+00:00",
+      "candidate_task": "X03",
+      "write_scope": [
+        "harness/runs/implementation/X03-plan.md"
+      ],
+      "resource_leases": [],
+      "note": "Historical bounded preparation/repair closed by current full independent functional/gate/recovery acceptance; original returned artifacts preserved; no historical runtime result relabeled.",
+      "returned_at": "2026-10-10T17:15:13.385289+00:00",
+      "result_path": "harness/runs/implementation/X03-plan.md",
+      "review_result": "Local-evidence gate preparation returned; no implementation/test/acceptance until X02 accepted.",
+      "historical_preparation_status": "review",
+      "accepted_at": "2026-10-11T02:51:43.510921+00:00",
+      "accepted_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "current_covering_evidence": [
+        "harness/runs/implementation/E08-independent-381730f-full34-reviewer-metadata.json",
+        "harness/runs/implementation/E08-independent-381730f-actual-localgate-010.json",
+        "harness/runs/implementation/E08-381730-matrix-actual/report.json"
+      ]
+    },
+    {
+      "id": "PX04P",
+      "role": "recovery-and-held-out-evaluation-preparation",
+      "status": "accepted",
+      "owner_agent_id": "/root/query_development",
+      "base_sha": "deb89793dc203ad4da29cc3679121aa7bce5d0bb",
+      "contract_revision": 5,
+      "candidate_task": "X04",
+      "write_scope": [
+        "harness/runs/implementation/X04-plan.md"
+      ],
+      "resource_leases": [],
+      "returned_at": "2026-10-10T17:23:19.258157+00:00",
+      "result_path": "harness/runs/implementation/X04-plan.md",
+      "note": "Historical bounded preparation/repair closed by current full independent functional/gate/recovery acceptance; original returned artifacts preserved; no historical runtime result relabeled.",
+      "historical_preparation_status": "review",
+      "accepted_at": "2026-10-11T02:51:43.510921+00:00",
+      "accepted_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "current_covering_evidence": [
+        "harness/runs/implementation/E08-independent-381730f-full34-reviewer-metadata.json",
+        "harness/runs/implementation/E08-independent-381730f-actual-localgate-010.json",
+        "harness/runs/implementation/E08-381730-matrix-actual/report.json"
+      ]
+    },
+    {
+      "id": "IE08H",
+      "role": "native-acceptance-host-capabilities",
+      "candidate_task": "E08",
+      "status": "accepted",
+      "owner_agent_id": "/root/harness_review",
+      "base_sha": "6a70a94eab758731bfd1468a384247bbfae48a83",
+      "started_at": "2026-10-10T18:03:39.398623+00:00",
+      "depends_on": [
+        "X02"
+      ],
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/native.py",
+        "harness/native_workbench.py",
+        "harness/tests/test_native.py",
+        "harness/tests/test_native_workbench.py",
+        "harness/runs/implementation/E08-host.md"
+      ],
+      "resource_leases": [],
+      "note": "Historical bounded preparation/repair closed by current full independent functional/gate/recovery acceptance; original returned artifacts preserved; no historical runtime result relabeled.",
+      "source_frozen": true,
+      "returned_at": "2026-10-10T19:22:09.550330+00:00",
+      "result_path": "harness/runs/implementation/E08-host.md",
+      "repair_reason": "Actual184820startupVMpublicationmissedlive logstream; strict taskcurrentPID persistedOSlogfallback without broadURIacceptance",
+      "failed_report": "harness/runs/20261010T184820743712Z-native/report.json",
+      "source_fingerprint": "45151988e0c042ec45de02797ffda4c1a56924910af13884f07f416a61228d73",
+      "native_protocol_revision": 6,
+      "historical_preparation_status": "review",
+      "accepted_at": "2026-10-11T02:51:43.510921+00:00",
+      "accepted_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "current_covering_evidence": [
+        "harness/runs/implementation/E08-independent-381730f-full34-reviewer-metadata.json",
+        "harness/runs/implementation/E08-independent-381730f-actual-localgate-010.json",
+        "harness/runs/implementation/E08-381730-matrix-actual/report.json"
+      ]
+    },
+    {
+      "id": "PX03R",
+      "role": "independent-gate-source-review",
+      "candidate_task": "X03",
+      "status": "accepted",
+      "owner_agent_id": "/root/query_development",
+      "base_sha": "6a70a94eab758731bfd1468a384247bbfae48a83",
+      "contract_revision": 5,
+      "write_scope": [
+        "harness/runs/implementation/X03-preliminary-review.md"
+      ],
+      "resource_leases": [],
+      "depends_on": [
+        "X02",
+        "X01"
+      ],
+      "started_at": "2026-10-10T18:25:13.699524+00:00",
+      "note": "Historical bounded preparation/repair closed by current full independent functional/gate/recovery acceptance; original returned artifacts preserved; no historical runtime result relabeled.",
+      "returned_at": "2026-10-10T18:33:17.093588+00:00",
+      "result_path": "harness/runs/implementation/X03-preliminary-review.md",
+      "historical_preparation_status": "review",
+      "accepted_at": "2026-10-11T02:51:43.510921+00:00",
+      "accepted_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "current_covering_evidence": [
+        "harness/runs/implementation/E08-independent-381730f-full34-reviewer-metadata.json",
+        "harness/runs/implementation/E08-independent-381730f-actual-localgate-010.json",
+        "harness/runs/implementation/E08-381730-matrix-actual/report.json"
+      ]
+    },
+    {
+      "id": "RE08A",
+      "role": "native-large-text-visual-repair",
+      "status": "accepted",
+      "owner_agent_id": "/root/requirements_review",
+      "candidate_task": "E08",
+      "contract_revision": 5,
+      "depends_on": [
+        "E07",
+        "X02"
+      ],
+      "write_scope": [
+        "app/lib/ui/delivery_screen.dart",
+        "app/lib/ui/delivery/detail/delivery_detail_card.dart",
+        "harness/runs/implementation/E08-large-text-repair.md"
+      ],
+      "resource_leases": [],
+      "started_at": "2026-10-10T18:53:38.967631+00:00",
+      "failed_report": "harness/runs/20261010T184820743712Z-native/report.json",
+      "note": "Historical bounded preparation/repair closed by current full independent functional/gate/recovery acceptance; original returned artifacts preserved; no historical runtime result relabeled.",
+      "source_frozen": true,
+      "returned_at": "2026-10-10T19:12:17.131419+00:00",
+      "result_path": "harness/runs/implementation/E08-large-text-repair.md",
+      "native_protocol_revision": 6,
+      "historical_preparation_status": "review",
+      "accepted_at": "2026-10-11T02:51:43.510921+00:00",
+      "accepted_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "current_covering_evidence": [
+        "harness/runs/implementation/E08-independent-381730f-full34-reviewer-metadata.json",
+        "harness/runs/implementation/E08-independent-381730f-actual-localgate-010.json",
+        "harness/runs/implementation/E08-381730-matrix-actual/report.json"
+      ]
+    },
+    {
+      "id": "RE08I",
+      "role": "independent-full-native-evidence-acceptance",
+      "owner_agent_id": "/root/e08_acceptance_review",
+      "status": "accepted",
+      "contract_revision": 5,
+      "depends_on": [
+        "E07",
+        "X02"
+      ],
+      "candidate_task": "E08",
+      "write_scope": [
+        "harness/runs/implementation/E08-independent-acceptance.md",
+        "harness/runs/implementation/verify_E08_ignored_scripts"
+      ],
+      "resource_leases": [],
+      "started_at": "2026-10-10T18:58:54.894325+00:00",
+      "note": "Actual full current 34-check semantic G2, G1, aggregate and real gates accepted by this nonauthor; no product/driver/gate/packager authorship.",
+      "result_path": "harness/runs/implementation/E08-independent-acceptance.md",
+      "native_protocol_revision": 6,
+      "current_frozen_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "current_source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+      "quality_current": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+      "ci_current": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38102904327",
+      "current_executor": "/root",
+      "current_observed_at": "2026-10-11T02:11:43.914698+00:00",
+      "historical_preparation_status": "running",
+      "accepted_at": "2026-10-11T02:51:43.510921+00:00",
+      "accepted_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "current_covering_evidence": [
+        "harness/runs/implementation/E08-independent-381730f-full34-reviewer-metadata.json",
+        "harness/runs/implementation/E08-independent-381730f-actual-localgate-010.json",
+        "harness/runs/implementation/E08-381730-matrix-actual/report.json"
+      ]
+    },
+    {
+      "id": "RE08G",
+      "role": "native-observation-geometry-repair",
+      "candidate_task": "E08",
+      "status": "accepted",
+      "owner_agent_id": "/root/query_development",
+      "base_sha": "02608127fd2cd42286d7eb4e6d4b357b8a3ac394",
+      "contract_revision": 5,
+      "write_scope": [
+        "app/integration_test/support/native_workbench_bridge.dart",
+        "app/test/native_observation_geometry_test.dart",
+        "harness/runs/implementation/native-geometry-repair.md"
+      ],
+      "resource_leases": [],
+      "source_frozen": true,
+      "returned_at": "2026-10-10T19:12:17.131419+00:00",
+      "note": "Historical bounded preparation/repair closed by current full independent functional/gate/recovery acceptance; original returned artifacts preserved; no historical runtime result relabeled.",
+      "native_protocol_revision": 6,
+      "historical_preparation_status": "review",
+      "accepted_at": "2026-10-11T02:51:43.510921+00:00",
+      "accepted_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "current_covering_evidence": [
+        "harness/runs/implementation/E08-independent-381730f-full34-reviewer-metadata.json",
+        "harness/runs/implementation/E08-independent-381730f-actual-localgate-010.json",
+        "harness/runs/implementation/E08-381730-matrix-actual/report.json"
+      ]
     }
   ],
-  "resource_leases": "all run leases released; task-created simulator deleted; clean workspace deleted",
+  "resource_leases": [],
   "events": [
     {
       "task": "N01",
@@ -118,14 +1898,605 @@
     {
       "task": "root",
       "event": "same candidate quality,clean-source build and3native processes passed; production gate expectedno-go"
+    },
+    {
+      "task": "P00",
+      "event": "Independent issue reviews accepted after fixes; publishing 19 sub-issues, preserving production no-go",
+      "at": "2026-10-10T12:44:24.915861+00:00"
+    },
+    {
+      "task": "P00",
+      "event": "Accepted parent/sub-issue drafts, remote hierarchy/dependencies/body hashes, and same-candidate Harness quality; full product tasks remain unimplemented",
+      "at": "2026-10-10T12:50:00.474989+00:00"
+    },
+    {
+      "task": "E00",
+      "event": "Independent freeze review and exact-candidate quality accepted",
+      "at": "2026-10-10T13:19:27.731143+00:00"
+    },
+    {
+      "task": "E01",
+      "event": "Independent code review, exact-candidate quality and formal main simulator build accepted",
+      "at": "2026-10-10T13:25:30.406429+00:00"
+    },
+    {
+      "task": "E06/E11",
+      "event": "Stablecut repository/tooling/sdk/pub/format/analyze passed. Seven actual map marker overflow failures; real SQLite widget stalled. Root terminated own Harness job, logs retained and lease released; source owners repairing with independent review. No passed quality claimed.",
+      "at": "2026-10-10T14:23:00.618567+00:00"
+    },
+    {
+      "task": "E06/E11",
+      "event": "Fresh isolated quality142809 completed139pass3failed, clone/origin fp79bc equal. Previous marker overflow and SQLite stall repaired. Remaining two test lifecycle failures and keyboard complete-button bounds require retest; no accepted claimed.",
+      "at": "2026-10-10T14:31:02.133457+00:00"
+    },
+    {
+      "task": "E05/E06/E11",
+      "event": "Independent G1 accepted after preserved failure/repair cycle: 44 Harness and142 Flutter; all seven stage raw hashes independently verified; exact origin/execution identity and lease cleanup. Native/full integration pending.",
+      "at": "2026-10-10T14:35:38.072019+00:00"
+    },
+    {
+      "task": "E04",
+      "event": "Fresh isolated quality 44 Harness/145 Flutter passed,1 held-out fixture key failure. Root dispatched test-only repair; no product fault hidden or pass claimed.",
+      "at": "2026-10-10T14:50:45.663760+00:00"
+    },
+    {
+      "task": "E04",
+      "event": "Independent component risk G1 accepted: 44 Harness/146 Flutter, preserved single fixture failure, exact candidate and seven stage hashes; no G2 claimed",
+      "at": "2026-10-10T14:54:17.567109+00:00"
+    },
+    {
+      "task": "X01",
+      "event": "Source-frozen first quality rejected at tooling stage for macOS symlink root normalization. Logs retained, resources released, source owner repairing without laterbuild or passedclaim.",
+      "at": "2026-10-10T15:07:02.219423+00:00"
+    },
+    {
+      "task": "X01",
+      "event": "G1 trace graph/Issue/Skill/source/tests joins accepted; preserved root alias failure and explicit symlink regression; actual CLI negative rejectsX99. Full UI and current delivery gate remainpending.",
+      "at": "2026-10-10T15:12:44.921104+00:00"
+    },
+    {
+      "task": "E07",
+      "at": "2026-10-10T16:31:21.819887+00:00",
+      "event": "Map12 positive/regression/stock characterization passed. Full quality timedout180s at +150 pre-mount held-out focus fixture; raw report retained, source cut equal, lease/clone cleanup. No full G1 accepted."
+    },
+    {
+      "task": "E07",
+      "at": "2026-10-10T16:44:28.120589+00:00",
+      "event": "Independent frozen source/raw evidence accepted:61Harness/159Flutter and formal-main simulator debug build, exact66832 source identity,84appfiles verified, realleasesreleased/isolatedcopiescleaned. Preserved fault/repair history; X02 unlocked; full G2 pending."
+    },
+    {
+      "task": "X02",
+      "at": "2026-10-10T17:07:25.792027+00:00",
+      "event": "Fresh f720 quality repositorypassed;78Harness2fixture setup failures. Native notrun. Source author repair after job lease/clone cleanup; raw 170656 retained."
+    },
+    {
+      "task": "X02",
+      "at": "2026-10-10T17:13:27.885601+00:00",
+      "event": "cfb718 freshquality78/159passed independently, privatebuildpassed, tasknativeVMURI45sdeadlinefailed; device_cleaned true/sourceunchanged/lease+clonecleaned. Unifiedlogcapture repair delegated; originalraw retained."
+    },
+    {
+      "task": "X02",
+      "at": "2026-10-10T17:25:57.927204+00:00",
+      "event": "22be quality81/159passed; privatebuildpassed; actualunifiedlog+OSfailurePNG pinpointed missingDartlaunchconfig andexact flutter: VMprefix. Nativefailed83.714s; own devicecleaned/logreaderreaped/lease+clonecleaned. Originalrawretained; paired producerconsumerrepair delegated."
+    },
+    {
+      "task": "X02",
+      "event": "Actual173605 demo VM PID97790 and twoUI SQLite saves succeeded; capturePOST fixed-length framing failed. All14rawartifacts hashed, ownUDIDdeleted, lease released17:38:26.296188+00:00; repair producers, preserve strictcollector."
+    },
+    {
+      "task": "X02",
+      "event": "Actual174439 cold map failure: 3 taskloopback TCP resets,9PNG200; initialized30/nativeSQLite fine. report3e52b403a7d0b5052ce38b2312e6a78d162977e3d51f4c5ee1fdfe7e58c23205 preserved, owncleanuptrue. Hostcapacityinvestigation, noUIpredicateweakening."
+    },
+    {
+      "task": "X02",
+      "event": "Independent accepted e888779:89Harness/159Flutter plusdemo3PID2/0/0 andlocal3PID2/2/2; rawhash/SQLite/ownedcleanupverified. NoG2signature."
+    },
+    {
+      "task": "E08/X03",
+      "at": "2026-10-10T18:45:44.661830+00:00",
+      "event": "Preserved184458 failed tooling122tests,1 expectation FAIL+1 missing fixture parent ERROR. Correct rejection itself intact; owners repair tests only after resource cleanup."
+    },
+    {
+      "task": "E08/X03",
+      "event": "184614 qualityrejected at Dartanalyze3info lint;122Harnesspassed. Lint-onlyownedrepair, no behavior waiver; retainedraw."
+    },
+    {
+      "task": "E08/X03",
+      "event": "Freshquality184739pass122Harness159Flutter; exact3c0224cut. Root starts17e/maxtext/reducedmotion N7initialprobe beforeX04/finalmatrix."
+    },
+    {
+      "task": "X03",
+      "at": "2026-10-10T19:06:26.968515+00:00",
+      "event": "Independent strictgateimplementationaccepted130Harness/159Flutter+99heldout; realemptydiagnosticscontextrepaired. FullG2/localallowednotclaimed. X04unlocked."
+    },
+    {
+      "task": "X04/E08",
+      "at": "2026-10-10T19:23:08.109446+00:00",
+      "event": "Preserved192209 fail141Harness1fixture; actualnewattempt terminalfailed/exit1/reaped/0group/hashedlog/clone+leasereleased proves no stale runningstage. Host minimalfixture repair, no product change/native launched."
+    },
+    {
+      "task": "X04/E08",
+      "at": "2026-10-10T19:25:01.397144+00:00",
+      "event": "Samecurrent2ddea isolatedquality141Harness161Flutter all7 passed with actualcompletion/hash/reap/lease/cloneverified. MaximumOSN7 started192420 beforefinalmatrix; nofullG2claim."
+    },
+    {
+      "task": "E08",
+      "at": "2026-10-10T19:31:05.501461+00:00",
+      "event": "Preserved192420N7 geometrypassed/rawkeyboardnotrun/OSflagfalse. SDK+officialsource proveiosreduceMotionseparateflag; protocol6 correctsobservation, source product/bridge/driver/gate ownersassigned, full34 unchanged."
+    },
+    {
+      "task": "E08/X03/X04",
+      "at": "2026-10-10T19:57:32.553674+00:00",
+      "event": "Current d633 G1 146Harness169Flutter accepted independently; strict motion negatives2positive32reject; X04 realOS21+cleanup16 currentcut pass. Root N7 immutable host TLS retry000002."
+    },
+    {
+      "task": "E08",
+      "at": "2026-10-10T20:23:26.914878+00:00",
+      "event": "ActualBrowse clipping + viewportcoherence race and regressionRenderFlex preserved; finalInter/adaptiveheader/stablecapture source currentc3e G1passed146Harness176Flutter; maxN7 actualVM rerun"
+    },
+    {
+      "task": "X04",
+      "at": "2026-10-10T20:28:57.059340+00:00",
+      "event": "Remote Linux CI raw: actualNoissues analyzer exit0 but groupalive; strictHarnessblocked. Retainedall6raw anddelegateowned-groupboundedcleanup."
+    },
+    {
+      "task": "E08/X04",
+      "at": "2026-10-10T21:29:58.967323+00:00",
+      "event": "e851 max N7 actual 3-process PASS; root raw terminal, source identity, actual lease/group/clone and task UDID absence verified. Actual held-request TERM/replay controller launched; full G2 remains pending."
+    },
+    {
+      "task": "E08",
+      "at": "2026-10-10T22:46:35.603316+00:00",
+      "event": "N4 occluded-first-cluster actual failure retained; independent bounded driver selection and format trailing-comma review passed. Fresh candidate0e73; old58 evidence historical."
+    },
+    {
+      "task": "E08",
+      "at": "2026-10-10T22:50:45.811327+00:00",
+      "event": "Current0e73 targetedN4 actualfailure preserved at reference-nearest; sharedAll nearest correctly completedTV2. Root terminalraw/PG/kernel/lease/clone/taskUDIDabsence proven; Req assigned driver UI setup only and E08 independent review."
+    },
+    {
+      "task": "E08/X03",
+      "at": "2026-10-10T22:57:38.984012+00:00",
+      "event": "Actualf25 deep-list failure preserved; TV24 is Allsecond/Pendingnearest. CorrectfarPendingfixture identity only, originaldeep>400/gesturebounds/modal/focus/SQL predicates unchanged; independent review assigned."
+    },
+    {
+      "task": "E08/X03",
+      "at": "2026-10-10T23:04:26.878476+00:00",
+      "event": "Actual1fcf12gestures stoppedbeforeTV29; all originalraw retained. ActuallastsnapshotTV23rank25 Pending/fullrect/truehit at3435px provides groundedreachabledeepfixture. Literalidentityrepaironly; budgetsunchanged."
+    },
+    {
+      "task": "E08",
+      "at": "2026-10-10T23:11:00.579909+00:00",
+      "event": "Actualsamefba6N4 all5/3PIDs passed; rootstrictleaf/hash/SQL/kernel/lease/clone/taskUDIDabsence validated. Independentraw review pending; samecutlate-riskN6fault starts beforeN3/fullmatrix."
+    },
+    {
+      "task": "E08/X03",
+      "at": "2026-10-10T23:21:19.502032+00:00",
+      "event": "Actualfba6N5UI/3processjobPASS; authoritativeassertion correctlyrejects expectedinteger11 vsactualdouble11.0. Fixdriverexpectedtypeonly; originalgate/physicalzoom/allpredicates retained, oldpassedjob+strictrejection immutable."
+    },
+    {
+      "task": "E10",
+      "at": "2026-10-11T02:51:43.510921+00:00",
+      "event": "Actual bounded archive1038271039B and sourceHEAD069 ZIP30359888B generated terminal0; nonauthor integrity review pending; no source changes or production acceptance."
+    },
+    {
+      "task": "E10",
+      "at": "2026-10-11T02:59:18.750923+00:00",
+      "event": "Actual nonauthor archive stream/hash/CRC/sourceZIP17Runner/originals audit accepted; root localhandoff decision accepted. Actual Issues27-30 closed and16C3O/parent14OPEN API readback. Final metadata CI follows separate commit identity; production no-go."
     }
   ],
-  "status": "Historical accepted reliability baseline; current tasks are assigned here when engineering resumes.",
+  "status": "Full current local Flutter/Harness handoff accepted;16localIssues CLOSED,3external OPEN;production no-go",
   "accepted_candidate": {
-    "source_head": "8e9a7cca9c4360ca07d86e8aa8d196caf88c8c42",
-    "source_fingerprint": "89fa4461c961cc287f10665314c9e418da69bcddc721398f12e6c559683c1b25",
-    "working_tree_changes": true
+    "source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+    "source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+    "scope": "G0/current G1/full local G2/local G4/actual gates/formal builds/narrow startup/bounded local archive;production no-go",
+    "counted_source_inputs": 260
   },
-  "runtime_observation": "All three assigned agents completed; verified with collaboration.list_agents after reviews",
-  "evidence_archive": "harness/archive/2026-10-10-engineering.tar.gz"
+  "runtime_observation": {
+    "observed_at": "2026-10-11T02:51:43.510921+00:00",
+    "active_run": null,
+    "source_writers": [],
+    "note": "All SDK controllers terminal; only excluded metadata/archive/remote closure work remains."
+  },
+  "evidence_archive": "harness/runs/E10/381730-local-handoff/index.json",
+  "next_task": "Verify this final metadata commit exactHEAD CI/remote status in independent excluded record; then externalE09/X05/E12 remain.",
+  "issue_planning_validation": {
+    "status": "passed",
+    "candidate": {
+      "source_fingerprint": "b5050d4731905258653e434db66e2d2bb80db4232ebc03ebde3a373199f68f78"
+    },
+    "github_parent": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/14",
+    "children": 19,
+    "dependency_edges": 31,
+    "archive": "harness/reports/issue-planning-2026-10-10.tar.gz",
+    "archive_sha256": "a27a8b9cde7f8d5658741721c02287fb5d01b2910800f9c748dc9d0176c2b6df",
+    "quality_report_member": "quality-verified/report.json",
+    "native_rerun": false,
+    "production_eligible": false
+  },
+  "updated_at": "2026-10-11T07:28:48.610653+00:00",
+  "native_protocol_revision": 6,
+  "source_writers": [],
+  "active_execution": {
+    "candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+    "status": "All SDK jobs terminal; local archive nonauthor verification",
+    "source_writers": [],
+    "sole_sdk_executor": "/root"
+  },
+  "current_source_fingerprint": "9ca3cc8caf2d0a1eb46570153b38205a3bb1f831266e00551f4c0ea07719f69d",
+  "runtime_execution": {
+    "executor": "/root",
+    "active_controller": null,
+    "background_cli_only": true,
+    "source_frozen": true,
+    "SDK_serialized_by_OS_lease": true,
+    "session": null,
+    "last_terminal_controller": "E10-381730-formal-main-actual",
+    "terminal_exit": 0
+  },
+  "agent_runtime_observation": {
+    "captured_at": "2026-10-11T02:59:18.750923+00:00",
+    "source": "Actual collaboration.list_agents immediately preceding final metadata update",
+    "agents": [
+      {
+        "name": "/root",
+        "status": "running"
+      },
+      {
+        "name": "/root/e08_acceptance_review",
+        "status": "completed semantic report review"
+      },
+      {
+        "name": "/root/query_development",
+        "status": "completed nonauthor archive review"
+      },
+      {
+        "name": "/root/requirements_review",
+        "status": "completed future exactHEAD readback preparation"
+      }
+    ],
+    "source_writers": [],
+    "future_readback_dispatch": "requirements_review will only read APIs/CI when supplied actual newHEAD/run; no source/SDK writer"
+  },
+  "source_frozen": true,
+  "candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+  "active_sdk_controller": null,
+  "root_execution_checkpoint": {
+    "updated_at": "2026-10-11T02:59:18.750923+00:00",
+    "candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+    "source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+    "source_snapshot": "harness/runs/implementation/final-cut-platform-terminal.json",
+    "state": "local_handoff_accepted-final_excluded_metadata_commit",
+    "sdk_active": false,
+    "sdk_session": null,
+    "matrix": "harness/runs/implementation/E08-381730-matrix-actual/report.json",
+    "matrix_plan": "harness/runs/implementation/E08-platform-terminal-execution-plan.json",
+    "matrix_controller": "harness/runs/implementation/run_e08_matrix_platform_terminal.py",
+    "quality_report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+    "quality_root_audit": "harness/runs/implementation/G1-381730-root-terminal-audit/report.json",
+    "n3_actual_controller": "harness/runs/implementation/N3-381730-cancel-replay-actual/report.json",
+    "n3_root_audit": "harness/runs/implementation/N3-381730-root-collection-audit/report.json",
+    "completed_native_jobs": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "active_native_jobs": [],
+    "ci_run": 38102904327,
+    "completed_scopes": [
+      "actual current G1 161/Macskip1+177",
+      "actual LinuxCI161zeroSkip+177",
+      "41 scoped mechanical evaluations independently accepted",
+      "actual currentN3cancel/freshreplay independently accepted"
+    ],
+    "remaining_order": [
+      "finalmetadata commit/push",
+      "PRready/parent currentstatus",
+      "actual exactnewHEAD CI and independent API/raw readback"
+    ],
+    "production_eligible": false,
+    "prior_progress_snapshot": "harness/runs/implementation/current381730-board-progress-0213/work.json",
+    "matrix_sha256": "3accae0282a70291206ec6c9a3838b446919ace2473bbe6ef4858422b18d3246",
+    "formal_controller": "harness/runs/implementation/run_e10_formal_current381.py",
+    "formal_report": "harness/runs/implementation/E10-381730-formal-main-actual/report.json",
+    "full34_metadata": "harness/runs/implementation/E08-independent-381730f-full34-reviewer-metadata.json",
+    "full_G2_aggregate_verdict": "harness/runs/implementation/E08-independent-381730f-full-aggregate-verdict.json",
+    "actual_local_gate_010": "harness/runs/implementation/E08-independent-381730f-actual-localgate-010.json",
+    "actual_production_refusal": "harness/runs/implementation/E08-independent-381730f-actual-production-refusal.json",
+    "actual_formal_artifact_review": "harness/runs/implementation/E10-381730-artifact-observation/four-formal-jobs-observation.json",
+    "actual_config": "harness/runs/implementation/E10-381730-config-actual/config.json",
+    "archive_index": "harness/runs/E10/381730-local-handoff/index.json",
+    "archive_independent_review": "harness/runs/implementation/E10-381730-archive-nonauthor-review/archive-mechanical-observation.json",
+    "local_issue_closed_count": 16,
+    "external_issue_open_count": 3
+  },
+  "latest_observation_history_before_delivery": {
+    "status": "Matrix stopped at actual occluded first-cluster driver locator; bounded repair assigned",
+    "accepted_candidate": {
+      "source_head": "6a70a94eab758731bfd1468a384247bbfae48a83",
+      "source_fingerprint": "e888779d6b48c5a3aecd002b20f0a21362134594fbb19680562bd535a7cc769b",
+      "scope": "G1 and both iOS nativeworkbench toolingsmokes",
+      "working_tree_changes": true
+    },
+    "runtime_observation": {
+      "observed_at": "2026-10-11T00:40:12.021952+00:00",
+      "active_run": null,
+      "source_writers": [
+        {
+          "agent": "/root/requirements_review",
+          "scope": [
+            "app/integration_test/acceptance_driver.dart sharedN4/N7modalClose helper"
+          ],
+          "reason": "Both actual failure originals show preservedlist/detail, transient outgoingmodal renderboxes"
+        }
+      ],
+      "note": "All actual failed N4 cleanup proven before sole bounded source repair; prior5873 results remain their originalcut"
+    },
+    "evidence_archive": "harness/archive/2026-10-10-engineering.tar.gz",
+    "next_task": "Complete current12matrix and independent34G2, actual3attempt gate tamper, formalmain handoff",
+    "active_execution": {
+      "candidate": "0926af0ab41179cc59948826b0739b847f57e5675df96b9e86603bcd41d5d9ee",
+      "status": "Onecameraexpecteddoubleliteral frozen; standardG1",
+      "source_writers": [],
+      "sole_sdk_executor": "/root",
+      "helper_sha256": "16a434d5cddecb6b8f212f6801bf36a065c00ab8a2cd3b6727f73fed74cc242c",
+      "previous_native_failure": "harness/runs/20261010T205314408077Z-native/attempts/000001/report.json",
+      "failure_reason": "cached offstage bounds mistaken for actionable row; no actual primary scroll occurred; strict failure retained",
+      "driver_sha256": "105c7da66b82a1a85bf5c9778c0ed8ef9783bd2c9a2fd0936eb033f46d23ed77",
+      "gate_sha256": "0c710c6d714ce42c6e47aec72a54b51d613475220196459e00b08790f91d8264"
+    },
+    "runtime_execution": {
+      "executor": "/root",
+      "active_controller": null,
+      "background_cli_only": true,
+      "source_frozen": false,
+      "SDK_serialized_by_OS_lease": true,
+      "session": null,
+      "last_terminal_controller": "E08-5873fe-matrix-actual",
+      "terminal_exit": 1
+    },
+    "agent_runtime_observation": {
+      "captured_at": "2026-10-11T00:10:26.081416+00:00",
+      "source": "Actual collaboration.list_agents immediately preceding this capture",
+      "agents": [
+        {
+          "name": "/root",
+          "status": "running"
+        },
+        {
+          "name": "/root/e08_acceptance_review",
+          "status": "running"
+        },
+        {
+          "name": "/root/query_development",
+          "status": "completed-preparation"
+        },
+        {
+          "name": "/root/requirements_review",
+          "status": "running"
+        }
+      ],
+      "source_writers": [
+        {
+          "agent": "/root/requirements_review",
+          "scope": [
+            "app/integration_test/acceptance_driver.dart N7.platform-back"
+          ],
+          "reason": "Actual opening/dismissal geometry race; preserve all assertions"
+        }
+      ]
+    }
+  },
+  "active_repair": {
+    "id": "prototype-feedback-20261011",
+    "base_sha": "68dcbabec7460e0ce2724b176b24213641158b8b",
+    "previous_accepted_candidate": {
+      "source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+      "source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "scope": "G0/current G1/full local G2/local G4/actual gates/formal builds/narrow startup/bounded local archive;production no-go",
+      "counted_source_inputs": 260
+    },
+    "status": "accepted",
+    "reason": "User simulator review: single-column tools, pinch zoom, explicit status camera fit, Browse list fidelity",
+    "started_at": "2026-10-11T06:59:02.412740+00:00",
+    "tasks": [
+      {
+        "id": "map-interactions",
+        "owner": "/root",
+        "status": "accepted_targeted_scope",
+        "requirements": [
+          "R07",
+          "R08",
+          "R13",
+          "R14"
+        ],
+        "write_scope": [
+          "app/lib/ui/delivery/map/delivery_map_workspace.dart",
+          "app/lib/ui/delivery_screen.dart",
+          "app/test/map/delivery_map_workspace_test.dart",
+          "harness/project/contracts.md"
+        ],
+        "source_frozen": true
+      },
+      {
+        "id": "browse-fidelity",
+        "owner": "/root/query_development",
+        "status": "accepted_targeted_scope",
+        "requirements": [
+          "R08",
+          "R10",
+          "R14"
+        ],
+        "write_scope": [
+          "app/lib/ui/delivery/list",
+          "app/test/list/stop_list_workspace_test.dart"
+        ],
+        "result": "harness/runs/repair-20261011-prototype/browse-development.md",
+        "source_frozen": true
+      },
+      {
+        "id": "prototype-contract-review",
+        "owner": "/root/requirements_review",
+        "status": "accepted_targeted_scope",
+        "write_scope": [
+          "harness/runs/repair-20261011-prototype/requirements-review.md"
+        ],
+        "source_frozen": true
+      },
+      {
+        "id": "independent-regressions",
+        "owner": "/root/e08_acceptance_review",
+        "status": "accepted_targeted_scope",
+        "write_scope": [
+          "app/test/review/prototype_map_interactions_test.dart"
+        ],
+        "result": "harness/runs/repair-20261011-prototype/independent-test-review.md",
+        "source_frozen": true
+      }
+    ],
+    "native_preview_device": "D2B958C6-486D-4C17-A0CE-A8135717F3A6",
+    "sdk_execution": "Only root after all source authors freeze; preserve old evidence and preview business data",
+    "source_frozen": true,
+    "candidate": {
+      "source_head": "a6d473d2b9b91126d4d689dddfc4b9b8ee19e48f",
+      "source_fingerprint": "fcc573639cd8ba9fe4cf4a9951636cc5f8fbd1e94c8bc248f6906f2f27d9fff5",
+      "counted_inputs": 261,
+      "all_counted_inputs_match_source_commit": true
+    },
+    "issue_numbers": [
+      22,
+      19
+    ],
+    "focused_host_report": "harness/runs/20261011T072605267388Z-test/attempts/000001/report.json",
+    "test_fixture_repair": "Approved SVGs must complete before first RiskWorkbenchHost mount; original 5s deadline and failure assertions unchanged.",
+    "fixture_repair_focused_report": "harness/runs/20261011T073402606757Z-test/attempts/000001/report.json",
+    "driver_lazy_query_repair": "Observe actual IconButton.isSelected from readonly bridge; no toggling from offscreen search absence; preserve bounded real scroll.",
+    "quality_report": "harness/runs/20261011T075012562118Z-quality/attempts/000001/report.json",
+    "quality_status": "passed",
+    "raw_native_failures": [
+      "harness/runs/20261011T074459493063Z-native/attempts/000001/report.json"
+    ],
+    "driver_direction_repair": "Use actual search / scroll / heading bounds for +/-160 real drag; original 12/15 budget and centerHit preserved.",
+    "native_reports": [
+      "harness/runs/20261011T075729932356Z-native/attempts/000001/report.json",
+      "harness/runs/20261011T075134499170Z-native/attempts/000001/report.json"
+    ],
+    "native_review": {
+      "path": "harness/runs/repair-20261011-prototype/final-native-independent-review.json",
+      "sha256": "2be2e2b9e0c3af3a697598f22c8148f54116f3d789dcc5acd6578c06d320cc45"
+    },
+    "formal_build": {
+      "path": "harness/runs/20261011T080102059864Z-build/attempts/000001/report.json",
+      "sha256": "73477a6ea33a676680279808502d4b7b9a980204d0bfab8119bed44db8375884",
+      "artifact_manifest": {
+        "path": "harness/runs/20261011T080102059864Z-build/attempts/000001/artifact-ios-build/manifest.json",
+        "sha256": "007e3e549cc5eba8862972be654857df51683ef9be6e0e887b8edf243b7ea5d9"
+      },
+      "archive_sha256": "e94671cebc94ef02ab1feea15c775f90066c8a3550a965d627d0a305e8bbd2b2",
+      "files_verified": 84,
+      "entrypoint": "lib/main.dart",
+      "signed_for_production": false
+    },
+    "installed_preview": {
+      "path": "harness/runs/repair-20261011-prototype/preview/preview.json",
+      "sha256": "14b68f4d2401d84296b847fed91991baa557d2af03bcc83cfb0c719979168308",
+      "udid": "D2B958C6-486D-4C17-A0CE-A8135717F3A6",
+      "pid": 25842,
+      "business_data_equal": true,
+      "stops": 30,
+      "outbox": 0,
+      "screenshot": {
+        "path": "harness/runs/repair-20261011-prototype/preview/initialized-preview.png",
+        "sha256": "d3b3d92dc0b32a2566e25b447831420bae8cd16727659831e4f5b618680071f1"
+      },
+      "public_tiles_initialized": true
+    },
+    "handoff_report": "harness/reports/prototype-feedback-2026-10-11.json",
+    "full34_on_current_candidate": false,
+    "production_eligible": false
+  },
+  "final_pr_review": {
+    "status": "accepted_local_final_review",
+    "PR": 34,
+    "merge_authorized": true,
+    "production_publish_authorized": false,
+    "base_sha": "3e0300848fcded055abcc47448c06a165d0472d6",
+    "previous_head": "3233a2e0f99bde286fe1faa710e9f3955d1da628",
+    "started_at": "2026-10-11T08:41:28.893613+00:00",
+    "request": "Add trailing Browse stops arrow; review entire PR; merge into main if clean",
+    "owners": {
+      "arrow_change": "/root",
+      "UI_model_and_tests": "/root/pr34_ui_review",
+      "data_sync_viewmodel_and_tests": "/root/pr34_data_review",
+      "Harness_native_skills": "/root/pr34_harness_review",
+      "bootstrap_dependencies_docs_assets_and_integration": "/root",
+      "map_toolbar_fix": "/root/pr34_ui_review",
+      "compact_fit_fix": "/root",
+      "gate_fix": "/root/pr34_harness_review",
+      "fix_independent_acceptance": "/root/pr34_data_review"
+    },
+    "source_writers": [
+      "/root",
+      "/root/pr34_ui_review",
+      "/root/pr34_harness_review"
+    ],
+    "SDK_executor": "/root",
+    "review_scope": "Entire156-file PR against origin/main, not arrow-only",
+    "evidence_root": "harness/runs/pr34-final-review",
+    "red_regression": {
+      "report": "harness/runs/20261011T085040509646Z-test/attempts/000001/report.json",
+      "source_fingerprint": "79711386e2d9b3b9e7ec6e3266b2aa6883c017b53995d5c21c9b05f314278ed7",
+      "result": "three expected failures: clipped Sync on200/240px maps and matching marker clipped on844x390 formal landscape"
+    },
+    "quality": {
+      "path": "harness/runs/20261011T085246150851Z-quality/attempts/000001/report.json",
+      "sha256": "d646e5f4df5ffc49df5a2433c303b2a8d7395f18b56e116056ba6c2e7bfc5368"
+    },
+    "candidate": {
+      "source_head": "cae7fca40760e67567c3e29d39b9b295ffa002e5",
+      "source_fingerprint": "9ca3cc8caf2d0a1eb46570153b38205a3bb1f831266e00551f4c0ea07719f69d",
+      "counted_inputs": 261,
+      "all_counted_inputs_match_source_commit": true,
+      "binding": {
+        "path": "harness/runs/pr34-final-review/source-commit-binding.json",
+        "sha256": "ff410070a1ee877e792555a57e8aa3c4e96d948267c6cd58fd073961574581be"
+      }
+    },
+    "source_writers_frozen": true,
+    "findings": [
+      {
+        "id": "UI-01",
+        "priority": "P2",
+        "status": "fixed_independent_accepted"
+      },
+      {
+        "id": "HREV-1",
+        "priority": "P2",
+        "status": "fixed_independent_accepted"
+      },
+      {
+        "id": "HREV-2",
+        "priority": "P2",
+        "status": "fixed_independent_accepted"
+      }
+    ],
+    "independent_native_review": {
+      "path": "harness/runs/pr34-final-review/final-native-independent-review.json",
+      "sha256": "e9a6900ed7a2b4f1e66e4c7f2e9d4387f800d6af6c46311054c06a2aa149d3c4"
+    },
+    "formal_artifact_review": {
+      "path": "harness/runs/pr34-final-review/formal-artifact-independent.json",
+      "sha256": "39e29a87a0823a9440be8f9c50973735fa5cd9b9de34041e4cd5ccf20f86e7fc"
+    },
+    "handoff_report": "harness/reports/pr34-final-review.json"
+  }
 }

@@ -5,7 +5,12 @@ abstract interface class DeliveryRepository {
 
   Future<List<Stop>> loadStops();
 
-  Future<void> submit(String stopId, DeliveryStatus status, {String? reason});
+  Future<void> submit(
+    String stopId,
+    DeliveryStatus status, {
+    String? reason,
+    String? note,
+  });
 
   Future<List<PendingUpdate>> pendingUpdates();
 

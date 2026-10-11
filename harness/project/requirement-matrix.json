@@ -1,0 +1,1171 @@
+{
+  "schema_version": 1,
+  "contract_revision": 5,
+  "requirements": [
+    {
+      "id": "R01",
+      "sources": [
+        "docs/assignment/deliveries.csv",
+        "docs/solution-design.md",
+        "harness/project/contracts.md"
+      ],
+      "tasks": [
+        "E00",
+        "E02",
+        "E04",
+        "X01",
+        "E07",
+        "E08",
+        "E10",
+        "E12"
+      ],
+      "tests": [
+        {
+          "task": "E02",
+          "path": "app/test/data/sqlite_delivery_repository_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "imports the real source, preserving missing historical reasons",
+            "import SQLite write failure rolls back the entire batch",
+            "file reopen retains all stable identities, snapshots and sequence"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E02",
+          "path": "app/test/data/delivery_migration_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "real v1 file migrates preserving results, identity, queue and sequence",
+            "time window is not inferred on mismatched ${mismatch.key}",
+            "v1 $failure failure rolls back version and schema, then retries"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/confirmation_mode_combinations_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "demo confirmation cannot alter a separate local-client file or its retry identity"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "formal factory uses first-mount local tiles, typed origins and isolated default modes",
+            "formal cold App remount resets transients while restoring offline file state and actual gesture viewport"
+          ],
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        {
+          "task": "E08",
+          "level": "G2",
+          "reason": "设备真实旧v1容器升级与终止重开保留：E08/X02，宿主文件重开不代签。"
+        }
+      ]
+    },
+    {
+      "id": "R02",
+      "sources": [
+        "docs/solution-design.md",
+        "prototype/assets/app.js"
+      ],
+      "tasks": [
+        "E00",
+        "E02",
+        "E11",
+        "E04",
+        "X01",
+        "E07",
+        "E08"
+      ],
+      "tests": [
+        {
+          "task": "E02",
+          "path": "app/test/data/sqlite_delivery_repository_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "duplicate and terminal submissions reject without another result",
+            "concurrent terminal attempts commit only one result and outbox"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E11",
+          "path": "app/test/detail/delivery_detail_card_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "complete commits once, remains terminal detail and disables in-flight close"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/workbench_fault_combinations_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "filtered real list retains Other draft after rollback, then returns with truthful global queue",
+            "tile failure and cache-clear failure preserve actual saved result and restored viewport"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "formal automatic enqueue joins one drain and durable pause holds the next immutable event until reconnect",
+            "formal App keeps committed read-only failure facts across card remount until actual Reload succeeds"
+          ],
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        {
+          "task": "E08",
+          "level": "G2",
+          "reason": "E07正式工作台真实点按与系统恢复：E08。"
+        }
+      ]
+    },
+    {
+      "id": "R03",
+      "sources": [
+        "prototype/index.html",
+        "prototype/assets/app.js",
+        "harness/project/mission.md"
+      ],
+      "tasks": [
+        "E00",
+        "E02",
+        "E11",
+        "E04",
+        "E07",
+        "E08"
+      ],
+      "tests": [
+        {
+          "task": "E11",
+          "path": "app/test/detail/delivery_failure_sheet_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "reason choice and trimmed Other explanation are required"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E11",
+          "path": "app/test/detail/delivery_detail_card_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "imported failure stays read-only and does not invent reason or time"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E02",
+          "path": "app/test/data/delivery_result_snapshot_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "blank note is absent and completed result discards failure fields"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/workbench_fault_combinations_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "filtered real list retains Other draft after rollback, then returns with truthful global queue"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "formal App keeps committed read-only failure facts across card remount until actual Reload succeeds"
+          ],
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        {
+          "task": "E08",
+          "level": "G2",
+          "reason": "E08原生输入/IME/取消与不可达原因状态。"
+        }
+      ]
+    },
+    {
+      "id": "R04",
+      "sources": [
+        "docs/solution-design.md",
+        "prototype/direct-sync-design.md"
+      ],
+      "tasks": [
+        "E00",
+        "E02",
+        "E11",
+        "E04",
+        "X01",
+        "E07",
+        "E08"
+      ],
+      "tests": [
+        {
+          "task": "E02",
+          "path": "app/test/data/sqlite_delivery_repository_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "outbox insert failure rolls back the preceding terminal update"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E02",
+          "path": "app/test/data/delivery_result_snapshot_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "result and immutable outbox snapshot preserve trimmed note and UTC time"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E11",
+          "path": "app/test/detail/delivery_failure_sheet_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "real outbox failure keeps selection and draft, retry commits only one result"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/workbench_fault_combinations_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "filtered real list retains Other draft after rollback, then returns with truthful global queue",
+            "tile failure and cache-clear failure preserve actual saved result and restored viewport"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/confirmation_mode_combinations_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "held matching ack plus SQL rollback never reports confirmation and survives reopen before retry"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "settings save failure retains persisted Online flag and permits retry",
+            "formal automatic enqueue joins one drain and durable pause holds the next immutable event until reconnect",
+            "formal cold App remount resets transients while restoring offline file state and actual gesture viewport"
+          ],
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        {
+          "task": "E08",
+          "level": "G2",
+          "reason": "E07 Saved Toast的正式集成和原生故障展示仍未实现验收。"
+        }
+      ]
+    },
+    {
+      "id": "R05",
+      "sources": [
+        "docs/solution-design.md",
+        "harness/project/contracts.md"
+      ],
+      "tasks": [
+        "E00",
+        "E02",
+        "E05",
+        "E04",
+        "X01",
+        "E07",
+        "E08"
+      ],
+      "tests": [
+        {
+          "task": "E02",
+          "path": "app/test/data/sqlite_delivery_repository_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "ack rejects any wrong identity and repeated ack changes nothing"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E02",
+          "path": "app/test/data/delivery_result_snapshot_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "only matching committed ack exposes UTC confirmation, once"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E05",
+          "path": "app/test/sync/sync_wakeup_timeout_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "progress cannot count a transport response before the ack commits",
+            "confirmation rollback reports zero persisted progress"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/confirmation_mode_combinations_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "demo confirmation cannot alter a separate local-client file or its retry identity",
+            "held matching ack plus SQL rollback never reports confirmation and survives reopen before retry"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "formal direct sync notice preserves camera focus and detail",
+            "formal automatic enqueue joins one drain and durable pause holds the next immutable event until reconnect",
+            "formal App keeps committed read-only failure facts across card remount until actual Reload succeeds"
+          ],
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        {
+          "task": "E08",
+          "level": "G2",
+          "reason": "原生受控demo确认仅模拟；真实backend幂等不在当前范围。"
+        }
+      ]
+    },
+    {
+      "id": "R06",
+      "sources": [
+        "docs/solution-design.md",
+        "harness/project/contracts.md"
+      ],
+      "tasks": [
+        "E00",
+        "E05",
+        "E04",
+        "E07",
+        "E08"
+      ],
+      "tests": [
+        {
+          "task": "E05",
+          "path": "app/test/sync/sync_coordinator_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "repeated triggers join one strictly serial loop",
+            "pause finishes an in-flight ack and leaves the next item for resume",
+            "wrong ack cannot confirm another item and retries the original ID"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E05",
+          "path": "app/test/sync/sync_wakeup_timeout_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "a never completing send times out and ignores its late ack",
+            "a request during an empty snapshot causes another queue read",
+            "finished observer can start a new run without old cleanup clearing it"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/confirmation_mode_combinations_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "demo confirmation cannot alter a separate local-client file or its retry identity",
+            "held matching ack plus SQL rollback never reports confirmation and survives reopen before retry"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "formal factory uses first-mount local tiles, typed origins and isolated default modes",
+            "settings save failure retains persisted Online flag and permits retry",
+            "formal direct sync notice preserves camera focus and detail",
+            "formal automatic enqueue joins one drain and durable pause holds the next immutable event until reconnect",
+            "formal cold App remount resets transients while restoring offline file state and actual gesture viewport"
+          ],
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        {
+          "task": "E08",
+          "level": "G2",
+          "reason": "E07 online/manual/enqueue每次必须送达sync；设备真实scope关闭/停止场景E08。"
+        }
+      ]
+    },
+    {
+      "id": "R07",
+      "sources": [
+        "prototype/map-design.md",
+        "prototype/assets/map.js"
+      ],
+      "tasks": [
+        "E00",
+        "E06",
+        "E04",
+        "E07",
+        "E08"
+      ],
+      "tests": [
+        {
+          "task": "E06",
+          "path": "app/test/map/delivery_map_workspace_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "real map uses original coordinates and shared query membership",
+            "mixed cluster conveys member count/status and tap expands to original stop",
+            "explicit focus uses updated detail padding and overlay leaves footer visible",
+            "cached return, latest rapid focus and detach remain ready (${reducedMotion ? 'reduced motion' : 'normal motion'})"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/workbench_fault_combinations_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "tile failure and cache-clear failure preserve actual saved result and restored viewport"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "formal factory uses first-mount local tiles, typed origins and isolated default modes"
+          ],
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        {
+          "task": "E08",
+          "level": "G2",
+          "reason": "正式主屏与overlay位置、pointer行为原生图面E07/E08。"
+        }
+      ]
+    },
+    {
+      "id": "R08",
+      "sources": [
+        "prototype/index.html",
+        "docs/solution-design.md",
+        "harness/project/mission.md"
+      ],
+      "tasks": [
+        "E00",
+        "E03",
+        "E06",
+        "E04",
+        "E07",
+        "E08"
+      ],
+      "tests": [
+        {
+          "task": "E03",
+          "path": "app/test/query/workbench_query_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "search, status and Waiting intersect without changing global queue",
+            "Waiting is outbox membership, including terminal status"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E03",
+          "path": "app/test/list/stop_list_workspace_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "search and status intersect with Waiting and clear empty state",
+            "list shows identity, window, status and separate global queue count"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/workbench_fault_combinations_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "filtered real list retains Other draft after rollback, then returns with truthful global queue",
+            "tile failure and cache-clear failure preserve actual saved result and restored viewport"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "formal factory uses first-mount local tiles, typed origins and isolated default modes",
+            "formal cold App remount resets transients while restoring offline file state and actual gesture viewport"
+          ],
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        {
+          "task": "E08",
+          "level": "G2",
+          "reason": "E07地图/list/nearest正式同步共用result，E08验证；Waiting是架构扩展。"
+        }
+      ]
+    },
+    {
+      "id": "R09",
+      "sources": [
+        "prototype/assets/map-config.json",
+        "prototype/map-design.md"
+      ],
+      "tasks": [
+        "E00",
+        "E03",
+        "E06",
+        "E04",
+        "E07",
+        "E08"
+      ],
+      "tests": [
+        {
+          "task": "E03",
+          "path": "app/test/query/workbench_query_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "known Haversine distances use fixed reference without mutating stops",
+            "all matches sort by distance then reference, independent of input order"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E06",
+          "path": "app/test/map/delivery_map_workspace_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "reference heading stays anchored while footer label supports large text"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "formal factory uses first-mount local tiles, typed origins and isolated default modes"
+          ],
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        {
+          "task": "E08",
+          "level": "G2",
+          "reason": "E07最近项卡片消费与固定参考明示，E08原生Label/方向。"
+        }
+      ]
+    },
+    {
+      "id": "R10",
+      "sources": [
+        "prototype/origin-return-design.md",
+        "prototype/assets/app.js"
+      ],
+      "tasks": [
+        "E00",
+        "E03",
+        "E11",
+        "E04",
+        "E07",
+        "E08"
+      ],
+      "tests": [
+        {
+          "task": "E03",
+          "path": "app/test/query/workbench_view_model_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "list detail survives terminal save while Pending filter removes its row",
+            "explicit map and nearest origins return to map even from an open list"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E11",
+          "path": "app/test/detail/delivery_detail_card_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "form system back returns to detail, then detail back restores list"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E03",
+          "path": "app/test/review/e03_list_focus_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "system-style return restores lazy row focus without extra pumps",
+            "filtered return restores close focus without animation frames"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/workbench_fault_combinations_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "filtered real list retains Other draft after rollback, then returns with truthful global queue",
+            "tile failure and cache-clear failure preserve actual saved result and restored viewport"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "formal factory uses first-mount local tiles, typed origins and isolated default modes",
+            "formal direct sync notice preserves camera focus and detail",
+            "formal App keeps committed read-only failure facts across card remount until actual Reload succeeds"
+          ],
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        {
+          "task": "E08",
+          "level": "G2",
+          "reason": "正式main PopScope/真实OS back与焦点不可由test host代签，E07/E08。"
+        }
+      ]
+    },
+    {
+      "id": "R11",
+      "sources": [
+        "prototype/direct-sync-design.md",
+        "prototype/feedback-design.md"
+      ],
+      "tasks": [
+        "E00",
+        "E05",
+        "E04",
+        "E07",
+        "E08"
+      ],
+      "tests": [
+        {
+          "task": "E05",
+          "path": "app/test/sync/sync_wakeup_timeout_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "a failed second send retains the first persisted confirmation count"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/map/delivery_map_workspace_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "same dataset viewport restores once, result and sync updates retain camera"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "settings save failure retains persisted Online flag and permits retry",
+            "formal direct sync notice preserves camera focus and detail"
+          ],
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        {
+          "task": "E08",
+          "level": "G2",
+          "reason": "直接按钮/Toast/online持久恢复的正式集成尚待E07；G2全链E08。"
+        },
+        {
+          "task": "E07",
+          "level": "G1",
+          "reason": "Formal assembly/test source implemented; exact candidate quality/build acceptance pending. Source presence alone does not sign acceptance."
+        }
+      ]
+    },
+    {
+      "id": "R12",
+      "sources": [
+        "docs/solution-design.md",
+        "harness/project/mission.md"
+      ],
+      "tasks": [
+        "E00",
+        "E02",
+        "E05",
+        "E04",
+        "X02",
+        "E08"
+      ],
+      "tests": [
+        {
+          "task": "E02",
+          "path": "app/test/data/sqlite_delivery_repository_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "file reopen retains all stable identities, snapshots and sequence"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E02",
+          "path": "app/test/data/delivery_settings_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "online and dataset viewport survive reopen without overwriting each other"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/bootstrap/runtime_configuration_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "demo cannot use the existing local-client database container"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E05",
+          "path": "app/test/sync/sync_coordinator_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "default unavailable preserves the exact queue and releases the loop"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/confirmation_mode_combinations_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "demo confirmation cannot alter a separate local-client file or its retry identity",
+            "held matching ack plus SQL rollback never reports confirmation and survives reopen before retry"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "formal factory uses first-mount local tiles, typed origins and isolated default modes",
+            "formal cold App remount resets transients while restoring offline file state and actual gesture viewport"
+          ],
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        {
+          "task": "E08",
+          "level": "G2",
+          "reason": "宿主repo重开不是真OS termination；X00旧probe仅前提，E08/X02 full UI PID/SQLite/截图互证。"
+        }
+      ]
+    },
+    {
+      "id": "R13",
+      "sources": [
+        "docs/solution-design.md",
+        "prototype/map-design.md"
+      ],
+      "tasks": [
+        "E00",
+        "E02",
+        "E06",
+        "E04",
+        "E07",
+        "E08",
+        "E10",
+        "E12"
+      ],
+      "tests": [
+        {
+          "task": "E06",
+          "path": "app/test/map/delivery_map_workspace_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "real fixture tile failure leaves marker action available and Retry recovers",
+            "tile-only clear reloads fixture, preserves camera and query and rejoins calls",
+            "explicit focus uses updated detail padding and overlay leaves footer visible",
+            "cached return, latest rapid focus and detach remain ready (${reducedMotion ? 'reduced motion' : 'normal motion'})"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E06",
+          "path": "app/test/map/map_viewport_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "real built-in cache clear removes fm_cache and preserves sibling business file"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E02",
+          "path": "app/test/data/delivery_settings_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "invalid and different dataset viewports reject before replacing settings",
+            "settings update rollback preserves online and previous viewport"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/workbench_fault_combinations_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "tile failure and cache-clear failure preserve actual saved result and restored viewport"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "formal factory uses first-mount local tiles, typed origins and isolated default modes"
+          ],
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        {
+          "task": "E08",
+          "level": "G2",
+          "reason": "E08原生禁网/冷启/缓存缺失并保存和OS恢复；公共OSM不可做自动化依赖/商业offline承诺。"
+        }
+      ]
+    },
+    {
+      "id": "R14",
+      "sources": [
+        "prototype/assets/refined.css",
+        "prototype/assets/app-icon-design.md",
+        "harness/project/mission.md"
+      ],
+      "tasks": [
+        "E00",
+        "E01",
+        "E03",
+        "E11",
+        "E06",
+        "E04",
+        "E07",
+        "E08"
+      ],
+      "tests": [
+        {
+          "task": "E06",
+          "path": "app/test/map/delivery_map_workspace_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "reference heading stays anchored while footer label supports large text"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E03",
+          "path": "app/test/list/stop_list_workspace_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "390px layout remains scrollable at 2x text and keyboard-sized height"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E11",
+          "path": "app/test/detail/delivery_failure_sheet_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "390px and 2x text keep failure controls above keyboard without overflow"
+          ],
+          "evidence": []
+        },
+        {
+          "task": "E04",
+          "path": "app/test/reliability/formal_workbench_test.dart",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "formal factory uses first-mount local tiles, typed origins and isolated default modes",
+            "formal automatic enqueue joins one drain and durable pause holds the next immutable event until reconnect",
+            "formal cold App remount resets transients while restoring offline file state and actual gesture viewport"
+          ],
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        {
+          "task": "E08",
+          "level": "G2",
+          "reason": "widget metrics不等于OS keyboard/SafeArea/accessibility；E08设备旋转/键盘/缩放/动效图面。"
+        }
+      ]
+    },
+    {
+      "id": "R15",
+      "sources": [
+        "docs/solution-design.md",
+        "harness/project/contracts.md"
+      ],
+      "tasks": [
+        "E00",
+        "X02",
+        "E09",
+        "E12"
+      ],
+      "tests": [],
+      "gaps": [
+        {
+          "task": "X02",
+          "level": "G2",
+          "reason": "Actual debug trace interface not implemented; it cannot sign physical profile performance."
+        },
+        {
+          "task": "E09",
+          "level": "G3",
+          "reason": "Physical device, representative load and agreed performance budget unavailable; no simulator-to-physical substitution."
+        },
+        {
+          "task": "E12",
+          "level": "G3",
+          "reason": "Production performance prerequisites remain unfulfilled."
+        }
+      ]
+    },
+    {
+      "id": "R16",
+      "sources": [
+        "AGENTS.md",
+        "README.md",
+        "app/README.md",
+        "harness/README.md",
+        "harness/project/contracts.md"
+      ],
+      "tasks": [
+        "E00",
+        "E01",
+        "X00",
+        "X03",
+        "X05",
+        "E10",
+        "E12"
+      ],
+      "tests": [
+        {
+          "task": "X00",
+          "path": "harness/tests/test_runner.py",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "test_configured_build_and_integration_plan_are_explicit",
+            "test_invalid_paths_missing_device_and_simulator_modes_reject_before_execution",
+            "test_artifact_is_retained_with_file_and_archive_hashes"
+          ],
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        {
+          "task": "X03",
+          "level": "G1",
+          "reason": "Full local delivery evidence validator pending."
+        },
+        {
+          "task": "X05",
+          "level": "G5",
+          "reason": "Remote required-check/protection enforcement not verified; previous permission API returned403."
+        },
+        {
+          "task": "E10",
+          "level": "G4",
+          "reason": "Full same-candidate local demo/client artifacts and handoff archive pending."
+        },
+        {
+          "task": "E12",
+          "level": "G6",
+          "reason": "Backend/service/tiles authorization, signing/channel and explicit production publication prerequisites unavailable."
+        }
+      ]
+    },
+    {
+      "id": "R17",
+      "sources": [
+        "AGENTS.md",
+        "harness/README.md",
+        "harness/project/mission.md",
+        "harness/project/contracts.md"
+      ],
+      "tasks": [
+        "E00",
+        "X00",
+        "X01",
+        "E07",
+        "X02",
+        "X03",
+        "X05",
+        "X04",
+        "E10",
+        "E12"
+      ],
+      "tests": [
+        {
+          "task": "X00",
+          "path": "harness/tests/test_state.py",
+          "state": "implemented",
+          "level": "G1",
+          "cases": [
+            "test_real_process_kill_releases_lease_and_resume_rechecks_candidate",
+            "test_killed_parent_does_not_release_wrapper_inherited_lease",
+            "test_agent_complete_does_not_override_live_job"
+          ],
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        {
+          "task": "X01",
+          "level": "G1",
+          "reason": "Trace graph/Skill/matrix mechanical negative tests in implementation; no passed claim until root review."
+        },
+        {
+          "task": "X02",
+          "level": "G2",
+          "reason": "Full UI/process/trace interface pending; current narrow probe cannot sign full product."
+        },
+        {
+          "task": "X03",
+          "level": "G1",
+          "reason": "Full delivery manifest gate pending."
+        },
+        {
+          "task": "X04",
+          "level": "G1",
+          "reason": "Actual cancellation terminal-stage finalization, resume and held-out agent evaluations pending."
+        },
+        {
+          "task": "X05",
+          "level": "G5",
+          "reason": "Remote forced checks pending."
+        },
+        {
+          "task": "E10",
+          "level": "G4",
+          "reason": "Full local evidence archive pending."
+        },
+        {
+          "task": "E12",
+          "level": "G6",
+          "reason": "Production Harness H01-H08 requirements not met."
+        }
+      ]
+    }
+  ]
+}

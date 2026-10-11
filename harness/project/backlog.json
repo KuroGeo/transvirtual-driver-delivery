@@ -1,146 +1,445 @@
 {
   "schema_version": 1,
   "mode": "execute",
-  "contract_revision": 4,
-  "source_baseline": "8e9a7cc",
+  "contract_revision": 5,
+  "source_baseline": "3e0300848fcded055abcc47448c06a165d0472d6",
   "concurrency_limit": 4,
   "coordinator": "/root",
   "shared_file_owner": "coordinator",
-  "external_issue_publication": "not_authorized",
+  "external_issue_publication": "authorized_by_user_2026-10-10",
   "tasks": [
     {
       "id": "E00",
-      "title": "核验环境并冻结接口与运行配置",
+      "title": "冻结原型功能合同、共享接口与已有可靠性基线复用条件",
+      "kind": "engineering",
       "role": "requirements-and-coordinator",
-      "status": "planned",
-      "depends_on": [],
-      "requirements": [
-        "R01",
-        "R05",
-        "R15",
-        "R16",
-        "R17"
-      ],
-      "write_scope": [
-        "harness/project/mission.md",
-        "harness/project/contracts.md",
-        "harness/project/work.json"
-      ],
-      "done_when": "实际平台、SDK、接口责任和预算状态可追踪"
-    },
-    {
-      "id": "E01",
-      "title": "Flutter 最小原生启动和依赖锁定",
-      "role": "development",
-      "status": "planned",
-      "depends_on": [
-        "E00"
-      ],
-      "requirements": [
-        "R16"
-      ],
-      "write_scope": [
-        "app/pubspec.yaml",
-        "app/pubspec.lock",
-        "app/lib/app",
-        "app/android",
-        "app/ios"
-      ],
-      "done_when": "指定原生目标最小启动，记录实际 SDK/lock；启动负责人独占共享配置"
-    },
-    {
-      "id": "E02",
-      "title": "原子导入、终态提交与 SQLite outbox 恢复",
-      "role": "development-data",
-      "status": "planned",
-      "depends_on": [
-        "X00"
-      ],
       "requirements": [
         "R01",
         "R02",
         "R03",
         "R04",
-        "R05"
+        "R05",
+        "R06",
+        "R07",
+        "R08",
+        "R09",
+        "R10",
+        "R11",
+        "R12",
+        "R13",
+        "R14",
+        "R15",
+        "R16",
+        "R17"
       ],
+      "depends_on": [],
       "write_scope": [
-        "app/lib/models",
-        "app/lib/data/delivery",
-        "app/test/data"
+        "harness/project/mission.md",
+        "harness/project/contracts.md",
+        "harness/project/backlog.json",
+        "harness/project/work.json"
       ],
-      "done_when": "文件库重开、提交/确认故障、非法和重复提交通过，稳定身份与未确认结果保留"
+      "current": "main 已合入 SQLite/outbox 基线与 Harness；产品图仍是旧实施范围，地图/查询接口尚未冻结。历史 Issues #1–#10 以 not_planned 关闭，不是完整 Flutter 已交付。",
+      "target": "形成可派工的 revision=5 合同；复用 R01–R06 已有逻辑，仅补原型和架构要求的增量。iOS 为首个本地原生目标；Android 沿用工程但不预签验证。",
+      "acceptance": [
+        "逐条 R01–R17 关联源文件、子 Issue、最低证据和负责人；最新直接同步/按来源返回优先旧图面。",
+        "冻结 time_window、failureNote、运行配置/持久 online、查询结果、来源返回、视口回调与进度事件的行为和单一写入者，通知所有消费者。",
+        "记录数据/同步/地图/页面状态的独立性：demo 显式 fake；local-client 默认 unavailable；connected 不在本轮。",
+        "复核当前候选的原子提交、终态、身份与确认基线；定义最低设备/业务容量/性能预算的待决项，未测不标通过。"
+      ],
+      "skills": [
+        "engineering-requirements-extract",
+        "engineering-issue-authoring",
+        "agent-engineering-team"
+      ],
+      "commands": [
+        "python3 harness/run.py check",
+        "python3 harness/run.py quality"
+      ],
+      "verification_level": "G0 合同 + G1 当前候选基线，不证明 G2/G3",
+      "outputs": [
+        "revision=5 合同与所有权表",
+        "当前候选基线报告、复用/返工清单"
+      ],
+      "handoff": "主控接受合同后解锁 E01；变更接口必须通知 E02/E03/E05/E06/E11 并重验消费者。",
+      "blockers": [],
+      "status": "planned",
+      "done_when": "逐条 R01–R17 关联源文件、子 Issue、最低证据和负责人；最新直接同步/按来源返回优先旧图面。；冻结 time_window、failureNote、运行配置/持久 online、查询结果、来源返回、视口回调与进度事件的行为和单一写入者，通知所有消费者。；记录数据/同步/地图/页面状态的独立性：demo 显式 fake；local-client 默认 unavailable；connected 不在本轮。；复核当前候选的原子提交、终态、身份与确认基线；定义最低设备/业务容量/性能预算的待决项，未测不标通过。",
+      "github": {
+        "number": 15,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/15",
+        "issue_id": 5791322041,
+        "state": "open",
+        "body_sha256": "bf34333cbc6823050ef8bffb64bb9c35a755048186374229c5b0afbaea0e87c6",
+        "parent_number": 14,
+        "blocked_by_numbers": []
+      }
     },
     {
-      "id": "E03",
-      "title": "工作台状态、列表详情与失败表单",
-      "role": "development-ui",
+      "id": "E01",
+      "title": "装配 Flutter 品牌应用壳、地图依赖和显式运行配置入口",
+      "kind": "engineering",
+      "role": "development-bootstrap",
+      "requirements": [
+        "R14",
+        "R16"
+      ],
+      "depends_on": [
+        "E00"
+      ],
+      "write_scope": [
+        "app/pubspec.yaml",
+        "app/pubspec.lock",
+        "app/lib/main.dart",
+        "app/lib/app",
+        "app/lib/ui/core",
+        "app/assets",
+        "app/ios",
+        "app/android"
+      ],
+      "current": "已有最小列表入口、SDK/lock 和 iOS 工程；缺地图插件、原型品牌与显式 demo 启动。",
+      "target": "由唯一装配负责人锁定兼容地图/聚合依赖、打包现有橙色图标与字体、提供 Material 3 品牌应用壳及显式 demo/local-client 入口。",
+      "acceptance": [
+        "Flutter 3.44.2/Dart 3.12.2 与 lock 可复现；新增依赖实际解析，保留 SDK/插件版本和许可。",
+        "应用标题/橙色圆环箭头图标/鲜橙奶油白主题沿用原型；字体图标随包加载，不依赖运行时外部图标请求。",
+        "默认 local-client 注入 UnavailableTransport；只有明确 demo 配置可选择测试数据与 fake，界面能辨别运行模式。",
+        "应用壳支持 SafeArea/键盘/文字缩放/减少动效；本地初始化失败有可重试错误，不等待瓦片才显示业务入口。"
+      ],
+      "skills": [
+        "flutter-development",
+        "engineering-flutter-testing"
+      ],
+      "commands": [
+        "cd app && flutter pub get --enforce-lockfile",
+        "python3 harness/run.py quality",
+        "python3 harness/run.py build"
+      ],
+      "verification_level": "G1 host/widget + iOS simulator debug 构建；原生体验交 E08",
+      "outputs": [
+        "锁定依赖、主题/资源、配置启动命令",
+        "质量报告与正式入口构建日志"
+      ],
+      "handoff": "交 X00 复核执行入口；主题/导航/依赖锁由本任务唯一负责人写，其他开发只消费；完整装配由 E07 接收。",
+      "blockers": [],
       "status": "planned",
+      "done_when": "Flutter 3.44.2/Dart 3.12.2 与 lock 可复现；新增依赖实际解析，保留 SDK/插件版本和许可。；应用标题/橙色圆环箭头图标/鲜橙奶油白主题沿用原型；字体图标随包加载，不依赖运行时外部图标请求。；默认 local-client 注入 UnavailableTransport；只有明确 demo 配置可选择测试数据与 fake，界面能辨别运行模式。；应用壳支持 SafeArea/键盘/文字缩放/减少动效；本地初始化失败有可重试错误，不等待瓦片才显示业务入口。",
+      "github": {
+        "number": 16,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/16",
+        "issue_id": 5791322492,
+        "state": "open",
+        "body_sha256": "269a8f08918cdf753b9bda9639e642427a8b1d21ce555ff2f4ee7bc3ae727395",
+        "parent_number": 14,
+        "blocked_by_numbers": [
+          15
+        ]
+      }
+    },
+    {
+      "id": "X00",
+      "title": "扩展 Harness 的完整产品配置执行入口并复验隔离环境",
+      "kind": "engineering",
+      "role": "harness-engineering",
+      "requirements": [
+        "R16",
+        "R17"
+      ],
+      "depends_on": [
+        "E01"
+      ],
+      "write_scope": [
+        "harness/run.py",
+        "harness/native.py",
+        "harness/tests/test_native.py",
+        "harness/tests/test_state.py",
+        "app/.fvmrc"
+      ],
+      "current": "quality/check/test/build/native 已有；build/native 固定 iOS debug/probe，test --target 仅接受 app/test，完整产品配置/native integration 未纳入统一入口。",
+      "target": "复用 SDK、lease、日志和候选指纹机制，补本轮必需的显式配置与原生执行入口；不造第二套调度平台。",
+      "acceptance": [
+        "干净隔离工作区按 lock 启动正式产品，demo/local-client 配置和 asset/schema 来源可观察；命令参数在 --help 中实际存在。",
+        "若新增 app/integration_test 或配置入口，Runner 能正确执行并记录其候选/退出码；现有 app/test 窄测试及 quality 不回退。",
+        "构建/安装/进程操作经过同一 workspace/device lease；取消释放子进程与资源，只清理任务自己创建的设备和数据。",
+        "本轮默认后台 CLI；不可用的 UI 控制/真机环境记录为明确缺口，不自动激活用户模拟器/窗口。"
+      ],
+      "skills": [
+        "harness-engineering",
+        "engineering-flutter-testing"
+      ],
+      "commands": [
+        "python3 harness/run.py preflight",
+        "python3 harness/run.py check",
+        "python3 harness/run.py quality",
+        "python3 harness/run.py build"
+      ],
+      "verification_level": "H02/H07 工具实跑；debug 构建不代签原生/性能",
+      "outputs": [
+        "实际支持的配置/目标命令与帮助",
+        "干净环境启动、资源冲突/取消日志"
+      ],
+      "handoff": "E02/E03 从此入口迭代；X02 扩展完整 UI 驱动；接口调整通知主控，禁止各 Agent 绕 lease 直调 native.py。",
+      "blockers": [],
+      "status": "planned",
+      "done_when": "干净隔离工作区按 lock 启动正式产品，demo/local-client 配置和 asset/schema 来源可观察；命令参数在 --help 中实际存在。；若新增 app/integration_test 或配置入口，Runner 能正确执行并记录其候选/退出码；现有 app/test 窄测试及 quality 不回退。；构建/安装/进程操作经过同一 workspace/device lease；取消释放子进程与资源，只清理任务自己创建的设备和数据。；本轮默认后台 CLI；不可用的 UI 控制/真机环境记录为明确缺口，不自动激活用户模拟器/窗口。",
+      "github": {
+        "number": 17,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/17",
+        "issue_id": 5791322933,
+        "state": "open",
+        "body_sha256": "05cffba2ec527ce16a767a2a516c8011460a19fc4126ce18aea23331920350aa",
+        "parent_number": 14,
+        "blocked_by_numbers": [
+          16
+        ]
+      }
+    },
+    {
+      "id": "E02",
+      "title": "以增量迁移补齐时间窗、失败备注和持久会话设置",
+      "kind": "feature",
+      "role": "development-data",
+      "requirements": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "R05",
+        "R12",
+        "R13"
+      ],
       "depends_on": [
         "X00"
       ],
+      "write_scope": [
+        "app/lib/models",
+        "app/lib/data/delivery/delivery_repository.dart",
+        "app/lib/data/delivery/sqlite_delivery_repository.dart",
+        "app/lib/data/services",
+        "app/test/data",
+        "app/test/ui/fake_delivery_repository.dart",
+        "app/test/ui/delivery_view_model_lifecycle_test.dart",
+        "app/lib/data/delivery/delivery_settings_store.dart"
+      ],
+      "current": "已有 schema v1、事务 outbox、稳定 operationId 和确认逻辑；Stop/importer 未保留 CSV time_window，缺失败备注、持久 online/视口设置和升级路径。",
+      "target": "在保留现有事务合同的前提下补字段和 settings；既有安装通过增量升级保留所有配送结果与未确认身份。",
+      "acceptance": [
+        "首导入全量校验七列并保存 time_window，30 站 24/3/3；源 failed 的原因/备注缺失显示事实，不补造。",
+        "失败选择预设原因时保存 trim 后 reason + 可选 note；Other 的 trim 非空说明作为 reason，不重复生成第二份说明；结果/备注与 outbox 在同一事务。",
+        "新结果发生时间在提交时落盘并进入不可变快照，必要的确认时间只在匹配 ack 事务后可读；重试不重写原发生时间，初始/历史缺失时间不编造。",
+        "携带未确认记录的真实 v1 文件库升级后 datasetId/stopId/operationId/seq/原因/队列不变，不清库重导；历史缺失字段按合同补齐或标未提供，不改终态。",
+        "demo online 设置与 datasetId/中心/缩放按冻结合同落盘，失败不宣告切换成功；设置写失败不影响配送事务；无效/不同批次视口可回退。",
+        "提交/确认失败整体回滚、双击与终态拒改、错配/重复 ack、文件库重开仍通过原行为回归。"
+      ],
+      "skills": [
+        "flutter-development",
+        "engineering-flutter-testing"
+      ],
+      "commands": [
+        "python3 harness/run.py test --target test/data",
+        "python3 harness/run.py quality"
+      ],
+      "verification_level": "G1 host 文件 SQLite/迁移/故障；G4-local 部分，G2 由 E08",
+      "outputs": [
+        "增量 schema/模型/Repository 契约实现",
+        "旧库迁移及故障回归日志"
+      ],
+      "handoff": "交 E03/E05/E06/E11 消费冻结接口，E04 独立审查，E08 在产品真实进程重开复核。只本任务写 schema/模型；同步负责人写协调器。",
+      "blockers": [],
+      "status": "planned",
+      "done_when": "首导入全量校验七列并保存 time_window，30 站 24/3/3；源 failed 的原因/备注缺失显示事实，不补造。；失败选择预设原因时保存 trim 后 reason + 可选 note；Other 的 trim 非空说明作为 reason，不重复生成第二份说明；结果/备注与 outbox 在同一事务。；新结果发生时间在提交时落盘并进入不可变快照，必要的确认时间只在匹配 ack 事务后可读；重试不重写原发生时间，初始/历史缺失时间不编造。；携带未确认记录的真实 v1 文件库升级后 datasetId/stopId/operationId/seq/原因/队列不变，不清库重导；历史缺失字段按合同补齐或标未提供，不改终态。；demo online 设置与 datasetId/中心/缩放按冻结合同落盘，失败不宣告切换成功；设置写失败不影响配送事务；无效/不同批次视口可回退。；提交/确认失败整体回滚、双击与终态拒改、错配/重复 ack、文件库重开仍通过原行为回归。",
+      "github": {
+        "number": 18,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/18",
+        "issue_id": 5791323327,
+        "state": "open",
+        "body_sha256": "36b72d5c193a3aa3718e88e7805ce45924fe9f1a82e7574221467cc37618f2f3",
+        "parent_number": 14,
+        "blocked_by_numbers": [
+          17
+        ]
+      }
+    },
+    {
+      "id": "E03",
+      "title": "实现共享查询结果、最近站点和可恢复的配送列表",
+      "kind": "feature",
+      "role": "development-query-list",
       "requirements": [
-        "R03",
         "R08",
         "R09",
         "R10",
         "R14"
       ],
-      "write_scope": [
-        "app/lib/ui",
-        "app/test/widget_test.dart"
-      ],
-      "done_when": "冻结 Repository 替身验证查询/返回/保存反馈，真实接线在 E07"
-    },
-    {
-      "id": "E04",
-      "title": "独立故障回归和测试配置",
-      "role": "testing",
-      "status": "planned",
       "depends_on": [
         "X00"
       ],
-      "requirements": [
-        "R01",
-        "R02",
-        "R04",
-        "R05",
-        "R06",
-        "R12"
-      ],
       "write_scope": [
-        "app/test/reliability",
-        "app/test/support"
+        "app/lib/ui/delivery_view_model.dart",
+        "app/lib/ui/delivery/query",
+        "app/lib/ui/delivery/list",
+        "app/test/query",
+        "app/test/list"
       ],
-      "done_when": "正常/失败/恢复断言齐全，不与开发者测试文件重叠；实际实现执行在 E07"
+      "current": "现有 ViewModel 仅全量 stops/queue，列表没有搜索、状态/Waiting 筛选、距离排序与最近项派生结果。",
+      "target": "地图/列表/最近项消费同一查询快照；保留列表会话上下文并提供类型化来源给详情。Waiting only 来源为架构扩展，当前原型没有该控件。",
+      "acceptance": [
+        "搜索编号/客户/地址不区分大小写；状态和 Waiting only 与搜索取交集；全局 outbox 数和当前匹配数明确区分。",
+        "固定参考位置取现有 map-config（-33.9004,151.139），标为测试参考；Haversine 直线距离排序，等距以 reference 稳定打破平局；不改原坐标、不显示 ETA。",
+        "列表展示编号/客户/地址/状态及可用 time_window；状态颜色/符号/文字一致；零匹配隐藏最近项并显示可恢复的空态。",
+        "距离/排序只随数据或查询条件变化计算；所有匹配结果参与列表/最近项，不用地图可见范围截断业务查询。",
+        "搜索/筛选/滚动/行焦点在当前会话保留；冷启进入地图、All、关闭 Waiting、空搜索，地图视口按 E02/E06 恢复。"
+      ],
+      "skills": [
+        "flutter-development",
+        "engineering-flutter-testing"
+      ],
+      "commands": [
+        "python3 harness/run.py test --target test/widget_test.dart",
+        "python3 harness/run.py quality"
+      ],
+      "verification_level": "G1 unit/widget 查询与列表；G2 地图联动由 E08",
+      "outputs": [
+        "共享查询结果和列表会话状态",
+        "计划新增 test/query 与 test/list 的行为测试，创建后用 --target 执行"
+      ],
+      "handoff": "地图 E06 只读查询结果，详情 E11 接收来源和列表上下文；首次冻结字段由 E00，后续共享 ViewModel 变更主控串行协调。",
+      "blockers": [],
+      "status": "planned",
+      "done_when": "搜索编号/客户/地址不区分大小写；状态和 Waiting only 与搜索取交集；全局 outbox 数和当前匹配数明确区分。；固定参考位置取现有 map-config（-33.9004,151.139），标为测试参考；Haversine 直线距离排序，等距以 reference 稳定打破平局；不改原坐标、不显示 ETA。；列表展示编号/客户/地址/状态及可用 time_window；状态颜色/符号/文字一致；零匹配隐藏最近项并显示可恢复的空态。；距离/排序只随数据或查询条件变化计算；所有匹配结果参与列表/最近项，不用地图可见范围截断业务查询。；搜索/筛选/滚动/行焦点在当前会话保留；冷启进入地图、All、关闭 Waiting、空搜索，地图视口按 E02/E06 恢复。",
+      "github": {
+        "number": 19,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/19",
+        "issue_id": 5791323877,
+        "state": "open",
+        "body_sha256": "cecd40757b56915b38e2482027d60aabfd38c9f2e445ee94e5c12da485199faf",
+        "parent_number": 14,
+        "blocked_by_numbers": [
+          17
+        ]
+      }
     },
     {
       "id": "E05",
-      "title": "串行同步、稳定身份和配置真实表达",
+      "title": "补齐 demo 连通性、串行同步与故障后的确定重试",
+      "kind": "feature",
       "role": "development-sync",
-      "status": "planned",
-      "depends_on": [
-        "E02"
-      ],
       "requirements": [
         "R05",
         "R06",
         "R11",
         "R12"
       ],
+      "depends_on": [
+        "E02"
+      ],
       "write_scope": [
         "app/lib/data/delivery/sync_coordinator.dart",
+        "app/lib/data/services/demo_transport.dart",
         "app/test/sync"
       ],
-      "done_when": "fake/unavailable 区分，错配/确认写失败保留，重复触发只有一个循环"
+      "current": "已有 seq 串行协调器、pause/错 ack/确认故障回归；fake 只在 probe/test 使用，缺产品 demo 开关、恢复/自动唤醒和超时配置。",
+      "target": "显式 demo 用受控 fake 实现原型离线积累/重连同步；local-client 维持等待服务；新增队列和退出窗口不漏处理。",
+      "acceptance": [
+        "demo offline 不启动新发送，保存多项后队列保留；重开恢复 offline 不提前清空；online 切换成功后按 seq 单循环发送。",
+        "保存时 online、手动重试、重复重连/双击、发送期间新增项和查空退出窗口均不会产生第二消费者或漏唤醒。",
+        "真实永不完成的 transport Future 在约定期限内超时释放，能以原 operationId 重试；迟到完成不错误确认其他事件。发送失败/错 ack/本地确认失败保留当前与后续记录；错误后停止，不无限自动重试。",
+        "pause 不启动下一条；已发送的匹配确认可完成持久收尾；finally 释放运行状态，关闭作用域等待有界在途处理后关库。",
+        "进度只统计本地已持久确认项；demo 确认明示模拟；local-client 无服务时不发送/不伪确认，联网也保留队列。"
+      ],
+      "skills": [
+        "flutter-development",
+        "engineering-flutter-testing"
+      ],
+      "commands": [
+        "python3 harness/run.py test --target test/sync",
+        "python3 harness/run.py quality"
+      ],
+      "verification_level": "G1 Completer/文件库故障与竞争；G2 恢复链由 E08",
+      "outputs": [
+        "配置化协调器/显式 demo transport",
+        "重复触发/尾部入队/超时/确认失败回归日志"
+      ],
+      "handoff": "E07 将事件接到直接同步/Toast，E04 独立故障审查，E08 复核 demo 与 unavailable 两种原生链；不引入真实后端或持久 mock 服务承诺。",
+      "blockers": [],
+      "status": "planned",
+      "done_when": "demo offline 不启动新发送，保存多项后队列保留；重开恢复 offline 不提前清空；online 切换成功后按 seq 单循环发送。；保存时 online、手动重试、重复重连/双击、发送期间新增项和查空退出窗口均不会产生第二消费者或漏唤醒。；真实永不完成的 transport Future 在约定期限内超时释放，能以原 operationId 重试；迟到完成不错误确认其他事件。发送失败/错 ack/本地确认失败保留当前与后续记录；错误后停止，不无限自动重试。；pause 不启动下一条；已发送的匹配确认可完成持久收尾；finally 释放运行状态，关闭作用域等待有界在途处理后关库。；进度只统计本地已持久确认项；demo 确认明示模拟；local-client 无服务时不发送/不伪确认，联网也保留队列。",
+      "github": {
+        "number": 20,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/20",
+        "issue_id": 5791324262,
+        "state": "open",
+        "body_sha256": "a6993c4325161142c5ab690216d410e669b3a16cdf547734874fd4b00793d77a",
+        "parent_number": 14,
+        "blocked_by_numbers": [
+          18
+        ]
+      }
+    },
+    {
+      "id": "E11",
+      "title": "还原详情失败表单、保存后终态与按入口返回",
+      "kind": "feature",
+      "role": "development-detail",
+      "requirements": [
+        "R02",
+        "R03",
+        "R04",
+        "R10",
+        "R14"
+      ],
+      "depends_on": [
+        "E02",
+        "E03"
+      ],
+      "write_scope": [
+        "app/lib/ui/delivery/detail",
+        "app/lib/ui/delivery/failure",
+        "app/test/detail"
+      ],
+      "current": "已有基础详情与自由文本失败原因；保存后会自动返回，缺原型预设原因/备注和 list/map 来源返回合同。",
+      "target": "按原型展示详情/时间窗/状态，失败表单遵守 reason/note 规则，提交后在详情显示终态，再由用户按来源返回。",
+      "acceptance": [
+        "失败选项为 Recipient unavailable、Business closed、Address not found、Other；未选拒绝，Other 空白说明拒绝，预设原因可加可选备注。",
+        "本地 commit 后提示 Saved/待同步，关闭失败表单但保持详情并显示终态；保存失败保留选择/说明/备注/原结果，可重试且不重复入队。",
+        "初始失败显示来源未提供；完成/失败详情不可再次提交，业务层终态拒改回归保留。",
+        "列表进入详情：箭头/终态 Back to stops/系统返回回原列表，恢复搜索筛选滚动行焦点；地图或最近项：关闭/Back to map/系统返回回地图。",
+        "失败表单先返回详情，再按原入口返回；键盘/文字放大不遮挡操作，返回不销毁应用级 Repository/Coordinator。"
+      ],
+      "skills": [
+        "flutter-development",
+        "engineering-flutter-testing"
+      ],
+      "commands": [
+        "python3 harness/run.py test --target test/widget_test.dart",
+        "python3 harness/run.py quality"
+      ],
+      "verification_level": "G1 widget 用户操作/输入保留；G2 原生返回链由 E08",
+      "outputs": [
+        "详情/表单/类型化返回来源组件",
+        "计划新增 test/detail 故障与导航操作测试"
+      ],
+      "handoff": "E03 提供列表上下文，E07 统一导航及提示装配；本任务不改主题/schema/共享 ViewModel，接口需要变更时交主控。",
+      "blockers": [],
+      "status": "planned",
+      "done_when": "失败选项为 Recipient unavailable、Business closed、Address not found、Other；未选拒绝，Other 空白说明拒绝，预设原因可加可选备注。；本地 commit 后提示 Saved/待同步，关闭失败表单但保持详情并显示终态；保存失败保留选择/说明/备注/原结果，可重试且不重复入队。；初始失败显示来源未提供；完成/失败详情不可再次提交，业务层终态拒改回归保留。；列表进入详情：箭头/终态 Back to stops/系统返回回原列表，恢复搜索筛选滚动行焦点；地图或最近项：关闭/Back to map/系统返回回地图。；失败表单先返回详情，再按原入口返回；键盘/文字放大不遮挡操作，返回不销毁应用级 Repository/Coordinator。",
+      "github": {
+        "number": 21,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/21",
+        "issue_id": 5791324879,
+        "state": "open",
+        "body_sha256": "4d8b5311c391884a9dec0a719738e624b6aaae88e1220e82abe212b5d80f3c92",
+        "parent_number": 14,
+        "blocked_by_numbers": [
+          18,
+          19
+        ]
+      }
     },
     {
       "id": "E06",
-      "title": "地图聚合、最近站点、视口和品牌体验",
+      "title": "交付地图聚合、站点状态联动及底图失败降级",
+      "kind": "feature",
       "role": "development-map",
-      "status": "planned",
-      "depends_on": [
-        "E03"
-      ],
       "requirements": [
         "R07",
         "R08",
@@ -148,26 +447,186 @@
         "R13",
         "R14"
       ],
+      "depends_on": [
+        "E02",
+        "E03"
+      ],
       "write_scope": [
         "app/lib/ui/delivery/map",
-        "app/assets",
         "app/test/map"
       ],
-      "done_when": "坐标/状态/查询一致，底图失败业务可用，署名可见，不新增同步抽屉"
+      "current": "正式 Flutter 入口没有地图；原型坐标、聚合和最近项仅有浏览器历史证据。",
+      "target": "用锁定 flutter_map/聚合插件交付地图主工作区；视口持久回调与业务 Repository 隔离，底图失败仍可操作本地业务。",
+      "acceptance": [
+        "按 CSV 原经纬度展示所有匹配站点，pending/completed/failed 使用一致颜色/符号/语义；聚合数量与成员一致，点聚合展开，点站标进入 map 来源详情。",
+        "提供原型 Zoom +/-、fit 当前匹配站点、locate 固定参考位置/方向箭头；无匹配时 fit 有稳定行为；底图错误展示 Retry，受控来源恢复后重试成功。",
+        "地图、列表和最近项使用 E03 同一查询集合；概览最近项可进入详情；参考位置标为测试、方向取已有配置，不发起真实定位。",
+        "MapController 稳定；Toast/同步进度不重置镜头、筛选或焦点；fit/recenter 仅在明确用户动作时执行。",
+        "同批次恢复最后落盘的有效中心/缩放，非法/批次变更回退；手势结束合并保存，强杀以最后落盘值为准。",
+        "无底图/瓦片错误/缓存缺失仍能搜索列表、详情、保存；清瓦片缓存不清业务库；HTTP freshness 和署名可见，自动化测试用本地或已授权受控底图。"
+      ],
+      "skills": [
+        "flutter-development",
+        "engineering-flutter-testing"
+      ],
+      "commands": [
+        "python3 harness/run.py quality",
+        "python3 harness/run.py build"
+      ],
+      "verification_level": "G1 widget/地图 fixture；G2 禁网/冷启/点选由 E08",
+      "outputs": [
+        "地图/聚合/视口适配组件",
+        "计划新增 test/map 控件和受控底图回归；资源/来源说明"
+      ],
+      "handoff": "E01 独占依赖/资源，E02 持久 settings，E03 提供查询，E07 接详情导航；地图不读 SQLite、不自行改共享主题或配置。",
+      "blockers": [],
+      "status": "planned",
+      "done_when": "按 CSV 原经纬度展示所有匹配站点，pending/completed/failed 使用一致颜色/符号/语义；聚合数量与成员一致，点聚合展开，点站标进入 map 来源详情。；提供原型 Zoom +/-、fit 当前匹配站点、locate 固定参考位置/方向箭头；无匹配时 fit 有稳定行为；底图错误展示 Retry，受控来源恢复后重试成功。；地图、列表和最近项使用 E03 同一查询集合；概览最近项可进入详情；参考位置标为测试、方向取已有配置，不发起真实定位。；MapController 稳定；Toast/同步进度不重置镜头、筛选或焦点；fit/recenter 仅在明确用户动作时执行。；同批次恢复最后落盘的有效中心/缩放，非法/批次变更回退；手势结束合并保存，强杀以最后落盘值为准。；无底图/瓦片错误/缓存缺失仍能搜索列表、详情、保存；清瓦片缓存不清业务库；HTTP freshness 和署名可见，自动化测试用本地或已授权受控底图。",
+      "github": {
+        "number": 22,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/22",
+        "issue_id": 5791325247,
+        "state": "open",
+        "body_sha256": "4420501403574ca41f4c90b1a224121fef3f1d32b2be257b72283106e7ecae05",
+        "parent_number": 14,
+        "blocked_by_numbers": [
+          18,
+          19
+        ]
+      }
+    },
+    {
+      "id": "E04",
+      "title": "独立检验产品查询、迁移、同步和返回的故障闭环",
+      "kind": "verification",
+      "role": "testing",
+      "requirements": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "R05",
+        "R06",
+        "R07",
+        "R08",
+        "R09",
+        "R10",
+        "R11",
+        "R12",
+        "R13",
+        "R14"
+      ],
+      "depends_on": [
+        "E05",
+        "E11",
+        "E06"
+      ],
+      "write_scope": [
+        "app/test/reliability",
+        "app/test/support",
+        "app/integration_test/support"
+      ],
+      "current": "已有 52 个 host/widget 测试为可靠性基线；完整产品新增查询/迁移/地图/返回链尚无独立风险回归。",
+      "target": "由非对应实现者建立产品风险矩阵，复用既有测试和确定 fixture，输出可交给原生验收的安全故障配置。",
+      "acceptance": [
+        "覆盖查询交集/零匹配/等距稳定、列表来源返回/终态留详情、失败输入保留、demo/unavailable 区分。",
+        "覆盖带 outbox v1 升级、设置保存失败、终态/双击/事务回滚、错配/确认失败、超时/pause/尾部入队竞争；不靠随机睡眠。",
+        "覆盖底图失败不阻塞业务与视口恢复；原生流程 fixture 可安全注入，不清用户业务库或访问真实服务。",
+        "每个 R01–R14 说明已有/新增测试及最低证据；发现缺陷保存最短复现，修复后重跑缺陷和未用于修复的风险场景。",
+        "合并候选通过 Harness quality；测试作者不以 host 文件重开签 OS 进程恢复，不以测试数量签原生完整功能。"
+      ],
+      "skills": [
+        "engineering-flutter-testing",
+        "engineering-issue-authoring"
+      ],
+      "commands": [
+        "python3 harness/run.py test --target test/data --target test/sync --target test/widget_test.dart",
+        "python3 harness/run.py quality"
+      ],
+      "verification_level": "G1 独立风险回归；G2 只交 fixture 不自签",
+      "outputs": [
+        "需求→测试/安全故障配置矩阵",
+        "同候选原始日志和修复/复验记录"
+      ],
+      "handoff": "X01 机械检查消费需求/测试矩阵，E07 集成后重跑；X02/E08 使用 fixture 原生验证，缺少安全入口就开返工/补证 Issue。",
+      "blockers": [],
+      "status": "planned",
+      "done_when": "覆盖查询交集/零匹配/等距稳定、列表来源返回/终态留详情、失败输入保留、demo/unavailable 区分。；覆盖带 outbox v1 升级、设置保存失败、终态/双击/事务回滚、错配/确认失败、超时/pause/尾部入队竞争；不靠随机睡眠。；覆盖底图失败不阻塞业务与视口恢复；原生流程 fixture 可安全注入，不清用户业务库或访问真实服务。；每个 R01–R14 说明已有/新增测试及最低证据；发现缺陷保存最短复现，修复后重跑缺陷和未用于修复的风险场景。；合并候选通过 Harness quality；测试作者不以 host 文件重开签 OS 进程恢复，不以测试数量签原生完整功能。",
+      "github": {
+        "number": 23,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/23",
+        "issue_id": 5791325723,
+        "state": "open",
+        "body_sha256": "38796a6059b3a1600e1402c08041d245beaca56a9110b56c9d33bc65bdffffc6",
+        "parent_number": 14,
+        "blocked_by_numbers": [
+          20,
+          21,
+          22
+        ]
+      }
+    },
+    {
+      "id": "X01",
+      "title": "把需求、Issue、测试及架构边界纳入机械检查",
+      "kind": "engineering",
+      "role": "harness-engineering",
+      "requirements": [
+        "R01",
+        "R02",
+        "R04",
+        "R05",
+        "R17"
+      ],
+      "depends_on": [
+        "E04"
+      ],
+      "write_scope": [
+        "harness/checks.py",
+        "harness/tests/test_checks.py"
+      ],
+      "current": "现有 checks 验证链接、R ID 覆盖、任务 DAG 与 Dart import/export 层次；R ID 出现不证明对应 Issue/测试/证据已联动。",
+      "target": "在现有仓库检查内验证本轮任务的来源、Skill、依赖与证据索引；保留简单 JSON/文件规则。",
+      "acceptance": [
+        "每个已发布任务的稳定 ID/真实 Issue/父项/依赖可追溯；重复 ID、悬空依赖、循环、缺来源/Skill/写域/验收明确报错。",
+        "检查实际 Skill 文件存在，需求到计划测试/实际证据映射区分 planned/passed；不存在或未运行测试不能标通过。",
+        "新增 settings/demo transport/地图代码依旧符合纯模型、data 不依赖 UI、UI 不持 SQLite/CSV 实现；违规反例实际失败并指文件/修复入口。",
+        "现有 quality 接受有效图和当前证据，拒绝缺失/错误层次样例；不得以机械 ID 覆盖冒充业务测试结果。"
+      ],
+      "skills": [
+        "harness-engineering",
+        "engineering-flutter-testing"
+      ],
+      "commands": [
+        "python3 harness/run.py check",
+        "python3 harness/run.py quality"
+      ],
+      "verification_level": "H01/H04；G1 工具正反例",
+      "outputs": [
+        "机械检查和正式回归",
+        "有效与故意违约样例的退出码/日志"
+      ],
+      "handoff": "E07 使用 quality 门禁，X03 以同一覆盖模型校验候选证据；规则变化由测试职能独立复核，主控维护共享任务图。",
+      "blockers": [],
+      "status": "planned",
+      "done_when": "每个已发布任务的稳定 ID/真实 Issue/父项/依赖可追溯；重复 ID、悬空依赖、循环、缺来源/Skill/写域/验收明确报错。；检查实际 Skill 文件存在，需求到计划测试/实际证据映射区分 planned/passed；不存在或未运行测试不能标通过。；新增 settings/demo transport/地图代码依旧符合纯模型、data 不依赖 UI、UI 不持 SQLite/CSV 实现；违规反例实际失败并指文件/修复入口。；现有 quality 接受有效图和当前证据，拒绝缺失/错误层次样例；不得以机械 ID 覆盖冒充业务测试结果。",
+      "github": {
+        "number": 24,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/24",
+        "issue_id": 5791326045,
+        "state": "open",
+        "body_sha256": "429263c6a8571f6eb51c5d9009b76742037c384dd193e1507ce7262316b36bd8",
+        "parent_number": 14,
+        "blocked_by_numbers": [
+          23
+        ]
+      }
     },
     {
       "id": "E07",
-      "title": "集成客户端、同步反馈与质量 gate",
+      "title": "集成地图工作台与直接同步 Toast，保持当前任务上下文",
+      "kind": "feature",
       "role": "coordinator-integration",
-      "status": "planned",
-      "depends_on": [
-        "E02",
-        "E03",
-        "E04",
-        "E05",
-        "E06",
-        "X01"
-      ],
       "requirements": [
         "R01",
         "R02",
@@ -184,22 +643,130 @@
         "R14",
         "R17"
       ],
+      "depends_on": [
+        "E01",
+        "E05",
+        "E06",
+        "E11",
+        "X01"
+      ],
       "write_scope": [
+        "app/lib/main.dart",
         "app/lib/app",
-        "app/lib/ui/delivery",
+        "app/lib/ui/delivery_screen.dart",
+        "app/lib/ui/delivery_view_model.dart",
+        "app/lib/ui/delivery/feedback",
         "app/lib/diagnostics",
         "app/integration_test"
       ],
-      "done_when": "精确候选通过格式/分析/关键测试和目标构建，结构化业务错误/事件与受控观测入口可用；共享文件在工作 Agent 归还后改"
+      "current": "基线正式入口是列表/local-client；产品组件和同步进度需要统一装配，历史同步抽屉已被最新原型删除。",
+      "target": "将查询/地图/列表/详情与运行配置接成完整正式产品入口；左侧同步按钮直接操作并以局部 Toast 反馈。",
+      "acceptance": [
+        "冷启为地图主屏，搜索筛选/最近站点/列表/详情完成同一业务链；本地失败有恢复入口，瓦片网络不阻塞首屏。",
+        "左侧按钮直接同步，不新增 Sync centre/队列抽屉；空队列、进度、离线中断、发送/确认失败、完成分别表达真实结果。",
+        "Toast 在地图/列表/详情均实际可见，避开概览/工具栏/键盘，不抢焦点、不关闭卡片、不改变镜头；减少动效仍能读到状态。",
+        "配送状态/等待确认/服务配置/online/底图独立；局部 Listenable 进度不触发全图排序/重建；终态留详情并按来源返回。",
+        "默认 local-client 队列不伪清空，显式 demo 重连按 E05 排空并标模拟；页面返回不创建第二协调器，在途关闭不通知已销毁界面。",
+        "独立 E04 测试职能在本条精确集成候选重跑关键用户链和新增 Toast/导航/配置故障回归；组件测试旧通过不能替代本次集成复验。",
+        "完整候选 quality 和正式入口 build 通过；产品诊断/安全故障入口能交给 X02，缺失则返工，不用 probe 代签。"
+      ],
+      "skills": [
+        "agent-engineering-team",
+        "flutter-development",
+        "engineering-flutter-testing"
+      ],
+      "commands": [
+        "python3 harness/run.py quality",
+        "python3 harness/run.py build"
+      ],
+      "verification_level": "G1 集成质量 + simulator debug 构建；G2 交 E08",
+      "outputs": [
+        "完整产品正式入口与配置运行说明",
+        "同候选质量/构建/集成测试日志与受控观察入口"
+      ],
+      "handoff": "依赖开发归还共享文件后主控串行装配；X02 接完整 UI/进程观测，E08 独立验收，不由集成者自签原生。",
+      "blockers": [],
+      "status": "planned",
+      "done_when": "冷启为地图主屏，搜索筛选/最近站点/列表/详情完成同一业务链；本地失败有恢复入口，瓦片网络不阻塞首屏。；左侧按钮直接同步，不新增 Sync centre/队列抽屉；空队列、进度、离线中断、发送/确认失败、完成分别表达真实结果。；Toast 在地图/列表/详情均实际可见，避开概览/工具栏/键盘，不抢焦点、不关闭卡片、不改变镜头；减少动效仍能读到状态。；配送状态/等待确认/服务配置/online/底图独立；局部 Listenable 进度不触发全图排序/重建；终态留详情并按来源返回。；默认 local-client 队列不伪清空，显式 demo 重连按 E05 排空并标模拟；页面返回不创建第二协调器，在途关闭不通知已销毁界面。；独立 E04 测试职能在本条精确集成候选重跑关键用户链和新增 Toast/导航/配置故障回归；组件测试旧通过不能替代本次集成复验。；完整候选 quality 和正式入口 build 通过；产品诊断/安全故障入口能交给 X02，缺失则返工，不用 probe 代签。",
+      "github": {
+        "number": 25,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/25",
+        "issue_id": 5791326408,
+        "state": "open",
+        "body_sha256": "f4614556e756d77014bfba7cc32137b5848c2dec983f5d76232bf2082890402a",
+        "parent_number": 14,
+        "blocked_by_numbers": [
+          16,
+          20,
+          22,
+          21,
+          24
+        ]
+      }
+    },
+    {
+      "id": "X02",
+      "title": "提供完整产品的后台原生 UI 驱动、进程恢复和业务观测",
+      "kind": "engineering",
+      "role": "harness-engineering",
+      "requirements": [
+        "R12",
+        "R15",
+        "R17"
+      ],
+      "depends_on": [
+        "E07"
+      ],
+      "write_scope": [
+        "harness/native.py",
+        "harness/run.py",
+        "harness/tests/test_native.py",
+        "app/lib/harness_probe.dart"
+      ],
+      "current": "现有 native 仅启动 harness_probe 三个 OS 进程并读取 SQLite/fake JSON；不操作正式 UI，不检查地图/表单/Toast，不采集性能 trace。",
+      "target": "让独立验收者通过统一 Harness 实际操作完整产品配置并读证据；保留旧 probe 作为窄可靠性检查。",
+      "acceptance": [
+        "安全驱动正式 UI 搜索/筛选/列表→详情/失败表单/直接同步，读取截图/语义/业务事件和持久状态，记录设备/OS/build mode/配置/候选。",
+        "在同一任务隔离安装上真实终止并重新启动，保存 PID 和原 operationId/seq/原因/队列/online/视口；不热重启/重装/清数据。",
+        "安全故障 fixture 与正式业务初始化/同步观测来自 E07/E04；缺产品入口交 E07 返工，Harness Agent 不越界改业务。",
+        "本条关闭基于后台 iOS simulator 正式产品 UI 与真进程观测；提供 trace 获取接口/协议即可。缺真机只阻塞 E09/E12 的实际采样，不阻塞本条/E08/E10；模拟器必需 UI 工具缺失或需前台权限时只阻塞该步骤。",
+        "新入口走 device/workspace lease 并绑定日志 hash；旧 native probe 结果明确窄范围，不能误报完整产品 G2/G3。"
+      ],
+      "skills": [
+        "harness-engineering",
+        "flutter-native-acceptance",
+        "engineering-flutter-testing"
+      ],
+      "commands": [
+        "python3 harness/run.py native",
+        "python3 harness/run.py quality"
+      ],
+      "verification_level": "H03/H05 观察能力实跑；native 现仅 probe，新产品入口需实现并记录实际命令",
+      "outputs": [
+        "可用完整 UI/进程命令与帮助、隔离资源记录",
+        "原始 UI/业务/进程证据样本与候选 hash"
+      ],
+      "handoff": "E08 消费 UI/进程接口，E09 消费 trace 支持；X03 消费覆盖/层级元数据。不得靠本条文字宣称 G2 已通过。",
+      "blockers": [],
+      "status": "planned",
+      "done_when": "安全驱动正式 UI 搜索/筛选/列表→详情/失败表单/直接同步，读取截图/语义/业务事件和持久状态，记录设备/OS/build mode/配置/候选。；在同一任务隔离安装上真实终止并重新启动，保存 PID 和原 operationId/seq/原因/队列/online/视口；不热重启/重装/清数据。；安全故障 fixture 与正式业务初始化/同步观测来自 E07/E04；缺产品入口交 E07 返工，Harness Agent 不越界改业务。；本条关闭基于后台 iOS simulator 正式产品 UI 与真进程观测；提供 trace 获取接口/协议即可。缺真机只阻塞 E09/E12 的实际采样，不阻塞本条/E08/E10；模拟器必需 UI 工具缺失或需前台权限时只阻塞该步骤。；新入口走 device/workspace lease 并绑定日志 hash；旧 native probe 结果明确窄范围，不能误报完整产品 G2/G3。",
+      "github": {
+        "number": 26,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/26",
+        "issue_id": 5791326788,
+        "state": "open",
+        "body_sha256": "5878f2077e10741eaae344288e6e142c9568c741b26337fb350cc70224dc7372",
+        "parent_number": 14,
+        "blocked_by_numbers": [
+          25
+        ]
+      }
     },
     {
       "id": "E08",
-      "title": "独立原生验收及真实进程恢复",
+      "title": "独立验收完整原生功能与离线多结果跨进程恢复",
+      "kind": "verification",
       "role": "native-acceptance",
-      "status": "planned",
-      "depends_on": [
-        "X02"
-      ],
       "requirements": [
         "R01",
         "R02",
@@ -216,147 +783,414 @@
         "R13",
         "R14"
       ],
-      "write_scope": [
-        "harness/runs/E08"
-      ],
-      "done_when": "用户链/故障恢复有版本/设备/进程证据，缺陷回开发；缺目标设备保持 blocked"
-    },
-    {
-      "id": "E09",
-      "title": "真机性能基线与热点回归",
-      "role": "performance",
-      "status": "planned",
       "depends_on": [
         "X02"
       ],
+      "write_scope": [
+        "harness/runs/E08"
+      ],
+      "current": "浏览器 78/78 是历史交互证据；旧三进程 probe 只能证明本地可靠性，完整 Flutter 原生产品尚未验收。",
+      "target": "由非对应实现者从正式产品 UI 运行完整流程，绑定候选/设备/数据库/传输配置，逐需求判定。",
+      "acceptance": [
+        "demo offline，经 UI 完成 A、失败 B（含备注/Other），记录 operationId/seq/原因/队列；真 OS 终止→同安装重开，offline 和原记录保留→online 串行确认落盘后排空→再次重开不重发。",
+        "local-client 同样保存后即使 online 仍等待服务，不伪上传；错 ack/发送超时/确认失败保留，重试复用身份；初始 failed 缺原因如实展示。",
+        "原生点聚合/站标/最近项与 Zoom +/-、fit matching、locate 参考箭头；查询交集/空态，列表详情来源返回/系统返回，终态留详情，直接同步/Toast 不抢任务上下文。",
+        "禁网/底图错误仍可业务操作，受控底图恢复后 Retry 成功；有效/失效视口、缓存缺失/清地图缓存、携带 outbox 的升级分别验证业务可用且不丢数据。",
+        "390×844 参考之外检查目标 SafeArea、键盘、文字缩放、减少动效与语义；每项 passed/failed/blocked/not_run 有原始证据。",
+        "记录精确源码/产物指纹、三次独立 PID、UI 截图/操作、SQLite/事件和时间；缺陷经 Issue skill 转返工，修复后复验。"
+      ],
+      "skills": [
+        "flutter-native-acceptance",
+        "engineering-issue-authoring"
+      ],
+      "commands": [
+        "python3 harness/run.py quality",
+        "python3 harness/run.py build",
+        "python3 harness/run.py native"
+      ],
+      "verification_level": "G2 完整 iOS 原生功能/OS 恢复；模拟器结果不能代签 G3",
+      "outputs": [
+        "R01–R14 原生验收矩阵及原始证据 manifest",
+        "缺陷/补证子 Issue 与复验记录"
+      ],
+      "handoff": "使用 X02 新产品入口（命令由该 Issue 实现后确定）；当前 native 仅 probe 不足以关闭本条。通过后交 E10 本地交付和 E12 生产审查。",
+      "blockers": [],
+      "status": "planned",
+      "done_when": "demo offline，经 UI 完成 A、失败 B（含备注/Other），记录 operationId/seq/原因/队列；真 OS 终止→同安装重开，offline 和原记录保留→online 串行确认落盘后排空→再次重开不重发。；local-client 同样保存后即使 online 仍等待服务，不伪上传；错 ack/发送超时/确认失败保留，重试复用身份；初始 failed 缺原因如实展示。；原生点聚合/站标/最近项与 Zoom +/-、fit matching、locate 参考箭头；查询交集/空态，列表详情来源返回/系统返回，终态留详情，直接同步/Toast 不抢任务上下文。；禁网/底图错误仍可业务操作，受控底图恢复后 Retry 成功；有效/失效视口、缓存缺失/清地图缓存、携带 outbox 的升级分别验证业务可用且不丢数据。；390×844 参考之外检查目标 SafeArea、键盘、文字缩放、减少动效与语义；每项 passed/failed/blocked/not_run 有原始证据。；记录精确源码/产物指纹、三次独立 PID、UI 截图/操作、SQLite/事件和时间；缺陷经 Issue skill 转返工，修复后复验。",
+      "github": {
+        "number": 27,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/27",
+        "issue_id": 5791327130,
+        "state": "open",
+        "body_sha256": "a72fcbc2ca472d5faef14d24cac42f8b1a46cf08dd5969229d341665865244c3",
+        "parent_number": 14,
+        "blocked_by_numbers": [
+          26
+        ]
+      }
+    },
+    {
+      "id": "E09",
+      "title": "在约定真机与工作负载下验证启动、帧时间和内存预算",
+      "kind": "verification",
+      "role": "performance",
       "requirements": [
         "R15"
+      ],
+      "depends_on": [
+        "X02"
       ],
       "write_scope": [
         "harness/runs/E09"
       ],
-      "done_when": "明确设备/容量/预算，profile trace 与 release 复核；缺硬件保持 blocked"
+      "current": "未有完整产品真机 profile/release trace；30 条 CSV 是测试样本而非支持容量证明。",
+      "target": "建立具体设备/刷新率/容量/缓存/网络条件和 provisional 预算，再以实测验证可交付性能。",
+      "acceptance": [
+        "在测量前冻结真机型号/OS/刷新率、30 条基础与约定容量/密集点负载、业务可操作/地图可用时间、UI/raster 慢帧定义和内存预算。",
+        "同候选 profile 测冷启、拖缩聚合、列表滚动、搜索排序、保存/同步 Toast；受控瓦片来源，不压公共 OSM。",
+        "记录样本量/原始 trace/帧与内存统计，样本不足不报虚假 p95；关闭额外跟踪测正式帧预算，release 复核体验。",
+        "超预算热点形成带 trace 的修复 Issue，同条件复测正确性和性能；未测/无真机为 blocked，debug/模拟器不签性能。"
+      ],
+      "skills": [
+        "flutter-performance",
+        "engineering-issue-authoring"
+      ],
+      "commands": [
+        "python3 harness/run.py preflight",
+        "python3 harness/run.py quality"
+      ],
+      "verification_level": "G3 真机 profile + release；现有 Harness 无性能命令，消费 X02 实际支持的 trace 入口",
+      "outputs": [
+        "设备/负载/预算合同",
+        "原始 profile trace、release 复核、热点与复测报告"
+      ],
+      "handoff": "与 E08 串行租用同设备；E00 的未决预算在本任务测量前冻结。预算/真机证据交 E12，缺硬件不阻塞 E10 本地演示。",
+      "blockers": [
+        "目标真机与 profile/release 执行条件尚未取得证据"
+      ],
+      "status": "planned",
+      "done_when": "在测量前冻结真机型号/OS/刷新率、30 条基础与约定容量/密集点负载、业务可操作/地图可用时间、UI/raster 慢帧定义和内存预算。；同候选 profile 测冷启、拖缩聚合、列表滚动、搜索排序、保存/同步 Toast；受控瓦片来源，不压公共 OSM。；记录样本量/原始 trace/帧与内存统计，样本不足不报虚假 p95；关闭额外跟踪测正式帧预算，release 复核体验。；超预算热点形成带 trace 的修复 Issue，同条件复测正确性和性能；未测/无真机为 blocked，debug/模拟器不签性能。",
+      "github": {
+        "number": 31,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/31",
+        "issue_id": 5791328586,
+        "state": "open",
+        "body_sha256": "7ab0eb6250c72fc58e68a4a583aed56eb4d9f13b47ac58e3a537d3056d551bda",
+        "parent_number": 14,
+        "blocked_by_numbers": [
+          26
+        ]
+      }
+    },
+    {
+      "id": "X03",
+      "title": "让本地门禁严格校验完整需求、性能和资源的候选证据",
+      "kind": "engineering",
+      "role": "harness-engineering",
+      "requirements": [
+        "R16",
+        "R17"
+      ],
+      "depends_on": [
+        "X02",
+        "X01"
+      ],
+      "write_scope": [
+        "harness/gate.py",
+        "harness/tests/test_gate.py"
+      ],
+      "current": "现有 CI 仅 quality，未有强制生产 gate/release 路径；私有保护 API 历史 403；G2 只校验 platform/process_restart，完整需求覆盖仍缺机械验证。",
+      "target": "补现有 gate 的完整产品证据合同，完整 R01–R14 不能被旧 probe 冒充；本条验收本地拒证能力，实际强制远端路径另由 X05 验收。",
+      "acceptance": [
+        "G1 引用 runner 原始 quality-run，校验前后候选/必需阶段/退出码/log hash；G2 校验完整所需 acceptance ID 与原始产品 UI/OS 恢复证据。",
+        "H01–H08/G0–G6 对当前范围必需项缺失、失败、跳过、未知、旧候选、hash 错配、网页/窄 probe 冒充完整原生、debug 冒充真机均拒绝。生产 gate 不能通过修改 scope 标签或改称本地交付绕过，保留该反例。",
+        "G3 关联原始真机 profile trace、设备/配置/负载和预算判定；G4 明确 local/resource/适用 connected 与升级证据，不接受只有 passed 声明。",
+        "本地正式回归覆盖缺项/错误样例；合成正向 fixture 仅证明 validator 行为，不签真实产品性能/许可/生产资格；实际 enforcement 保持未部署直到 X05 通过。"
+      ],
+      "skills": [
+        "harness-engineering",
+        "engineering-flutter-testing",
+        "engineering-release-handoff"
+      ],
+      "commands": [
+        "python3 harness/run.py check",
+        "python3 harness/run.py quality",
+        "python3 harness/run.py gate --manifest harness/runs/<本任务实际交付目录>/manifest.json"
+      ],
+      "verification_level": "H06 本地候选证据校验；强制部署由 X05 验证",
+      "outputs": [
+        "正式门禁回归/候选 manifest 格式",
+        "缺证/错层/旧候选实际拒绝的退出码与原始记录"
+      ],
+      "handoff": "X02 提供完整产品证据模型，X01 提供覆盖检查；X04 消费本地 validator，X05 接强制路径。本条关闭不自动解除生产 no-go。",
+      "blockers": [],
+      "status": "planned",
+      "done_when": "G1 引用 runner 原始 quality-run，校验前后候选/必需阶段/退出码/log hash；G2 校验完整所需 acceptance ID 与原始产品 UI/OS 恢复证据。；H01–H08/G0–G6 对当前范围必需项缺失、失败、跳过、未知、旧候选、hash 错配、网页/窄 probe 冒充完整原生、debug 冒充真机均拒绝。生产 gate 不能通过修改 scope 标签或改称本地交付绕过，保留该反例。；G3 关联原始真机 profile trace、设备/配置/负载和预算判定；G4 明确 local/resource/适用 connected 与升级证据，不接受只有 passed 声明。；本地正式回归覆盖缺项/错误样例；合成正向 fixture 仅证明 validator 行为，不签真实产品性能/许可/生产资格；实际 enforcement 保持未部署直到 X05 通过。",
+      "github": {
+        "number": 28,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/28",
+        "issue_id": 5791327521,
+        "state": "open",
+        "body_sha256": "6c88dad66ce6f30a999f04d869ed050df4750536a43b6167ccdcf88f49afcb4e",
+        "parent_number": 14,
+        "blocked_by_numbers": [
+          26,
+          24
+        ]
+      }
+    },
+    {
+      "id": "X05",
+      "title": "落实实际 required checks 与不可绕过的发布门禁路径",
+      "kind": "engineering",
+      "role": "harness-engineering",
+      "requirements": [
+        "R16",
+        "R17"
+      ],
+      "depends_on": [
+        "X03"
+      ],
+      "write_scope": [
+        ".github/workflows",
+        "harness/reports/readiness.md",
+        "harness/reports/status.json"
+      ],
+      "current": "质量 CI 已运行，但 required checks/实际发布强制路径未部署；历史私有仓库保护 API 403，不可把 workflow 文件存在当作 enforced。",
+      "target": "在实际可用的治理和授权发布环境中强制执行 X03 门禁；只建立接线与失败阻断演练，不借此发布产品。",
+      "acceptance": [
+        "重新核实仓库套餐/权限与 required checks 或可用等价强制治理，记录真实 API/配置结果；不改公开仓库或购买套餐绕过限制。",
+        "质量与适用原生构建接 CI，失败仍保存日志；实际发布工作流强制绑定同候选 manifest 并执行 gate，不留可绕过的正式发布入口。",
+        "缺失/失败/旧候选/错误 hash 的候选在真实流程被阻断，成功路径只有真实必要证据和相应授权具备后才能实测；不把合成 fixture 当上线资格。",
+        "审计 status/enforcement_deployed 与真实环境一致；治理或发布环境权限缺失时保持 blocked、生产 no-go，不阻塞独立本地开发/演示。"
+      ],
+      "skills": [
+        "harness-engineering",
+        "engineering-release-handoff",
+        "engineering-flutter-testing"
+      ],
+      "commands": [
+        "python3 harness/run.py quality",
+        "python3 harness/run.py gate --manifest harness/runs/<本任务实际交付目录>/manifest.json"
+      ],
+      "verification_level": "H06 实际 CI/发布强制接线；当前未部署",
+      "outputs": [
+        "实际治理/CI 配置与 API 结果",
+        "真实发布路径缺证阻断记录与审计状态"
+      ],
+      "handoff": "X03 保证本地 validator 语义；E12 必须依赖本条 accepted。本条仅门禁接线/演练，不授予生产发布或修改仓库公开性的权限。",
+      "blockers": [
+        "历史保护 API 403；实际 required checks/强制发布环境需可用权限与配置"
+      ],
+      "status": "planned",
+      "done_when": "重新核实仓库套餐/权限与 required checks 或可用等价强制治理，记录真实 API/配置结果；不改公开仓库或购买套餐绕过限制。；质量与适用原生构建接 CI，失败仍保存日志；实际发布工作流强制绑定同候选 manifest 并执行 gate，不留可绕过的正式发布入口。；缺失/失败/旧候选/错误 hash 的候选在真实流程被阻断，成功路径只有真实必要证据和相应授权具备后才能实测；不把合成 fixture 当上线资格。；审计 status/enforcement_deployed 与真实环境一致；治理或发布环境权限缺失时保持 blocked、生产 no-go，不阻塞独立本地开发/演示。",
+      "github": {
+        "number": 32,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/32",
+        "issue_id": 5791328948,
+        "state": "open",
+        "body_sha256": "baa2a583029f5fcbb99c114853f576f0746799dc1635525e3966a5ed7c21be48",
+        "parent_number": 14,
+        "blocked_by_numbers": [
+          28
+        ]
+      }
+    },
+    {
+      "id": "X04",
+      "title": "验证完整产品工具的中断恢复、资源重入和独立 Agent 评测",
+      "kind": "verification",
+      "role": "harness-engineering",
+      "requirements": [
+        "R17"
+      ],
+      "depends_on": [
+        "X02",
+        "X03"
+      ],
+      "write_scope": [
+        "harness/state.py",
+        "harness/tests/test_state.py",
+        "harness/tests/test_native.py",
+        "harness/runs/X04"
+      ],
+      "current": "已有 lease/SIGTERM/SIGKILL/同候选恢复的窄工具回归；新增完整 UI、配置和原生入口需扩展恢复评测。",
+      "target": "验证新增执行面能中断/恢复且不重复派工、损坏业务数据或误用旧证据；生产治理阻塞不阻塞此本地评测。",
+      "acceptance": [
+        "实际取消构建/UI/进程采样，检查子进程退出、锁释放及隔离设备回收；活 PID/lease 或候选变化拒绝恢复。",
+        "同候选仅复用日志 hash/阶段状态已核验的成功阶段；中断/旧报告/不同配置不冒充新结果。",
+        "独立 Agent 按 Skill 接力，检测重复写域/派工、过期 result/输入合同，并将可复现失败交 Issue skill 返工。",
+        "修复后重跑失败反例与未参与优化的场景；记录审查轮数、样本量/flake/时间成本，不以一次成功估算可靠率。"
+      ],
+      "skills": [
+        "harness-engineering",
+        "agent-engineering-team",
+        "engineering-flutter-testing",
+        "engineering-issue-authoring"
+      ],
+      "commands": [
+        "python3 harness/run.py quality",
+        "python3 harness/run.py quality --resume harness/runs/<本任务同候选中断目录>"
+      ],
+      "verification_level": "H07/H08 实际生命周期/保留场景",
+      "outputs": [
+        "取消/恢复/资源冲突的原始记录",
+        "独立 Agent 演练与修复/复验判定"
+      ],
+      "handoff": "依赖 X02 的本地工具与 X03 本地 validator，不依赖 X05 外部治理。证据交 E10/E12；主控实际 runtime 核对 Agent，不能靠猜 PID 判 Agent 生命周期。",
+      "blockers": [],
+      "status": "planned",
+      "done_when": "实际取消构建/UI/进程采样，检查子进程退出、锁释放及隔离设备回收；活 PID/lease 或候选变化拒绝恢复。；同候选仅复用日志 hash/阶段状态已核验的成功阶段；中断/旧报告/不同配置不冒充新结果。；独立 Agent 按 Skill 接力，检测重复写域/派工、过期 result/输入合同，并将可复现失败交 Issue skill 返工。；修复后重跑失败反例与未参与优化的场景；记录审查轮数、样本量/flake/时间成本，不以一次成功估算可靠率。",
+      "github": {
+        "number": 29,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/29",
+        "issue_id": 5791327885,
+        "state": "open",
+        "body_sha256": "c0e7a8abe8c35a2a472ddddf51d7eb36a363e11342e2b9a819db94dbc0564764",
+        "parent_number": 14,
+        "blocked_by_numbers": [
+          26,
+          28
+        ]
+      }
     },
     {
       "id": "E10",
-      "title": "数据恢复、资源许可与发布准备",
+      "title": "交付可复现的完整 Flutter 演示与本地客户端证据包",
+      "kind": "engineering",
       "role": "release-handoff",
-      "status": "planned",
-      "depends_on": [
-        "X03",
-        "X04",
-        "E08",
-        "E09"
-      ],
       "requirements": [
         "R01",
         "R13",
         "R16",
         "R17"
       ],
+      "depends_on": [
+        "E08",
+        "X04"
+      ],
       "write_scope": [
-        "harness/runs/E10",
         "app/README.md",
-        "harness/runs/E10/manifest.json"
+        "README.md",
+        "harness/runs/E10"
       ],
-      "done_when": "文档/manifest 可预备；生产 accepted 必须 H01–H08 demonstrated、E08/E09 与适用 G0–G6 通过；未达标保持 blocked，外部发布另按授权"
+      "current": "已有 baseline README 与历史证据归档；完整原型 Flutter 的运行/演示/迁移/恢复说明和对应候选证据包缺失。",
+      "target": "闭合已授权的本地 demo/local-client 层级；把生产 no-go 和未完成外部条件准确交接，不等待真机生产门槛才交本地结果。",
+      "acceptance": [
+        "精确候选 SHA/fingerprint、SDK/lock、正式入口 demo/local-client 命令、设备要求和实际原生证据可复现。",
+        "提供约五分钟的离线→多结果→真进程重开→online 模拟确认演示，说明本地 commit/模拟确认/真实服务的区别。",
+        "升级/缓存/失败恢复与已知缺口明确，真实 AI 使用记录注明生成与手写、实际错误及如何发现，不虚构经历。",
+        "归档质量/原生/Harness 证据和产物 hash；测试 CSV、图标字体依赖及演示地图来源可追溯；不报告公共瓦片已商用授权。",
+        "仅签本地演示/客户端完成；G3/G5/G6/生产强制门禁分别保持真实状态。本条完成不能关闭 E12 或声称真实上传/上线。"
+      ],
+      "skills": [
+        "engineering-release-handoff",
+        "engineering-issue-authoring"
+      ],
+      "commands": [
+        "python3 harness/run.py quality",
+        "python3 harness/run.py build"
+      ],
+      "verification_level": "G0/G1/G2/本地 G4 + 本地证据包；生产判定独立",
+      "outputs": [
+        "README/演示/AI 使用和迁移恢复说明",
+        "同候选本地 handoff manifest 与实际产物 hash"
+      ],
+      "handoff": "E08 和 X04 通过后本地交付可完成；E09/X03/生产授权不足不伪完成，交 E12 跟踪。不外发招聘方、不默认上传商店。",
+      "blockers": [],
+      "status": "planned",
+      "done_when": "精确候选 SHA/fingerprint、SDK/lock、正式入口 demo/local-client 命令、设备要求和实际原生证据可复现。；提供约五分钟的离线→多结果→真进程重开→online 模拟确认演示，说明本地 commit/模拟确认/真实服务的区别。；升级/缓存/失败恢复与已知缺口明确，真实 AI 使用记录注明生成与手写、实际错误及如何发现，不虚构经历。；归档质量/原生/Harness 证据和产物 hash；测试 CSV、图标字体依赖及演示地图来源可追溯；不报告公共瓦片已商用授权。；仅签本地演示/客户端完成；G3/G5/G6/生产强制门禁分别保持真实状态。本条完成不能关闭 E12 或声称真实上传/上线。",
+      "github": {
+        "number": 30,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/30",
+        "issue_id": 5791328213,
+        "state": "open",
+        "body_sha256": "a3df75732846b60fce3b767e691d09bd9d146edc8c5bcd9e2549aac1e1e2d91f",
+        "parent_number": 14,
+        "blocked_by_numbers": [
+          27,
+          29
+        ]
+      }
     },
     {
-      "id": "X00",
-      "title": "可复现原生执行环境与隔离工具入口",
-      "role": "harness-engineering",
-      "status": "planned",
-      "depends_on": [
-        "E01"
-      ],
-      "requirements": [
-        "R17"
-      ],
-      "write_scope": [
-        "harness/run.py",
-        "app/.fvmrc"
-      ],
-      "done_when": "干净工作树按锁定 SDK/依赖实际启动和快速检查；隔离测试数据/服务、设备租用与保留业务数据清理可验证"
-    },
-    {
-      "id": "X01",
-      "title": "架构数据边界和仓库事实机械检查",
-      "role": "harness-engineering",
-      "status": "planned",
-      "depends_on": [
-        "X00",
-        "E02",
-        "E04"
-      ],
+      "id": "E12",
+      "title": "满足 Harness 与产品生产门槛后准备签名发布候选",
+      "kind": "release",
+      "role": "release-handoff",
       "requirements": [
         "R01",
-        "R02",
-        "R04",
-        "R05",
-        "R17"
-      ],
-      "write_scope": [
-        "harness/checks.py",
-        "harness/tests/test_checks.py"
-      ],
-      "done_when": "依赖/状态/事务/确认身份和文档覆盖检查实际运行；故意违反样例被拒绝，日志给具体修复入口；复用测试职能 fixture"
-    },
-    {
-      "id": "X02",
-      "title": "Agent 可读取的原生操作与业务观测",
-      "role": "harness-engineering",
-      "status": "planned",
-      "depends_on": [
-        "E07"
-      ],
-      "requirements": [
-        "R12",
+        "R13",
         "R15",
-        "R17"
-      ],
-      "write_scope": [
-        "harness/native.py",
-        "app/lib/harness_probe.dart"
-      ],
-      "done_when": "实际驱动目标 UI/进程、读取业务失败/同步事件/持久状态和 trace；候选绑定，缺产品观测入口交 E07 返工再过质量 gate，不越界改实现"
-    },
-    {
-      "id": "X03",
-      "title": "候选证据与生产门禁的实际接线",
-      "role": "harness-engineering",
-      "status": "planned",
-      "depends_on": [
-        "X02",
-        "X01"
-      ],
-      "requirements": [
         "R16",
         "R17"
       ],
-      "write_scope": [
-        "harness/gate.py",
-        ".github/workflows/quality.yml"
-      ],
-      "done_when": "缺失/未知/失败/跳过/旧版本/错层证据实际被拒绝；核实 required checks 与发布路径，未接入不写 enforced"
-    },
-    {
-      "id": "X04",
-      "title": "中断恢复、资源重入和独立 Agent 回归",
-      "role": "harness-engineering",
-      "status": "planned",
       "depends_on": [
-        "X02",
-        "X03"
-      ],
-      "requirements": [
-        "R17"
+        "E10",
+        "E09",
+        "X05"
       ],
       "write_scope": [
-        "harness/state.py",
-        "harness/tests"
+        "harness/runs/E12",
+        "app/README.md"
       ],
-      "done_when": "真正取消/恢复，检查活负责人/diff/租用且无重复写入；保留场景和门禁反例实跑，记录成本与失败后最小修正"
+      "current": "生产 no-go：完整产品/真机/资源授权/签名和实际强制发布路径未全部验证。本次授权是提 Issues 与后续功能实现，不含外部生产上线。",
+      "target": "维护不可绕过的上线条件，所有条件与授权取得后再形成可发布候选；本条当前保持 blocked。",
+      "acceptance": [
+        "当前候选 H01–H08 必需能力 demonstrated、适用 G0–G6 按真实范围全部通过；E08/E09/X03/X04/X05 实测可追溯，不能平均打分。",
+        "适用 v1 升级/前滚修复保留配送结果/outbox，地图数据/在线服务/离线权限分别核验，业务数据授权与依赖许可明确。",
+        "目标平台 release 构建/签名/版本/渠道与 hash 实际验证；debug/无签 simulator app 不代替。",
+        "外部发布前必须已有具体目的地/产物/所需动作和用户直接授权；缺授权不执行 G6，继续完成可审阅准备材料。",
+        "只有授权目的地实际回执和相应运行验证才签外部交付；不凭上传请求、PR 合并或本地包生成声明上线。"
+      ],
+      "skills": [
+        "engineering-release-handoff",
+        "harness-engineering",
+        "flutter-native-acceptance",
+        "flutter-performance"
+      ],
+      "commands": [
+        "python3 harness/run.py gate --manifest harness/runs/<本任务实际交付目录>/manifest.json"
+      ],
+      "verification_level": "生产 H01–H08 + 适用 G0–G6，当前 no-go",
+      "outputs": [
+        "签名候选/许可与升级证据",
+        "实际 gate 报告、授权和外部回执（取得后）"
+      ],
+      "handoff": "E10 本地交付与本条生产任务分别关闭；预算/设备/治理/许可/签名/外部授权缺项均保留 blocked，不能更名本地交付规避门槛。",
+      "blockers": [
+        "真机/性能、许可/业务授权、签名/渠道、强制门禁及具体外部发布授权尚未满足"
+      ],
+      "status": "planned",
+      "done_when": "当前候选 H01–H08 必需能力 demonstrated、适用 G0–G6 按真实范围全部通过；E08/E09/X03/X04/X05 实测可追溯，不能平均打分。；适用 v1 升级/前滚修复保留配送结果/outbox，地图数据/在线服务/离线权限分别核验，业务数据授权与依赖许可明确。；目标平台 release 构建/签名/版本/渠道与 hash 实际验证；debug/无签 simulator app 不代替。；外部发布前必须已有具体目的地/产物/所需动作和用户直接授权；缺授权不执行 G6，继续完成可审阅准备材料。；只有授权目的地实际回执和相应运行验证才签外部交付；不凭上传请求、PR 合并或本地包生成声明上线。",
+      "github": {
+        "number": 33,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/33",
+        "issue_id": 5791329241,
+        "state": "open",
+        "body_sha256": "9e171325bfb933990d1a8ec68b220672df91277646e6ff83aea077bfa9472119",
+        "parent_number": 14,
+        "blocked_by_numbers": [
+          30,
+          31,
+          32
+        ]
+      }
     }
   ],
-  "purpose": "Full-product reference plan; reuse completed reliability baseline after checking current candidate. This is not the live task board."
+  "purpose": "Full Flutter prototype + architecture execution graph; GitHub parent/sub-issues mirror this graph. Implementation completion is in work.json, not publication state.",
+  "github_parent": {
+    "number": 14,
+    "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/14",
+    "issue_id": 5791321742,
+    "state": "open",
+    "body_sha256": "0980e616f0a06c9168544c116fbaeeda4e02e0726eb6a8a7460b2bbe0239b7fc"
+  },
+  "publication_status": "published_and_remote_verified",
+  "publication_verified_at": "2026-10-10T12:46:05.530721+00:00",
+  "publication_verification": {
+    "child_count": 19,
+    "dependency_edges": 31,
+    "report_path": "harness/runs/issue-planning/remote-verification.json"
+  }
 }

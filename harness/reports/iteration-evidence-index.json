@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "kind": "tracked thin index; local binary/raw artifacts are excluded from Git",
+  "observed_at": "2026-10-11T02:58:30.892066+00:00",
+  "local_handoff_accepted": true,
+  "production_eligible": false,
+  "source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+  "candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+  "counted_inputs": 260,
+  "archive": {
+    "path": "harness/runs/E10/381730-local-handoff/handoff.tar.gz",
+    "bytes": 1038271039,
+    "sha256": "1c1ee25698593bba3e38f74a92f91f4f0d2ee902ad95ca05d6b30cffc3014751"
+  },
+  "source_zip": {
+    "path": "harness/runs/E10/381730-local-handoff/source-0693165b8f21c2af956fd04451228dc8b646e960.zip",
+    "bytes": 30359888,
+    "sha256": "53a4aaadfe724a84e094fc78f2124e88310b4ff5db686f415a7a782313b3f205"
+  },
+  "member_count": 2396,
+  "expanded_Runner_substitutions": 17,
+  "original_files_unchanged": 3818,
+  "original_directories_unchanged": 882,
+  "raw_closure_entries": 1663,
+  "references": [
+    {
+      "path": "harness/runs/implementation/E08-independent-381730f-full34-reviewer-metadata.json",
+      "bytes": 98982,
+      "sha256": "3fb7aa85651afd7c678513c5ec62d6d94765a6db9dc7d7a121147750c323ba82"
+    },
+    {
+      "path": "harness/runs/implementation/E08-independent-381730f-full-aggregate-verdict.json",
+      "bytes": 21977,
+      "sha256": "7381ba55e2cdb3bcbd3395b93f5cdc4467eccd0b3df4b4419ffdc6f938a80279"
+    },
+    {
+      "path": "harness/runs/implementation/E08-independent-381730f-actual-localgate-010.json",
+      "bytes": 8969,
+      "sha256": "e3567259c01a267ddab25baf7165c374144939fca8ca74b175fbf3f46402ca0c"
+    },
+    {
+      "path": "harness/runs/implementation/E08-independent-381730f-actual-production-refusal.json",
+      "bytes": 2984,
+      "sha256": "4de8091f9b05f5eea4e8b2671970ad4409a5cb4ebb3599fe5d61c9b3c1bbf749"
+    },
+    {
+      "path": "harness/runs/implementation/E10-381730-archive-nonauthor-review/archive-mechanical-observation.json",
+      "bytes": 21200,
+      "sha256": "824928fa33d5d604f65a805055bedbc8c4a939e36d945445101bda445bcc25b0"
+    },
+    {
+      "path": "harness/runs/implementation/E10-381730-local-handoff-root-decision/report.json",
+      "bytes": 3550,
+      "sha256": "3cb0dbfafb1668fa22df20ce00ba82a747c4a575614110da47948e11915b927b"
+    },
+    {
+      "path": "harness/runs/E10/381730-local-handoff/index.json",
+      "bytes": 345852,
+      "sha256": "06c4b4260af0d4f6baa4b4cc408524dbd20b50c4525fc23872c59ab957290f03"
+    }
+  ],
+  "source_CI": {
+    "run": 38102904327,
+    "head": "0693165b8f21c2af956fd04451228dc8b646e960",
+    "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38102904327"
+  },
+  "final_metadata_CI": {
+    "record": "harness/runs/implementation/final-metadata-381730-independent-actual/review.json",
+    "identity_policy": "Verified separately after this metadata commit; source ZIP remains069. No self-referential final HEAD or future CI success is inserted into this file."
+  },
+  "preserves_original_absolute_paths": true,
+  "portable_gate_rebinding_supported": false,
+  "external_tasks": [
+    "E09/#31",
+    "X05/#32",
+    "E12/#33"
+  ]
+}

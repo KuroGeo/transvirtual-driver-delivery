@@ -1,5 +1,5 @@
 name: ocean_delivery
-description: Ocean Delivery native reliability baseline.
+description: Ocean Delivery map-first delivery workbench.
 publish_to: none
 version: 0.1.0+1
 environment:
@@ -10,8 +10,17 @@ dependencies:
   sqflite: ^2.4.4+1
   path: ^1.9.1
   csv: ^8.0.0
+  flutter_map: 8.3.2
+  flutter_map_marker_cluster: 8.2.2
+  latlong2: 0.9.1
+  flutter_svg: 2.3.0
+  url_launcher: 6.3.3
 dev_dependencies:
   flutter_test:
+    sdk: flutter
+  flutter_driver:
+    sdk: flutter
+  integration_test:
     sdk: flutter
   flutter_lints: ^6.0.0
   sqflite_common_ffi: ^2.4.3
@@ -19,3 +28,10 @@ flutter:
   uses-material-design: true
   assets:
     - assets/deliveries.csv
+    - assets/app-icon.png
+    - assets/icons.json
+    - assets/licenses/
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/InterVariable.ttf

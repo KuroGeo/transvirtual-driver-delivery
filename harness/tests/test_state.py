@@ -33,6 +33,119 @@ with lease([sys.argv[1]], sys.argv[2], sys.argv[3]) as record:
     time.sleep(60)
 """
 
+# A separate task worker owns Linux's subreaper flag. It reaps only the known
+# orphan fixture PID, never subprocess_stage's wrapper; no host setting changes.
+EXITED_WRAPPER_WORKER = r'''
+import ctypes, json, os, signal, subprocess, sys, threading, time
+from pathlib import Path
+from harness.run import subprocess_stage
+mode, directory = sys.argv[1], Path(sys.argv[2])
+ready, done = directory / "orphan-ready.json", directory / "orphan-done.txt"
+if sys.platform.startswith("linux"):
+    libc = ctypes.CDLL(None, use_errno=True)
+    if libc.prctl(36, 1, 0, 0, 0) != 0:  # PR_SET_CHILD_SUBREAPER, this worker only
+        raise OSError(ctypes.get_errno(), "task subreaper setup failed")
+child_source = r"""
+import json, os, signal, sys, time
+from pathlib import Path
+mode, ready, done = sys.argv[1], Path(sys.argv[2]), Path(sys.argv[3])
+if mode == "term":
+    def stop(*args):
+        done.write_text("term")
+        sys.exit(0)
+    signal.signal(signal.SIGTERM, stop)
+elif mode == "ignore":
+    signal.signal(signal.SIGTERM, signal.SIG_IGN)
+ready.write_text(json.dumps({"pid": os.getpid(), "group": os.getpgrp()}))
+if mode in ("natural", "zombie"):
+    # Begin the tail only after the actual wrapper PID has disappeared.
+    deadline = time.monotonic() + 10
+    while time.monotonic() < deadline:
+        try:
+            os.kill(os.getpgrp(), 0)
+        except ProcessLookupError:
+            break
+        time.sleep(0.01)
+    time.sleep(0.25)
+    done.write_text(mode)
+else:
+    time.sleep(60)
+"""
+parent_source = """
+import subprocess, sys, time
+from pathlib import Path
+child = subprocess.Popen([sys.executable, '-u', '-c', sys.argv[1], *sys.argv[2:]])
+ready = Path(sys.argv[3])
+deadline = time.monotonic() + 5
+while not ready.exists() and child.poll() is None and time.monotonic() < deadline:
+    time.sleep(0.01)
+if not ready.exists():
+    raise RuntimeError('owned orphan did not become ready')
+print('zero-wrapper-parent-ready', flush=True)
+"""
+reaped = {}
+allow_reap = threading.Event()
+if mode != "zombie":
+    allow_reap.set()
+def reap_fixture():
+    deadline = time.monotonic() + 20
+    while time.monotonic() < deadline:
+        try:
+            identity = json.loads(ready.read_text())
+        except (FileNotFoundError, ValueError):
+            time.sleep(0.01)
+            continue
+        pid = identity["pid"]
+        if not allow_reap.is_set():
+            time.sleep(0.01)
+            continue
+        try:
+            found, status = os.waitpid(pid, os.WNOHANG)
+            if found == pid:
+                reaped.update(identity, exited=True, wait_status=status)
+                return
+        except ChildProcessError:
+            # macOS launchd adopts the orphan. Observe actual disappearance;
+            # Linux waits until this worker becomes its reaping parent.
+            if not sys.platform.startswith("linux"):
+                try:
+                    os.kill(pid, 0)
+                except ProcessLookupError:
+                    reaped.update(identity, exited=True)
+                    return
+        time.sleep(0.01)
+thread = threading.Thread(target=reap_fixture, daemon=True)
+thread.start()
+receipt, spawned, outcome = [], [], {}
+sibling = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(60)'],
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                           start_new_session=True)
+try:
+    outcome["code"] = subprocess_stage(
+        [sys.executable, '-u', '-c', parent_source, child_source, mode, str(ready), str(done)],
+        Path.cwd(), directory / 'stage.log', 10, [], spawned.append,
+        on_finish=receipt.append, cleanup_grace=1)
+except BaseException as error:
+    outcome["error"] = {"type": type(error).__name__, "message": str(error)}
+finally:
+    outcome["unrelated_task_group_survived"] = sibling.poll() is None
+    # Cleanup is limited to this fixture's independently recorded Popen group,
+    # so the old implementation fails the test without leaving a long orphan.
+    for group in spawned:
+        try:
+            os.killpg(group, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+    allow_reap.set()
+    thread.join(timeout=5)
+    sibling.terminate()
+    sibling.wait(timeout=5)
+outcome.update(receipt=receipt, fixture=reaped,
+               done=done.read_text() if done.exists() else None,
+               log=(directory / 'stage.log').read_text())
+print(json.dumps(outcome))
+'''
+
 
 class StateTests(unittest.TestCase):
     def setUp(self):
@@ -101,6 +214,118 @@ class StateTests(unittest.TestCase):
         with lease(["device:test"], self.root / "two", self.locks):
             pass
 
+    def test_graceful_parent_close_preserves_descendant_inherited_lock(self):
+        with lease(["device:test"], self.root / "one", self.locks) as record:
+            child = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(60)"], pass_fds=record["lock_fds"])
+            self.addCleanup(self.stop_holder, child)
+        self.assertIsNone(child.poll())
+        self.assertEqual(json.loads((self.root / "one/lease.json").read_text())["status"], "released")
+        self.report["stages"] = [{"id": "descendant", "status": "running", "job_pid": child.pid}]
+        blocked = validate_resume(self.report, self.candidate)
+        self.assertTrue(any("still locked" in reason for reason in blocked["reasons"]), blocked)
+        with self.assertRaises(BusyError):
+            with lease(["device:test"], self.root / "contender", self.locks):
+                self.fail("parent close must not unlock the inherited descriptor")
+        child.terminate()
+        child.wait(timeout=5)
+        self.assertTrue(validate_resume(self.report, self.candidate)["allowed"])
+        with lease(["device:test"], self.root / "after-child", self.locks):
+            pass
+
+    def test_real_timeout_preserves_completion_callback_and_forced_reap(self):
+        from harness.run import subprocess_stage
+        receipt = []
+        log = self.root / "timeout.log"
+        with self.assertRaises(subprocess.TimeoutExpired):
+            subprocess_stage([sys.executable, "-u", "-c", "import signal,time; signal.signal(signal.SIGTERM,signal.SIG_IGN); print('ready',flush=True); time.sleep(60)"],
+                             REPO, log, 1, [], lambda pid: None, on_finish=receipt.append, cleanup_grace=0.2)
+        self.assertEqual(len(receipt), 1)
+        self.assertTrue(receipt[0]["spawned"])
+        self.assertTrue(receipt[0]["wrapper_reaped"])
+        self.assertEqual(receipt[0]["returncode"], -signal.SIGKILL)
+        self.assertTrue(receipt[0]["term_sent"])
+        self.assertTrue(receipt[0]["kill_sent"])
+        self.assertEqual(receipt[0]["cause"], "TimeoutExpired")
+        self.assertIn("ready", log.read_text())
+        with self.assertRaises(ProcessLookupError):
+            os.kill(receipt[0]["wrapper_pid"], 0)
+
+    def test_native_grace_allows_cooperative_cleanup_longer_than_generic_five_seconds(self):
+        from harness.run import cleanup_grace, subprocess_stage
+        receipt = []
+        code = "import signal,time,sys\ndef stop(*args):\n time.sleep(5.2)\n sys.exit(0)\nsignal.signal(signal.SIGTERM,stop)\nprint('ready',flush=True)\ntime.sleep(60)"
+        with self.assertRaises(subprocess.TimeoutExpired):
+            subprocess_stage([sys.executable, "-u", "-c", code], REPO, self.root / "cooperative.log", 1, [], lambda pid: None,
+                             on_finish=receipt.append, cleanup_grace=cleanup_grace("workbench-smoke"))
+        self.assertEqual(receipt[0]["cleanup_grace_seconds"], 150)
+        self.assertGreater(receipt[0]["cleanup_elapsed_seconds"], 5)
+        self.assertEqual(receipt[0]["returncode"], 0)
+        self.assertTrue(receipt[0]["wrapper_reaped"])
+        self.assertFalse(receipt[0].get("kill_sent", False))
+        self.assertFalse(receipt[0]["group_alive"])
+
+    def run_exited_wrapper_worker(self, mode):
+        directory = self.root / mode
+        directory.mkdir()
+        result = subprocess.run([sys.executable, "-u", "-c", EXITED_WRAPPER_WORKER, mode, str(directory)],
+                                cwd=REPO, capture_output=True, text=True, timeout=30)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        return json.loads(result.stdout)
+
+    def exited_wrapper_case(self, mode):
+        evidence = self.run_exited_wrapper_worker(mode)
+        self.assertNotIn("error", evidence, evidence)
+        self.assertEqual(evidence.get("code"), 0)
+        self.assertEqual(len(evidence["receipt"]), 1)
+        receipt = evidence["receipt"][0]
+        self.assertEqual(receipt["returncode"], 0)
+        self.assertTrue(receipt["wrapper_reaped"])
+        self.assertTrue(receipt["group_alive_after_wrapper_exit"])
+        self.assertFalse(receipt["group_alive"])
+        self.assertFalse(receipt["cleanup_errors"])
+        self.assertLess(receipt["cleanup_elapsed_seconds"], 1.5)
+        self.assertTrue(evidence["fixture"].get("exited"), evidence)
+        self.assertTrue(evidence["unrelated_task_group_survived"], evidence)
+        self.assertEqual(evidence["fixture"]["group"], receipt["process_group"])
+        self.assertIn("zero-wrapper-parent-ready", evidence["log"])
+        return receipt, evidence
+
+    def test_zero_wrapper_waits_for_actual_delayed_descendant_exit(self):
+        receipt, evidence = self.exited_wrapper_case("natural")
+        self.assertGreater(receipt["natural_quiet_wait_seconds"], 0)
+        self.assertFalse(receipt.get("term_sent", False))
+        self.assertFalse(receipt.get("kill_sent", False))
+        self.assertEqual(evidence["done"], "natural")
+
+    def test_zero_wrapper_terminates_only_its_actual_long_descendant(self):
+        receipt, evidence = self.exited_wrapper_case("term")
+        self.assertTrue(receipt["term_sent"])
+        self.assertFalse(receipt.get("kill_sent", False))
+        self.assertEqual(evidence["done"], "term")
+
+    def test_zero_wrapper_forces_ignored_term_and_verifies_actual_group_exit(self):
+        receipt, evidence = self.exited_wrapper_case("ignore")
+        self.assertTrue(receipt["term_sent"])
+        self.assertTrue(receipt["kill_sent"])
+        self.assertIsNone(evidence["done"])
+        if "wait_status" in evidence["fixture"]:
+            self.assertEqual(os.waitstatus_to_exitcode(evidence["fixture"]["wait_status"]), -signal.SIGKILL)
+
+    @unittest.skipUnless(sys.platform.startswith("linux"), "Linux task subreaper observes an actual unreaped orphan")
+    def test_zero_wrapper_does_not_claim_unreaped_zombie_group_is_clean(self):
+        evidence = self.run_exited_wrapper_worker("zombie")
+        self.assertEqual(evidence["error"]["type"], "RuntimeError")
+        receipt = evidence["receipt"][0]
+        self.assertEqual(receipt["returncode"], 0)
+        self.assertTrue(receipt["wrapper_reaped"])
+        self.assertTrue(receipt["group_alive"])
+        self.assertTrue(receipt["term_sent"])
+        self.assertTrue(receipt["kill_sent"])
+        self.assertLess(receipt["cleanup_elapsed_seconds"], 1.5)
+        self.assertTrue(evidence["fixture"]["exited"])
+        self.assertEqual(os.waitstatus_to_exitcode(evidence["fixture"]["wait_status"]), 0)
+        self.assertTrue(evidence["unrelated_task_group_survived"])
+
     def test_spawn_record_failure_reaps_the_started_stage(self):
         with patch.object(sys, "path", [str(REPO / "harness"), *sys.path]):
             from harness.run import subprocess_stage
@@ -122,7 +347,7 @@ class StateTests(unittest.TestCase):
                             pass
                 self.addCleanup(cleanup)
                 with self.assertRaises(type(error)):
-                    subprocess_stage([sys.executable, "-c", "import time; time.sleep(60)"], REPO, self.root / "spawn.log", 10, [], on_spawn)
+                    subprocess_stage([sys.executable, "-c", "import time; time.sleep(60)"], REPO, self.root / (type(error).__name__ + "-spawn.log"), 10, [], on_spawn)
                 self.assertEqual(len(started), 1)
                 with self.assertRaises(ProcessLookupError):
                     os.kill(started[0], 0)
@@ -222,6 +447,19 @@ class StateTests(unittest.TestCase):
                 result = validate_resume(report, self.candidate)
                 self.assertFalse(result["allowed"])
                 self.assertTrue(any(reason in value for value in result["reasons"]), result)
+
+    def test_resume_rejects_malformed_nested_shapes_and_live_recorded_group(self):
+        for edit in (lambda r: r.update(job=[]), lambda r: r.update(stages={}),
+                     lambda r: r.update(stages=[None]), lambda r: r.update(stages=[{"completion": []}]),
+                     lambda r: r.update(lease=[]), lambda r: r.update(lease={"resources": [1]})):
+            report = json.loads(json.dumps(self.report))
+            edit(report)
+            self.assertFalse(validate_resume(report, self.candidate)["allowed"])
+        self.report["stages"] = [{"id": "unfinished", "status": "failed", "job_pid": 123456789,
+                                  "completion": {"wrapper_reaped": True, "process_group": 123456789}}]
+        with patch("harness.state.os.killpg", return_value=None):
+            result = validate_resume(self.report, self.candidate)
+        self.assertTrue(any("process group" in reason for reason in result["reasons"]), result)
 
 
 if __name__ == "__main__":
