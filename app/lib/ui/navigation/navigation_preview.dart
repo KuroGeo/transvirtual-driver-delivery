@@ -421,14 +421,26 @@ class _ManualStartDialogState extends State<_ManualStartDialog> {
   }
 
   @override
-  Widget build(BuildContext context) => AlertDialog(
-    title: const Text('Choose a starting point'),
-    content: SingleChildScrollView(
+  Widget build(BuildContext context) => Dialog(
+    constraints: const BoxConstraints(maxWidth: 560),
+    insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+    child: SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
       child: Form(
         key: form,
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Semantics(
+              namesRoute: true,
+              header: true,
+              child: Text(
+                'Choose a starting point',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+            ),
+            const SizedBox(height: 16),
             const Text('Confirm the coordinates of your starting point.'),
             const SizedBox(height: 16),
             TextFormField(
@@ -452,29 +464,35 @@ class _ManualStartDialogState extends State<_ManualStartDialog> {
               ),
               validator: (text) => validate(text, 180),
             ),
+            const SizedBox(height: 24),
+            Wrap(
+              alignment: WrapAlignment.end,
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                ),
+                FilledButton(
+                  key: const ValueKey('navigation-confirm-start'),
+                  onPressed: () {
+                    if (form.currentState!.validate()) {
+                      Navigator.of(context).pop(
+                        RouteCoordinate(
+                          double.parse(latitude.text.trim()),
+                          double.parse(longitude.text.trim()),
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text('Use this start'),
+                ),
+              ],
+            ),
           ],
         ),
       ),
     ),
-    actions: [
-      TextButton(
-        onPressed: () => Navigator.of(context).pop(),
-        child: const Text('Cancel'),
-      ),
-      FilledButton(
-        key: const ValueKey('navigation-confirm-start'),
-        onPressed: () {
-          if (form.currentState!.validate()) {
-            Navigator.of(context).pop(
-              RouteCoordinate(
-                double.parse(latitude.text.trim()),
-                double.parse(longitude.text.trim()),
-              ),
-            );
-          }
-        },
-        child: const Text('Use this start'),
-      ),
-    ],
   );
 }
