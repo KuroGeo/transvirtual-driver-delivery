@@ -1,6 +1,6 @@
 # Native demo production sources
 
-`capture.py` records an **isolated, task-owned** iOS simulator using the existing workbench and OS process restart checks. It needs an isolated copy of `app/` and `harness/`, a hash-verified workbench `Runner.app` under `app/build/ios/iphonesimulator`, and `video_driver.dart` copied into `app/integration_test/`. Resolve locked app dependencies first. Keep raw recordings and logs out of the public Pages allowlist.
+`capture.py` records an **isolated, task-owned** iOS simulator using the existing workbench and OS process restart checks. This historical capture uses checkout `8d631db`, whose application tree still matched `256de9f`. It needs an isolated copy of that matching `app/` and `harness/`, a hash-verified workbench `Runner.app` under `app/build/ios/iphonesimulator`, and `video_driver.dart` copied into `app/integration_test/`. Resolve locked app dependencies first. The script rejects a compiled/source CSV mismatch; the current public synthetic CSV requires a matching rebuilt workbench package for a new capture. Keep raw recordings and logs out of the public Pages allowlist.
 
 The driver is the existing tooling smoke driver with readable pauses and a clearly labelled demo scope. It uses UI controls and read-only snapshots; no model mutation endpoint is added. The private tile proxy handles only requests from the actual viewport. The fixture provides controlled simulated HTTP acknowledgements. The recording does not replace or expand native acceptance.
 

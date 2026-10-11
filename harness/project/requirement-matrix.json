@@ -5,7 +5,7 @@
     {
       "id": "R01",
       "sources": [
-        "docs/assignment/deliveries.csv",
+        "app/assets/deliveries.csv",
         "docs/solution-design.md",
         "harness/project/contracts.md"
       ],

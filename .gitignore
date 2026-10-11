@@ -3,3 +3,7 @@ __pycache__/
 *.py[cod]
 
 harness/runs/
+
+# Private recruitment mail, assignment attachments and their local copies.
+/docs/assignment/
+/harness/archive/2026-10-10-engineering.tar.gz

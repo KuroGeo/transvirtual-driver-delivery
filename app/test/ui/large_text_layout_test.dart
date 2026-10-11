@@ -87,11 +87,11 @@ void main() {
         lessThan(tester.getSize(queryViewport).height),
         reason: 'The complete scaled field must fit the real tool viewport.',
       );
-      await tester.enterText(search, 'Silverline');
+      await tester.enterText(search, 'TV-300002');
       await pumpFormalFrames(tester);
       await _dragToExpose(tester, 'filter-pending', queryViewport);
       await _tapActual(tester, 'filter-pending');
-      expect(model.query.search, 'Silverline');
+      expect(model.query.search, 'TV-300002');
       expect(model.query.status, DeliveryStatus.pending);
 
       // Closing the tool state must reveal a matching row immediately, rather
@@ -99,7 +99,7 @@ void main() {
       await _tapActual(tester, 'list-query-controls');
       expect(_byKey('stop-search'), findsNothing);
       expect(_byKey('list-query-scroll'), findsNothing);
-      expect(model.query.search, 'Silverline');
+      expect(model.query.search, 'TV-300002');
       expect(model.query.status, DeliveryStatus.pending);
       final first = model.result.stops.first;
       _expectReadableStop(tester, model, first, _byKey('stop-list-scroll'));
@@ -109,16 +109,16 @@ void main() {
       await _tapActual(tester, 'list-query-controls');
       expect(
         tester.widget<TextField>(_byKey('stop-search')).controller!.text,
-        'Silverline',
+        'TV-300002',
       );
       await _dragToExpose(tester, 'list-query-apply', queryViewport);
       await _tapActual(tester, 'list-query-apply');
       expect(_byKey('stop-search'), findsNothing);
-      expect(model.query.search, 'Silverline');
+      expect(model.query.search, 'TV-300002');
       expect(model.query.status, DeliveryStatus.pending);
       _expectReadableStop(tester, model, first, _byKey('stop-list-scroll'));
 
-      // Two compact matches may both fit, which is an accessibility benefit.
+      // A compact match may fit, which is an accessibility benefit.
       // Broaden through actual query tools before requiring nonzero scrolling.
       await _tapActual(tester, 'list-query-controls');
       await _dragToExpose(tester, 'stop-search', queryViewport);
@@ -418,11 +418,11 @@ void main() {
       _maximumPhone(tester);
       final (_, model) = await _mount(tester);
       await _tapActual(tester, 'open-search');
-      await tester.enterText(_byKey('map-search'), 'Silverline');
+      await tester.enterText(_byKey('map-search'), 'TV-300002');
       await pumpFormalFrames(tester);
       await revealFormalControl(tester, 'header-filter-pending');
       await _tapActual(tester, 'header-filter-pending');
-      expect(model.query.search, 'Silverline');
+      expect(model.query.search, 'TV-300002');
       expect(model.query.status, DeliveryStatus.pending);
       await _tapActual(tester, 'fit-stops');
       final query = model.query;
@@ -531,16 +531,16 @@ void main() {
       await _tapActual(tester, 'browse-stops');
       await _tapActual(tester, 'list-query-controls');
       await _dragToExpose(tester, 'stop-search', _byKey('list-query-scroll'));
-      await tester.enterText(_byKey('stop-search'), 'Silverline');
+      await tester.enterText(_byKey('stop-search'), 'TV-300002');
       await pumpFormalFrames(tester);
       await _tapActual(tester, 'close-list');
       await _tapActual(tester, 'open-search');
-      await tester.enterText(_byKey('map-search'), 'Silverline');
+      await tester.enterText(_byKey('map-search'), 'TV-300002');
       await pumpFormalFrames(tester);
       await _tapActual(tester, 'fit-stops');
       final query = model.query;
       final camera = _actualCamera(tester);
-      expect(query.search, 'Silverline');
+      expect(query.search, 'TV-300002');
 
       await _tapActual(tester, 'map-summary-open');
       _expectSummaryTask(tester);

@@ -61,9 +61,9 @@ python3 harness/run.py native --scope workbench --driver-target integration_test
 
 ## 历史证据
 
-[2026-10-10 原始归档](archive/2026-10-10-engineering.tar.gz) 含419个保全文件和 `ARCHIVE-MANIFEST.json`，每个文件保存 SHA-256 与长度。归档 SHA-256：`d3b7fc7275f7672a050f346449d4e9d8e726bea2e6997eada8c29f253cb45f59`。完整日志、旧准备稿和原候选源码均在其中，当前结论见 [演练报告](reports/rehearsal.md)。
+本地 `harness/archive/2026-10-10-engineering.tar.gz` 原始归档 含419个保全文件和 `ARCHIVE-MANIFEST.json`，每个文件保存 SHA-256 与长度。归档 SHA-256：`d3b7fc7275f7672a050f346449d4e9d8e726bea2e6997eada8c29f253cb45f59`。该包含原始题目资料，已取消 Git 跟踪并加入 ignore，仅保留本地原件。完整日志、旧准备稿和原候选源码均在其中，当前结论见 [演练报告](reports/rehearsal.md)。
 
-需要复查时解包到独立临时目录，保留归档中的原路径；不能解包覆盖当前源码，也不能将旧原生证据改签为当前版本：
+持有本地原件并需要复查时，解包到独立临时目录，保留归档中的原路径；不能解包覆盖当前源码，也不能将旧原生证据改签为当前版本：
 
 ```sh
 archive_dir=$(mktemp -d)

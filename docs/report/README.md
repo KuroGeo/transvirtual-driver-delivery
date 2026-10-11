@@ -32,6 +32,7 @@ The report snapshots application/source history at `bebda787284fed5f9d5fb4acc36c
 
 ## Compressed media
 
-Original PNGs and the raw native recording are retained. Web copies use WebP; Inter is embedded as WOFF2. The video uses H.264 / yuv420p / MP4 faststart at 1080p and 30 fps. It has no audio, allowing live narration. The player preloads metadata only, so reading the report does not load the whole video. [Image compression receipts](media/image-compression.json) · [Video proof and encoding receipts](media/demo-proof.json).
+Original PNGs and the raw native recording are retained. Web copies use WebP; Inter is embedded as WOFF2. The video uses H.264 / yuv420p / MP4 faststart at 1080p and 30 fps. It has no audio, allowing live narration. The video is a separate file and the player uses `preload="metadata"`; actual fetching is browser-dependent. [Image compression receipts](media/image-compression.json) · [Video proof and encoding receipts](media/demo-proof.json).
 
 The native recording reuses a hash-verified 84-file workbench simulator package and drives real UI controls across three system processes. Input text is Flutter Driver emulated; ACKs come from the task HTTP fixture. This is an additional demonstration, not a new full native acceptance result. Raw logs, task secrets, original recording and temporary project assets are kept out of the Pages export.
+The current public app uses self-created synthetic CSV data. Original recruitment mail, assignment attachments and the engineering archive containing copies are retained locally and ignored by Git. This report keeps screenshots and evidence bound to their historical candidates; it does not claim they were recaptured with the replacement data.

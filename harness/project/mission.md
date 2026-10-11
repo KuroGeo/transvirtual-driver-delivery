@@ -8,7 +8,7 @@
 
 | 来源 | 用途 |
 | --- | --- |
-| [原题](../../docs/assignment/brief.en.txt) / [CSV](../../docs/assignment/deliveries.csv) | 30 站：24 pending、3 completed、3 failed；原题时间盒仅 take-home 模式 |
+| [公开演示 CSV](../../app/assets/deliveries.csv) | 自造合成30站：24 pending、3 completed、3 failed；原始招聘资料仅本地保留，原题时间盒仅 take-home 模式 |
 | [当前原型](../../prototype/README.md) | 已有功能和受控数据条件 |
 | [直接同步](../../prototype/direct-sync-design.md) | 替代旧同步抽屉；Toast、最近项 |
 | [按来源返回](../../prototype/origin-return-design.md) | 替代旧返回行为 |

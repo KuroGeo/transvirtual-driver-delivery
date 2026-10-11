@@ -1,6 +1,6 @@
 # Ocean Delivery · 82 秒原生演示
 
-真实 iOS 模拟器录屏；workbench_entry.dart 受控 Demo；本地 HTTP 模拟确认。无配音，供现场讲解。
+历史构建 256de9f / 原题数据快照，当前公开 App 使用自造合成 CSV。本片是历史构建的真实 iOS 模拟器录屏；workbench_entry.dart 受控 Demo；本地 HTTP 模拟确认。无配音，供现场讲解。
 
 - 00:00–00:05：离线时，也能完成配送。
 - 00:05–00:14：先离线，继续工作。

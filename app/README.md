@@ -14,7 +14,7 @@ Online 设置和合法地图视口随数据库持久化；冷启重置搜索、�
 
 `--dart-define=OCEAN_MODE=demo` 使用模拟确认，界面标记 `Demo · simulated confirmations`，业务文件为独立的 `ocean_delivery-demo.sqlite`。demo 不复用 local-client 队列，也不表示客户结果已上传。
 
-批准的开发样本为 assets/deliveries.csv 的30站原始七列；字体、图标和地图依赖许可保存在 assets/licenses。生产业务数据、地图/瓦片与离线服务的使用条件仍需单独核验。
+公开开发样本为 assets/deliveries.csv 的30站自造合成数据：客户名、虚构地址和坐标均为演示值，保留七列格式、演示编号及24 pending / 3 completed / 3 failed 分布。原始招聘附件保留在本地 docs/assignment/，不进入 Git。已有安装仍保留其已保存数据库；本次不迁移或清除用户数据。字体、图标和地图依赖许可保存在 assets/licenses。生产业务数据、地图/瓦片与离线服务的使用条件仍需单独核验。
 
 人工交互演示使用独立检出和明确的任务专用模拟器 UDID，在 app/ 目录运行正式入口。先结束占用相同工作区或设备的 Harness 任务，再选择一种配置；不要自动选取用户正在使用的设备。
 

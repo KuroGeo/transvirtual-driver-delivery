@@ -9,3 +9,5 @@ Make the existing Ocean Delivery interview report's demo concrete with a short n
 
 Concept: keep the phone recording as the fixed focal point while a quiet proof panel explains what is being observed.
 Use silent Chinese captions so George can talk over the video during the interview. No narration or stock music requested. Duration follows the measured native footage; remove setup/waiting time, retain business actions and restart transitions. One continuous composition with timed panel changes.
+
+The recording is a historical build/data snapshot (256de9f application tree), captured from the earlier checkout 8d631db. Preserve the newer public synthetic-data change on main; do not label these pixels as a capture of that replacement CSV.

@@ -34,7 +34,7 @@ python3 prototype/serve.py
 
 发送目标是应用内 fake，约 720ms 确认一条，没有真实网络上传。Online 开关控制题目要求的应用内连接状态，不读取设备网络；它与底图能否加载是两件事。
 
-原始数据来自未修改的 `docs/assignment/deliveries.csv`：24 pending、3 completed、3 failed。CSV 已有 failed 没有原因，详情明确显示来源未提供。配送状态遵守 `pending → completed | failed`；终态不可再改。保存失败时保留表单输入，不提前改变标记或追加队列；同步中切回 Offline，未确认记录仍留在队列。
+已生成的原型与截图保留其记录时的演示样本；重新生成读取公开的自造合成数据 `app/assets/deliveries.csv`：24 pending、3 completed、3 failed，不再依赖本地私密附件。初始 failed 没有原因，详情明确显示来源未提供。配送状态遵守 `pending → completed | failed`；终态不可再改。保存失败时保留表单输入，不提前改变标记或追加队列；同步中切回 Offline，未确认记录仍留在队列。
 
 ## 设计和证据
 

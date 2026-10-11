@@ -14,6 +14,10 @@ parser.add_argument('--root',type=Path,required=True)
 parser.add_argument('--output',type=Path,required=True)
 parser.add_argument('--lock-root',type=Path,required=True)
 args=parser.parse_args();args.root=args.root.resolve();args.output=args.output.resolve()
+compiled_csv=args.root/'app/build/ios/iphonesimulator/Runner.app/Frameworks/App.framework/flutter_assets/assets/deliveries.csv'
+source_csv=args.root/'app/assets/deliveries.csv'
+if hashlib.sha256(compiled_csv.read_bytes()).digest()!=hashlib.sha256(source_csv.read_bytes()).digest():
+    parser.error('Verified workbench bundle CSV differs from isolated source; use its recorded source tree or rebuild.')
 sys.path.insert(0,str(args.root))
 from harness import native_workbench as nw
 from harness.checks import fingerprint
