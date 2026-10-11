@@ -67,12 +67,14 @@ class GateTests(unittest.TestCase):
         for stage_id, command in commands.items():
             text = "synthetic passed stage\n"
             if stage_id == "tooling-tests":
-                text = "Ran 9 tests in 0.02s\n\nOK\n"
+                text = "".join(f"test_case_{i} (fixture.SyntheticTests.test_case_{i}) ... ok\n" for i in range(9)) + "\n----------------------------------------------------------------------\nRan 9 tests in 0.02s\n\nOK\n"
             if stage_id == "flutter-tests":
                 text = "00:01 +9: All tests passed!\n"
             log = self.evidence(f"quality-{stage_id}.log", "raw-log", text)
             cwd = self.quality["execution_root"] + ("/app" if stage_id in ("pub", "format", "analyze", "flutter-tests") else "")
-            self.quality["stages"].append({"id": stage_id, "status": "passed", "exit_code": 0, "job_pid": 99, "command": command, "cwd": cwd, "log_path": log["path"], "sha256": log["sha256"]})
+            completion = {"spawned": True, "wrapper_pid": 99, "process_group": 99, "wrapper_reaped": True,
+                          "returncode": 0, "group_alive": False, "cleanup_errors": []}
+            self.quality["stages"].append({"id": stage_id, "status": "passed", "exit_code": 0, "job_pid": 99, "command": command, "cwd": cwd, "log_path": log["path"], "sha256": log["sha256"], "completion": completion})
             self.quality["stage_spec"].append({"id": stage_id, "command": command, "cwd": cwd.replace(self.quality["execution_root"], "@workspace")})
         self.entry("G1")["evidence"].append(self.evidence("quality.json", "quality-run", json.dumps(self.quality)))
         artifact = self.evidence("release.bin", "release-artifact", b"synthetic release artifact")
@@ -656,6 +658,41 @@ class GateTests(unittest.TestCase):
                 self.assert_rejected("successful completion")
                 (self.root / stage["log_path"]).write_bytes(original_log)
 
+    def test_hash_valid_quality_requires_typed_complete_stage_reaping(self):
+        # Actual 075012 producer completion fields, with synthetic PIDs/logs so
+        # this regression stays portable and never adopts ignored run evidence.
+        mutations = {
+            "missing receipt": lambda s: s.pop("completion"),
+            "nonobject receipt": lambda s: s.update(completion=[]),
+            "missing group state": lambda s: s["completion"].pop("group_alive"),
+            "unreaped live group": lambda s: s["completion"].update(wrapper_reaped=False, returncode=None, group_alive=True, cleanup_errors=["still running"]),
+            "not spawned": lambda s: s["completion"].update(spawned=False),
+            "numeric spawned": lambda s: s["completion"].update(spawned=1),
+            "wrong wrapper": lambda s: s["completion"].update(wrapper_pid=100),
+            "wrong group": lambda s: s["completion"].update(process_group=100),
+            "boolean wrapper": lambda s: s.update(job_pid=1, completion={**s["completion"], "wrapper_pid": True, "process_group": 1}),
+            "boolean group": lambda s: s.update(job_pid=1, completion={**s["completion"], "wrapper_pid": 1, "process_group": True}),
+            "numeric reaped": lambda s: s["completion"].update(wrapper_reaped=1),
+            "nonzero child": lambda s: s["completion"].update(returncode=1),
+            "boolean returncode": lambda s: s["completion"].update(returncode=False),
+            "live group": lambda s: s["completion"].update(group_alive=True),
+            "numeric group state": lambda s: s["completion"].update(group_alive=0),
+            "unknown group state": lambda s: s["completion"].update(group_alive=None),
+            "cleanup error": lambda s: s["completion"].update(cleanup_errors=[{"type": "OSError", "message": "incomplete"}]),
+            "untyped empty errors": lambda s: s["completion"].update(cleanup_errors=""),
+            "unknown cleanup errors": lambda s: s["completion"].update(cleanup_errors=None),
+        }
+        for label, mutate in mutations.items():
+            with self.subTest(label=label):
+                report = copy.deepcopy(self.quality)
+                mutate(report["stages"][0])
+                # Both report and all original logs have valid hashes: refusal
+                # must come from missing/contradictory facts, not a hash error.
+                ref = self.evidence("completion-mutated-quality.json", "quality-run", json.dumps(report))
+                validator = Validator(self.manifest, self.fingerprint, self.root)
+                with self.assertRaisesRegex(EvidenceError, "stage completion"):
+                    validator.quality(report, validator.raw(ref))
+
     def quality_with_tooling(self, text):
         """Exercise the full original-log/hash reader, not only a regex helper."""
         report = copy.deepcopy(self.quality)
@@ -676,14 +713,23 @@ class GateTests(unittest.TestCase):
         )
         self.assertEqual(self.quality_with_tooling(text)["command"], "quality")
 
-    def test_quality_keeps_linux_no_skip_and_legacy_plain_success(self):
+    def test_quality_keeps_complete_linux_zero_skip_and_rejects_missing_rows(self):
         text = (
             "test_every_required_status_rejects_unknown_failed_skipped_and_stale (test_gate.GateTests.test_every_required_status_rejects_unknown_failed_skipped_and_stale) ... ok\n"
             "test_zero_wrapper_does_not_claim_unreaped_zombie_group_is_clean (test_state.StateTests.test_zero_wrapper_does_not_claim_unreaped_zombie_group_is_clean) ... ok\n"
             "\n----------------------------------------------------------------------\nRan 2 tests in 0.02s\n\nOK\n"
         )
         self.assertEqual(self.quality_with_tooling(text)["command"], "quality")
-        self.assertEqual(self.quality_with_tooling("Ran 9 tests in 0.02s\n\nOK\n")["command"], "quality")
+        variants = {
+            "summary only": "Ran 2 tests in 0.02s\n\nOK\n",
+            "one missing row": text.replace("test_every_required_status_rejects_unknown_failed_skipped_and_stale (test_gate.GateTests.test_every_required_status_rejects_unknown_failed_skipped_and_stale) ... ok\n", ""),
+            "inflated count": text.replace("Ran 2", "Ran 161"),
+            "truncated outcome": text.replace(" ... ok\n", " ...\n", 1),
+        }
+        for label, raw in variants.items():
+            with self.subTest(label=label):
+                with self.assertRaisesRegex(EvidenceError, "tooling-tests raw log lacks final successful completion"):
+                    self.quality_with_tooling(raw)
 
     def test_quality_rejects_hash_valid_skip_identity_count_failure_and_truncation(self):
         row = "test_zero_wrapper_does_not_claim_unreaped_zombie_group_is_clean (test_state.StateTests.test_zero_wrapper_does_not_claim_unreaped_zombie_group_is_clean) ... skipped 'Linux task subreaper observes an actual unreaped orphan'\n"

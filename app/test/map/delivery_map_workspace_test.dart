@@ -849,4 +849,104 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  for (final height in [200.0, 240.0]) {
+    testWidgets(
+      'landscape short map exposes single-column tools by actual drag at height $height',
+      (tester) async {
+        tester.view.physicalSize = const Size(844, 390);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        final provider = await fixtureProvider(tester);
+        final controller = fixtureController(tester);
+        final result = mapResult([mapStop('A')]);
+        var syncCalls = 0;
+        await tester.pumpWidget(
+          mapHost(
+            result: result,
+            provider: provider,
+            controller: controller,
+            workspaceHeight: height,
+            toolbarTop: 12,
+            onSync: () => syncCalls++,
+          ),
+        );
+        await tester.pumpAndSettle();
+        await waitForFixtureMap(tester, controller);
+        final map = tester.getRect(find.byKey(const ValueKey('delivery-map')));
+        expect(map.height, lessThan(221));
+        final initialCamera = controller.mapController.camera;
+        final zoom = find.byKey(const ValueKey('zoom-in'));
+        expect(zoom.hitTestable(), findsOneWidget);
+        final columnX = tester.getCenter(zoom).dx;
+
+        // Deliver a real vertical drag inside the visible column. An unbounded
+        // column leaves Sync clipped and this actual-hit assertion fails.
+        await tester.dragFrom(
+          Offset(columnX, map.bottom - 24),
+          const Offset(0, -140),
+        );
+        await tester.pumpAndSettle();
+        final sync = find.byKey(const ValueKey('map-sync'));
+        expect(
+          sync.hitTestable(),
+          findsOneWidget,
+          reason: 'The bottom tool must receive input after a real column drag',
+        );
+        for (final key in ['locate-reference', 'map-sync']) {
+          final action = find.byKey(ValueKey(key));
+          final bounds = tester.getRect(action);
+          expect(action.hitTestable(), findsOneWidget, reason: key);
+          expect(bounds.size, const Size(44, 44), reason: key);
+          expect(map.contains(bounds.topLeft), isTrue, reason: key);
+          expect(map.contains(bounds.bottomRight), isTrue, reason: key);
+        }
+        expect(controller.mapController.camera.center, initialCamera.center);
+        expect(controller.mapController.camera.zoom, initialCamera.zoom);
+        await tester.tap(sync.hitTestable());
+        await tester.pump();
+        expect(syncCalls, 1);
+        await tester.tap(
+          find.byKey(const ValueKey('locate-reference')).hitTestable(),
+        );
+        await tester.pumpAndSettle();
+        expect(
+          controller.mapController.camera.center,
+          const LatLng(TestReference.latitude, TestReference.longitude),
+        );
+        expect(controller.mapController.camera.zoom, 14);
+
+        // Scroll back through the same pointer route, then prove Zoom remains
+        // a real 44px action. Scrolling the tools must not pan the map.
+        final locatedCamera = controller.mapController.camera;
+        await tester.dragFrom(
+          Offset(columnX, map.top + 32),
+          const Offset(0, 140),
+        );
+        await tester.pumpAndSettle();
+        expect(zoom.hitTestable(), findsOneWidget);
+        expect(tester.getSize(zoom), const Size(44, 44));
+        expect(controller.mapController.camera.center, locatedCamera.center);
+        expect(controller.mapController.camera.zoom, locatedCamera.zoom);
+        await tester.tap(zoom.hitTestable());
+        await tester.pumpAndSettle();
+        expect(controller.mapController.camera.zoom, 15);
+        for (final key in [
+          'zoom-in',
+          'zoom-out',
+          'fit-stops',
+          'locate-reference',
+          'map-sync',
+        ]) {
+          final action = find.byKey(ValueKey(key));
+          expect(tester.getSize(action), const Size(44, 44), reason: key);
+          expect(tester.getCenter(action).dx, columnX, reason: key);
+        }
+        expect(result.stops.single.reference, 'A');
+        expect(controller.tileStatus.value, MapTileStatus.ready);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
 }

@@ -124,6 +124,8 @@ def _tooling_completed(tooling):
                "... " + skip_outcome)
     prefix = tooling[:summary.start()]
     rows = list(re.finditer(r"(?m)^test\S+ \([^\r\n]+\) \.\.\. ", prefix))
+    if len(rows) != int(summary[1]):
+        return False
     for index, row in enumerate(rows):
         end = rows[index + 1].start() if index + 1 < len(rows) else len(prefix)
         output = prefix[row.end():end].splitlines()
@@ -139,7 +141,7 @@ def _tooling_completed(tooling):
             return False
     if declared == 0:
         return True
-    return declared == 1 and skipped == [allowed] and len(rows) == int(summary[1])
+    return declared == 1 and skipped == [allowed]
 
 
 class Validator:
@@ -312,6 +314,17 @@ class Validator:
             _integer(stage.get("exit_code"), "stage exit_code")
             _expect(stage["exit_code"], 0, "status/exit_code")
             _integer(stage.get("job_pid"), "stage job_pid", 1)
+            completion = _object(stage.get("completion"), "stage completion")
+            for key, expected in {
+                "spawned": True,
+                "wrapper_pid": stage["job_pid"],
+                "process_group": stage["job_pid"],
+                "wrapper_reaped": True,
+                "returncode": 0,
+                "group_alive": False,
+                "cleanup_errors": [],
+            }.items():
+                _expect(completion.get(key), expected, "stage completion." + key)
             argv = _list(stage.get("command"), "stage command")
             if any(not isinstance(argument, str) for argument in argv):
                 raise EvidenceError("stage command arguments must be strings")

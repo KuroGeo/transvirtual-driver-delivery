@@ -548,7 +548,15 @@ class _DeliveryMapWorkspaceState extends State<DeliveryMapWorkspace> {
                     Positioned(
                       left: 13,
                       top: widget.toolbarTop,
-                      child: _toolbar(),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: math.max(
+                            0,
+                            constraints.maxHeight - widget.toolbarTop - 12,
+                          ),
+                        ),
+                        child: _toolbar(),
+                      ),
                     ),
                   if (widget.showTileError)
                     Positioned(
@@ -643,39 +651,44 @@ class _DeliveryMapWorkspaceState extends State<DeliveryMapWorkspace> {
     elevation: 2,
     borderRadius: BorderRadius.circular(14),
     clipBehavior: Clip.antiAlias,
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _tool('zoom-in', 'Zoom in', Icons.add, _controller.zoomIn),
-        _tool('zoom-out', 'Zoom out', Icons.remove, _controller.zoomOut),
-        _tool(
-          'fit-stops',
-          'Fit matching stops',
-          Icons.crop_free,
-          widget.result.stops.isEmpty ? null : _controller.fitMatches,
-        ),
-        _tool(
-          'locate-reference',
-          'Locate test reference',
-          Icons.near_me_outlined,
-          _controller.locateTestReference,
-        ),
-        if (widget.onSync != null) ...[
-          const SizedBox(width: 44, child: Divider(height: 1)),
-          SizedBox(
-            width: 44,
-            height: 44,
-            child: IconButton(
-              key: const ValueKey('map-sync'),
-              tooltip: widget.syncing
-                  ? 'Syncing saved updates'
-                  : 'Sync saved updates',
-              icon: SyncActionIcon(syncing: widget.syncing),
-              onPressed: _ready ? widget.onSync : null,
-            ),
+    // Keep targets at their full size on short/landscape maps. The existing
+    // Material clips this viewport; only this column receives vertical drags.
+    child: SingleChildScrollView(
+      key: const ValueKey('map-tools-scroll'),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _tool('zoom-in', 'Zoom in', Icons.add, _controller.zoomIn),
+          _tool('zoom-out', 'Zoom out', Icons.remove, _controller.zoomOut),
+          _tool(
+            'fit-stops',
+            'Fit matching stops',
+            Icons.crop_free,
+            widget.result.stops.isEmpty ? null : _controller.fitMatches,
           ),
+          _tool(
+            'locate-reference',
+            'Locate test reference',
+            Icons.near_me_outlined,
+            _controller.locateTestReference,
+          ),
+          if (widget.onSync != null) ...[
+            const SizedBox(width: 44, child: Divider(height: 1)),
+            SizedBox(
+              width: 44,
+              height: 44,
+              child: IconButton(
+                key: const ValueKey('map-sync'),
+                tooltip: widget.syncing
+                    ? 'Syncing saved updates'
+                    : 'Sync saved updates',
+                icon: SyncActionIcon(syncing: widget.syncing),
+                onPressed: _ready ? widget.onSync : null,
+              ),
+            ),
+          ],
         ],
-      ],
+      ),
     ),
   );
 

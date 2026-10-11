@@ -254,6 +254,56 @@ void main() {
     },
   );
 
+  testWidgets(
+    'landscape status fit keeps the matching stop and Browse reachable',
+    (tester) async {
+      mapTestSize(tester);
+      tester.view.physicalSize = const Size(844, 390);
+      tester.view.padding = const FakeViewPadding(
+        left: 47,
+        right: 47,
+        bottom: 21,
+      );
+      tester.view.viewPadding = const FakeViewPadding(
+        left: 47,
+        right: 47,
+        bottom: 21,
+      );
+      addTearDown(tester.view.resetPadding);
+      addTearDown(tester.view.resetViewPadding);
+      final (fixture, model, map) = await _mount(tester);
+      await tapFormalControl(tester, 'open-search');
+      await tester.enterText(
+        find.byKey(const ValueKey('map-search')),
+        'TV-300002',
+      );
+      await pumpFormalFrames(tester);
+      await tapFormalControl(tester, 'header-filter-pending');
+      await waitForFixtureMap(tester, map);
+      expect(model.result.stops.single.reference, 'TV-300002');
+      expect(
+        tester.getSize(find.byKey(const ValueKey('delivery-map'))).height,
+        lessThan(200),
+      );
+      _expectMatchExposed(tester);
+      _expectFullyWithin(
+        tester,
+        find.byKey(const ValueKey('browse-stops')),
+        find.byKey(const ValueKey('delivery-map')),
+      );
+      await tapFormalControl(tester, 'browse-stops');
+      expect(model.panel, WorkbenchPanel.list);
+      await tapFormalControl(tester, 'close-list');
+      expect(model.panel, WorkbenchPanel.map);
+      expect(model.query.search, 'TV-300002');
+      await waitForFixtureMap(tester, map);
+      _expectMatchExposed(tester);
+      expect(tester.takeException(), isNull);
+      await unmountFormalApp(tester, model);
+      await awaitFormalIO(tester, fixture.dispose);
+    },
+  );
+
   testWidgets('normal overview keeps its summary and Browse in one card', (
     tester,
   ) async {

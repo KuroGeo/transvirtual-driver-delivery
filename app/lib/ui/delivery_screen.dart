@@ -243,12 +243,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                                         if (_compact(context, area)) {
                                           // Fit beside the single tool column
                                           // and the compact card/feedback.
-                                          return EdgeInsets.fromLTRB(
-                                            80,
-                                            170,
-                                            math.max(0, area.maxWidth - 91),
-                                            24,
-                                          );
+                                          return _compactFitPadding(area);
                                         }
                                         return const EdgeInsets.fromLTRB(
                                           35,
@@ -263,12 +258,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                                         _compact(context, area),
                                       );
                                       if (compact) {
-                                        return EdgeInsets.fromLTRB(
-                                          80,
-                                          170,
-                                          math.max(0, area.maxWidth - 91),
-                                          24,
-                                        );
+                                        return _compactFitPadding(area);
                                       }
                                       if (_map.tileStatus.value ==
                                           MapTileStatus.error) {
@@ -438,6 +428,19 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
       );
     },
   );
+
+  EdgeInsets _compactFitPadding(BoxConstraints area) {
+    // Keep a complete marker lane even beneath the short landscape header.
+    // On taller maps the existing card/tool clearance stays unchanged.
+    final bottom = math.min(24.0, math.max(0.0, area.maxHeight - 44));
+    final top = math.min(170.0, math.max(0.0, area.maxHeight - bottom - 44));
+    return EdgeInsets.fromLTRB(
+      80,
+      top,
+      math.max(0, area.maxWidth - 91),
+      bottom,
+    );
+  }
 
   bool _compact(BuildContext context, BoxConstraints area) =>
       area.maxHeight < 500 || MediaQuery.textScalerOf(context).scale(14) > 22;
@@ -730,11 +733,13 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
     final nearest = model.result.nearest;
     final finished = model.stops.length - model.pendingCount;
     final ratio = model.stops.isEmpty ? 0.0 : finished / model.stops.length;
-    final browse = TextButton(
+    final browse = TextButton.icon(
       key: const ValueKey('browse-stops'),
       onPressed: model.openList,
       style: TextButton.styleFrom(minimumSize: const Size(0, 44)),
-      child: const Text('Browse stops', textAlign: TextAlign.center),
+      label: const Text('Browse stops', textAlign: TextAlign.center),
+      icon: const Icon(Icons.arrow_forward, size: 18),
+      iconAlignment: IconAlignment.end,
     );
     final completion = Text(
       model.loadError == null
