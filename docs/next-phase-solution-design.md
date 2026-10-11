@@ -6,7 +6,7 @@
 
 ## 产品行为与默认选择
 
-沿用推荐的 A 地图首页：地图、当前下一站、时间窗提醒和导航入口共存，助手按需打开。用户确认了原型整体，未单独指定 A/B/C。用户登录解释为司机通过企业已有身份系统登录；首版使用受信公司配置与 OIDC，公司内部非 OIDC 系统通过服务端身份桥接。用户最新修正将第二项扩大为全站 Go 用户/组织/角色权限体系；司机端与其他站内应用复用同一身份和授权。新增管理原型待用户确认，详见 [单项方案](next-phase/identity.md) 与 [Go 架构](next-phase/backend-go.md)。自助注册与任意身份服务器不默认开放。
+沿用推荐的 A 地图首页：地图、当前下一站、时间窗提醒和导航入口共存，助手按需打开。用户确认了原型整体，未单独指定 A/B/C。用户登录解释为司机通过企业已有身份系统登录；首版使用受信公司配置与 OIDC，公司内部非 OIDC 系统通过服务端身份桥接。用户最新澄清只需要Go用户表/认证/会话与前端登录，取消B端和用户管理；不增加组织成员/邀请/角色配置。详见 [登录方案](next-phase/identity.md) 与 [Go 架构](next-phase/backend-go.md)。自助注册与任意身份服务器不默认开放。
 
 站点详情进入道路路线预览，显示来源、计算时间、道路距离和 ETA；用户选择外部导航应用。返回后恢复原站点与来源，用户手动确认到站/配送结果。打开导航、推测到站或 AI 提醒均不能自动完成配送。
 
@@ -16,13 +16,13 @@ AI 本期使用可替换的客户端执行器，目标迁到 Go 服务端；模�
 
 现有 Flutter 使用 View/ViewModel、Repository、SQLite/outbox、串行 SyncCoordinator；当前 Transport 只有 demo/unavailable。SQLite v2 与 PendingUpdate/Ack 尚无企业/司机身份维度；查询层按固定参考点 Haversine 排序。必须先增加受信账号作用域和独立计划站序，不能把旧数据库默认归属新登录用户，也不能把直线距离作为道路 ETA。
 
-继续复用 `flutter_map` 与现有 Flutter/Harness，不引入另一套客户端状态框架或 Runner。域模型保持纯 Dart；I/O 放 data，系统登录回调、安全存储、定位、通知和外部应用交接放 platform，启动装配仍由一个负责人维护。全站后端采用 Go 模块化单体/PostgreSQL/REST；模块为 identity/session、workspace/membership、authorization、delivery、audit、modelproxy。企业 IdP 与既有派单可经 adapter 接入，但本站用户体系统一管理。NP15 单写 Go 依赖、启动、OpenAPI 和迁移，NP02/NP16/NP09 写领域模块；详见 [Go 架构](next-phase/backend-go.md)。路线客户端直连第三方，不增加本站 routes/matrix 服务。
+继续复用 `flutter_map` 与现有 Flutter/Harness，不引入另一套客户端状态框架或 Runner。域模型保持纯 Dart；I/O 放 data，系统登录回调、安全存储、定位、通知和外部应用交接放 platform，启动装配仍由一个负责人维护。Go后端采用模块化单体/PostgreSQL/REST；模块为identity/users/session、delivery、modelproxy，统一用户记录/认证/会话和数据归属。NP15单写Go依赖、启动、OpenAPI和迁移，NP02/NP09写领域模块；详见 [Go 架构](next-phase/backend-go.md)。路线客户端直连第三方，不增加本站 routes/matrix 服务。
 
 | 边界 | 建议接口/职责 | 所有者任务 |
 | --- | --- | --- |
 | 共享域协议 | AccountScope、Session、RouteRequest/Result、PlanSnapshot/Proposal、Reminder、AssistantReply | NP00 冻结；实现写入者 NP03（账号）/NP05（路线）/NP07（计划）/NP08（提醒）/NP09（助手） |
 | Go 平台 | 统一启动/依赖、OpenAPI、schema/迁移、HTTP/DB/日志基础 | NP15 单写 |
-| 全站用户授权 | 身份/会话与持久 ACK；组织成员/RBAC/管理审计 | NP02 / NP16 各自领域 |
+| 用户认证与数据归属 | 用户表、受信登录/会话、本人资源校验和持久ACK | NP02 |
 | 助手执行协议 | AssistantUseCase/Executor、独立 AgentCore/ToolPort/ModelPort；本期客户端，后续 Go | NP09 |
 | 账号容器 | 按作用域业务库、迁移、会话 generation、Transport 与同步生命周期 | NP03 |
 | 登录与系统能力 | OIDC 系统浏览器、凭据、安全回调；定位/外部地图；通知 | NP04 / NP06 / NP08 各自独占对应 platform 子目录 |
@@ -71,15 +71,13 @@ Go modelproxy 本期只保护模型 secret、身份/配额/预算/取消，不�
 
 ## Harness 与实施顺序
 
-下一阶段使用 NP-R01–NP-R19 与 NP00–NP16 独立命名空间，不改写旧 R01–R17/已接受任务。此次增加的静态检查验证需求覆盖、无环依赖、共享写域、计划状态、命令分类和 issue 正文/发布身份；纳入原型源码与方案指纹。它验证任务包结构，不证明新功能已实现。新增 host/native/live 检查均 planned。
+下一阶段使用 NP-R01–NP-R17、NP-R19 与 NP00–NP15（NP-R18/NP16管理项已取消） 独立命名空间，不改写旧 R01–R17/已接受任务。此次增加的静态检查验证需求覆盖、无环依赖、共享写域、计划状态、命令分类和 issue 正文/发布身份；纳入原型源码与方案指纹。它验证任务包结构，不证明新功能已实现。新增 host/native/live 检查均 planned。
 
 ```mermaid
 flowchart LR
   NP00[NP00 合同/外部配置] --> NP01[NP01 Harness 新协议]
   NP01 --> NP15[NP15 Go 平台/协议/迁移]
-  NP15 --> NP16[NP16 全站成员/RBAC/审计]
-  NP16 --> NP02[NP02 Go 身份/会话/ACK]
-  NP15 --> NP02
+  NP15 --> NP02[NP02 Go 用户/登录/会话/ACK]
   NP02 --> NP03[NP03 账号数据隔离]
   NP03 --> NP04[NP04 登录生命周期]
   NP03 --> NP05[NP05 第三方道路直连]
@@ -99,7 +97,7 @@ flowchart LR
 
 NP01 扩展现有 native 合同、fixture、可观察工具和门禁，支持新验收 ID 与服务配置指纹；当前 Runner 只有旧 N1–N7，不能用它们代签登录/导航/Agent。要求账号 A/B、超时/撤销/旧回调、在途 ACK、路线失败、错 scope、stale plan、原子应用失败、时区、重复提醒、注入和限流等确定性 fixture。独立原生进程检查需真正杀进程重开，记录数据库/站序/operationId、导航系统返回及原始 trace；真实企业 SSO、道路/模型服务与物理设备另签 NP13/NP14。
 
-NP15/NP16 提供 Go 与受控 PostgreSQL 基线，NP11 加入跨租户/会话/邀请/最后 owner 并发/审计失败、Local/Remote-fixture 协议替换及路线直连/凭据反例；新管理原型尚待确认，生产管理 Web 实施另拆后续任务。NP11 用 held-out 故障与对抗样本测“正确/拒绝/恢复”，记录逐案例判定、输入来源、模型/服务配置版本、工具参数与预算；网页、fixture、debug、模拟器和真实服务证据分别表达。运行报告沿用候选前后指纹、设备/资源租用、精确 attempt 路径、原日志 hash；旧报告只作为 historical，不复签当前候选。取消工具任务时只清理自有后代与租用，保留已落盘记录，恢复创建新 attempt。
+NP15提供Go与受控PostgreSQL基线，NP11加入可信首次登录并发、本人用户/数据归属、会话轮换/UTC过期/恢复、Local/Remote-fixture协议替换及路线直连反例。B端/用户管理已取消，不保留管理原型审批或后续实施任务。NP11 用 held-out 故障与对抗样本测“正确/拒绝/恢复”，记录逐案例判定、输入来源、模型/服务配置版本、工具参数与预算；网页、fixture、debug、模拟器和真实服务证据分别表达。运行报告沿用候选前后指纹、设备/资源租用、精确 attempt 路径、原日志 hash；旧报告只作为 historical，不复签当前候选。取消工具任务时只清理自有后代与租用，保留已落盘记录，恢复创建新 attempt。
 
 首次产品派工前 NP00 要确认身份 issuer/client/redirect/scopes、业务授权和 ACK、供应商/缓存许可、数据时区和窗口、服务实现源、模型/隐私/配额、设备/容量/性能预算。外部值未取得则对应任务 blocked，不妨碍已准备好的合同校验与 fixture 工作。真正执行仍须另有产品实施指令。
 

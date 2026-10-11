@@ -15,7 +15,7 @@ template = (ROOT/'index.html').read_text()
 for feature,(title,headline,summary,scenes) in FEATURES.items():
     additions = {
         'routing':'客户端直连第三方道路能力，不新增自己的路线后端。预览不可用时仍可交接地图导航。',
-        'identity':'用户系统扩展为全站 Go 账号、组织与权限。<a href="identity-admin.html">查看新增用户管理原型（待确认） ↗</a>',
+        'identity':'Go后端只做用户表、认证与会话，前端登录/退出/恢复；不做B端或用户管理。',
         'assistant':'本期客户端执行器与核心/工具分层，后续切换 Go 服务端执行器；用户交互保持一致。',
     }
     flow = ''.join(f'<button data-scene="{scene}"><span>{number}</span><div><strong>{label}</strong><small>{hint}</small></div><span>↗</span></button>' for scene,number,label,hint in scenes)

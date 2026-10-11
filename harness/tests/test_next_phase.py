@@ -24,7 +24,7 @@ class PreparationContract(unittest.TestCase):
             path.write_text('Fixture source')
         registry = self.read('feature-contracts.json')
         for feature in registry['features']:
-            for key in ('prototype','technical_design','backend_architecture','management_prototype'):
+            for key in ('prototype','technical_design','backend_architecture'):
                 if key not in feature:
                     continue
                 path = self.root/feature[key]
@@ -60,9 +60,6 @@ class PreparationContract(unittest.TestCase):
 
     def publish_fixture(self, reserved_number=False):
         registry = self.read('feature-contracts.json')
-        identity = next(feature for feature in registry['features'] if feature['id']=='F2')
-        identity.update(management_prototype_status='approved',management_approval={'source':'user_message','scope':'identity-admin','statement':'Fixture user approval for management prototype'})
-        self.write('feature-contracts.json',registry)
         value = self.read('backlog.json')
         repo = value['repository']
         value['publication_status'] = 'published'
@@ -75,7 +72,7 @@ class PreparationContract(unittest.TestCase):
             task['github'] = {'number':number,'issue_id':50000+index,'url':f'https://github.com/{repo}/issues/{number}'}
         materials = {'prototype/next-phase/README.md','prototype/next-phase/next.js','docs/next-phase-solution-design.md'}
         for feature in registry['features']:
-            materials.update(feature[key] for key in ('prototype','technical_design','backend_architecture','management_prototype') if key in feature)
+            materials.update(feature[key] for key in ('prototype','technical_design','backend_architecture') if key in feature)
         def git(*args):
             return subprocess.run(['git','-C',str(self.root),*args],capture_output=True,check=True).stdout.decode().strip()
         git('init','-q')
@@ -111,10 +108,10 @@ class PreparationContract(unittest.TestCase):
         (self.root/'docs/next-phase/backend-go.md').write_text('New architecture absent from committed source')
         self.assertTrue(any('stale/mismatched bytes' in error for error in self.errors()))
 
-    def test_published_cannot_borrow_original_mobile_approval(self):
+    def test_published_does_not_require_cancelled_management_review(self):
         self.publish_fixture()
-        self.mutate('feature-contracts.json',lambda value:value['features'][1].update(management_prototype_status='pending_user_review'))
-        self.assertTrue(any('separate user approval' in error for error in self.errors()))
+        self.assertEqual(self.errors(),[])
+        self.assertNotIn('management_prototype_status',self.read('feature-contracts.json')['features'][1])
 
     def test_routing_cannot_add_own_service(self):
         self.mutate('backlog.json',lambda value:next(t for t in value['tasks'] if t['id']=='NP05')['write_scope'].append('service/routes'))
@@ -124,9 +121,13 @@ class PreparationContract(unittest.TestCase):
         self.inputs.remove('docs/next-phase/backend-go.md')
         self.assertTrue(any('backend_architecture missing' in error for error in self.errors()))
 
-    def test_management_prototype_cannot_borrow_previous_approval(self):
-        self.mutate('feature-contracts.json',lambda value:value['features'][1].update(management_prototype_status='approved'))
-        self.assertTrue(any('management prototype review boundary' in error for error in self.errors()))
+    def test_management_cannot_return_to_login_only_scope(self):
+        self.mutate('feature-contracts.json',lambda value:value['features'][1].update(management_ui=True))
+        self.assertTrue(any('user/login-only scope' in error for error in self.errors()))
+
+    def test_membership_module_is_not_hidden_backend_scope(self):
+        self.mutate('backlog.json',lambda value:value['tasks'][2]['write_scope'].append('service/internal/membership'))
+        self.assertTrue(any('B-end management write scope forbidden' in error for error in self.errors()))
 
     def test_agent_cannot_become_permanent_client_only(self):
         self.mutate('feature-contracts.json',lambda value:value['features'][2].update(target_executor='client'))

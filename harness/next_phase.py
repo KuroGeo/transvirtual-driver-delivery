@@ -14,7 +14,7 @@ SHARED = {'app/pubspec.yaml':'NP10','app/pubspec.lock':'NP10','app/lib/main.dart
           'service/go.mod':'NP15','service/go.sum':'NP15','service/cmd/api':'NP15',
           'service/internal/platform':'NP15','service/api':'NP15','service/migrations':'NP15'}
 ARCHITECTURE = {'routing':'client-direct-third-party-no-own-routing-backend',
-                'identity':'site-wide-go-backend',
+                'identity':'go-user-auth-no-b-end',
                 'assistant':'client-executor-now-server-executor-later'}
 
 
@@ -105,14 +105,11 @@ def validate(root, candidate_inputs):
         routing,identity,assistant = [features.get(name,{}) for name in ('F1','F2','F3')]
         if routing.get('integration_policy')!=ARCHITECTURE['routing']:
             fail('F1: client third-party routing must not require own backend')
-        approval = identity.get('management_approval')
-        review_status = identity.get('management_prototype_status')
-        approved = review_status=='approved' and isinstance(approval,dict) and approval.get('source')=='user_message' and approval.get('scope')=='identity-admin' and isinstance(approval.get('statement'),str) and bool(approval['statement'].strip())
-        if identity.get('backend_language')!='Go' or review_status not in ('pending_user_review','approved') or (review_status=='approved' and not approved):
-            fail('F2: site-wide Go design/new management prototype review boundary missing')
-        if publication=='published' and not approved:
-            fail('published requires separate user approval for new management prototype')
-        for key,suffix in (('backend_architecture','.md'),('management_prototype','.html')):
+        if identity.get('backend_language')!='Go' or identity.get('product_scope')!='user-login-only' or identity.get('management_ui') is not False or any(key in identity for key in ('management_prototype','management_approval','management_prototype_status')):
+            fail('F2: Go user/login-only scope must exclude B-end management and approval gate')
+        if (root/'prototype/next-phase/identity-admin.html').exists():
+            fail('F2: cancelled B-end management prototype must not return')
+        for key,suffix in (('backend_architecture','.md'),):
             value = identity.get(key)
             if not canonical(value) or not value.endswith(suffix) or value not in candidate_inputs or not (root/value).is_file():
                 fail(f'F2: {key} missing/unsafe or outside fingerprint')
@@ -121,7 +118,7 @@ def validate(root, candidate_inputs):
     # Bind issue materials to real committed bytes, rather than checking URL spelling alone.
     materials = {'prototype/next-phase/README.md','prototype/next-phase/next.js','docs/next-phase-solution-design.md'}
     for feature in features.values():
-        materials.update(feature[key] for key in ('prototype','technical_design','backend_architecture','management_prototype') if isinstance(feature.get(key),str))
+        materials.update(feature[key] for key in ('prototype','technical_design','backend_architecture') if isinstance(feature.get(key),str))
     pending = backlog.get('source_ref_pending')
     if type(pending) is not bool or (publication=='published' and pending):
         fail('source binding pending/unknown cannot attest published materials')
@@ -151,6 +148,8 @@ def validate(root, candidate_inputs):
             continue
         name = task['id']
         by_id[name] = task
+        if name=='NP16':
+            fail('cancelled B-end management task NP16 must not return')
         if not strings(task.get('features')) or set(task['features'])-set(features):
             fail(f'{name}: feature source mapping missing/unknown')
         if not strings(task.get('requirements')) or set(task['requirements'])-required:
@@ -159,6 +158,8 @@ def validate(root, candidate_inputs):
             fail(f'{name}: invalid dependencies')
         if not strings(task.get('write_scope')) or any(not canonical(scope) for scope in task['write_scope']):
             fail(f'{name}: invalid write scope')
+        elif any(scope.startswith(('service/internal/workspace','service/internal/membership','service/internal/audit','admin/')) for scope in task['write_scope']):
+            fail(f'{name}: B-end management write scope forbidden')
         elif name in ('NP05','NP07') and any(scope.startswith('service/') for scope in task['write_scope']):
             fail(f'{name}: own routing/planning backend forbidden this iteration')
         elif name=='NP09' and any(scope.startswith(('service/assistant','service/internal/assistant')) for scope in task['write_scope']):
@@ -281,7 +282,7 @@ def validate(root, candidate_inputs):
                 fail(f'{name}: local marker/body hash mismatch')
             required_features = by_id[name]['features'] if name in by_id else list(features)
             for feature_id in required_features:
-                source_keys = ('prototype','technical_design','backend_architecture','management_prototype') if feature_id=='F2' else ('prototype','technical_design')
+                source_keys = ('prototype','technical_design','backend_architecture') if feature_id=='F2' else ('prototype','technical_design')
                 for key in source_keys:
                     expected = f"https://github.com/{backlog['repository']}/blob/{backlog.get('source_ref')}/{features[feature_id][key]}"
                     if expected not in body.decode():

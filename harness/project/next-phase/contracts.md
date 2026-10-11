@@ -1,4 +1,4 @@
-# 下一阶段合同 revision 2
+# 下一阶段合同 revision 3
 
 本包为 prepare，与旧 Flutter parity/revision 5–6 分开。业务细节见 [方案](../../../docs/next-phase-solution-design.md)，结构化来源为 backlog 与 requirement-matrix。
 
@@ -35,8 +35,8 @@ B1：去重保留覆盖离线/重试；401暂停、403/业务永久拒绝需处�
 
 F1 路线客户端直连第三方，不能新增自己的 routes/matrix/代理/OSRM 服务；ThirdPartyRoutePort 与外部 Maps 交接分开，基础导航不受道路配置阻塞，本站 token/身份不发给地图供应商。
 
-F2 为全站 Go 用户/组织/RBAC/会话/审计，架构见 docs/next-phase/backend-go.md。NP15 单写 service/go.mod/go.sum/cmd/api/internal/platform/api/migrations；NP02 写 identity/session/delivery，NP16 写 authorization/workspace/membership/audit，NP09 写 modelproxy。所有域 schema/OpenAPI 需求提交 NP15 集成；域端不能各建启动或数据迁移。NP15→NP16→NP02→客户端/集成，避免共享写冲突。
+F2仅做Go用户表/认证/会话和前端登录，架构见docs/next-phase/backend-go.md。NP15单写Go依赖/启动/OpenAPI/migrations；NP02写identity/users/session/delivery；NP09写modelproxy。删除NP16管理任务、NP-R18管理需求及管理原型，不把它们留到后续。不建membership/invitation/roles管理模块。NP15→NP02→客户端/集成。
 
 F3 本期 LocalAssistantExecutor 与独立纯 Dart AgentCore/ToolPort/ModelPort，未来 RemoteAssistantExecutor/Go Agent。v1 Request/Response 和合同案例必须可序列化、可替换；同一 UseCase/页面/客户端 Apply/设备提醒不随执行位置改写。Go modelproxy 本期只转发受限模型请求，不执行 Agent loop。真实服务端迁移另立后续任务，remote-fixture 不代签。
 
-新增 NP-R17 Go 架构、NP-R18 全站管理授权/审计、NP-R19 执行器迁移。新管理原型为 pending_user_review，不能借已确认司机原型签字；本地草稿继续 draft，远端正文与源码尚未更新发布。
+保留NP-R17 Go用户/认证架构和NP-R19执行器迁移；取消NP-R18。已确认登录原型继续有效，已取消的管理原型不再是发布前置条件。当前产品仍prepare，远端更新与实际回执分开记录。

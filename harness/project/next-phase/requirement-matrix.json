@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "contract_revision": 2,
+  "contract_revision": 3,
   "requirements": [
     {
       "id": "NP-R01",
@@ -101,8 +101,7 @@
         "NP04",
         "NP11",
         "NP12",
-        "NP13",
-        "NP16"
+        "NP13"
       ],
       "checks": [
         {
@@ -158,14 +157,6 @@
           "task": "NP13",
           "level": "live",
           "evidence_kind": "live",
-          "status": "planned",
-          "evidence": []
-        },
-        {
-          "id": "NP-R02-NP16",
-          "task": "NP16",
-          "level": "host",
-          "evidence_kind": "host",
           "status": "planned",
           "evidence": []
         }
@@ -881,8 +872,7 @@
         "NP09",
         "NP11",
         "NP13",
-        "NP15",
-        "NP16"
+        "NP15"
       ],
       "checks": [
         {
@@ -936,14 +926,6 @@
         {
           "id": "NP-R13-NP15",
           "task": "NP15",
-          "level": "host",
-          "evidence_kind": "host",
-          "status": "planned",
-          "evidence": []
-        },
-        {
-          "id": "NP-R13-NP16",
-          "task": "NP16",
           "level": "host",
           "evidence_kind": "host",
           "status": "planned",
@@ -1155,8 +1137,8 @@
     },
     {
       "id": "NP-R17",
-      "title": "全站 Go 后端架构",
-      "behavior": "Go 模块化单体/PostgreSQL/统一用户组织和 API，跨端共享授权；迁移、部署和恢复具备边界。",
+      "title": "Go 用户表与认证架构",
+      "behavior": "Go/PostgreSQL用户表、外部身份关联、会话/刷新/UTC时间与API支撑前端登录；不做B端/用户管理。",
       "sources": [
         "docs/next-phase/backend-go.md"
       ],
@@ -1165,8 +1147,7 @@
         "NP02",
         "NP11",
         "NP13",
-        "NP15",
-        "NP16"
+        "NP15"
       ],
       "checks": [
         {
@@ -1208,79 +1189,10 @@
           "evidence_kind": "host",
           "status": "planned",
           "evidence": []
-        },
-        {
-          "id": "NP-R17-NP16",
-          "task": "NP16",
-          "level": "host",
-          "evidence_kind": "host",
-          "status": "planned",
-          "evidence": []
         }
       ],
       "gaps": [
-        "仅方案/原型/任务准备，Go 服务与执行器尚未实现；新增管理原型待确认。"
-      ]
-    },
-    {
-      "id": "NP-R18",
-      "title": "全站用户管理与权限",
-      "behavior": "邀请/角色/停用/撤销会话/审计服务端授权，跨组织隔离和最后 owner 并发保护。",
-      "sources": [
-        "docs/next-phase/identity.md",
-        "docs/next-phase/backend-go.md"
-      ],
-      "tasks": [
-        "NP00",
-        "NP02",
-        "NP11",
-        "NP13",
-        "NP16"
-      ],
-      "checks": [
-        {
-          "id": "NP-R18-NP00",
-          "task": "NP00",
-          "level": "contract",
-          "evidence_kind": "contract",
-          "status": "planned",
-          "evidence": []
-        },
-        {
-          "id": "NP-R18-NP02",
-          "task": "NP02",
-          "level": "host",
-          "evidence_kind": "host",
-          "status": "planned",
-          "evidence": []
-        },
-        {
-          "id": "NP-R18-NP11",
-          "task": "NP11",
-          "level": "host",
-          "evidence_kind": "host",
-          "status": "planned",
-          "evidence": []
-        },
-        {
-          "id": "NP-R18-NP13",
-          "task": "NP13",
-          "level": "live",
-          "evidence_kind": "live",
-          "status": "planned",
-          "evidence": []
-        },
-        {
-          "id": "NP-R18-NP16",
-          "task": "NP16",
-          "level": "host",
-          "evidence_kind": "host",
-          "status": "planned",
-          "evidence": []
-        }
-      ],
-      "gaps": [
-        "仅方案/原型/任务准备，Go 服务与执行器尚未实现；新增管理原型待确认。"
+        "仅方案/原型/任务准备，Go 用户/认证服务与执行器尚未实现；沿用已确认登录原型。"
       ]
     },
     {
@@ -1340,7 +1252,7 @@
         }
       ],
       "gaps": [
-        "仅方案/原型/任务准备，Go 服务与执行器尚未实现；新增管理原型待确认。"
+        "仅方案/原型/任务准备，Go 用户/认证服务与执行器尚未实现；沿用已确认登录原型。"
       ]
     }
   ]

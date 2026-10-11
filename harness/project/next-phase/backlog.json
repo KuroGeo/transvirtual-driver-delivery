@@ -2,14 +2,14 @@
   "schema_version": 1,
   "package": "NEXT-PHASE",
   "mode": "prepare",
-  "contract_revision": 2,
+  "contract_revision": 3,
   "source_baseline": "e8276b4cc641b57fb70ee61401ccf3dd7e84871e",
   "repository": "KuroGeo/transvirtual-driver-delivery",
   "prototype_approval": {
     "date": "2026-10-12",
     "statement": "原型可以。你提issue的时候，像之前一样把任务做好harness，如果大的话，要拆解子issue。",
     "default_home": "A",
-    "identity_assumption": "全站 Go 用户/组织/RBAC 后端，企业受信 OIDC；新增管理原型待确认"
+    "identity_assumption": "Go 用户表/认证/会话+前端登录；沿用受信身份原型，不做B端/用户管理"
   },
   "publication_status": "draft",
   "github_parent": {
@@ -56,8 +56,7 @@
         "NP-R14",
         "NP-R16",
         "NP-R19",
-        "NP-R17",
-        "NP-R18"
+        "NP-R17"
       ],
       "depends_on": [],
       "external_dependencies": [],
@@ -74,7 +73,7 @@
         "确认受信 issuer/native client/redirect、scope 映射、离线授权期限/撤权策略、派单/ACK 与服务实现仓库和负责人；缺配置明确 blocked。 去重保留期覆盖最大离线/重试，明确永久拒绝、离线撤权与授权期限。",
         "冻结道路/地图许可与缓存、服务日期/IANA 时区/时窗/停留、车型约束、目标 OS、模型数据地区/保留及 30 站性能/成本预算。 冻结算法来源/预算、起点年龄精度与 ETA 重算阈值，按 OS 选择 Apple URL/兼容方式。",
         "固定接口所有者、运行模式 demo/local-client/connected、迁移策略、验收 ID 和最低证据；connected 缺配置失败，不回退 fake。",
-        "冻结全站 Go 模块/数据/REST 与单写所有权；本期路线直连第三方、AI LocalAssistantExecutor，未来 Go Agent 协议及管理原型评审边界明确。"
+        "冻结 Go 用户表/认证/会话、REST/时间TTL和单写所有权；不做B端/用户管理，不再等待管理原型；本期路线直连第三方、AI客户端分层与后续Go迁移。"
       ],
       "recovery": "合同改动、缺来源或共享写域冲突阻止派工；保留旧合同及已接受基线。",
       "outputs": [
@@ -106,7 +105,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/43",
         "state": "open"
       },
-      "body_sha256": "d40675cd73bcb6c41aa2d73f0c091b4cf3971cc92296d3c5267a4e1de15f21ca",
+      "body_sha256": "9ef1f303dcb583ebd60f218631e7d4a7b3d6edc2559d2934677f755df70c06ee",
       "features": [
         "F1",
         "F2",
@@ -178,7 +177,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/44",
         "state": "open"
       },
-      "body_sha256": "ce40127401b0698b74208fc571b7b5f06b27ff4d175824e9dd1bfe0488421511",
+      "body_sha256": "b0c87fb5fa8c1c4f10b7024466ccc1bcb5d9d46ebea6159c0415a6e183b26703",
       "features": [
         "F1",
         "F2",
@@ -187,7 +186,7 @@
     },
     {
       "id": "NP02",
-      "title": "用 Go 实现受信身份、会话和派单持久 ACK",
+      "title": "用 Go 实现用户表、登录会话和派单持久 ACK",
       "kind": "engineering",
       "role": "service-engineer",
       "requirements": [
@@ -195,12 +194,10 @@
         "NP-R02",
         "NP-R03",
         "NP-R13",
-        "NP-R17",
-        "NP-R18"
+        "NP-R17"
       ],
       "depends_on": [
-        "NP15",
-        "NP16"
+        "NP15"
       ],
       "external_dependencies": [],
       "write_scope": [
@@ -210,22 +207,24 @@
         "service/tests/identity",
         "service/tests/delivery",
         "app/lib/data/services/authenticated_transport.dart",
-        "app/test/data/services/authenticated_transport_test.dart"
+        "app/test/data/services/authenticated_transport_test.dart",
+        "service/internal/users"
       ],
       "skills": [
         "harness-engineering",
         "flutter-development"
       ],
       "acceptance": [
-        "Go 验证受信 issuer/subject/nonce/一次性登录事务并映射全站 userId；本站短期访问会话、轮换 refresh、Web BFF cookie/CSRF，客户端自报 scope/角色不能授权。统一 authorizer 检查有效组织成员/权限，派单与模型读取也鉴权。",
+        "Go验证受信issuer/subject/nonce/一次性登录事务，事务创建/取得users/external_identities；用户主键不是email，并发可信首次登录唯一。本站短期访问会话/轮换refresh，/me只返回本人，派单/模型读取校验会话、user状态与资源归属；没有用户管理/B端。",
         "稳定服务端 dataset/stop/snapshotVersion；原子持久接受 operationId+payload 并幂等 ACK；同 ID 不同 payload 拒绝，ACK 绑定完整账号/批次/站点。 去重保留期覆盖离线/重试；401 暂停，403/撤权/业务冲突/永久拒绝保留 outbox 与依据并停止自动重发，拒绝不得 ACK。",
         "受控服务协议测试覆盖响应丢失后重试、token 过期/撤权、错 scope 与持久接受失败；NP13 另签真实企业服务。",
-        "按 NP15/NP16 的 Go 协议实现，不另造启动或 schema；多端/组织切换、refresh 重放、本站停用与企业再验证期限、在途写提交前授权检查有受控 Go/DB 测试。",
-        "refresh family/token 在数据库事务锁/CAS 中单次消费，多副本最多一个请求成功，重放原子撤销 family；刷新响应丢失不得盲重试旧 token，安全幂等恢复或重新认证。"
+        "按NP15的Go用户/认证协议实现，不另造启动或schema；会话失效/退出、refresh重放、IdP再验证期限及在途提交前授权检查有Go/DB测试。workspace仅受信业务namespace，不是组织成员/角色系统。",
+        "refresh family/token 在数据库事务锁/CAS 中单次消费，多副本最多一个请求成功，重放原子撤销 family；刷新响应丢失不得盲重试旧 token，安全幂等恢复或重新认证。",
+        "用户/会话表时间使用timestamptz与服务端UTC/RFC3339；注入Clock验证TTL、过期边界和时钟变化，不信客户端时钟。无 /users 管理列表/CRUD、邀请、成员或角色API。"
       ],
       "recovery": "服务未持久接受不得 ACK；身份/配置未知失败闭合。现有后端若承载本协议，NP00 先登记实际仓库与写域再派工。",
       "outputs": [
-        "Go 身份/会话/派单 ACK 模块、原生/Web 会话协议与受控 SQL/HTTP 回归、服务授权和持久接受日志。"
+        "Go users/identity/session/delivery模块、用户/会话schema需求、登录/刷新/退出/me协议、受控SQL/HTTP回归及ACK原始记录。"
       ],
       "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
       "verification": {
@@ -253,7 +252,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/45",
         "state": "open"
       },
-      "body_sha256": "25b97f3d7673e88a4ebc8276afba7b55f3dc04df8defbf0caa9875a6d9486d24",
+      "body_sha256": "4754c6d6ea5facd3f4306bf4432019cf6e9ba5a4046ae5646d21b74939b757fe",
       "features": [
         "F2"
       ]
@@ -320,7 +319,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/46",
         "state": "open"
       },
-      "body_sha256": "659da4a0e0d9c4ffd23ada1b06a499df0f413ba5d2d1562b59b2ae21c6dc24ec",
+      "body_sha256": "1ec26ad130252b82764b54c7cef4f7f9db3040e9c222084ac6b35979607dab05",
       "features": [
         "F2"
       ]
@@ -384,7 +383,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/47",
         "state": "open"
       },
-      "body_sha256": "0b3314b16c002c0ba3af07d0d8a29e01aa90db0eccb0e91f455be3c0774cc5c6",
+      "body_sha256": "5d7eaf36b366a00fd566bb20f6c895ac7b6c6b47a4c905abb7610265322f88bc",
       "features": [
         "F2"
       ]
@@ -448,7 +447,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/48",
         "state": "open"
       },
-      "body_sha256": "7c402aa65e66c35aea37a6c9928a977d901ecd271c64e05b03703f0519cbb91b",
+      "body_sha256": "130ab3ede307ead14a98895c43af0e8821976d287afec361312e0e613a98bc83",
       "features": [
         "F1"
       ]
@@ -512,7 +511,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/49",
         "state": "open"
       },
-      "body_sha256": "3e33dfd0a4ad00d37755da6863c1bc6086b9d16256ebccc4c58ea6203128b702",
+      "body_sha256": "a756101f44b61b4d76ce65ab82f5af3f6ef63600dc9140e5f5f7e71e6f6c7c12",
       "features": [
         "F1"
       ]
@@ -576,7 +575,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/50",
         "state": "open"
       },
-      "body_sha256": "d594b491baa13ff6a7c909192781466eb07956b27323e031f248958706f225dc",
+      "body_sha256": "ebf84a470866c59fefdf5f2153a28d6700faf628d6f1549b7750afd133c4b3a1",
       "features": [
         "F3"
       ]
@@ -640,7 +639,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/51",
         "state": "open"
       },
-      "body_sha256": "62de4e886bbe44fa3dcfa98d5a6906df8956dfee4d3f7732279765dbce13c6d1",
+      "body_sha256": "ec6382d8aac8a09a62777ad976ad9066e2788c35ae0c78da2417900889df2a83",
       "features": [
         "F3"
       ]
@@ -713,7 +712,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/52",
         "state": "open"
       },
-      "body_sha256": "6206f9f92d1668ef63d75400165b5411eaab9cd5803c31fbe9f54fe264e969d3",
+      "body_sha256": "d9fba555893bbe26ff8f692e7f884c74949d17b64eb6b42c9243de71e3848ef9",
       "features": [
         "F3"
       ]
@@ -798,7 +797,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/53",
         "state": "open"
       },
-      "body_sha256": "e554b0eb83cd04e1e01db583ccdf48d06f08e315209a2fe84c2aee1dc8e2eefd",
+      "body_sha256": "a4e19aa07b0907f7aabb229bb6de27249b838291e6896d62820af9886a78c134",
       "features": [
         "F1",
         "F2",
@@ -825,12 +824,10 @@
         "NP-R14",
         "NP-R15",
         "NP-R19",
-        "NP-R17",
-        "NP-R18"
+        "NP-R17"
       ],
       "depends_on": [
-        "NP10",
-        "NP16"
+        "NP10"
       ],
       "external_dependencies": [],
       "write_scope": [
@@ -848,8 +845,8 @@
         "held-out 覆盖 A/B/同 email 不同 issuer、在途 ACK、持久接受响应丢失、刷新迟到/退出、安全存储与迁移失败。",
         "覆盖路线 A/B 乱序、不可达/缺站、stale Apply/Undo/双击/落盘失败、时区/提醒重复；逐项核对 outbox/终态不变量。",
         "独立注入/越权 stop/未知工具/错数字/超限/超时/取消/预算用例，记录每案事实/拒绝/恢复与原始参数；旧候选/配置/假原生门禁拒绝。 本地完成但服务端仍 pending 时，在线助手/优化排除该站且原 outbox 不变；普通重算不重复提醒或重置 snooze。",
-        "独立 Go/PostgreSQL/HTTP 评测跨组织/RBAC/邀请/最后 owner 并发/审计事务/会话撤销及进程重启；执行器协议 round-trip、local→remote-fixture 替换与等价事实、核心依赖边界、第三方直连不漏本站 token。",
-        "held-out 验证无会员首次邀请/受信 bootstrap、多副本 refresh 并发及丢响应、模型代理并发预留/取消费用/未知接受状态。"
+        "独立Go/PostgreSQL/HTTP评测首次登录并发/同email不同issuer/本人me与A/B数据归属/会话撤销/时钟/重启；执行器协议round-trip、local→remote-fixture替换与等价事实、核心依赖边界、第三方直连不漏本站token。",
+        "held-out验证首次可信用户落盘失败/会话轮换多副本并发及丢响应、模型代理预算预留/取消费用/未知接受状态；不新增管理端验收。"
       ],
       "recovery": "失败进入 rework，保留复现和原日志；评测者与实现者不能同一签字。",
       "outputs": [
@@ -881,7 +878,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/54",
         "state": "open"
       },
-      "body_sha256": "c61ddef4e7dbb89896db15b3a5edfc39d39155e62c42da93882b527fdd43bb07",
+      "body_sha256": "5ea163ee5275fa647bdc1f3d7c77ee13360d2a64a441cf110ab7c0971392b51e",
       "features": [
         "F1",
         "F2",
@@ -957,7 +954,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/55",
         "state": "open"
       },
-      "body_sha256": "b248f7b1a772dc6b97708ef63ee749ac73201ecd370197c18715a47f8cd0bdb1",
+      "body_sha256": "3cd8f81e9b1a719b21fdf026e5412835ff57831ec0ad2a762418f8847408fc15",
       "features": [
         "F1",
         "F2",
@@ -982,8 +979,7 @@
         "NP-R15",
         "NP-R16",
         "NP-R19",
-        "NP-R17",
-        "NP-R18"
+        "NP-R17"
       ],
       "depends_on": [
         "NP12"
@@ -1037,7 +1033,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/56",
         "state": "open"
       },
-      "body_sha256": "851e015646f38f849029fdb31934223916469bfebc2cdb4b395dd2060e4c94ba",
+      "body_sha256": "314e671b7805e7812d2f055d9bacf5cf17ed3bddcbd35c639f7c898f81fb21b0",
       "features": [
         "F1",
         "F2",
@@ -1106,7 +1102,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/57",
         "state": "open"
       },
-      "body_sha256": "67a40ed605b3b40c0ccabb00d5f4c95a125ec6b4aacabb65a589e5ebe896d2f7",
+      "body_sha256": "60eaf14da5a06fab304faf6d255bf2ea4d590e3030a09cbec91342f0722d9e75",
       "handoff_issue_numbers": [
         31,
         32,
@@ -1120,7 +1116,7 @@
     },
     {
       "id": "NP15",
-      "title": "建立全站 Go 后端模块、OpenAPI 与迁移基线",
+      "title": "建立 Go 用户认证后端的模块、OpenAPI 与迁移基线",
       "kind": "engineering",
       "role": "go-platform-owner",
       "requirements": [
@@ -1148,11 +1144,11 @@
         "engineering-requirements-extract"
       ],
       "acceptance": [
-        "按全站 Go 模块化单体/PostgreSQL 架构冻结 handler→application→domain/ports→adapter，统一 Actor/authorizer 接口、REST/OpenAPI/错误码和 SQL scope；不用微服务或复制用户库。",
+        "按Go模块化单体/PostgreSQL冻结handler→application→domain/ports→adapter，统一Actor/用户资源归属、REST/OpenAPI/错误和UTC/TTL；users/identity/session只支撑前端登录，不做B端/组织/RBAC管理。",
         "单写 Go 依赖/启动/OpenAPI/schema/migration 集成，领域任务提交需求而不越界；数据库 fixture、迁移版本锁/expand-contract/回滚恢复与 Go race/vet/测试入口纳入 Harness，未有工具前 planned。",
         "HTTP/context timeout、DB pool、graceful shutdown、health/readiness、secret/config 缺失失败、requestId/权限/ACK 日志脱敏；不加入自建 routes/matrix 服务，Go Agent 后续。"
       ],
-      "recovery": "权限/版本/数据库/审计失败明确拒绝且不提交变更；重试保持幂等，保留原始 attempt，不删除配送/outbox。",
+      "recovery": "认证/数据库/迁移失败明确拒绝且不提交变更；重试保持幂等，保留原始attempt，不删除配送/outbox。",
       "outputs": [
         "Go 工程与共享接口/OpenAPI、数据库 migration/受控环境、配置/启动/关停/备份恢复合同及原始工具证据。"
       ],
@@ -1185,84 +1181,16 @@
       "features": [
         "F2"
       ],
-      "body_sha256": "368849356a3a40053326b58e224dc647ac7ab42b1160fc4bfbef6adeefd732a0"
-    },
-    {
-      "id": "NP16",
-      "title": "实现全站组织成员、角色权限与管理审计",
-      "kind": "engineering",
-      "role": "go-user-system-engineer",
-      "requirements": [
-        "NP-R02",
-        "NP-R13",
-        "NP-R17",
-        "NP-R18"
-      ],
-      "depends_on": [
-        "NP15"
-      ],
-      "external_dependencies": [],
-      "write_scope": [
-        "service/internal/authorization",
-        "service/internal/workspace",
-        "service/internal/membership",
-        "service/internal/audit",
-        "service/tests/authorization"
-      ],
-      "skills": [
-        "harness-engineering",
-        "engineering-requirements-extract"
-      ],
-      "acceptance": [
-        "全站 user/externalIdentity 与 workspace/membership 边界、固定 owner/admin/dispatcher/driver 权限；服务端 Actor 从受信会话构建，资源双重租户/归属校验，默认拒绝，多个前端复用同一策略。",
-        "邀请单次/期限/受信身份绑定，角色/停用 If-Match、禁止越权授予、组织 admin 不得全站停人；最后有效 owner 事务行锁防并发清空。",
-        "成员变更、authorizationVersion/本站相关 session 撤销与 audit 同事务，audit 失败整体失败；其他组织不受影响，配送/outbox 保留；统一分页/错误/脱敏。",
-        "受控 Go/DB 反例覆盖 A/B 组织、同 email、跨组织停人/读审计、邀请重放、角色提升、两人并发降级最后 owner、旧版本覆盖与审计落盘失败。生产管理 Web 另立后续实施任务，此处原型不算管理端交付。",
-        "首个组织/owner 只允许受信平台 bootstrap 并审计；无 membership 受邀用户走 invitation/loginTransaction + OIDC 身份证明，原子消费邀请/映射/成员/audit 后才签正式 scope 会话，不允许首个登录者自动升 owner。"
-      ],
-      "recovery": "权限/版本/数据库/审计失败明确拒绝且不提交变更；重试保持幂等，保留原始 attempt，不删除配送/outbox。",
-      "outputs": [
-        "全站用户/组织/RBAC/邀请/审计 Go 模块与管理 API、数据库需求提交给 NP15、授权/并发/事务反例证据。"
-      ],
-      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
-      "verification": {
-        "level": "host",
-        "evidence_kind": "host",
-        "status": "planned",
-        "evidence": []
-      },
-      "commands": [
-        {
-          "command": "python3 harness/run.py check",
-          "availability": "now",
-          "purpose": "任务包结构，不证明 Go 后端已实现"
-        },
-        {
-          "command": "cd service && go test -race ./...",
-          "availability": "planned",
-          "purpose": "NP15 Go 工程和 NP01/NP15 数据库 fixture/日志入口实现后执行；当前不可报告 passed"
-        },
-        {
-          "command": "cd service && go vet ./...",
-          "availability": "planned",
-          "purpose": "Go 工程与依赖锁定后执行"
-        }
-      ],
-      "status": "planned",
-      "github": null,
-      "features": [
-        "F2"
-      ],
-      "body_sha256": "98ffe100bb84439302b6e33e29c84d14a26a46545dd96365daa60ff0f3aa8bf5"
+      "body_sha256": "42a1346b17c72ebb311cff29cdbd86562bb1fe5ba7b5d979a42572b28ba0a1f2"
     }
   ],
-  "epic_body_sha256": "36be48f3590a6ed28624ae0231bb8c07bbdfadccb75a0bf2b2ddb8b93c1c6572",
+  "epic_body_sha256": "748392a62450ea4fcb3b7784acd7e747cb5827ed207b2f93af13fa88b4f4325d",
   "architecture_decisions": {
     "routing": "client-direct-third-party-no-own-routing-backend",
-    "identity": "site-wide-go-backend",
+    "identity": "go-user-auth-no-b-end",
     "assistant": "client-executor-now-server-executor-later"
   },
-  "source_ref_pending": false,
+  "source_ref_pending": true,
   "source_manifest": {
     "docs/next-phase-solution-design.md": "6858337bfc594c5466760a49addc9ca4e28429736a30e1f0f09ff211340fed35",
     "docs/next-phase/assistant.md": "c488a1d35443dd970e1dc55113b91ed21d23fd28b4ac5615bf8ac905b02a0840",
