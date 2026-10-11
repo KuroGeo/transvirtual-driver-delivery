@@ -1,0 +1,953 @@
+{
+  "schema_version": 1,
+  "package": "NEXT-PHASE",
+  "mode": "prepare",
+  "contract_revision": 1,
+  "source_baseline": "e8276b4",
+  "repository": "KuroGeo/transvirtual-driver-delivery",
+  "prototype_approval": {
+    "date": "2026-10-12",
+    "statement": "原型可以。你提issue的时候，像之前一样把任务做好harness，如果大的话，要拆解子issue。",
+    "default_home": "A",
+    "identity_assumption": "企业已有 OIDC/服务端身份桥接；供应商和真实配置待 NP00 冻结"
+  },
+  "publication_status": "draft",
+  "github_parent": null,
+  "source_ref": "codex/next-phase-planning",
+  "concurrency_limit": 4,
+  "production_eligible": false,
+  "enforcement_deployed": false,
+  "shared_file_owners": {
+    "app/pubspec.yaml": "NP10",
+    "app/pubspec.lock": "NP10",
+    "app/lib/main.dart": "NP10",
+    "app/lib/app": "NP10",
+    "app/lib/ui/core": "NP10",
+    "app/android": "NP10",
+    "app/ios": "NP10",
+    "app/lib/data/delivery": "NP03",
+    "app/lib/models/delivery.dart": "NP03",
+    ".github/workflows": "NP01"
+  },
+  "tasks": [
+    {
+      "id": "NP00",
+      "title": "冻结账号、导航和助手合同及真实接入配置",
+      "kind": "engineering",
+      "role": "requirements-and-coordinator",
+      "requirements": [
+        "NP-R01",
+        "NP-R02",
+        "NP-R04",
+        "NP-R08",
+        "NP-R09",
+        "NP-R13",
+        "NP-R14",
+        "NP-R16"
+      ],
+      "depends_on": [],
+      "external_dependencies": [],
+      "write_scope": [
+        "docs/next-phase-solution-design.md",
+        "harness/project/next-phase"
+      ],
+      "skills": [
+        "engineering-requirements-extract",
+        "harness-engineering"
+      ],
+      "acceptance": [
+        "确认受信 issuer/native client/redirect、scope 映射、离线授权期限/撤权策略、派单/ACK 与服务实现仓库和负责人；缺配置明确 blocked。 去重保留期覆盖最大离线/重试，明确永久拒绝、离线撤权与授权期限。",
+        "冻结道路/地图许可与缓存、服务日期/IANA 时区/时窗/停留、车型约束、目标 OS、模型数据地区/保留及 30 站性能/成本预算。 冻结算法来源/预算、起点年龄精度与 ETA 重算阈值，按 OS 选择 Apple URL/兼容方式。",
+        "固定接口所有者、运行模式 demo/local-client/connected、迁移策略、验收 ID 和最低证据；connected 缺配置失败，不回退 fake。"
+      ],
+      "recovery": "合同改动、缺来源或共享写域冲突阻止派工；保留旧合同及已接受基线。",
+      "outputs": [
+        "冻结合同、配置缺口清单、预算/设备矩阵和可派工接口交接。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "contract",
+        "evidence_kind": "contract",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py quality",
+          "availability": "now",
+          "purpose": "当前候选本地基线，不证明真实服务/真机/新功能"
+        }
+      ],
+      "status": "planned",
+      "github": null,
+      "body_sha256": "994a1441bd8c35ee177cadff35fa62cd1aaf25535168338a48a2838d7add5a1a"
+    },
+    {
+      "id": "NP01",
+      "title": "扩展 Harness 的账号、路线与 Agent 观察和门禁",
+      "kind": "engineering",
+      "role": "harness-engineer",
+      "requirements": [
+        "NP-R14",
+        "NP-R15",
+        "NP-R16"
+      ],
+      "depends_on": [
+        "NP00"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "harness/checks.py",
+        "harness/next_phase.py",
+        "harness/run.py",
+        "harness/gate.py",
+        "harness/state.py",
+        "harness/native_workbench.py",
+        "harness/tests",
+        "harness/fixtures/next_phase",
+        "harness/project/next-phase/native-contract.json",
+        ".github/workflows"
+      ],
+      "skills": [
+        "harness-engineering"
+      ],
+      "acceptance": [
+        "实现 NP 新原生/服务验收合同和受控 fixture；旧 N1–N7/revision6 继续有效，新能力未覆盖时门禁拒绝。",
+        "观察真实 scope/generation、请求/ACK、计划 revision、提醒/工具、进程 PID 与独立重启；记录服务/模型配置版本和 fixture/live 类型。",
+        "新增故障注入、超时/取消/恢复与 fresh attempt 候选绑定；网页冒充原生、旧配置/旧候选、缺日志/hash/案例必须拒绝。"
+      ],
+      "recovery": "中断仅清理任务自有进程/设备/租用；原报告字节保留，恢复另建 attempt。",
+      "outputs": [
+        "已实现检查/工具、反例日志、Runner 帮助与原生/服务合同 revision；不能只交文档。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "harness",
+        "evidence_kind": "harness",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py quality",
+          "availability": "now",
+          "purpose": "当前候选本地基线，不证明真实服务/真机/新功能"
+        }
+      ],
+      "status": "planned",
+      "github": null,
+      "body_sha256": "6c195c770e5c5f9ccf097dde92df855e7b75e1e1abecf168c828050ebc6acefe"
+    },
+    {
+      "id": "NP02",
+      "title": "建立受信账号的派单授权与持久 ACK 服务边界",
+      "kind": "engineering",
+      "role": "service-engineer",
+      "requirements": [
+        "NP-R01",
+        "NP-R02",
+        "NP-R03",
+        "NP-R13"
+      ],
+      "depends_on": [
+        "NP00",
+        "NP01"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "service/identity",
+        "service/delivery",
+        "service/tests/identity",
+        "service/tests/delivery",
+        "app/lib/data/services/authenticated_transport.dart",
+        "app/test/data/services/authenticated_transport_test.dart"
+      ],
+      "skills": [
+        "harness-engineering",
+        "flutter-development"
+      ],
+      "acceptance": [
+        "验证 issuer/subject 到内部 scope 映射，服务端鉴权派单/路线/工具；客户端传他人 workspace/stop 不改变授权范围。",
+        "稳定服务端 dataset/stop/snapshotVersion；原子持久接受 operationId+payload 并幂等 ACK；同 ID 不同 payload 拒绝，ACK 绑定完整账号/批次/站点。 去重保留期覆盖离线/重试；401 暂停，403/撤权/业务冲突/永久拒绝保留 outbox 与依据并停止自动重发，拒绝不得 ACK。",
+        "受控服务协议测试覆盖响应丢失后重试、token 过期/撤权、错 scope 与持久接受失败；NP13 另签真实企业服务。"
+      ],
+      "recovery": "服务未持久接受不得 ACK；身份/配置未知失败闭合。现有后端若承载本协议，NP00 先登记实际仓库与写域再派工。",
+      "outputs": [
+        "协议适配实现、受控服务/客户端回归、服务端授权与接受原始记录。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "host",
+        "evidence_kind": "host",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py test --target test/data/services/authenticated_transport_test.dart",
+          "availability": "planned",
+          "purpose": "实现目标文件及 NP01 协议后执行；当前不得运行或写 passed"
+        }
+      ],
+      "status": "planned",
+      "github": null,
+      "body_sha256": "b5c3505ac9ef4c481420024eec77a7905f43b8552cc5218a7c84d96264dbb392"
+    },
+    {
+      "id": "NP03",
+      "title": "按账号隔离 SQLite、计划与在途同步",
+      "kind": "feature",
+      "role": "data-engineer",
+      "requirements": [
+        "NP-R02",
+        "NP-R03",
+        "NP-R07",
+        "NP-R12"
+      ],
+      "depends_on": [
+        "NP02"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "app/lib/models/account.dart",
+        "app/lib/models/delivery.dart",
+        "app/lib/data/account",
+        "app/lib/data/delivery",
+        "app/test/data/account",
+        "app/test/data/account_scope_test.dart"
+      ],
+      "skills": [
+        "flutter-development",
+        "harness-engineering"
+      ],
+      "acceptance": [
+        "A 离线保存后退出/进入 B，B 不能读取或发送 A 数据；A 重登保留原 operationId 并继续匹配确认。",
+        "换账号、退出、授权失效、重登重置均递增 generation；旧 ACK 仅按原 scope 收尾原库，旧查询/refresh/路线/AI 不能改新 UI、凭据或恢复旧会话。 只有尚未超时且匹配原请求 ACK 可在开放旧容器收尾；超时迟到拒绝。",
+        "legacy/demo 库不自动绑定首个账号；有受信归属证据才事务迁移，失败回滚；账号、计划/提醒配置冷启按原作用域恢复。"
+      ],
+      "recovery": "数据库/ACK 落盘失败不移除 outbox；停用旧容器时隔离/等待在途收尾，禁止提前关库。",
+      "outputs": [
+        "migration/schema 增量、scope 容器及同步回归、进程边界交给 NP12。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "host",
+        "evidence_kind": "host",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py test --target test/data/account_scope_test.dart",
+          "availability": "planned",
+          "purpose": "实现目标文件及 NP01 协议后执行；当前不得运行或写 passed"
+        }
+      ],
+      "status": "planned",
+      "github": null,
+      "body_sha256": "b4ff7d27a13ffc4cf10c4c9acdc0b689fdd4a3bdfc058c116d3d786dbd41e8fe"
+    },
+    {
+      "id": "NP04",
+      "title": "完成企业登录、刷新、过期和退出的客户端生命周期",
+      "kind": "feature",
+      "role": "identity-client-engineer",
+      "requirements": [
+        "NP-R01",
+        "NP-R02",
+        "NP-R03",
+        "NP-R12"
+      ],
+      "depends_on": [
+        "NP03"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "app/lib/data/session",
+        "app/lib/platform/identity",
+        "app/lib/ui/session",
+        "app/test/session_lifecycle_test.dart"
+      ],
+      "skills": [
+        "flutter-development"
+      ],
+      "acceptance": [
+        "系统浏览器授权码+PKCE，受信公司配置、一次消费 state/nonce/issuer/audience/回调，取消/失败可重试；不收企业密码。",
+        "系统安全存储凭据；单一 refresh 支持 IdP 旋转/重放防护；并发刷新、重复回调与退出后的迟到成功不恢复会话。",
+        "过期暂停远端访问并保留原 scope 队列；同账号重登恢复；退出清凭据、锁业务视图且显示保留数量。"
+      ],
+      "recovery": "安全存储失败不宣告已登录；离线读写期限按 NP00 合同，撤权/未知归属不可继续联网。",
+      "outputs": [
+        "登录状态机/platform 适配/页面及回归；装配和平台工程配置需求交 NP10，真实 SSO 交 NP13。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "host",
+        "evidence_kind": "host",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py test --target test/session_lifecycle_test.dart",
+          "availability": "planned",
+          "purpose": "实现目标文件及 NP01 协议后执行；当前不得运行或写 passed"
+        }
+      ],
+      "status": "planned",
+      "github": null,
+      "body_sha256": "1bb86bd58cbd292522d1f9c6f94e9042758038f57405ab8c7a6657e975e03cab"
+    },
+    {
+      "id": "NP05",
+      "title": "提供有来源的道路路线与距离 ETA",
+      "kind": "feature",
+      "role": "routing-engineer",
+      "requirements": [
+        "NP-R04",
+        "NP-R08",
+        "NP-R12",
+        "NP-R13"
+      ],
+      "depends_on": [
+        "NP03"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "app/lib/models/route.dart",
+        "app/lib/data/routes",
+        "app/test/route_repository_test.dart",
+        "service/routes",
+        "service/tests/routes"
+      ],
+      "skills": [
+        "flutter-development"
+      ],
+      "acceptance": [
+        "受信起点/定位时间精度、stop/inputRevision 请求道路路线；响应带 provider/configRevision/computedAt/expiresAt/几何/距离/时长。 响应包含 departureAt/durationBasis，静态路网耗时注明不含实时交通，不能冒称交通感知 ETA。 包含 arrivalAt、可取得的 roadDataVersion，多站 ETA 含窗口等待/服务时长。",
+        "迟到 A 路线不能覆盖新 B；权限拒绝/过旧定位支持显式手选起点，缺服务不以直线或固定测试点伪造 ETA。",
+        "覆盖 timeout、不可达、部分失败、限额及合法缓存；地图/归属/缓存契约合规，真实供应商测试另在 NP13。"
+      ],
+      "recovery": "取消与有界重试；过期缓存标旧，不称实时，服务配置变更拒绝恢复旧结果。",
+      "outputs": [
+        "RouteRepository/provider 适配、道路 fixture 回归、许可与缓存配置。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "host",
+        "evidence_kind": "host",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py test --target test/route_repository_test.dart",
+          "availability": "planned",
+          "purpose": "实现目标文件及 NP01 协议后执行；当前不得运行或写 passed"
+        }
+      ],
+      "status": "planned",
+      "github": null,
+      "body_sha256": "08170562a31d9b082aea9f5e13e93c6e9aea442c914455dbaba718b9f1abe391"
+    },
+    {
+      "id": "NP06",
+      "title": "交接外部地图并返回正确站点",
+      "kind": "feature",
+      "role": "navigation-engineer",
+      "requirements": [
+        "NP-R04",
+        "NP-R05",
+        "NP-R06"
+      ],
+      "depends_on": [
+        "NP04",
+        "NP05"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "app/lib/platform/navigation",
+        "app/lib/platform/location",
+        "app/lib/ui/navigation",
+        "app/test/navigation_handoff_test.dart"
+      ],
+      "skills": [
+        "flutter-development"
+      ],
+      "acceptance": [
+        "详情→道路预览→用户选择地图→编码白名单目的地交接；handoff 不等同真正导航或到站。",
+        "未安装/打开失败/定位拒绝提供另一应用或复制地址；不同 OS/App 的实际行为在 NP12/NP13 验证。",
+        "返回恢复 scope/dataset/stopId/origin/query/viewport；换账号/站点失效不能恢复旧视图，到站和配送终态继续手动。"
+      ],
+      "recovery": "导航退回/取消不修改配送/outbox；外部路线与 Ocean 预览可能不同，界面表达交接边界。",
+      "outputs": [
+        "NavigationGateway/location 适配、预览/选择器及返回回归；平台配置交 NP10。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "host",
+        "evidence_kind": "host",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py test --target test/navigation_handoff_test.dart",
+          "availability": "planned",
+          "purpose": "实现目标文件及 NP01 协议后执行；当前不得运行或写 passed"
+        }
+      ],
+      "status": "planned",
+      "github": null,
+      "body_sha256": "ae8633bc8523279dd87dea514d123f5dbabd8d0a0edb529f4b7ea1070237ad65"
+    },
+    {
+      "id": "NP07",
+      "title": "原子应用时间窗派送计划并支持有条件撤销",
+      "kind": "feature",
+      "role": "planning-engineer",
+      "requirements": [
+        "NP-R07",
+        "NP-R08",
+        "NP-R11",
+        "NP-R12"
+      ],
+      "depends_on": [
+        "NP05"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "app/lib/models/plan.dart",
+        "app/lib/data/plans",
+        "app/test/plan_repository_test.dart",
+        "service/planning",
+        "service/tests/planning"
+      ],
+      "skills": [
+        "flutter-development"
+      ],
+      "acceptance": [
+        "30 站完整 pending 集与道路矩阵/时区/窗口/停留/固定顺序约束产生逐站验证的可行提案；不可达、搜索预算耗尽和已证明冲突分开，启发式未找到方案不能宣称无解/全局最优或静默漏站。",
+        "应用核验 scope/dataset/baseRevision/inputFingerprint/expiry/完整唯一站点集并事务落盘；双击幂等，失败不改 UI。",
+        "activeStopOrder/下一站/列表同版，重启恢复；Undo 仅同版本且输入仍有效，配送完成/派单/位置约束变化拒绝旧提案与旧撤销。"
+      ],
+      "recovery": "计划存储独立，应用/Undo 不更改终态、失败原因、统计或配送 outbox；优化器不把 OSRM Trip 当时间窗解。",
+      "outputs": [
+        "确定性规划/PlanRepository、原子 Apply/Undo 与 stale 回归；计划共享不复用结果 outbox。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "host",
+        "evidence_kind": "host",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py test --target test/plan_repository_test.dart",
+          "availability": "planned",
+          "purpose": "实现目标文件及 NP01 协议后执行；当前不得运行或写 passed"
+        }
+      ],
+      "status": "planned",
+      "github": null,
+      "body_sha256": "7d13a085468e853b1f8fee0a9287fa7aafd81e26798f815ac97bda50cbe8522d"
+    },
+    {
+      "id": "NP08",
+      "title": "以确定性规则提供时效提醒与下一站提示",
+      "kind": "feature",
+      "role": "reminder-engineer",
+      "requirements": [
+        "NP-R09",
+        "NP-R12"
+      ],
+      "depends_on": [
+        "NP04",
+        "NP07"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "app/lib/models/reminder.dart",
+        "app/lib/data/reminders",
+        "app/lib/platform/notifications",
+        "app/lib/ui/reminders",
+        "app/test/reminder_policy_test.dart"
+      ],
+      "skills": [
+        "flutter-development"
+      ],
+      "acceptance": [
+        "注入时钟与 IANA 时区/服务日期，跨午夜/DST/时钟变化重算；有道路 ETA 才称迟到风险，无 ETA 只提示窗口临近。",
+        "scope+serviceDate+stop+windowId+rule 稳定键去重/暂缓，planRevision 仅核验新鲜度；重算不重置 snooze，终态/换号清对应提醒，冷启/恢复前台不重复轰炸。 稳定键包含 dataset；换号仅取消可见/系统通知，保留旧账号设置、去重和暂缓。",
+        "前台提醒正常工作，本地通知按实际权限降级并最小化锁屏信息；不声明后台持续定位或语音能力已交付。"
+      ],
+      "recovery": "权限拒绝不反复申请；计划/路线过期刷新依据，未解析 timeWindow 明示 unknown。",
+      "outputs": [
+        "ReminderPolicy/notification 适配与回归；原生通知/恢复交 NP12。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "host",
+        "evidence_kind": "host",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py test --target test/reminder_policy_test.dart",
+          "availability": "planned",
+          "purpose": "实现目标文件及 NP01 协议后执行；当前不得运行或写 passed"
+        }
+      ],
+      "status": "planned",
+      "github": null,
+      "body_sha256": "9de857bddffa5e4d227619be2ba604e25a98bea0fa726f7f2805da05b0a56b7c"
+    },
+    {
+      "id": "NP09",
+      "title": "为 AI 提供受限查询和派送提案工具",
+      "kind": "feature",
+      "role": "agent-service-engineer",
+      "requirements": [
+        "NP-R08",
+        "NP-R10",
+        "NP-R11",
+        "NP-R12",
+        "NP-R13"
+      ],
+      "depends_on": [
+        "NP02",
+        "NP07",
+        "NP08"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "app/lib/models/assistant.dart",
+        "app/lib/data/assistant",
+        "app/test/assistant_gateway_test.dart",
+        "service/assistant",
+        "service/tests/assistant"
+      ],
+      "skills": [
+        "flutter-development",
+        "harness-engineering"
+      ],
+      "acceptance": [
+        "服务端 model secret；工具仅 getNextStop/getDeliveryRisks/previewPlan，服务端注入 scope，schema/ID/权限/状态/版本再次校验。",
+        "下一站/风险回答附版本、数据时间和来源；本地未同步终态优先，不伪造 ETA/同步成功；提案经 NP07 人工应用。 EffectiveSnapshot 带 serverSnapshotVersion/localRevision/operationId overlay/planRevision/inputFingerprint，服务端校验授权与合法状态并标未确认来源；工具/优化器用同一有效 pending 集，客户端拒绝已变化指纹。 local overlay 明标 clientReported；远端刷新不能覆盖本地结果/原因/note/operationId/outbox，冲突显式呈现。",
+        "限制轮数/总时限/公司用户配额/成本，支持取消/请求去重/脱敏；越权 stop、注入、未知工具/额外参数拒绝，普通配送仍可继续。"
+      ],
+      "recovery": "模型超时/拒绝/工具失败明确降级，离线只显示可访问缓存事实；无 completeDelivery/clearOutbox 工具。",
+      "outputs": [
+        "AgentGateway/服务工具循环与 schema、受控对抗回归、配置/预算与审计合同。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "host",
+        "evidence_kind": "host",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py test --target test/assistant_gateway_test.dart",
+          "availability": "planned",
+          "purpose": "实现目标文件及 NP01 协议后执行；当前不得运行或写 passed"
+        }
+      ],
+      "status": "planned",
+      "github": null,
+      "body_sha256": "29bce708daf31eb9782ed61d05520a6f9f705c17bb20c8b0e6e981841dd39517"
+    },
+    {
+      "id": "NP10",
+      "title": "将登录、导航、提醒和助手接入已确认配送首页",
+      "kind": "feature",
+      "role": "flutter-integration-owner",
+      "requirements": [
+        "NP-R01",
+        "NP-R04",
+        "NP-R05",
+        "NP-R06",
+        "NP-R07",
+        "NP-R08",
+        "NP-R09",
+        "NP-R10",
+        "NP-R11",
+        "NP-R12"
+      ],
+      "depends_on": [
+        "NP06",
+        "NP08",
+        "NP09"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "app/lib/main.dart",
+        "app/lib/app",
+        "app/lib/ui/delivery_screen.dart",
+        "app/lib/ui/delivery_view_model.dart",
+        "app/lib/ui/delivery/query",
+        "app/lib/ui/delivery/list",
+        "app/lib/ui/delivery/map",
+        "app/lib/ui/delivery/detail",
+        "app/lib/ui/core",
+        "app/lib/ui/assistant",
+        "app/pubspec.yaml",
+        "app/pubspec.lock",
+        "app/android",
+        "app/ios",
+        "app/test/ui/next_phase_workbench_test.dart"
+      ],
+      "skills": [
+        "flutter-development"
+      ],
+      "acceptance": [
+        "按批准 A 地图首页装配账号容器、详情路线、下一站/提醒和按需助手；首页/列表/地图/详情/计划读取一致版本。",
+        "显式 demo/local-client/connected，connected 缺配置失败闭合；退出/重登/导航返回、离线/过期/AI 失败可操作。",
+        "提案先比较后人工 Apply/Undo，按钮状态和 stale 原因明确；沿用直接同步、来源返回与可读性/触控/动态字体要求。"
+      ],
+      "recovery": "单一 owner 写 pubspec/lock、系统配置、main/runtime、导航/主题；消费者不并写共享装配。",
+      "outputs": [
+        "Flutter 集成源码与独立 host/widget 回归；浏览器原型不能代签，送 NP11/NP12。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "host",
+        "evidence_kind": "host",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py test --target test/ui/next_phase_workbench_test.dart",
+          "availability": "planned",
+          "purpose": "实现目标文件及 NP01 协议后执行；当前不得运行或写 passed"
+        }
+      ],
+      "status": "planned",
+      "github": null,
+      "body_sha256": "438bd2c218407708124eb824fee3839430e6b6a231ffff2d104a1e3015c8f56a"
+    },
+    {
+      "id": "NP11",
+      "title": "独立评测账号恢复、规划不变量和 AI 越权拒绝",
+      "kind": "verification",
+      "role": "independent-test-and-harness-reviewer",
+      "requirements": [
+        "NP-R02",
+        "NP-R03",
+        "NP-R04",
+        "NP-R06",
+        "NP-R07",
+        "NP-R08",
+        "NP-R09",
+        "NP-R10",
+        "NP-R11",
+        "NP-R12",
+        "NP-R13",
+        "NP-R14",
+        "NP-R15"
+      ],
+      "depends_on": [
+        "NP10"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "app/test/next_phase",
+        "harness/evals/next_phase",
+        "harness/tests/test_next_phase_gate.py",
+        "harness/project/next-phase/requirement-matrix.json"
+      ],
+      "skills": [
+        "engineering-flutter-testing",
+        "harness-engineering"
+      ],
+      "acceptance": [
+        "held-out 覆盖 A/B/同 email 不同 issuer、在途 ACK、持久接受响应丢失、刷新迟到/退出、安全存储与迁移失败。",
+        "覆盖路线 A/B 乱序、不可达/缺站、stale Apply/Undo/双击/落盘失败、时区/提醒重复；逐项核对 outbox/终态不变量。",
+        "独立注入/越权 stop/未知工具/错数字/超限/超时/取消/预算用例，记录每案事实/拒绝/恢复与原始参数；旧候选/配置/假原生门禁拒绝。 本地完成但服务端仍 pending 时，在线助手/优化排除该站且原 outbox 不变；普通重算不重复提醒或重置 snooze。"
+      ],
+      "recovery": "失败进入 rework，保留复现和原日志；评测者与实现者不能同一签字。",
+      "outputs": [
+        "独立逐需求结果、held-out 清单与精确 attempt/hash；缺数据或未跑不得 passed。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "host",
+        "evidence_kind": "host",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py test --target test/next_phase",
+          "availability": "planned",
+          "purpose": "实现目标文件及 NP01 协议后执行；当前不得运行或写 passed"
+        }
+      ],
+      "status": "planned",
+      "github": null,
+      "body_sha256": "bf05dbe497c2c5778b2606aa46c57b55397a4d682379b59fd2e83e3fb736d80b"
+    },
+    {
+      "id": "NP12",
+      "title": "独立原生验收登录、导航返回与杀进程恢复",
+      "kind": "verification",
+      "role": "native-acceptance-reviewer",
+      "requirements": [
+        "NP-R01",
+        "NP-R02",
+        "NP-R03",
+        "NP-R04",
+        "NP-R05",
+        "NP-R06",
+        "NP-R07",
+        "NP-R09",
+        "NP-R11",
+        "NP-R12",
+        "NP-R14",
+        "NP-R15"
+      ],
+      "depends_on": [
+        "NP11"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "app/integration_test/next_phase_acceptance_test.dart",
+        "harness/project/next-phase/native-contract.json",
+        "harness/native_workbench.py",
+        "harness/gate.py",
+        "harness/tests/test_next_phase_native.py"
+      ],
+      "skills": [
+        "flutter-native-acceptance",
+        "harness-engineering"
+      ],
+      "acceptance": [
+        "专用模拟器/设备执行系统登录回调、过期/退出换号、导航 App 交接/返回与定位/通知权限；写明可模拟与需物理设备部分。",
+        "真正结束原生 PID 后重开，核对原 scope/outbox operationId、计划 revision 与提醒设置；热重载/网页刷新不接受。",
+        "新合同 mandatory checks/事件/数据库证据全齐、精确候选和配置一致；原生门禁失败/缺项拒绝，不借用旧 N1–N7。"
+      ],
+      "recovery": "默认后台、专用资源租用；需要前台时逐步授权，后台失败不能抢占用户窗口。真实 SSO/导航 App 现场限制记录 NP13。",
+      "outputs": [
+        "原生逐场景判定、PID/截图/trace/DB 证据及平台矩阵；未测平台明确 pending。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "native",
+        "evidence_kind": "native",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py integration --device <专用设备ID> --target integration_test/next_phase_acceptance_test.dart",
+          "availability": "planned",
+          "purpose": "实现目标文件及 NP01 协议后执行；当前不得运行或写 passed"
+        }
+      ],
+      "status": "planned",
+      "github": null,
+      "body_sha256": "3037a0c65228059cc918120a832e80ca62dffabecd1c2efa2b29fa36864aa6be"
+    },
+    {
+      "id": "NP13",
+      "title": "验收真实企业身份、派单 ACK、道路和模型服务",
+      "kind": "verification",
+      "role": "live-service-acceptance-reviewer",
+      "requirements": [
+        "NP-R01",
+        "NP-R02",
+        "NP-R03",
+        "NP-R04",
+        "NP-R05",
+        "NP-R08",
+        "NP-R10",
+        "NP-R13",
+        "NP-R14",
+        "NP-R15",
+        "NP-R16"
+      ],
+      "depends_on": [
+        "NP12"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "harness/evals/next_phase/live",
+        "harness/project/next-phase/live-contract.md"
+      ],
+      "skills": [
+        "harness-engineering",
+        "flutter-native-acceptance"
+      ],
+      "acceptance": [
+        "真实受信企业 A/B 角色鉴权、派单源与服务端持久接受/去重记录；撤权/过期/同账号恢复与跨账号拒绝实际有效。",
+        "真实道路供应商路线/矩阵/不可达/30 站约束与地图许可；真实导航 App 交接行为，ETA 新鲜度和缓存依据可追溯。",
+        "真实模型/服务配置验证工具权限、正确来源、延迟/限流/成本与取消；记录真实/fixture 边界和部署版本，不暴露秘密/客户数据。"
+      ],
+      "recovery": "缺 IdP/后端/地图合同/模型/测试角色/设备则 blocked，不以模拟服务关闭；无部署/采购授权不擅自发布或创建凭据。",
+      "outputs": [
+        "脱敏真实服务回执、服务/模型版本、权限与接受证据、依赖缺口和逐需求结论。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "live",
+        "evidence_kind": "live",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py quality",
+          "availability": "now",
+          "purpose": "当前候选本地基线，不证明真实服务/真机/新功能"
+        },
+        {
+          "command": "NP01/NP00 冻结并实现的真实服务或物理设备评测入口",
+          "availability": "blocked",
+          "purpose": "取得外部资源并由 Runner 记录后才能执行，不是现有 CLI 命令"
+        }
+      ],
+      "status": "planned",
+      "github": null,
+      "body_sha256": "96251cb49efde374623f1fea1cd349f72b6a21e24874e3e723d98fdc90d35140"
+    },
+    {
+      "id": "NP14",
+      "title": "验证增量真机性能并交接现有发布门槛",
+      "kind": "verification",
+      "role": "performance-and-release-handoff-reviewer",
+      "requirements": [
+        "NP-R14",
+        "NP-R15",
+        "NP-R16"
+      ],
+      "depends_on": [
+        "NP13"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "harness/project/next-phase/performance-contract.md",
+        "harness/project/next-phase/handoff.md"
+      ],
+      "skills": [
+        "flutter-performance",
+        "engineering-release-handoff"
+      ],
+      "acceptance": [
+        "按 NP00 冻结预算在物理设备 profile/release 测 30 站启动、账号切换、地图/计划/Agent、耗时/内存/电量与服务成本。",
+        "保存机型/OS/配置/样本/p50/p95/trace/产物 hash；debug/模拟器不代签真机，预算缺失或失败不能写性能通过。",
+        "将本轮增量证据交 #31；强制执行交 #32；服务/资源/签名/渠道/授权交 #33。关闭本条仅代表交接，不意味着这些任务完成或生产发布。 #31/#32/#33 是证据接收方，非本条前置关闭条件；生产 no-go 时可完成本条交接。"
+      ],
+      "recovery": "禁止改历史通过结论或扩签旧证据；production_eligible/enforcement_deployed 无实际事实不得改变。",
+      "outputs": [
+        "真机性能报告、可复现候选与交付依赖表；所有未满足发布条件仍 no-go。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "device-performance",
+        "evidence_kind": "device-performance",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py quality",
+          "availability": "now",
+          "purpose": "当前候选本地基线，不证明真实服务/真机/新功能"
+        },
+        {
+          "command": "NP01/NP00 冻结并实现的真实服务或物理设备评测入口",
+          "availability": "blocked",
+          "purpose": "取得外部资源并由 Runner 记录后才能执行，不是现有 CLI 命令"
+        }
+      ],
+      "status": "planned",
+      "github": null,
+      "body_sha256": "5e077ed93506e89d6bd32ad940fdb0c9c1818d89e4920525feedf1282ddc0128",
+      "handoff_issue_numbers": [
+        31,
+        32,
+        33
+      ]
+    }
+  ],
+  "epic_body_sha256": "e1860ce72b37f622917ba0ff939de23662de314ce9691b9b8657849d2cd7b870"
+}

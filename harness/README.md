@@ -1,5 +1,7 @@
 # 工程入口
 
+下一阶段账号/导航/AI 已确认原型的方案与父子任务见 [next-phase 准备包](project/next-phase/README.md)。`check/quality` 同时核对其结构和候选输入；新产品检查仍 planned，实施与原生/真实服务门禁扩展由 NP00/NP01 后续启动。
+
 先读 [需求合同](project/mission.md) 与 [接口合同](project/contracts.md)，按 [产品任务图](project/backlog.json) 选择依赖已满足的任务，在 [执行任务板](project/work.json) 分配负责人、写域和审查。[本轮 Issue 拆分与接力](project/issue-plan.md) 说明原型/架构增量、真实父子 Issue 和 Skill/Harness 联动。任务图保存产品路线，执行板记录具体派工；已通过的可靠性基线可复用，领取任务时按当前候选复核。
 
 | 位置 | 职责 |

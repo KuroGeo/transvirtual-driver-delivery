@@ -176,7 +176,7 @@ class RunnerTests(unittest.TestCase):
             self.assertEqual(code, 1)
             self.assertIn("busy", output)
         with lease(["app-workspace"], self.root / "held", self.locks) as context:
-            for name in ("run.py", "checks.py", "gate.py", "state.py", "native_workbench.py"):
+            for name in ("run.py", "checks.py", "next_phase.py", "gate.py", "state.py", "native_workbench.py"):
                 run.shutil.copy2(Path(run.__file__).parent / name, self.root / "harness" / name)
             code = "import json,sys; from harness.run import require_lease_context; require_lease_context(json.loads(sys.argv[1]), __import__('pathlib').Path(sys.argv[2]))"
             log = self.root / "wrapper.log"
