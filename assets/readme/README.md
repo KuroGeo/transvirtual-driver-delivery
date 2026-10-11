@@ -25,7 +25,7 @@ A map-first Flutter delivery workbench. Browse nearby stops, check addresses and
 
 ## 在当前 README 中使用
 
-根目录 [README](../../README.md) 已嵌入 `assets/readme/showcase.png`，并附上四张可展开的详情截图。下面是封面的完整预览：
+根目录 [English README](../../README.md) 和[中文 README](../../README.zh-CN.md) 复用压缩 `docs/report/media/showcase.webp` 与视频封面，并附上四张可展开的详情截图。下面是封面的完整预览：
 
 ![Ocean Delivery：真实 Flutter 模拟器中的地图工作台和配送列表](showcase.png)
 
@@ -57,3 +57,9 @@ node assets/readme/source/render-showcase.cjs
 模块位于独立工具目录时，用 `README_PLAYWRIGHT_MODULE` 和 `README_MARKED_MODULE` 指定已安装模块路径。脚本启动临时本地服务器，在后台生成 `showcase.png` 和 900/360px 阅读预览，并检查图片加载与页面宽度；结束时关闭浏览器和服务器。也可直接打开 `source/showcase.html` 调整文字与排版。
 
 原始屏幕保持完整，不移除 Demo 标识或地图署名。
+
+## 双语首页视觉方向
+
+面向招聘评审和希望复现演示的 Flutter 工程师。核心价值是离线结果可靠保存、跨进程恢复、匹配确认落盘后出队；证明材料是历史真实模拟器截图和 82 秒原生录屏。最短入口为播放视频，再按 README 在专用模拟器运行。
+
+沿用奶油白 `#fff9f0`、深灰 `#2e2b27`、橙色 `#f16c30` 和确认绿 `#567454`；系统字体、稀疏留白、状态节点与细连接线。封面与视频素材复用压缩 WebP，不生成或重绘产品界面。新增 [English 离线流程](offline-flow.svg) 和[中文离线流程](offline-flow.zh-CN.svg) 为轻量静态 SVG，三阶段含义也保留在 Markdown 中。

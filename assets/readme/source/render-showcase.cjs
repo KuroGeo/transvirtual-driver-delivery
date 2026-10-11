@@ -8,7 +8,7 @@ const { chromium } = require(process.env.README_PLAYWRIGHT_MODULE || 'playwright
 
 const root = path.resolve(__dirname, '../../..');
 const reviewDir = path.join(root, 'harness/runs/readme-promo');
-const types = { '.html': 'text/html', '.png': 'image/png', '.svg': 'image/svg+xml', '.ttf': 'font/ttf' };
+const types = { '.html': 'text/html', '.png': 'image/png', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.ttf': 'font/ttf' };
 
 async function main() {
   const { marked } = await import(pathToFileURL(require.resolve(process.env.README_MARKED_MODULE || 'marked')).href);
@@ -24,11 +24,12 @@ async function main() {
       const name = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
       if (name === '/__readme') { res.setHeader('Content-Type', 'text/html'); res.end(preview); return; }
       if (name === '/__hero') { res.setHeader('Content-Type', 'text/html'); res.end('<html><body style="margin:0"><img src="/assets/readme/hero.svg" style="display:block;width:100%;height:auto"></body></html>'); return; }
-      if (!name.startsWith('/assets/readme/') && name !== '/app/assets/InterVariable.ttf') { res.writeHead(404); res.end(); return; }
+      if (!name.startsWith('/assets/readme/') && !name.startsWith('/docs/report/media/') && name !== '/app/assets/InterVariable.ttf') { res.writeHead(404); res.end(); return; }
       const filename = path.resolve(root, '.' + name);
       const assetRoot = path.join(root, 'assets/readme') + path.sep;
+      const mediaRoot = path.join(root, 'docs/report/media') + path.sep;
       const fontFile = path.join(root, 'app/assets/InterVariable.ttf');
-      if (!filename.startsWith(assetRoot) && filename !== fontFile) { res.writeHead(404); res.end(); return; }
+      if (!filename.startsWith(assetRoot) && !filename.startsWith(mediaRoot) && filename !== fontFile) { res.writeHead(404); res.end(); return; }
       const data = await fs.readFile(filename);
       res.setHeader('Content-Type', types[path.extname(filename)] || 'application/octet-stream'); res.end(data);
     } catch { res.writeHead(404); res.end(); }
