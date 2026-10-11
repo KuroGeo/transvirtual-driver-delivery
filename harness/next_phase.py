@@ -228,6 +228,12 @@ def validate(root, candidate_inputs):
             digest = hashlib.sha256(body).hexdigest()
             if marker not in body.decode() or body_hash!=digest:
                 fail(f'{name}: local marker/body hash mismatch')
+            required_features = by_id[name]['features'] if name in by_id else list(features)
+            for feature_id in required_features:
+                for key in ('prototype','technical_design'):
+                    expected = f"https://github.com/{backlog['repository']}/blob/{backlog.get('source_ref')}/{features[feature_id][key]}"
+                    if expected not in body.decode():
+                        fail(f'{name}: corresponding feature {key} link missing')
         except (OSError,UnicodeError) as error:
             fail(f'{name}: issue body missing: {error}')
             return

@@ -1,4 +1,5 @@
 import json
+import hashlib
 from pathlib import Path
 import shutil
 import runpy
@@ -162,6 +163,13 @@ class PreparationContract(unittest.TestCase):
     def test_issue_without_feature_mapping_is_rejected(self):
         self.mutate('backlog.json',lambda value:value['tasks'][5].pop('features'))
         self.assertTrue(any('feature source mapping' in error for error in self.errors()))
+
+    def test_issue_cannot_omit_its_specific_technical_design_link(self):
+        path = self.package/'issues/NP05.md'
+        body = path.read_text().replace('/docs/next-phase/routing.md','/docs/only-general-design.md')
+        path.write_text(body)
+        self.mutate('backlog.json',lambda value:value['tasks'][5].update(body_sha256=hashlib.sha256(body.encode()).hexdigest()))
+        self.assertTrue(any('technical_design link missing' in error for error in self.errors()))
 
     def test_local_issue_changed_after_hash_is_rejected(self):
         path = self.package/'issues/NP03.md'
