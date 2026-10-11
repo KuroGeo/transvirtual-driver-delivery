@@ -258,7 +258,9 @@ Future<Map<String, dynamic>> _run(
       preview: 'map-preview.json',
       handoff: 'map-handoff.json',
     );
-  } else {
+    // The existing nearest entry focuses and persists the delivery map. Keep
+    // this actual UI action in recovery; confirmed remains a strictly readonly
+    // third OS process against the entire recovered SQLite state.
     await client.revealKey('nearest-stop');
     await client.tapKey('nearest-stop');
     await client.waitForSnapshot(
