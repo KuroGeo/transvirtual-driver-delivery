@@ -3,14 +3,14 @@
 
 用户于 2026-10-12 确认原型，并授权方案设计与带 Harness 的父子 issue。默认 A 地图首页、企业已有身份系统、外部地图导航、AI 提案人工应用。产品实施尚未开始；创建任务包不代表功能通过或生产发布。
 
-[批准原型](https://github.com/KuroGeo/transvirtual-driver-delivery/blob/4e57c6e014fc6787171b8902e4fc10df220eb102/prototype/next-phase/README.md) · [方案](https://github.com/KuroGeo/transvirtual-driver-delivery/blob/4e57c6e014fc6787171b8902e4fc10df220eb102/docs/next-phase-solution-design.md) · [任务包](https://github.com/KuroGeo/transvirtual-driver-delivery/tree/4e57c6e014fc6787171b8902e4fc10df220eb102/harness/project/next-phase)
+[批准原型](https://github.com/KuroGeo/transvirtual-driver-delivery/blob/5b8c7f49edb7255877bf587b3d6a04ac0bcbc832/prototype/next-phase/README.md) · [方案](https://github.com/KuroGeo/transvirtual-driver-delivery/blob/5b8c7f49edb7255877bf587b3d6a04ac0bcbc832/docs/next-phase-solution-design.md) · [任务包](https://github.com/KuroGeo/transvirtual-driver-delivery/tree/5b8c7f49edb7255877bf587b3d6a04ac0bcbc832/harness/project/next-phase)
 
 每项需求的材料：
 
-- 路径规划与导航：[原型](https://github.com/KuroGeo/transvirtual-driver-delivery/blob/4e57c6e014fc6787171b8902e4fc10df220eb102/prototype/next-phase/routing.html) · [技术方案](https://github.com/KuroGeo/transvirtual-driver-delivery/blob/4e57c6e014fc6787171b8902e4fc10df220eb102/docs/next-phase/routing.md)。
-- 全站用户、组织与权限：[原型](https://github.com/KuroGeo/transvirtual-driver-delivery/blob/4e57c6e014fc6787171b8902e4fc10df220eb102/prototype/next-phase/identity.html) · [技术方案](https://github.com/KuroGeo/transvirtual-driver-delivery/blob/4e57c6e014fc6787171b8902e4fc10df220eb102/docs/next-phase/identity.md)。
-  [全站管理原型（待确认）](https://github.com/KuroGeo/transvirtual-driver-delivery/blob/4e57c6e014fc6787171b8902e4fc10df220eb102/prototype/next-phase/identity-admin.html) · [Go 架构](https://github.com/KuroGeo/transvirtual-driver-delivery/blob/4e57c6e014fc6787171b8902e4fc10df220eb102/docs/next-phase/backend-go.md)。
-- AI 助手与智能派送：[原型](https://github.com/KuroGeo/transvirtual-driver-delivery/blob/4e57c6e014fc6787171b8902e4fc10df220eb102/prototype/next-phase/assistant.html) · [技术方案](https://github.com/KuroGeo/transvirtual-driver-delivery/blob/4e57c6e014fc6787171b8902e4fc10df220eb102/docs/next-phase/assistant.md)。
+- 路径规划与导航：[原型](https://github.com/KuroGeo/transvirtual-driver-delivery/blob/5b8c7f49edb7255877bf587b3d6a04ac0bcbc832/prototype/next-phase/routing.html) · [技术方案](https://github.com/KuroGeo/transvirtual-driver-delivery/blob/5b8c7f49edb7255877bf587b3d6a04ac0bcbc832/docs/next-phase/routing.md)。
+- 全站用户、组织与权限：[原型](https://github.com/KuroGeo/transvirtual-driver-delivery/blob/5b8c7f49edb7255877bf587b3d6a04ac0bcbc832/prototype/next-phase/identity.html) · [技术方案](https://github.com/KuroGeo/transvirtual-driver-delivery/blob/5b8c7f49edb7255877bf587b3d6a04ac0bcbc832/docs/next-phase/identity.md)。
+  [全站管理原型（待确认）](https://github.com/KuroGeo/transvirtual-driver-delivery/blob/5b8c7f49edb7255877bf587b3d6a04ac0bcbc832/prototype/next-phase/identity-admin.html) · [Go 架构](https://github.com/KuroGeo/transvirtual-driver-delivery/blob/5b8c7f49edb7255877bf587b3d6a04ac0bcbc832/docs/next-phase/backend-go.md)。
+- AI 助手与智能派送：[原型](https://github.com/KuroGeo/transvirtual-driver-delivery/blob/5b8c7f49edb7255877bf587b3d6a04ac0bcbc832/prototype/next-phase/assistant.html) · [技术方案](https://github.com/KuroGeo/transvirtual-driver-delivery/blob/5b8c7f49edb7255877bf587b3d6a04ac0bcbc832/docs/next-phase/assistant.md)。
 
 最新范围：导航直连第三方，不建自己的路线后端；全站 Go 用户/组织/RBAC；AI 本期可迁移客户端执行器、后续 Go Agent。管理原型尚待用户确认，远端发布暂缓；本地 draft hash 不是远端读回证据。
 

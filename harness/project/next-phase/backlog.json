@@ -18,7 +18,7 @@
     "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/42",
     "state": "open"
   },
-  "source_ref": "4e57c6e014fc6787171b8902e4fc10df220eb102",
+  "source_ref": "5b8c7f49edb7255877bf587b3d6a04ac0bcbc832",
   "concurrency_limit": 4,
   "production_eligible": false,
   "enforcement_deployed": false,
@@ -106,7 +106,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/43",
         "state": "open"
       },
-      "body_sha256": "de1121d6ecc50c4ea42f4bb208545f665134c82e09febbb31b96576268dccfe1",
+      "body_sha256": "d40675cd73bcb6c41aa2d73f0c091b4cf3971cc92296d3c5267a4e1de15f21ca",
       "features": [
         "F1",
         "F2",
@@ -178,7 +178,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/44",
         "state": "open"
       },
-      "body_sha256": "62267bd9989553e4890fb0f41bd4eca01ab3794266d72f1d270cd9ac1e0391db",
+      "body_sha256": "ce40127401b0698b74208fc571b7b5f06b27ff4d175824e9dd1bfe0488421511",
       "features": [
         "F1",
         "F2",
@@ -253,7 +253,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/45",
         "state": "open"
       },
-      "body_sha256": "d6ce93b82d66c8a2fc9e39e86b75cfcfb4267b343d3b675294463c6a420952b6",
+      "body_sha256": "25b97f3d7673e88a4ebc8276afba7b55f3dc04df8defbf0caa9875a6d9486d24",
       "features": [
         "F2"
       ]
@@ -320,7 +320,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/46",
         "state": "open"
       },
-      "body_sha256": "c2fbeacfc479a6ef42314a2e9803961dd582a48a3082eb06733384520296ae6a",
+      "body_sha256": "659da4a0e0d9c4ffd23ada1b06a499df0f413ba5d2d1562b59b2ae21c6dc24ec",
       "features": [
         "F2"
       ]
@@ -384,7 +384,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/47",
         "state": "open"
       },
-      "body_sha256": "5aaf65c13ff457805c39f4434320bbfbaa772792735c1aa7dcbae67c97578f21",
+      "body_sha256": "0b3314b16c002c0ba3af07d0d8a29e01aa90db0eccb0e91f455be3c0774cc5c6",
       "features": [
         "F2"
       ]
@@ -448,7 +448,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/48",
         "state": "open"
       },
-      "body_sha256": "9e734607d77afa04437d2ae5a7abd05e11ceec16984b7fa670274f426c8d000d",
+      "body_sha256": "7c402aa65e66c35aea37a6c9928a977d901ecd271c64e05b03703f0519cbb91b",
       "features": [
         "F1"
       ]
@@ -512,7 +512,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/49",
         "state": "open"
       },
-      "body_sha256": "5db22433af86dd0836e6e2af3ccbb82b76b5a2a316b924bd2b70422137e06a97",
+      "body_sha256": "3e33dfd0a4ad00d37755da6863c1bc6086b9d16256ebccc4c58ea6203128b702",
       "features": [
         "F1"
       ]
@@ -576,7 +576,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/50",
         "state": "open"
       },
-      "body_sha256": "e56d98d1925a5d6312e572cd6df6f2d7f6e47714a8086d35163d72a0fefd1c3c",
+      "body_sha256": "d594b491baa13ff6a7c909192781466eb07956b27323e031f248958706f225dc",
       "features": [
         "F3"
       ]
@@ -640,7 +640,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/51",
         "state": "open"
       },
-      "body_sha256": "db4de29ef20b8da1a7dc59ec520ecc3111124244b3f629977e4b195144faa64c",
+      "body_sha256": "62de4e886bbe44fa3dcfa98d5a6906df8956dfee4d3f7732279765dbce13c6d1",
       "features": [
         "F3"
       ]
@@ -713,7 +713,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/52",
         "state": "open"
       },
-      "body_sha256": "01d11328789a686ba0046990e304017a067b8c72e81c06215d6f981a6fc22913",
+      "body_sha256": "6206f9f92d1668ef63d75400165b5411eaab9cd5803c31fbe9f54fe264e969d3",
       "features": [
         "F3"
       ]
@@ -798,7 +798,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/53",
         "state": "open"
       },
-      "body_sha256": "e6bda4428e2bb1f74848e781f6a70712ed7b35cc66fdfa1143d1510ec09982f9",
+      "body_sha256": "e554b0eb83cd04e1e01db583ccdf48d06f08e315209a2fe84c2aee1dc8e2eefd",
       "features": [
         "F1",
         "F2",
@@ -881,7 +881,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/54",
         "state": "open"
       },
-      "body_sha256": "29938e5a2929f30c2aee73f24730646eb30afd930aa077e2f0e7354aa34b7141",
+      "body_sha256": "c61ddef4e7dbb89896db15b3a5edfc39d39155e62c42da93882b527fdd43bb07",
       "features": [
         "F1",
         "F2",
@@ -957,7 +957,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/55",
         "state": "open"
       },
-      "body_sha256": "3bb28189372bd27a84298a1bac514fb0819e86fca9a43df811702875f6152972",
+      "body_sha256": "b248f7b1a772dc6b97708ef63ee749ac73201ecd370197c18715a47f8cd0bdb1",
       "features": [
         "F1",
         "F2",
@@ -1037,7 +1037,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/56",
         "state": "open"
       },
-      "body_sha256": "26709803deb9c96831ec29440957a1f009acc2c2a246c0910bed4a29a1de8a3c",
+      "body_sha256": "851e015646f38f849029fdb31934223916469bfebc2cdb4b395dd2060e4c94ba",
       "features": [
         "F1",
         "F2",
@@ -1106,7 +1106,7 @@
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/57",
         "state": "open"
       },
-      "body_sha256": "cd04c804b26e834ef47fb51e9297e7685a18b4e889e411917cdecd6ba3e735fa",
+      "body_sha256": "67a40ed605b3b40c0ccabb00d5f4c95a125ec6b4aacabb65a589e5ebe896d2f7",
       "handoff_issue_numbers": [
         31,
         32,
@@ -1185,7 +1185,7 @@
       "features": [
         "F2"
       ],
-      "body_sha256": "2c327823ffcc9ae9a577c9eadbf1bd96245efda0dd6628183ab68df19605aa6b"
+      "body_sha256": "368849356a3a40053326b58e224dc647ac7ab42b1160fc4bfbef6adeefd732a0"
     },
     {
       "id": "NP16",
@@ -1253,14 +1253,27 @@
       "features": [
         "F2"
       ],
-      "body_sha256": "cf250a8857b9dcf116ff65f4830db933ee9af4fa7a73ef1b2a36222c1c23385c"
+      "body_sha256": "98ffe100bb84439302b6e33e29c84d14a26a46545dd96365daa60ff0f3aa8bf5"
     }
   ],
-  "epic_body_sha256": "9c782332f90946c74974237014e04cb8952ce3e789bd58576239a00ca739e748",
+  "epic_body_sha256": "36be48f3590a6ed28624ae0231bb8c07bbdfadccb75a0bf2b2ddb8b93c1c6572",
   "architecture_decisions": {
     "routing": "client-direct-third-party-no-own-routing-backend",
     "identity": "site-wide-go-backend",
     "assistant": "client-executor-now-server-executor-later"
   },
-  "source_ref_pending": true
+  "source_ref_pending": false,
+  "source_manifest": {
+    "docs/next-phase-solution-design.md": "6858337bfc594c5466760a49addc9ca4e28429736a30e1f0f09ff211340fed35",
+    "docs/next-phase/assistant.md": "c488a1d35443dd970e1dc55113b91ed21d23fd28b4ac5615bf8ac905b02a0840",
+    "docs/next-phase/backend-go.md": "a4c7780c4bf7cf4a0783c2f3a0e1abd5ed96af9bceace8e3af6c39df9fe6bc05",
+    "docs/next-phase/identity.md": "84a796f1ab6e1c10ebdd953c06f7eab00a17df72f2aa61235a5ab6695b0715d9",
+    "docs/next-phase/routing.md": "111891a1c915af46140f2369690924d6fd44ec2771e52fad87e12a3cc1c3a635",
+    "prototype/next-phase/README.md": "76d7fae15e5f384f0f09d1dd705fb2325f0d63b38022b3cebace75825ce6c345",
+    "prototype/next-phase/assistant.html": "eaf4f2204c670032837a4eec1e1293e6052353600e37ee8a1ab9c024eb7311dd",
+    "prototype/next-phase/identity-admin.html": "1c0d7a3bedac76a0fe1291df6e877ed970de54a8565041eeed1a69c102ab0d9a",
+    "prototype/next-phase/identity.html": "e3beebba34faf9035879acab89e1501cae15acdffce237653ccde0f4ad56f120",
+    "prototype/next-phase/next.js": "93d6c2701f141841f7ed3941191042efcb58be3351d1943e3efee75d40f1ef8b",
+    "prototype/next-phase/routing.html": "b391288640f6c1afd43ad18294a58123ea6da1b42b4a43141b506edc1e58cd15"
+  }
 }
