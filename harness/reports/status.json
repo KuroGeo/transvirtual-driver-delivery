@@ -645,7 +645,7 @@
   },
   "current_validation": {
     "schema": 1,
-    "status": "implemented_installed_partial_acceptance_blocked_disk",
+    "status": "accepted_targeted_large_text_repair_and_installed_demo",
     "PR": 37,
     "issue": 36,
     "scope": "System maximum text across map actions, full SafeArea summary/list/detail, query and source/focus returns; preserved-data formal Demo simulator update",
@@ -667,20 +667,20 @@
     },
     "report": "harness/reports/large-text-repair.json",
     "G1": "passed",
-    "native": "partial_max17_four_unique_N7; max16_ENVfailed; normal_not_run; two-size_not_accepted",
+    "native": "accepted_five_unique_N7_threeconfigs_twoactualmaxviewports_9PID; full34_G2_not_rerun",
     "formal_Demo": "installed_without_reset_current_source",
-    "merge": "draft_open_wait_required_acceptance",
+    "merge": "final_metadata_CI_then_authorized_merge_pending",
     "production_eligible": false,
     "evidence_archive": {
-      "path": "harness/reports/large-text-partial-evidence.tar.gz",
-      "sha256": "156153d3f3ba2c53aeac36fd46c13bf3717f0f5b7b851489cca50fa70216e4de",
-      "bytes": 21865994,
-      "members": 561,
-      "payload_files": 560,
+      "path": "harness/reports/large-text-final-evidence.tar.gz",
+      "sha256": "15b7aef5e5529cb625c5f23cbad7fc4353f0d508c58efdbccdb792fe80b39bc3",
+      "bytes": 40464589,
+      "members": 1085,
+      "payload_files": 1084,
       "all_payload_hashes_verified": true,
       "binary_artifacts_in_archive": false,
       "user_business_rows_in_archive": false,
-      "scope": "Partial acceptance; retains both max16 ENOSPC failures."
+      "scope": "Accepted targeted five N7 IDs/three configurations; no fullG2/production signoff."
     }
   },
   "historical_full_local_validation": {

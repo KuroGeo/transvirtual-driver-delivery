@@ -2085,8 +2085,13 @@
       "event": "Actual nonauthor archive stream/hash/CRC/sourceZIP17Runner/originals audit accepted; root localhandoff decision accepted. Actual Issues27-30 closed and16C3O/parent14OPEN API readback. Final metadata CI follows separate commit identity; production no-go."
     }
   ],
-  "status": "LTX-01 implemented/installed; partial native acceptance blocked disk; PR37draft; production no-go",
-  "accepted_candidate": null,
+  "status": "LTX targeted native/readability/install accepted; final metadata CI/merge pending; production no-go",
+  "accepted_candidate": {
+    "source_head": "256de9fd360040a52ed3e7ec5948dbbaf4529e90",
+    "source_fingerprint": "7b077f55197263c571fb33fce1b561f7ccd5cdc0d2a7252aab34c15a9eb184bf",
+    "scope": "CurrentG1/LinuxCI/fiveuniqueN7 threeconfigs/9PID/coldSQL/visual/retained-data formalDemo install; notfull34/fullG2/production",
+    "counted_source_inputs": 262
+  },
   "runtime_observation": {
     "observed_at": "2026-10-11T02:51:43.510921+00:00",
     "active_run": null,
@@ -2094,17 +2099,17 @@
     "note": "All SDK controllers terminal; only excluded metadata/archive/remote closure work remains."
   },
   "evidence_archive": {
-    "path": "harness/reports/large-text-partial-evidence.tar.gz",
-    "sha256": "156153d3f3ba2c53aeac36fd46c13bf3717f0f5b7b851489cca50fa70216e4de",
-    "bytes": 21865994,
-    "members": 561,
-    "payload_files": 560,
+    "path": "harness/reports/large-text-final-evidence.tar.gz",
+    "sha256": "15b7aef5e5529cb625c5f23cbad7fc4353f0d508c58efdbccdb792fe80b39bc3",
+    "bytes": 40464589,
+    "members": 1085,
+    "payload_files": 1084,
     "all_payload_hashes_verified": true,
     "binary_artifacts_in_archive": false,
     "user_business_rows_in_archive": false,
-    "scope": "Partial acceptance; retains both max16 ENOSPC failures."
+    "scope": "Accepted targeted five N7 IDs/three configurations; no fullG2/production signoff."
   },
-  "next_task": "Resolve disk dependency without deleting user apps/data absent explicit authorization; run fresh required native validations, independent aggregate review, then reconsider merge.",
+  "next_task": "Independent final handoff readback; commit/push report metadata; actual exact-head CI; merge authorized source PR37 then close Issue36 with source/runtime evidence. Production dependencies31/32/33 remain.",
   "issue_planning_validation": {
     "status": "passed",
     "candidate": {
@@ -2119,12 +2124,12 @@
     "native_rerun": false,
     "production_eligible": false
   },
-  "updated_at": "2026-10-11T12:07:12.696158+00:00",
+  "updated_at": "2026-10-11T12:41:11.325576+00:00",
   "native_protocol_revision": 6,
   "source_writers": [],
   "active_execution": {
     "candidate": "7b077f55197263c571fb33fce1b561f7ccd5cdc0d2a7252aab34c15a9eb184bf",
-    "status": "All SDK/device jobs terminal; remaining native acceptance blocked disk",
+    "status": "All SDK/device jobs terminal; final independent handoff/metadataCI/merge",
     "source_writers": [],
     "sole_sdk_executor": "/root"
   },
@@ -2136,8 +2141,8 @@
     "source_frozen": true,
     "SDK_serialized_by_OS_lease": true,
     "session": null,
-    "last_terminal_controller": "20261011T115158969693Z-native",
-    "terminal_exit": 1
+    "last_terminal_controller": "20261011T122711543720Z-native",
+    "terminal_exit": 0
   },
   "agent_runtime_observation": {
     "captured_at": "2026-10-11T02:59:18.750923+00:00",
@@ -2170,13 +2175,15 @@
     "updated_at": "2026-10-11T12:13:13.528777+00:00",
     "candidate": "7b077f55197263c571fb33fce1b561f7ccd5cdc0d2a7252aab34c15a9eb184bf",
     "source_head": "256de9fd360040a52ed3e7ec5948dbbaf4529e90",
-    "state": "partial_font_handoff_blocked_disk_native_acceptance",
+    "state": "targeted_native_visual_accepted_final_handoff_CI_merge_pending",
     "sdk_active": false,
     "sdk_session": null,
     "active_native_jobs": [],
     "quality_report": "harness/runs/20261011T113211673144Z-quality/attempts/000001/report.json",
     "native_reports": [
-      "harness/runs/20261011T113319446983Z-native/attempts/000001/report.json"
+      "harness/runs/20261011T113319446983Z-native/attempts/000001/report.json",
+      "harness/runs/20261011T122217447783Z-native/attempts/000001/report.json",
+      "harness/runs/20261011T122711543720Z-native/attempts/000001/report.json"
     ],
     "raw_native_failures": [
       "harness/runs/20261011T111030320436Z-native/attempts/000001/report.json",
@@ -2186,8 +2193,8 @@
     ],
     "formal_preview": "harness/runs/preview/20261011T113855Z-large-text/preview.json",
     "report": "harness/reports/large-text-repair.json",
-    "two_size_native_accepted": false,
-    "normal_native": "not_run_current_candidate",
+    "two_size_native_accepted": true,
+    "normal_native": "accepted_targeted_actual_run",
     "full_G2_on_current_candidate": false,
     "production_eligible": false
   },
@@ -2473,7 +2480,7 @@
   },
   "large_text_repair": {
     "id": "LTX-01",
-    "status": "blocked_disk_native_acceptance",
+    "status": "accepted_targeted_native_and_visual_pending_final_handoff_CI_merge",
     "base_sha": "31b144b4fb20126e86ff75460a9b11414030a419",
     "source": "User iOS max-text screenshot 2026-10-11",
     "coordinator": "/root",
@@ -2558,38 +2565,54 @@
       }
     ],
     "native_reports": [
-      "harness/runs/20261011T113319446983Z-native/attempts/000001/report.json"
+      "harness/runs/20261011T113319446983Z-native/attempts/000001/report.json",
+      "harness/runs/20261011T122217447783Z-native/attempts/000001/report.json",
+      "harness/runs/20261011T122711543720Z-native/attempts/000001/report.json"
     ],
     "CI_source_head": "256de9fd360040a52ed3e7ec5948dbbaf4529e90",
     "CI_run": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38135929033",
     "installed_preview": "harness/runs/preview/20261011T113855Z-large-text/preview.json",
-    "normal_native": "not_run_current_candidate",
-    "two_viewport_aggregate": "not_run_required_second_viewport_missing",
+    "normal_native": "accepted_three_actual_passed_checks_two_authenticNA",
+    "two_viewport_aggregate": "accepted_actual_same_source_max17_max16_plus_normal",
     "handoff_report": "harness/reports/large-text-repair.json",
     "PR": {
       "number": 37,
       "state": "draft_open",
-      "merge": "blocked_required_native_acceptance"
+      "merge": "pending_final_metadata_CI_and_independent_handoff"
     },
     "environment_dependency": {
       "kind": "disk_capacity",
       "observed_available_GiB": 1.9,
       "target_total_available_GiB": 5,
-      "user_owned_device_deletion_authorization": "pending_explicit_answer",
-      "protected_preview": "D2B958C6-486D-4C17-A0CE-A8135717F3A6"
+      "user_owned_device_deletion_authorization": "not_needed_no_user_devices_deleted",
+      "protected_preview": "D2B958C6-486D-4C17-A0CE-A8135717F3A6",
+      "status": "resolved_by_available_space_recovery_and_task_owned_verified_GC"
     },
-    "accepted_scope": "G1, exact source LinuxCI, max17 readability/four uniqueN7/coldSQL, formalDemo preserved-data install; no two-size/normal/fullG2/production acceptance",
+    "accepted_scope": "CurrentG1/LinuxCI/fiveuniqueN7 threeconfigs/9PID/coldSQL/visual/retained-data formalDemo install; notfull34/fullG2/production",
     "evidence_archive": {
-      "path": "harness/reports/large-text-partial-evidence.tar.gz",
-      "sha256": "156153d3f3ba2c53aeac36fd46c13bf3717f0f5b7b851489cca50fa70216e4de",
-      "bytes": 21865994,
-      "members": 561,
-      "payload_files": 560,
+      "path": "harness/reports/large-text-final-evidence.tar.gz",
+      "sha256": "15b7aef5e5529cb625c5f23cbad7fc4353f0d508c58efdbccdb792fe80b39bc3",
+      "bytes": 40464589,
+      "members": 1085,
+      "payload_files": 1084,
       "all_payload_hashes_verified": true,
       "binary_artifacts_in_archive": false,
       "user_business_rows_in_archive": false,
-      "scope": "Partial acceptance; retains both max16 ENOSPC failures."
-    }
+      "scope": "Accepted targeted five N7 IDs/three configurations; no fullG2/production signoff."
+    },
+    "native_maximum_16_raw_passed": "harness/runs/20261011T122217447783Z-native/attempts/000001/report.json",
+    "independent_final_reviews": [
+      {
+        "path": "harness/runs/large-text-repair/native-v7-three-config-independent.json",
+        "sha256": "6a10e87b6b9be4aa4615c18b17f64f8a1b0b9bc71017fe325605c3fdbdb48a7f",
+        "bytes": 368348
+      },
+      {
+        "path": "harness/runs/large-text-repair/global-map-v7-three-config-visual-accepted.json",
+        "sha256": "dd4cff59d7786470b897ec8fa4c90368605b0e9b74c24ba2615a2e1508535612",
+        "bytes": 25820
+      }
+    ]
   },
   "historical_root_work_before_large_text": {
     "status": "Full current local Flutter/Harness handoff accepted;16localIssues CLOSED,3external OPEN;production no-go",

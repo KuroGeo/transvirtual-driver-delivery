@@ -1,10 +1,10 @@
 {
   "schema": 1,
-  "generated_at": "2026-10-11T12:07:12.696158+00:00",
+  "generated_at": "2026-10-11T12:41:11.325576+00:00",
   "requirement": "LTX-01",
   "issue": 36,
   "PR": 37,
-  "status": "implemented_installed_partial_acceptance_blocked_disk",
+  "status": "accepted_targeted_large_text_repair_and_installed_demo",
   "coordinator": "/root",
   "scope": "System maximum text across map actions, full SafeArea summary/list/detail, query and source/focus returns; preserved-data formal Demo simulator update",
   "candidate": {
@@ -65,7 +65,7 @@
       "sha256": "adc0092db890dd46b23ce334cb16f71ee21b79bf0f22db5fc0454ed9846fbea0",
       "bytes": 21639
     },
-    "metadata_head_CI": "Not claimed by this source report; check actual latest PR head separately.",
+    "metadata_head_CI": "Final handoff commit exact-head CI evaluated separately after push; prior success does not substitute.",
     "metadata_failure_retained": {
       "head": "317d418a5101b80a3c68285da429d22bcf670875",
       "run": 38138406290,
@@ -77,119 +77,199 @@
         "bytes": 2762
       },
       "repair": "Tracked exact-byte OS PNG copies and archive-member references; no gate/code relaxation."
+    },
+    "accepted_metadata_1f80": {
+      "head": "1f80c87a2dce840d235ab788f03f99164ae637fb",
+      "run": 38138790695,
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38138790695",
+      "status": "passed_independently_verified_166Harness_zeroNA_skip_196Flutter",
+      "review": {
+        "path": "harness/runs/large-text-repair/ci-1f80c87a-38138790695/ci-independent-review.json",
+        "sha256": "b3c9f2540d895065d803059dc95956ecba579ffb420e1e804604b02647742891",
+        "bytes": 21808
+      }
     }
   },
   "native": {
-    "status": "partial_scope_accepted_single_maximum_viewport",
-    "runner": {
-      "path": "harness/runs/20261011T113319446983Z-native/attempts/000001/report.json",
-      "sha256": "99e7f6876962e37397108ff46afee69233771fbdf7b7b21d5d5d8f61383cac94",
-      "bytes": 11813
-    },
-    "raw": {
-      "path": "harness/runs/20261011T113319446983Z-native/attempts/000001/native/result.json",
-      "sha256": "5e8765294e238b9d3163792f15999ec3b44cd5722948a6226f47789c9cce4ed5",
-      "bytes": 3168850
-    },
-    "actual_viewport": [
-      402,
-      874
+    "status": "accepted_targeted_N7_three_configurations",
+    "runs": [
+      {
+        "name": "20261011T113319446983Z-native",
+        "runner": {
+          "path": "harness/runs/20261011T113319446983Z-native/attempts/000001/report.json",
+          "sha256": "99e7f6876962e37397108ff46afee69233771fbdf7b7b21d5d5d8f61383cac94",
+          "bytes": 11813
+        },
+        "collector": {
+          "path": "harness/runs/20261011T113319446983Z-native/attempts/000001/native/result.json",
+          "sha256": "5e8765294e238b9d3163792f15999ec3b44cd5722948a6226f47789c9cce4ed5",
+          "bytes": 3168850
+        },
+        "actual_process_ids": [
+          69668,
+          70311,
+          70389
+        ],
+        "content_size": "accessibility-extra-extra-extra-large",
+        "reduce_motion": true,
+        "inventory_count": 348,
+        "compiled_manifest": {
+          "path": "harness/runs/20261011T113319446983Z-native/attempts/000001/artifact-workbench-build/manifest.json",
+          "sha256": "5d44eba51dcd81425a7f8c9adc31f35e742031e30cc022cace2f3890fdd6864e",
+          "bytes": 16845
+        }
+      },
+      {
+        "name": "20261011T122217447783Z-native",
+        "runner": {
+          "path": "harness/runs/20261011T122217447783Z-native/attempts/000001/report.json",
+          "sha256": "433f9a294546de3d2917b4af4a40290975e1290f84cd7261fd62e4aaf4c6466f",
+          "bytes": 11792
+        },
+        "collector": {
+          "path": "harness/runs/20261011T122217447783Z-native/attempts/000001/native/result.json",
+          "sha256": "e8dbdb555986e3a1511bf8d066ae170a830ae6a31d878e1450424f6fddbb3956",
+          "bytes": 3148138
+        },
+        "actual_process_ids": [
+          79409,
+          79812,
+          79875
+        ],
+        "content_size": "accessibility-extra-extra-extra-large",
+        "reduce_motion": true,
+        "inventory_count": 348,
+        "compiled_manifest": {
+          "path": "harness/runs/20261011T122217447783Z-native/attempts/000001/artifact-workbench-build/manifest.json",
+          "sha256": "db3ea005193ebb352366cab90b122c038fe1c9b4ff44670136f52cfbfe1a39c7",
+          "bytes": 16841
+        }
+      },
+      {
+        "name": "20261011T122711543720Z-native",
+        "runner": {
+          "path": "harness/runs/20261011T122711543720Z-native/attempts/000001/report.json",
+          "sha256": "5a8294b5ecbb372d58f791d16890859e4e916210fda94172ee7503d15aa35121",
+          "bytes": 11600
+        },
+        "collector": {
+          "path": "harness/runs/20261011T122711543720Z-native/attempts/000001/native/result.json",
+          "sha256": "a13fe8c2b890efe8c45cdc575270d108140e20941a22435a17a0bfc54dbe2bfd",
+          "bytes": 2999975
+        },
+        "actual_process_ids": [
+          81627,
+          81813,
+          81876
+        ],
+        "content_size": "large",
+        "reduce_motion": false,
+        "inventory_count": 117,
+        "compiled_manifest": {
+          "path": "harness/runs/20261011T122711543720Z-native/attempts/000001/artifact-workbench-build/manifest.json",
+          "sha256": "8550f40283fedd9180bc17ab5ca8dca8ed4548039170ebc7cd86a412e6473e8b",
+          "bytes": 16814
+        }
+      }
     ],
-    "OS_content_size": "accessibility-extra-extra-extra-large",
-    "reduce_motion": true,
-    "actual_process_ids": [
-      69668,
-      70311,
-      70389
-    ],
-    "raw_check_count": 5,
-    "mandatory_assertions": 681,
-    "independently_mechanically_accepted_unique_ids": [
+    "unique_N7_ids": [
+      "N7.two-sizes-safearea",
       "N7.os-keyboard",
       "N7.text-scale",
       "N7.reduced-motion-semantics",
       "N7.platform-back"
     ],
-    "two_sizes_safearea": "Original Validator.native_check refuses one actual viewport. Two-size gate NOT passed.",
-    "true_OS_PNGs": 28,
-    "named_captures": 20,
-    "cold_SQL_outbox": [
-      2,
-      0,
-      0
+    "passed_check_instances": 13,
+    "authentic_normal_NA": 2,
+    "mandatory_assertions": 1382,
+    "actual_maximum_viewports": [
+      [
+        393,
+        852
+      ],
+      [
+        402,
+        874
+      ]
     ],
-    "HTTP_requests_per_phase": [
-      0,
-      2,
-      2
+    "normal_actual_viewport": [
+      402,
+      874
     ],
-    "real_fixture_ACK_and_persisted_ack_committed": true,
-    "third_process_no_resend": true,
+    "normal_OS": "large",
+    "normal_scale": 1,
+    "normal_reduce_motion": false,
+    "actual_process_ids": [
+      69668,
+      70311,
+      70389,
+      79409,
+      79812,
+      79875,
+      81627,
+      81813,
+      81876
+    ],
+    "maximum_OS": "accessibility-extra-extra-extra-large",
+    "maximum_reduce_motion": true,
+    "true_saved_OS_PNGs": 62,
+    "maximum_named_captures": 40,
+    "size_aggregation": "Only original N7.two-sizes-safearea samples gain authentic source/PID/session-bound references from verified actual runs (original2/2/1 to actual5). Other samples remain exactly original; original per-run single-viewport refusals retained.",
+    "mechanics": {
+      "path": "harness/runs/large-text-repair/native-v7-complete-mechanics.json",
+      "sha256": "e44341f6a7fe5f8a911dcea3bd4fedeb8e30273f6e57bd4c1b0f2188e8c80054",
+      "bytes": 328096
+    },
     "data_review": {
-      "path": "harness/runs/large-text-repair/native-v7-max17-independent.json",
-      "sha256": "71a661e6d424e2c52a42e36647295816688ee71133c908ee9d30856b75ddac74",
-      "bytes": 151508
+      "path": "harness/runs/large-text-repair/native-v7-three-config-independent.json",
+      "sha256": "6a10e87b6b9be4aa4615c18b17f64f8a1b0b9bc71017fe325605c3fdbdb48a7f",
+      "bytes": 368348
     },
     "visual_review": {
-      "path": "harness/runs/large-text-repair/global-map-v7-max17-visual-accepted.json",
-      "sha256": "7e32e0c02d4fc18f84c8bf3e6d1611f2c3d7eadcbeb303045c8badde3104f12d",
-      "bytes": 95716
+      "path": "harness/runs/large-text-repair/global-map-v7-three-config-visual-accepted.json",
+      "sha256": "dd4cff59d7786470b897ec8fa4c90368605b0e9b74c24ba2615a2e1508535612",
+      "bytes": 25820
     },
-    "text_input": "Driver-emulated text; actual OS keyboard inset/Save geometry. Captured QuickPath first-use surface is not physical key typing.",
+    "cold_outbox_by_config": {
+      "max17": [
+        2,
+        0,
+        0
+      ],
+      "max16": [
+        2,
+        0,
+        0
+      ],
+      "normal17": [
+        1,
+        0,
+        0
+      ]
+    },
+    "HTTP_requests_by_config": {
+      "max17": [
+        0,
+        2,
+        2
+      ],
+      "max16": [
+        0,
+        2,
+        2
+      ],
+      "normal17": [
+        0,
+        1,
+        1
+      ]
+    },
+    "real_fixture_ACK_persisted_ack_committed_and_no_third_process_resend": true,
+    "text_input": "Driver-emulated; actual OS keyboard/QuickPath surface and SafeArea Save geometry. No physical key typing claim.",
+    "normal_list_pixel_scope": "No separate normal StopList OS PNG; normal list return accepted from actual actions/observations and G1 host regression.",
     "tiles_ACK": "Controlled loopback simulator fixtures.",
     "full34_on_current_candidate": false,
-    "normal_font_native_on_current_candidate": "not_run"
-  },
-  "remaining_native_acceptance": {
-    "status": "blocked_disk",
-    "max16": "Two fresh same-source runs failed ENOSPC; UI acceptance inconclusive.",
-    "ordinary_font": "Fresh current-candidate native N7 not run. Host ordinary-font regressions are in G1.",
-    "two_viewport_aggregate": "not_run; cannot substitute historical differently-fingerprinted runs.",
-    "failures": [
-      {
-        "runner": {
-          "path": "harness/runs/20261011T114038212204Z-native/attempts/000001/report.json",
-          "sha256": "2628bb2d85d5921e652faf955113ff95c1f0a678742cb52fc44eef6f70db8d55",
-          "bytes": 11791
-        },
-        "raw": {
-          "path": "harness/runs/20261011T114038212204Z-native/attempts/000001/native/result.json",
-          "sha256": "2ae4a532b3c3936307052865f5f487e33a957cc494bde67eb26ada52a3602c71",
-          "bytes": 568869
-        },
-        "status": "failed_ENOSPC_inconclusive_UI",
-        "error": "[Errno 28] No space left on device: '/Users/yeyufeng/.codex/worktrees/5bde/transvirtual-driver-delivery/harness/runs/20261011T114038212204Z-native/attempts/000001/native/result.tmp'",
-        "original_log_reader_cleanup_error": "[Errno 28] No space left on device: '/Users/yeyufeng/.codex/worktrees/5bde/transvirtual-driver-delivery/harness/runs/20261011T114038212204Z-native/attempts/000001/native/result.tmp'",
-        "phases": [],
-        "device_cleaned": true,
-        "isolation_cleaned": true,
-        "lease_released": true,
-        "promoted_to_pass": false
-      },
-      {
-        "runner": {
-          "path": "harness/runs/20261011T115158969693Z-native/attempts/000001/report.json",
-          "sha256": "6b668bcd565e5afb32f4be3327519e2b617696c1eb9005025c3f696bfd36e727",
-          "bytes": 11791
-        },
-        "raw": {
-          "path": "harness/runs/20261011T115158969693Z-native/attempts/000001/native/result.json",
-          "sha256": "9e1cf33533439d18c5844aac11f38e31fdcef2465b6be7ff072538e604062f2c",
-          "bytes": 1480838
-        },
-        "status": "failed_ENOSPC_inconclusive_UI",
-        "error": "[Errno 28] No space left on device: '/Users/yeyufeng/.codex/worktrees/5bde/transvirtual-driver-delivery/harness/runs/20261011T115158969693Z-native/attempts/000001/native/result.tmp'",
-        "original_log_reader_cleanup_error": "[Errno 28] No space left on device",
-        "phases": [],
-        "device_cleaned": true,
-        "isolation_cleaned": true,
-        "lease_released": true,
-        "promoted_to_pass": false
-      }
-    ],
-    "restart": "Free approximately5GiB total, then fresh max16 and normal17 runs with unchanged source; original ENOSPC/log-reader failures remain immutable. Resume not promoted past unknown cleanup.",
-    "cleanup_boundary": "Only task-owned verified duplicate expanded artifacts and completed isolated Xcode intermediate cache reclaimed. User devices and original raw archives retained.",
-    "user_owned_device_deletion": "Not authorized; explicit question pending. Preview protected."
+    "full_G2_on_current_candidate": false
   },
   "formal_demo": {
     "status": "built_installed_and_initialized",
@@ -291,21 +371,41 @@
       "path": "harness/runs/large-text-repair/storage/intermediate-115158-independent.json",
       "sha256": "1a81837684b5adc0eef6a3daef078233b8c75ed85e0de59ad444cc060013cc0f",
       "bytes": 57218
+    },
+    "native_three_config": {
+      "path": "harness/runs/large-text-repair/native-v7-three-config-independent.json",
+      "sha256": "6a10e87b6b9be4aa4615c18b17f64f8a1b0b9bc71017fe325605c3fdbdb48a7f",
+      "bytes": 368348
+    },
+    "visual_three_config": {
+      "path": "harness/runs/large-text-repair/global-map-v7-three-config-visual-accepted.json",
+      "sha256": "dd4cff59d7786470b897ec8fa4c90368605b0e9b74c24ba2615a2e1508535612",
+      "bytes": 25820
+    },
+    "Linux_metadata_CI_1f80": {
+      "path": "harness/runs/large-text-repair/ci-1f80c87a-38138790695/ci-independent-review.json",
+      "sha256": "b3c9f2540d895065d803059dc95956ecba579ffb420e1e804604b02647742891",
+      "bytes": 21808
+    },
+    "portable_metadata_1f80": {
+      "path": "harness/runs/large-text-repair/ci-1f80c87a-38138790695/metadata-independent-review.json",
+      "sha256": "608dab0d324b0ef2d20a8f18e8c7b2645695c7edbe804e4b4bf0499fe34a1618",
+      "bytes": 9742
     }
   },
   "gates": {
     "G0": "passed_targeted_contract",
     "G1": "passed",
-    "G2": "partial_targeted_max17; required_two_viewports_and_normal_native_pending",
+    "G2": "accepted_targeted_N7_three_configs; full34_G2_not_rerun",
     "G3": "unverified_physical",
-    "G4_local": "Targeted cold SQL/ACK and preserved business upgrade observed; not full current matrix",
+    "G4_local": "Targeted9PID coldSQL/ACK/noresend plus formal install all business rows retained; not full current matrix",
     "G4_resource_connected": "production_pending",
     "G5": "simulator_Demo_not_production_signed; ad_hoc_CodeSignature_present",
     "G6": "local_install_receipt_only"
   },
   "merge": {
-    "state": "PR37_draft_open",
-    "decision": "Wait for required native acceptance and latest exact-head CI before merge. Issue36 stays open.",
+    "state": "PR37_draft_until_final_metadata_CI",
+    "decision": "Targeted source/G1/three-config native/visual/formal install accepted. Merge permitted after live exact-final-head CI and independent portable handoff review.",
     "prior_PR34": "Merged historical prototype/review repair; not this candidate."
   },
   "production_eligible": false,
@@ -314,17 +414,17 @@
     "X05#32 enforcedrequiredchecks/release",
     "E12#33 realservice/resources/signing/publication/delivery"
   ],
-  "next_action": "Resolve disk dependency without deleting user apps/data absent explicit authorization; run fresh required native validations, independent aggregate review, then reconsider merge.",
+  "next_action": "Independent final handoff readback; commit/push report metadata; actual exact-head CI; merge authorized source PR37 then close Issue36 with source/runtime evidence. Production dependencies31/32/33 remain.",
   "evidence_archive": {
-    "path": "harness/reports/large-text-partial-evidence.tar.gz",
-    "sha256": "156153d3f3ba2c53aeac36fd46c13bf3717f0f5b7b851489cca50fa70216e4de",
-    "bytes": 21865994,
-    "members": 561,
-    "payload_files": 560,
+    "path": "harness/reports/large-text-final-evidence.tar.gz",
+    "sha256": "15b7aef5e5529cb625c5f23cbad7fc4353f0d508c58efdbccdb792fe80b39bc3",
+    "bytes": 40464589,
+    "members": 1085,
+    "payload_files": 1084,
     "all_payload_hashes_verified": true,
     "binary_artifacts_in_archive": false,
     "user_business_rows_in_archive": false,
-    "scope": "Partial acceptance; retains both max16 ENOSPC failures."
+    "scope": "Accepted targeted five N7 IDs/three configurations; no fullG2/production signoff."
   },
   "tracked_visual_copies": {
     "formal_map": {
@@ -337,6 +437,138 @@
       "sha256": "f5932ef5b03694e0b511c0223e37bfc51d9fe3028bea05ad94aefb06856d90cc",
       "bytes": 243530
     },
-    "copied_without_edit": true
+    "copied_without_edit": true,
+    "maximum_iphone16_list": {
+      "path": "harness/reports/large-text-native-list-iphone16.png",
+      "sha256": "98b6f601b67e403de70a4b85b8ab231b9bace4faf1c5b3d0768eed226f1aad7a",
+      "bytes": 233310
+    }
+  },
+  "historical_partial_acceptance": {
+    "status": "implemented_installed_partial_acceptance_blocked_disk",
+    "archive": {
+      "path": "harness/reports/large-text-partial-evidence.tar.gz",
+      "sha256": "156153d3f3ba2c53aeac36fd46c13bf3717f0f5b7b851489cca50fa70216e4de",
+      "bytes": 21865994,
+      "members": 561,
+      "payload_files": 560,
+      "all_payload_hashes_verified": true,
+      "binary_artifacts_in_archive": false,
+      "user_business_rows_in_archive": false,
+      "scope": "Partial acceptance; retains both max16 ENOSPC failures."
+    },
+    "native": {
+      "status": "partial_scope_accepted_single_maximum_viewport",
+      "runner": {
+        "path": "harness/runs/20261011T113319446983Z-native/attempts/000001/report.json",
+        "sha256": "99e7f6876962e37397108ff46afee69233771fbdf7b7b21d5d5d8f61383cac94",
+        "bytes": 11813
+      },
+      "raw": {
+        "path": "harness/runs/20261011T113319446983Z-native/attempts/000001/native/result.json",
+        "sha256": "5e8765294e238b9d3163792f15999ec3b44cd5722948a6226f47789c9cce4ed5",
+        "bytes": 3168850
+      },
+      "actual_viewport": [
+        402,
+        874
+      ],
+      "OS_content_size": "accessibility-extra-extra-extra-large",
+      "reduce_motion": true,
+      "actual_process_ids": [
+        69668,
+        70311,
+        70389
+      ],
+      "raw_check_count": 5,
+      "mandatory_assertions": 681,
+      "independently_mechanically_accepted_unique_ids": [
+        "N7.os-keyboard",
+        "N7.text-scale",
+        "N7.reduced-motion-semantics",
+        "N7.platform-back"
+      ],
+      "two_sizes_safearea": "Original Validator.native_check refuses one actual viewport. Two-size gate NOT passed.",
+      "true_OS_PNGs": 28,
+      "named_captures": 20,
+      "cold_SQL_outbox": [
+        2,
+        0,
+        0
+      ],
+      "HTTP_requests_per_phase": [
+        0,
+        2,
+        2
+      ],
+      "real_fixture_ACK_and_persisted_ack_committed": true,
+      "third_process_no_resend": true,
+      "data_review": {
+        "path": "harness/runs/large-text-repair/native-v7-max17-independent.json",
+        "sha256": "71a661e6d424e2c52a42e36647295816688ee71133c908ee9d30856b75ddac74",
+        "bytes": 151508
+      },
+      "visual_review": {
+        "path": "harness/runs/large-text-repair/global-map-v7-max17-visual-accepted.json",
+        "sha256": "7e32e0c02d4fc18f84c8bf3e6d1611f2c3d7eadcbeb303045c8badde3104f12d",
+        "bytes": 95716
+      },
+      "text_input": "Driver-emulated text; actual OS keyboard inset/Save geometry. Captured QuickPath first-use surface is not physical key typing.",
+      "tiles_ACK": "Controlled loopback simulator fixtures.",
+      "full34_on_current_candidate": false,
+      "normal_font_native_on_current_candidate": "not_run"
+    },
+    "remaining_native_acceptance": {
+      "status": "blocked_disk",
+      "max16": "Two fresh same-source runs failed ENOSPC; UI acceptance inconclusive.",
+      "ordinary_font": "Fresh current-candidate native N7 not run. Host ordinary-font regressions are in G1.",
+      "two_viewport_aggregate": "not_run; cannot substitute historical differently-fingerprinted runs.",
+      "failures": [
+        {
+          "runner": {
+            "path": "harness/runs/20261011T114038212204Z-native/attempts/000001/report.json",
+            "sha256": "2628bb2d85d5921e652faf955113ff95c1f0a678742cb52fc44eef6f70db8d55",
+            "bytes": 11791
+          },
+          "raw": {
+            "path": "harness/runs/20261011T114038212204Z-native/attempts/000001/native/result.json",
+            "sha256": "2ae4a532b3c3936307052865f5f487e33a957cc494bde67eb26ada52a3602c71",
+            "bytes": 568869
+          },
+          "status": "failed_ENOSPC_inconclusive_UI",
+          "error": "[Errno 28] No space left on device: '/Users/yeyufeng/.codex/worktrees/5bde/transvirtual-driver-delivery/harness/runs/20261011T114038212204Z-native/attempts/000001/native/result.tmp'",
+          "original_log_reader_cleanup_error": "[Errno 28] No space left on device: '/Users/yeyufeng/.codex/worktrees/5bde/transvirtual-driver-delivery/harness/runs/20261011T114038212204Z-native/attempts/000001/native/result.tmp'",
+          "phases": [],
+          "device_cleaned": true,
+          "isolation_cleaned": true,
+          "lease_released": true,
+          "promoted_to_pass": false
+        },
+        {
+          "runner": {
+            "path": "harness/runs/20261011T115158969693Z-native/attempts/000001/report.json",
+            "sha256": "6b668bcd565e5afb32f4be3327519e2b617696c1eb9005025c3f696bfd36e727",
+            "bytes": 11791
+          },
+          "raw": {
+            "path": "harness/runs/20261011T115158969693Z-native/attempts/000001/native/result.json",
+            "sha256": "9e1cf33533439d18c5844aac11f38e31fdcef2465b6be7ff072538e604062f2c",
+            "bytes": 1480838
+          },
+          "status": "failed_ENOSPC_inconclusive_UI",
+          "error": "[Errno 28] No space left on device: '/Users/yeyufeng/.codex/worktrees/5bde/transvirtual-driver-delivery/harness/runs/20261011T115158969693Z-native/attempts/000001/native/result.tmp'",
+          "original_log_reader_cleanup_error": "[Errno 28] No space left on device",
+          "phases": [],
+          "device_cleaned": true,
+          "isolation_cleaned": true,
+          "lease_released": true,
+          "promoted_to_pass": false
+        }
+      ],
+      "restart": "Free approximately5GiB total, then fresh max16 and normal17 runs with unchanged source; original ENOSPC/log-reader failures remain immutable. Resume not promoted past unknown cleanup.",
+      "cleanup_boundary": "Only task-owned verified duplicate expanded artifacts and completed isolated Xcode intermediate cache reclaimed. User devices and original raw archives retained.",
+      "user_owned_device_deletion": "Not authorized; explicit question pending. Preview protected."
+    },
+    "resolved": "Task-owned verified duplicate/intermediate reclamation and actual available-space recovery allowed fresh max16 and normal runs; user-owned devices were not deleted."
   }
 }

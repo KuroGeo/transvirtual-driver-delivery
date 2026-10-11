@@ -33,6 +33,6 @@
 
 ## 最大系统字号修复 LTX-01
 
-当前 `256de9f` / `7b077f55197263c571fb33fce1b561f7ccd5cdc0d2a7252aab34c15a9eb184bf` 的 G1 与精确源码 Linux CI 通过；iPhone17Pro 最大字号的画面、4 个唯一 N7 条目及3进程冷 SQL/受控 ACK 已独立接受。当前正式 main Demo 已保留30条配送/0 outbox安装到 Preview，业务行未重置。
+当前256de9f / `7b077f55197263c571fb33fce1b561f7ccd5cdc0d2a7252aab34c15a9eb184bf` 的G1、精确源码/元数据LinuxCI和指定N7三配置已独立接受：最大字号402×874/393×852、普通OSlarge；五唯一ID/13passed+2authenticNA/1382断言/9PID、可读性与coldSQL/受控ACK/noresend通过。正式main Demo已保留30条配送/0outbox安装到Preview。
 
-两次 iPhone16 最大字号复验因 ENOSPC 失败，保留原日志及 log-reader 清理错误；普通字号原生与真实两尺寸聚合尚未完成。PR37 保持 Draft，Issue36 开放。详见 [当前修复交付记录](large-text-repair.md)；本轮不代签完整34项、真机或生产门槛，生产 no-go 原因继续适用。
+原两次max16 ENOSPC失败和清理错误保留，资源恢复后fresh同候选复验通过，不改写旧尝试。最终报告/归档元数据CI和PR37合入单独取证，详见[当前交付记录](large-text-repair.md)。指定字体修复不代签完整当前34项/G2、真机或生产门槛；#31/#32/#33和生产no-go继续适用。
