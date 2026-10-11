@@ -148,11 +148,22 @@ class F1EvidenceTests(unittest.TestCase):
         reference = self.fixture.evidence("quality-flutter-tests.log", "raw-log", text)
         stage = self.fixture.quality["stages"][-1]
         stage.update(log_path=reference["path"], sha256=reference["sha256"])
+        self.events = [{"type": "start", "protocolVersion": "0.1.1"},
+                       {"type": "suite", "suite": {"id": 0, "path": self.fixture.quality["execution_root"] + "/app/test/next_phase/f1_test.dart"}}]
+        for tid, name in enumerate(names.values(), 1):
+            self.events.extend([{"type": "testStart", "test": {"id": tid, "name": name, "suiteID": 0}},
+                                {"type": "testDone", "testID": tid, "result": "success", "skipped": False, "hidden": False}])
+        self.events.append({"type": "done", "success": True})
+        self.machine_path = self.root / "flutter-tests.events.jsonl"
+        stage["command"].extend(["--file-reporter", "json:" + str(self.machine_path)])
+        self.fixture.quality["stage_spec"][-1]["command"] = [argument.replace(self.fixture.quality["execution_root"], "@workspace").replace(str(self.root), "@run") for argument in stage["command"]]
         self.manifest = {"schema": 1, "feature": "F1", "level": "host", "publish_allowed": False,
                          "external_unverified": list(f1.EXTERNAL), "candidate": {"source_fingerprint": self.fp}}
         self.refresh()
 
     def refresh(self):
+        self.machine_path.write_text("".join(json.dumps(row) + "\n" for row in self.events))
+        self.fixture.quality["stages"][-1]["machine_report"] = {"path": str(self.machine_path), "sha256": hashlib.sha256(self.machine_path.read_bytes()).hexdigest(), "kind": "flutter-machine-events"}
         self.manifest["host"] = self.fixture.evidence("host.json", "f1-host-coverage", json.dumps(self.host))
         self.manifest["quality"] = self.fixture.evidence("quality.json", "quality-run", json.dumps(self.fixture.quality))
 
@@ -209,6 +220,42 @@ class F1EvidenceTests(unittest.TestCase):
         reference = self.fixture.evidence("quality-flutter-tests.log", "raw-log", "00:01 +11: All tests passed!\n")
         self.fixture.quality["stages"][-1]["sha256"] = reference["sha256"]
         self.refresh()
+        self.events = self.events[:2] + [self.events[-1]]
+        self.refresh()
+        self.assertFalse(self.evaluate()["feature_allowed"])
+
+    def test_parallel_console_can_hide_names_when_machine_events_prove_each_test(self):
+        reference = self.fixture.evidence("quality-flutter-tests.log", "raw-log", "00:01 +11: All tests passed!\n")
+        self.fixture.quality["stages"][-1]["sha256"] = reference["sha256"]
+        self.refresh()
+        self.assertTrue(self.evaluate()["feature_allowed"])
+
+    def test_machine_missing_failed_skipped_hidden_and_wrong_suite_are_rejected(self):
+        original = copy.deepcopy(self.events)
+        for mutate in (lambda rows: rows[3].update(result="failure"),
+                       lambda rows: rows[3].update(skipped=True),
+                       lambda rows: rows[3].update(hidden=True),
+                       lambda rows: rows[1]["suite"].update(path="test/another.dart"),
+                       lambda rows: rows.pop(3),
+                       lambda rows: rows.append({"type": "done", "success": True}),
+                       lambda rows: rows[-1].update(success=False)):
+            self.events = copy.deepcopy(original)
+            mutate(self.events)
+            self.refresh()
+            with self.subTest(mutate=mutate):
+                self.assertFalse(self.evaluate()["feature_allowed"])
+
+    def test_machine_raw_tampering_missing_tail_and_unbound_destination_are_rejected(self):
+        self.machine_path.write_text(self.machine_path.read_text() + "tampered")
+        self.assertFalse(self.evaluate()["feature_allowed"])
+        self.refresh()
+        self.machine_path.write_text(self.machine_path.read_text().rstrip("\n"))
+        self.fixture.quality["stages"][-1]["machine_report"]["sha256"] = hashlib.sha256(self.machine_path.read_bytes()).hexdigest()
+        self.manifest["quality"] = self.fixture.evidence("quality.json", "quality-run", json.dumps(self.fixture.quality))
+        self.assertFalse(self.evaluate()["feature_allowed"])
+        self.refresh()
+        self.fixture.quality["stages"][-1]["command"][-1] = "json:/foreign/path/events.jsonl"
+        self.manifest["quality"] = self.fixture.evidence("quality.json", "quality-run", json.dumps(self.fixture.quality))
         self.assertFalse(self.evaluate()["feature_allowed"])
 
     def test_symlink_evidence_is_rejected_and_original_bytes_remain_valid(self):
@@ -230,6 +277,11 @@ class F1EvidenceTests(unittest.TestCase):
         self.fixture.quality["isolation"]["verified_fingerprint"] = fingerprint
         report = self.root / "harness/runs/20261012T000000Z-quality/attempts/000001/report.json"
         report.parent.mkdir(parents=True)
+        machine = report.parent / "flutter-tests.events.jsonl"
+        shutil.copyfile(self.machine_path, machine)
+        stage = self.fixture.quality["stages"][-1]
+        stage["command"][-1] = "json:" + str(machine)
+        stage["machine_report"]["path"] = str(machine)
         report.write_text(json.dumps(self.fixture.quality))
         return report
 

@@ -181,7 +181,7 @@ def stages(command, run_dir, candidate, manifest=None, targets=None, options=Non
     quality = [check, tooling, sdk, pub,
                ("format", ["dart", "format", "--output=none", "--set-exit-if-changed", *format_paths], root / "app"),
                ("analyze", ["flutter", "analyze", "--no-pub"], root / "app"),
-               ("flutter-tests", ["flutter", "test", "--no-pub", "--reporter", "expanded", define], root / "app")]
+               ("flutter-tests", ["flutter", "test", "--no-pub", "--reporter", "expanded", define, "--file-reporter", f"json:{run_dir / 'flutter-tests.events.jsonl'}"], root / "app")]
     if command == "test":
         return [sdk, pub, ("flutter-tests", ["flutter", "test", "--no-pub", "--reporter", "expanded", define, *(targets or [])], root / "app")]
     if command == "integration":
@@ -301,6 +301,8 @@ def isolated_workspace(source_root, fingerprint, report=None):
 
 def stage_spec(stages_list, root, run_dir):
     def normalized(value):
+        if str(value).startswith("json:"):
+            return str(value).replace(str(run_dir), "@run").replace(str(root), "@workspace")
         return str(value).replace(str(root), "@workspace").replace(str(run_dir), "@run")
     result = []
     for name, argv, cwd in stages_list:
@@ -654,6 +656,8 @@ def main():
                     current_spec = stage_spec([(stage_id, argv, cwd)], execution_root, attempt)
                     old_spec = stage_spec([(stage_id, old["command"], old["cwd"])], previous_root, prior_path.parent) if old else None
                     retained_outputs = {"ios-build", "probe-build", "startup-build", "workbench-build", "process-restart", "startup-smoke", "workbench-smoke", "integration-tests"}
+                    if args.command == "quality":
+                        retained_outputs.add("flutter-tests")  # retain each attempt's original machine stream
                     if args.command not in {"gate", "local-gate", "f1-gate"} and stage_id not in {"pub", *retained_outputs} and not args.isolated and old and old["status"] == "passed" and type(old.get("exit_code")) is int and old["exit_code"] == 0 and old_spec == current_spec:
                         previous_log = Path(old["log_path"])
                         if not previous_log.is_relative_to(run_dir) or previous_log.resolve() != previous_log or not previous_log.is_file() or sha(previous_log) != old["sha256"]:
@@ -689,6 +693,10 @@ def main():
                         log = Path(record["log_path"])
                         if log.is_file():
                             record.update(sha256=sha(log), log_bytes=log.stat().st_size)
+                        if stage_id == "flutter-tests" and args.command == "quality":
+                            machine = attempt / "flutter-tests.events.jsonl"
+                            if machine.is_file() and machine.resolve() == machine:
+                                record["machine_report"] = {"path": str(machine), "sha256": sha(machine), "kind": "flutter-machine-events"}
                         save_attempt(run_dir, attempt, report, mirror)
                     if record["status"] == "passed" and stage_id in {"ios-build", "probe-build", "startup-build", "workbench-build"}:
                         record["artifact"] = preserve_artifact(execution_root, attempt, stage_id, options, candidate["source_fingerprint"])

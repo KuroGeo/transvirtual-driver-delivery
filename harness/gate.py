@@ -328,7 +328,8 @@ class Validator:
             argv = _list(stage.get("command"), "stage command")
             if any(not isinstance(argument, str) for argument in argv):
                 raise EvidenceError("stage command arguments must be strings")
-            normalized = [argument.replace(report["execution_root"], "@workspace").replace(str(item["path_object"].parent), "@run") for argument in argv]
+            normalized = [(argument.replace(str(item["path_object"].parent), "@run").replace(report["execution_root"], "@workspace") if argument.startswith("json:")
+                           else argument.replace(report["execution_root"], "@workspace").replace(str(item["path_object"].parent), "@run")) for argument in argv]
             if "--lease-context" in normalized:
                 normalized[normalized.index("--lease-context") + 1] = "@inherited-lease"
             _expect(spec.get("id"), stage.get("id"), "stage_spec.id")
@@ -359,6 +360,12 @@ class Validator:
             "flutter-tests": ["test", "--no-pub", "--reporter", "expanded", f"--dart-define=OCEAN_MODE={mode}"],
         }
         for stage in stages:
+            if stage["id"] == "flutter-tests" and "machine_report" in stage:
+                machine = self.nested(stage["machine_report"], item)
+                _expect(machine["kind"], "flutter-machine-events", "quality machine reporter kind")
+                _expect(machine["path_object"], item["path_object"].parent / "flutter-tests.events.jsonl", "quality machine reporter original attempt path")
+                expected[stage["id"]] += ["--file-reporter", "json:" + str(machine["path_object"])]
+                self.flutter_events(machine)
             _expect(stage["command"][1:], expected[stage["id"]], "full quality stage command")
             if stage["id"] in ("pub", "analyze", "flutter-tests"):
                 _expect(Path(stage["command"][0]).name, "flutter", "quality executable")
@@ -371,6 +378,45 @@ class Validator:
         if not re.search(r"\+[1-9][0-9]*: All tests passed!\s*\Z", flutter) or re.search(r"\+[0-9]+ -[1-9]|Some tests failed|unhandled exception", flutter, re.I):
             raise EvidenceError("flutter-tests raw log lacks full successful completion")
         return report
+
+    def flutter_events(self, item):
+        """Original Dart JSON reporter events, independent of parallel console UI."""
+        rows = self.jsonl(item)
+        _expect(rows[0].get("type"), "start", "Flutter machine stream first event")
+        _text(rows[0].get("protocolVersion"), "Flutter reporter protocolVersion")
+        _expect(rows[-1].get("type"), "done", "Flutter machine stream final event")
+        _expect(rows[-1].get("success"), True, "Flutter machine final success")
+        suites, starts, done = {}, {}, {}
+        for index, row in enumerate(rows):
+            kind = row.get("type")
+            if kind == "start" and index != 0 or kind == "done" and index != len(rows) - 1:
+                raise EvidenceError("Flutter machine stream duplicated start/done or trailing records")
+            if kind == "suite":
+                suite = _object(row.get("suite"), "Flutter suite event")
+                sid = _integer(suite.get("id"), "Flutter suite ID")
+                if sid in suites:
+                    raise EvidenceError("Flutter machine duplicate suite ID")
+                _text(suite.get("path"), "Flutter suite path")
+                suites[sid] = suite
+            elif kind == "testStart":
+                test = _object(row.get("test"), "Flutter testStart")
+                tid = _integer(test.get("id"), "Flutter test ID")
+                if tid in starts or test.get("suiteID") not in suites:
+                    raise EvidenceError("Flutter machine duplicate test ID or unknown suite")
+                _text(test.get("name"), "Flutter test name")
+                starts[tid] = test
+            elif kind == "testDone":
+                tid = _integer(row.get("testID"), "Flutter testDone ID")
+                if tid not in starts or tid in done:
+                    raise EvidenceError("Flutter machine duplicate or orphan testDone")
+                _expect(row.get("result"), "success", "Flutter machine test success")
+                _expect(row.get("skipped"), False, "Flutter machine skipped test")
+                if type(row.get("hidden")) is not bool:
+                    raise EvidenceError("Flutter machine hidden flag must be explicit boolean")
+                done[tid] = row
+        if not starts or set(starts) != set(done):
+            raise EvidenceError("Flutter machine incomplete testStart/testDone graph")
+        return {"suites": suites, "starts": starts, "done": done}
 
     def quality_items(self):
         items = [item for item in self.checked.get("G1", []) if item["kind"] == "quality-run"]

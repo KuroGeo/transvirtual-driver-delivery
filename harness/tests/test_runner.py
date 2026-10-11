@@ -1,4 +1,5 @@
 import io
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -63,6 +64,29 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(integration[-1][1][-1], "integration_test/example_test.dart")
         format_stage = next(x for x in run.stages("quality", self.root / "run", "candidate", options=options, root=self.root) if x[0] == "format")
         self.assertIn("integration_test", format_stage[1])
+
+    def test_quality_records_original_machine_stream_and_regenerates_it_on_resume(self):
+        captured = []
+        def execute(argv, cwd, log, timeout, lock_fds, on_spawn, context=None, **kwargs):
+            code = self.stage(argv, cwd, log, timeout, lock_fds, on_spawn, context, **kwargs)
+            if "--file-reporter" in argv:
+                path = Path(argv[argv.index("--file-reporter") + 1].removeprefix("json:"))
+                path.write_text('{"type":"start","protocolVersion":"0.1.1"}\n{"type":"done","success":true}\n')
+                captured.append(path)
+            return code
+        self.assertEqual(self.cli(["quality"], execute)[0], 0)
+        directory = next((self.root / "harness/runs").glob("*-quality"))
+        report, leaf, mirror = run.resume_report(directory)
+        machine = report["stages"][-1]["machine_report"]
+        self.assertEqual(Path(machine["path"]), leaf.parent / "flutter-tests.events.jsonl")
+        original = captured[0].read_bytes()
+        self.assertEqual(machine["sha256"], hashlib.sha256(original).hexdigest())
+        report["job"]["pid"] = None
+        run.save_attempt(directory, leaf.parent, report, mirror)
+        self.assertEqual(self.cli(["quality", "--resume", str(directory)], execute)[0], 0)
+        self.assertEqual(len(captured), 2)
+        self.assertNotEqual(captured[0], captured[1])
+        self.assertEqual(captured[0].read_bytes(), original)
 
     def test_invalid_paths_missing_device_and_simulator_modes_reject_before_execution(self):
         cases = [

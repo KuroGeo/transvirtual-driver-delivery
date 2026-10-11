@@ -189,7 +189,9 @@ class F1Validator(gate.Validator):
         if len(checks) != len(HOST_CHECKS) or {check.get("id") for check in checks} != HOST_CHECKS:
             raise gate.EvidenceError("F1 host coverage requires every frozen feature check exactly once")
         flutter = next(stage for stage in quality["stages"] if stage["id"] == "flutter-tests")
-        log = self.raw({"path": flutter["log_path"], "sha256": flutter["sha256"], "kind": "raw-log"})["raw"].decode()
+        machine = self.raw(flutter.get("machine_report"))
+        gate._expect(machine["kind"], "flutter-machine-events", "F1 original machine reporter kind")
+        events = self.flutter_events(machine)
         seen = set()
         for check in checks:
             gate._expect(check.get("status"), "passed", "F1 host check status")
@@ -200,11 +202,13 @@ class F1Validator(gate.Validator):
             path = gate.SOURCE_ROOT / source
             if path.resolve() != path or not path.is_file() or name not in path.read_text():
                 raise gate.EvidenceError("F1 host test name missing from canonical current source")
-            # Expanded reporter must show that exact named test running. An
-            # aggregate 'All tests passed' alone cannot attest new F1 coverage.
             reporter_source = source.removeprefix("app/")
-            if not any(reporter_source in line and name in line and re.search(r"\+[0-9]+:", line) for line in log.splitlines()):
-                raise gate.EvidenceError(f"F1 test absent from raw full-suite expanded log: {name}")
+            expected_path = str(Path(quality["execution_root"]) / "app" / reporter_source)
+            matches = [tid for tid, test in events["starts"].items()
+                       if test["name"] == name and events["suites"][test["suiteID"]]["path"] in (expected_path, reporter_source)
+                       and events["done"][tid]["hidden"] is False]
+            if len(matches) != 1:
+                raise gate.EvidenceError(f"F1 named test must complete once in its original machine suite: {name}")
             seen.add((source, name))
         if len(seen) < 7:
             raise gate.EvidenceError("F1 feature coverage cannot reuse one broad test for all checks")
