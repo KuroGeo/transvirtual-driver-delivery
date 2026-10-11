@@ -1,0 +1,654 @@
+1eaa8b5 feat: add ocean delivery map-first prototype (#11)
+ .gitignore                                         |   3 +
+ README.md                                          |  37 ++
+ prototype/README.md                                |  66 ++
+ prototype/archive/round1/README.md                 |  58 ++
+ prototype/archive/round1/assets/THIRD_PARTY.md     |   7 +
+ prototype/archive/round1/assets/app.css            |  15 +
+ prototype/archive/round1/assets/app.js             |  62 ++
+ prototype/archive/round1/assets/icons.json         |   1 +
+ prototype/archive/round1/design-notes.md           |  92 +++
+ prototype/archive/round1/evidence/a/page.png       | Bin 0 -> 56411 bytes
+ prototype/archive/round1/evidence/a/report.json    |  10 +
+ prototype/archive/round1/focus.html                |  31 +
+ prototype/archive/round1/index.html                |  31 +
+ prototype/archive/round1/manifest.json             |  69 +++
+ prototype/archive/round1/style-explorer.html       | 432 ++++++++++++++
+ prototype/archive/round1/vendor/alpine.min.js      |  22 +
+ prototype/archive/round1/windows.html              |  31 +
+ prototype/archive/round2/README.md                 |  63 ++
+ prototype/archive/round2/assets/Inter-OFL.txt      |  93 +++
+ prototype/archive/round2/assets/InterVariable.ttf  | Bin 0 -> 876576 bytes
+ prototype/archive/round2/assets/THIRD_PARTY.md     |   9 +
+ prototype/archive/round2/assets/app.css            |  15 +
+ prototype/archive/round2/assets/app.js             |  63 ++
+ prototype/archive/round2/assets/icons.json         |   1 +
+ prototype/archive/round2/assets/refined.css        |  19 +
+ prototype/archive/round2/evidence/home.png         | Bin 0 -> 63402 bytes
+ prototype/archive/round2/focus.html                |   1 +
+ prototype/archive/round2/index.html                |   1 +
+ prototype/archive/round2/manifest.json             |  47 ++
+ prototype/archive/round2/round2-design.md          |  43 ++
+ prototype/archive/round2/style-explorer.html       | 432 ++++++++++++++
+ prototype/archive/round2/vendor/alpine.min.js      |  22 +
+ prototype/archive/round2/verify.py                 | 150 +++++
+ prototype/archive/round2/windows.html              |   1 +
+ prototype/assets/CARBON-LICENSE                    | 201 +++++++
+ prototype/assets/Inter-OFL.txt                     |  93 +++
+ prototype/assets/InterVariable.ttf                 | Bin 0 -> 876576 bytes
+ prototype/assets/THIRD_PARTY.md                    |  13 +
+ prototype/assets/app-icon-180.png                  | Bin 0 -> 29885 bytes
+ prototype/assets/app-icon-32.png                   | Bin 0 -> 1564 bytes
+ prototype/assets/app-icon-design.md                |  14 +
+ prototype/assets/app-icon-source.png               | Bin 0 -> 1201199 bytes
+ prototype/assets/app-icon.png                      | Bin 0 -> 834032 bytes
+ prototype/assets/app.css                           |  15 +
+ prototype/assets/app.js                            | 108 ++++
+ prototype/assets/icons.json                        |   1 +
+ prototype/assets/map-config.json                   |  15 +
+ prototype/assets/map.css                           |  75 +++
+ prototype/assets/map.js                            | 122 ++++
+ prototype/assets/refined.css                       |  19 +
+ prototype/build_prototype.py                       |  96 +++
+ prototype/design-notes.md                          |  92 +++
+ prototype/direct-sync-design.md                    |  34 ++
+ prototype/evidence/a/page.png                      | Bin 0 -> 56411 bytes
+ prototype/evidence/a/report.json                   |  10 +
+ prototype/evidence/b/page.png                      | Bin 0 -> 49538 bytes
+ prototype/evidence/b/report.json                   |  10 +
+ prototype/evidence/c/page.png                      | Bin 0 -> 54159 bytes
+ prototype/evidence/c/report.json                   |  10 +
+ prototype/evidence/comparison/page.png             | Bin 0 -> 196782 bytes
+ prototype/evidence/comparison/report.json          |  10 +
+ prototype/evidence/direct-sync/baseline/page.png   | Bin 0 -> 71236 bytes
+ .../evidence/direct-sync/baseline/report.json      |  10 +
+ .../evidence/direct-sync/detail-toast/page.png     | Bin 0 -> 200182 bytes
+ .../evidence/direct-sync/detail-toast/report.json  |  10 +
+ prototype/evidence/direct-sync/home/page.png       | Bin 0 -> 347726 bytes
+ prototype/evidence/direct-sync/home/report.json    |  10 +
+ prototype/evidence/direct-sync/qa-run-1.json       |   1 +
+ prototype/evidence/direct-sync/qa-run-2.json       |   1 +
+ prototype/evidence/direct-sync/qa-run-3.json       |   1 +
+ .../direct-sync/record-return-list/motion-end.jpg  | Bin 0 -> 62496 bytes
+ .../direct-sync/record-return-list/motion-mid.jpg  | Bin 0 -> 34735 bytes
+ .../record-return-list/motion-start.jpg            | Bin 0 -> 47185 bytes
+ .../direct-sync/record-return-list/record.mp4      | Bin 0 -> 191740 bytes
+ .../direct-sync/record-return-list/report.json     |   9 +
+ .../direct-sync/record-sync/motion-end.jpg         | Bin 0 -> 88284 bytes
+ .../direct-sync/record-sync/motion-mid.jpg         | Bin 0 -> 88600 bytes
+ .../direct-sync/record-sync/motion-start.jpg       | Bin 0 -> 46439 bytes
+ .../evidence/direct-sync/record-sync/record.mp4    | Bin 0 -> 158991 bytes
+ .../evidence/direct-sync/record-sync/report.json   |   9 +
+ prototype/evidence/direct-sync/states/idle.png     | Bin 0 -> 76094 bytes
+ prototype/evidence/direct-sync/states/queued.png   | Bin 0 -> 118831 bytes
+ prototype/evidence/direct-sync/states/report.json  |  34 ++
+ prototype/evidence/direct-sync/states/sheet.png    | Bin 0 -> 487095 bytes
+ prototype/evidence/direct-sync/states/synced.png   | Bin 0 -> 265754 bytes
+ .../evidence/direct-sync/states/syncerror.png      | Bin 0 -> 333581 bytes
+ prototype/evidence/direct-sync/zoom/page-@2x.png   | Bin 0 -> 956719 bytes
+ prototype/evidence/direct-sync/zoom/report.json    |  10 +
+ prototype/evidence/motion/page.png                 | Bin 0 -> 57251 bytes
+ prototype/evidence/motion/report.json              | 213 +++++++
+ .../origin-return/from-list/motion-end.jpg         | Bin 0 -> 62496 bytes
+ .../origin-return/from-list/motion-mid.jpg         | Bin 0 -> 35748 bytes
+ .../origin-return/from-list/motion-start.jpg       | Bin 0 -> 45753 bytes
+ .../evidence/origin-return/from-list/record.mp4    | Bin 0 -> 160563 bytes
+ .../evidence/origin-return/from-list/report.json   |   9 +
+ .../evidence/origin-return/from-map/motion-end.jpg | Bin 0 -> 103610 bytes
+ .../evidence/origin-return/from-map/motion-mid.jpg | Bin 0 -> 72610 bytes
+ .../origin-return/from-map/motion-start.jpg        | Bin 0 -> 89309 bytes
+ .../evidence/origin-return/from-map/record.mp4     | Bin 0 -> 243706 bytes
+ .../evidence/origin-return/from-map/report.json    |   9 +
+ prototype/evidence/origin-return/qa-run-1.json     |   1 +
+ prototype/evidence/origin-return/qa-run-2.json     |   1 +
+ prototype/evidence/origin-return/qa-run-3.json     |   1 +
+ prototype/evidence/qa-run-1.json                   |   1 +
+ prototype/evidence/qa-run-2.json                   |   1 +
+ prototype/evidence/qa-run-3.json                   |   1 +
+ prototype/evidence/record-complete/motion-end.jpg  | Bin 0 -> 38571 bytes
+ prototype/evidence/record-complete/motion-mid.jpg  | Bin 0 -> 36153 bytes
+ .../evidence/record-complete/motion-start.jpg      | Bin 0 -> 43235 bytes
+ prototype/evidence/record-complete/record.mp4      | Bin 0 -> 107017 bytes
+ prototype/evidence/record-complete/report.json     |   9 +
+ prototype/evidence/record-entry/motion-end.jpg     | Bin 0 -> 43235 bytes
+ prototype/evidence/record-entry/motion-mid.jpg     | Bin 0 -> 34068 bytes
+ prototype/evidence/record-entry/motion-start.jpg   | Bin 0 -> 25327 bytes
+ prototype/evidence/record-entry/record.mp4         | Bin 0 -> 33696 bytes
+ prototype/evidence/record-entry/report.json        |   9 +
+ prototype/evidence/record-filter/motion-end.jpg    | Bin 0 -> 43235 bytes
+ prototype/evidence/record-filter/motion-mid.jpg    | Bin 0 -> 45071 bytes
+ prototype/evidence/record-filter/motion-start.jpg  | Bin 0 -> 43235 bytes
+ prototype/evidence/record-filter/record.mp4        | Bin 0 -> 54592 bytes
+ prototype/evidence/record-filter/report.json       |   9 +
+ prototype/evidence/record-sync/motion-end.jpg      | Bin 0 -> 39178 bytes
+ prototype/evidence/record-sync/motion-mid.jpg      | Bin 0 -> 40749 bytes
+ prototype/evidence/record-sync/motion-start.jpg    | Bin 0 -> 41386 bytes
+ prototype/evidence/record-sync/record.mp4          | Bin 0 -> 65923 bytes
+ prototype/evidence/record-sync/report.json         |   9 +
+ prototype/evidence/round2/comparison/page.png      | Bin 0 -> 203842 bytes
+ prototype/evidence/round2/comparison/report.json   |  10 +
+ .../evidence/round2/completed-filter/page.png      | Bin 0 -> 59057 bytes
+ .../evidence/round2/completed-filter/report.json   |  10 +
+ prototype/evidence/round2/home/page.png            | Bin 0 -> 63402 bytes
+ prototype/evidence/round2/home/report.json         |  10 +
+ prototype/evidence/round2/motion/page.png          | Bin 0 -> 64781 bytes
+ prototype/evidence/round2/motion/report.json       | 118 ++++
+ prototype/evidence/round2/qa-run-1.json            |  46 ++
+ prototype/evidence/round2/qa-run-2.json            |  46 ++
+ prototype/evidence/round2/qa-run-3.json            |  46 ++
+ .../evidence/round2/record-complete/motion-end.jpg | Bin 0 -> 29779 bytes
+ .../evidence/round2/record-complete/motion-mid.jpg | Bin 0 -> 33547 bytes
+ .../round2/record-complete/motion-start.jpg        | Bin 0 -> 50889 bytes
+ .../evidence/round2/record-complete/record.mp4     | Bin 0 -> 111335 bytes
+ .../evidence/round2/record-complete/report.json    |   9 +
+ .../evidence/round2/record-entry/motion-end.jpg    | Bin 0 -> 50916 bytes
+ .../evidence/round2/record-entry/motion-mid.jpg    | Bin 0 -> 48879 bytes
+ .../evidence/round2/record-entry/motion-start.jpg  | Bin 0 -> 9501 bytes
+ prototype/evidence/round2/record-entry/record.mp4  | Bin 0 -> 87171 bytes
+ prototype/evidence/round2/record-entry/report.json |   9 +
+ .../evidence/round2/record-filter/motion-end.jpg   | Bin 0 -> 45801 bytes
+ .../evidence/round2/record-filter/motion-mid.jpg   | Bin 0 -> 45800 bytes
+ .../evidence/round2/record-filter/motion-start.jpg | Bin 0 -> 50655 bytes
+ prototype/evidence/round2/record-filter/record.mp4 | Bin 0 -> 54679 bytes
+ .../evidence/round2/record-filter/report.json      |   9 +
+ .../evidence/round2/record-sync/motion-end.jpg     | Bin 0 -> 33534 bytes
+ .../evidence/round2/record-sync/motion-mid.jpg     | Bin 0 -> 29653 bytes
+ .../evidence/round2/record-sync/motion-start.jpg   | Bin 0 -> 28656 bytes
+ prototype/evidence/round2/record-sync/record.mp4   | Bin 0 -> 50445 bytes
+ prototype/evidence/round2/record-sync/report.json  |   9 +
+ prototype/evidence/round2/states/detail.png        | Bin 0 -> 36364 bytes
+ prototype/evidence/round2/states/done.png          | Bin 0 -> 35603 bytes
+ prototype/evidence/round2/states/error.png         | Bin 0 -> 47848 bytes
+ prototype/evidence/round2/states/failure.png       | Bin 0 -> 45427 bytes
+ prototype/evidence/round2/states/queued.png        | Bin 0 -> 40369 bytes
+ prototype/evidence/round2/states/report.json       |  42 ++
+ prototype/evidence/round2/states/sheet.png         | Bin 0 -> 175901 bytes
+ prototype/evidence/round2/visual-review.md         |  18 +
+ prototype/evidence/round2/zoom/detail-@2x.png      | Bin 0 -> 83370 bytes
+ prototype/evidence/round2/zoom/failure-@2x.png     | Bin 0 -> 103768 bytes
+ prototype/evidence/round2/zoom/report.json         |  18 +
+ .../evidence/round3-feedback/comparison/page.png   | Bin 0 -> 497619 bytes
+ .../round3-feedback/comparison/report.json         |  10 +
+ .../round3-feedback/pending-filter/page.png        | Bin 0 -> 350062 bytes
+ .../round3-feedback/pending-filter/report.json     |  10 +
+ prototype/evidence/round3-feedback/qa-run-1.json   |  62 ++
+ prototype/evidence/round3-feedback/qa-run-2.json   |  62 ++
+ prototype/evidence/round3-feedback/qa-run-3.json   |  62 ++
+ .../round3-feedback/record-entry/motion-end.jpg    | Bin 0 -> 98332 bytes
+ .../round3-feedback/record-entry/motion-mid.jpg    | Bin 0 -> 52545 bytes
+ .../round3-feedback/record-entry/motion-start.jpg  | Bin 0 -> 22778 bytes
+ .../round3-feedback/record-entry/record.mp4        | Bin 0 -> 186966 bytes
+ .../round3-feedback/record-entry/report.json       |   9 +
+ .../round3-feedback/record-nearest/motion-end.jpg  | Bin 0 -> 76388 bytes
+ .../round3-feedback/record-nearest/motion-mid.jpg  | Bin 0 -> 60959 bytes
+ .../record-nearest/motion-start.jpg                | Bin 0 -> 41676 bytes
+ .../round3-feedback/record-nearest/record.mp4      | Bin 0 -> 295305 bytes
+ .../round3-feedback/record-nearest/report.json     |   9 +
+ .../record-sync-tool/motion-end.jpg                | Bin 0 -> 49227 bytes
+ .../record-sync-tool/motion-mid.jpg                | Bin 0 -> 49087 bytes
+ .../record-sync-tool/motion-start.jpg              | Bin 0 -> 39358 bytes
+ .../round3-feedback/record-sync-tool/record.mp4    | Bin 0 -> 318960 bytes
+ .../round3-feedback/record-sync-tool/report.json   |   9 +
+ .../evidence/round3-feedback/states/detail.png     | Bin 0 -> 197355 bytes
+ prototype/evidence/round3-feedback/states/idle.png | Bin 0 -> 347654 bytes
+ prototype/evidence/round3-feedback/states/list.png | Bin 0 -> 158573 bytes
+ .../evidence/round3-feedback/states/report.json    |  26 +
+ .../evidence/round3-feedback/states/sheet.png      | Bin 0 -> 637457 bytes
+ .../evidence/round3-feedback/visual-review.md      |  22 +
+ .../evidence/round3-feedback/workspace/detail.png  | Bin 0 -> 205415 bytes
+ .../evidence/round3-feedback/workspace/done.png    | Bin 0 -> 185429 bytes
+ .../evidence/round3-feedback/workspace/failure.png | Bin 0 -> 76774 bytes
+ .../evidence/round3-feedback/workspace/idle.png    | Bin 0 -> 349592 bytes
+ .../evidence/round3-feedback/workspace/list.png    | Bin 0 -> 156431 bytes
+ .../round3-feedback/workspace/maperror.png         | Bin 0 -> 72624 bytes
+ .../evidence/round3-feedback/workspace/queued.png  | Bin 0 -> 146025 bytes
+ .../evidence/round3-feedback/workspace/report.json |  58 ++
+ .../evidence/round3-feedback/workspace/sheet.png   | Bin 0 -> 906741 bytes
+ .../evidence/round3-feedback/zoom/detail-@2x.png   | Bin 0 -> 609409 bytes
+ .../evidence/round3-feedback/zoom/done-@2x.png     | Bin 0 -> 537700 bytes
+ .../evidence/round3-feedback/zoom/idle-@2x.png     | Bin 0 -> 1021934 bytes
+ .../evidence/round3-feedback/zoom/list-@2x.png     | Bin 0 -> 407560 bytes
+ .../evidence/round3-feedback/zoom/report.json      |  34 ++
+ .../evidence/round3/attribution-check/done.png     | Bin 0 -> 178488 bytes
+ .../evidence/round3/attribution-check/idle.png     | Bin 0 -> 346298 bytes
+ .../evidence/round3/attribution-check/list.png     | Bin 0 -> 155595 bytes
+ .../evidence/round3/attribution-check/maperror.png | Bin 0 -> 72983 bytes
+ .../evidence/round3/attribution-check/queued.png   | Bin 0 -> 153891 bytes
+ .../evidence/round3/attribution-check/report.json  |  42 ++
+ .../evidence/round3/attribution-check/sheet.png    | Bin 0 -> 715323 bytes
+ prototype/evidence/round3/comparison/page.png      | Bin 0 -> 495637 bytes
+ prototype/evidence/round3/comparison/report.json   |  10 +
+ prototype/evidence/round3/home/page.png            | Bin 0 -> 346298 bytes
+ prototype/evidence/round3/home/report.json         |  10 +
+ prototype/evidence/round3/motion/page.png          | Bin 0 -> 177502 bytes
+ prototype/evidence/round3/motion/report.json       | 220 +++++++
+ prototype/evidence/round3/qa-run-1.json            |  50 ++
+ prototype/evidence/round3/qa-run-2.json            |  50 ++
+ prototype/evidence/round3/qa-run-3.json            |  50 ++
+ .../evidence/round3/record-complete/motion-end.jpg | Bin 0 -> 67721 bytes
+ .../evidence/round3/record-complete/motion-mid.jpg | Bin 0 -> 36352 bytes
+ .../round3/record-complete/motion-start.jpg        | Bin 0 -> 41319 bytes
+ .../evidence/round3/record-complete/record.mp4     | Bin 0 -> 233586 bytes
+ .../evidence/round3/record-complete/report.json    |   9 +
+ .../evidence/round3/record-entry/motion-end.jpg    | Bin 0 -> 87147 bytes
+ .../evidence/round3/record-entry/motion-mid.jpg    | Bin 0 -> 47180 bytes
+ .../evidence/round3/record-entry/motion-start.jpg  | Bin 0 -> 23121 bytes
+ prototype/evidence/round3/record-entry/record.mp4  | Bin 0 -> 166233 bytes
+ prototype/evidence/round3/record-entry/report.json |   9 +
+ .../evidence/round3/record-select/motion-end.jpg   | Bin 0 -> 73465 bytes
+ .../evidence/round3/record-select/motion-mid.jpg   | Bin 0 -> 36690 bytes
+ .../evidence/round3/record-select/motion-start.jpg | Bin 0 -> 45276 bytes
+ prototype/evidence/round3/record-select/record.mp4 | Bin 0 -> 207138 bytes
+ .../evidence/round3/record-select/report.json      |   9 +
+ .../round3/record-select/transition-1.2s.png       | Bin 0 -> 117808 bytes
+ prototype/evidence/round3/states/detail.png        | Bin 0 -> 196868 bytes
+ prototype/evidence/round3/states/done.png          | Bin 0 -> 178488 bytes
+ prototype/evidence/round3/states/failure.png       | Bin 0 -> 80059 bytes
+ prototype/evidence/round3/states/list.png          | Bin 0 -> 155595 bytes
+ prototype/evidence/round3/states/maperror.png      | Bin 0 -> 72983 bytes
+ prototype/evidence/round3/states/queued.png        | Bin 0 -> 153891 bytes
+ prototype/evidence/round3/states/report.json       |  50 ++
+ prototype/evidence/round3/states/sheet.png         | Bin 0 -> 630035 bytes
+ prototype/evidence/round3/visual-review.md         |  41 ++
+ prototype/evidence/round3/zoom/detail-@2x.png      | Bin 0 -> 568845 bytes
+ prototype/evidence/round3/zoom/failure-@2x.png     | Bin 0 -> 186634 bytes
+ prototype/evidence/round3/zoom/report.json         |  18 +
+ prototype/evidence/states/detail.png               | Bin 0 -> 40824 bytes
+ prototype/evidence/states/done.png                 | Bin 0 -> 41038 bytes
+ prototype/evidence/states/error.png                | Bin 0 -> 48698 bytes
+ prototype/evidence/states/failure.png              | Bin 0 -> 48652 bytes
+ prototype/evidence/states/queued.png               | Bin 0 -> 52985 bytes
+ prototype/evidence/states/report.json              |  42 ++
+ prototype/evidence/states/sheet.png                | Bin 0 -> 190780 bytes
+ prototype/evidence/zoom/detail-@2x.png             | Bin 0 -> 89393 bytes
+ prototype/evidence/zoom/failure-@2x.png            | Bin 0 -> 110293 bytes
+ prototype/evidence/zoom/report.json                |  18 +
+ prototype/feedback-design.md                       |  40 ++
+ prototype/focus.html                               |   1 +
+ prototype/index.html                               |  18 +
+ prototype/manifest.json                            |  48 ++
+ prototype/map-design.md                            |  54 ++
+ prototype/map_layout.py                            |  39 ++
+ prototype/origin-return-design.md                  |  12 +
+ prototype/refined_layout.py                        |  47 ++
+ prototype/round2-design.md                         |  43 ++
+ prototype/serve.py                                 |  18 +
+ prototype/style-explorer.html                      | 432 ++++++++++++++
+ prototype/vendor/ALPINE-LICENSE                    |  21 +
+ prototype/vendor/OIL-UI-LICENSE                    |  21 +
+ prototype/vendor/alpine.min.js                     |  22 +
+ prototype/vendor/leaflet/LICENSE                   |  26 +
+ prototype/vendor/leaflet/MARKERCLUSTER-LICENSE     |  20 +
+ prototype/vendor/leaflet/MarkerCluster.css         |  14 +
+ prototype/vendor/leaflet/images/layers-2x.png      | Bin 0 -> 1259 bytes
+ prototype/vendor/leaflet/images/layers.png         | Bin 0 -> 696 bytes
+ prototype/vendor/leaflet/images/marker-icon-2x.png | Bin 0 -> 2464 bytes
+ prototype/vendor/leaflet/images/marker-icon.png    | Bin 0 -> 1466 bytes
+ prototype/vendor/leaflet/images/marker-shadow.png  | Bin 0 -> 618 bytes
+ prototype/vendor/leaflet/leaflet.css               | 661 +++++++++++++++++++++
+ prototype/vendor/leaflet/leaflet.js                |   6 +
+ prototype/vendor/leaflet/markercluster.js          |   2 +
+ prototype/verify.py                                | 281 +++++++++
+ prototype/windows.html                             |   1 +
+ 291 files changed, 6461 insertions(+)
+
+
+8e9a7cc docs: define commercial Flutter MVP architecture (#12)
+ README.md               |   4 +
+ docs/solution-design.md | 409 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 413 insertions(+)
+
+
+3e03008 feat: prepare agent team skills and executable Flutter harness (#13)
+ .agents/installed-skills.json                      |  93 +++
+ .agents/skills/agent-engineering-team/SKILL.md     |  48 ++
+ .../agent-engineering-team/agents/openai.yaml      |   3 +
+ .../assets/result-template.md                      |  16 +
+ .../agent-engineering-team/assets/task-board.yaml  |   7 +
+ .../references/team-protocol.md                    |  42 ++
+ .../references/work-orders.md                      |  28 +
+ .../skills/engineering-flutter-testing/SKILL.md    |  22 +
+ .../skills/engineering-issue-authoring/SKILL.md    |  38 ++
+ .../engineering-issue-authoring/agents/openai.yaml |   3 +
+ .../assets/issue-template.md                       |  17 +
+ .../references/issue-standard.md                   |  29 +
+ .../skills/engineering-release-handoff/SKILL.md    |  29 +
+ .../engineering-release-handoff/agents/openai.yaml |   3 +
+ .../assets/handoff-template.md                     |  24 +
+ .../references/gates.md                            |  21 +
+ .../engineering-requirements-extract/SKILL.md      |  27 +
+ .../agents/openai.yaml                             |   3 +
+ .../assets/requirements-template.md                |  12 +
+ .../references/extraction.md                       |  16 +
+ .agents/skills/flutter-development/SKILL.md        |  16 +
+ .agents/skills/flutter-native-acceptance/SKILL.md  |  32 +
+ .../flutter-native-acceptance/agents/openai.yaml   |   3 +
+ .../assets/acceptance-template.md                  |  20 +
+ .../references/native-flows.md                     |  26 +
+ .agents/skills/flutter-performance/SKILL.md        |  36 ++
+ .../skills/flutter-performance/agents/openai.yaml  |   3 +
+ .../assets/performance-template.md                 |  18 +
+ .../flutter-performance/references/profiling.md    |  23 +
+ .agents/skills/harness-engineering/SKILL.md        |  35 ++
+ .../skills/harness-engineering/agents/openai.yaml  |   3 +
+ .../harness-engineering/assets/audit-template.md   |  15 +
+ .../harness-engineering/references/readiness.md    |  22 +
+ .github/workflows/quality.yml                      |  32 +
+ .gitignore                                         |   2 +
+ AGENTS.md                                          |  19 +
+ README.md                                          |   6 +-
+ app/.fvmrc                                         |   1 +
+ app/.gitignore                                     |  45 ++
+ app/.metadata                                      |  33 ++
+ app/README.md                                      |  37 ++
+ app/analysis_options.yaml                          |  28 +
+ app/android/.gitignore                             |  14 +
+ app/android/app/build.gradle.kts                   |  45 ++
+ app/android/app/src/debug/AndroidManifest.xml      |   7 +
+ app/android/app/src/main/AndroidManifest.xml       |  45 ++
+ .../oceandelivery/ocean_delivery/MainActivity.kt   |   5 +
+ .../main/res/drawable-v21/launch_background.xml    |  12 +
+ .../src/main/res/drawable/launch_background.xml    |  12 +
+ .../app/src/main/res/mipmap-hdpi/ic_launcher.png   | Bin 0 -> 544 bytes
+ .../app/src/main/res/mipmap-mdpi/ic_launcher.png   | Bin 0 -> 442 bytes
+ .../app/src/main/res/mipmap-xhdpi/ic_launcher.png  | Bin 0 -> 721 bytes
+ .../app/src/main/res/mipmap-xxhdpi/ic_launcher.png | Bin 0 -> 1031 bytes
+ .../src/main/res/mipmap-xxxhdpi/ic_launcher.png    | Bin 0 -> 1443 bytes
+ .../app/src/main/res/values-night/styles.xml       |  18 +
+ app/android/app/src/main/res/values/styles.xml     |  18 +
+ app/android/app/src/profile/AndroidManifest.xml    |   7 +
+ app/android/build.gradle.kts                       |  24 +
+ app/android/gradle.properties                      |   6 +
+ .../gradle/wrapper/gradle-wrapper.properties       |   5 +
+ app/android/settings.gradle.kts                    |  26 +
+ app/assets/deliveries.csv                          |  31 +
+ app/ios/.gitignore                                 |  34 ++
+ app/ios/Flutter/AppFrameworkInfo.plist             |  24 +
+ app/ios/Flutter/Debug.xcconfig                     |   1 +
+ app/ios/Flutter/Release.xcconfig                   |   1 +
+ app/ios/Runner.xcodeproj/project.pbxproj           | 644 +++++++++++++++++++++
+ .../project.xcworkspace/contents.xcworkspacedata   |   7 +
+ .../xcshareddata/IDEWorkspaceChecks.plist          |   8 +
+ .../xcshareddata/WorkspaceSettings.xcsettings      |   8 +
+ .../xcshareddata/xcschemes/Runner.xcscheme         | 119 ++++
+ .../Runner.xcworkspace/contents.xcworkspacedata    |   7 +
+ .../xcshareddata/IDEWorkspaceChecks.plist          |   8 +
+ .../xcshareddata/WorkspaceSettings.xcsettings      |   8 +
+ app/ios/Runner/AppDelegate.swift                   |  16 +
+ .../AppIcon.appiconset/Contents.json               | 122 ++++
+ .../AppIcon.appiconset/Icon-App-1024x1024@1x.png   | Bin 0 -> 10932 bytes
+ .../AppIcon.appiconset/Icon-App-20x20@1x.png       | Bin 0 -> 295 bytes
+ .../AppIcon.appiconset/Icon-App-20x20@2x.png       | Bin 0 -> 406 bytes
+ .../AppIcon.appiconset/Icon-App-20x20@3x.png       | Bin 0 -> 450 bytes
+ .../AppIcon.appiconset/Icon-App-29x29@1x.png       | Bin 0 -> 282 bytes
+ .../AppIcon.appiconset/Icon-App-29x29@2x.png       | Bin 0 -> 462 bytes
+ .../AppIcon.appiconset/Icon-App-29x29@3x.png       | Bin 0 -> 704 bytes
+ .../AppIcon.appiconset/Icon-App-40x40@1x.png       | Bin 0 -> 406 bytes
+ .../AppIcon.appiconset/Icon-App-40x40@2x.png       | Bin 0 -> 586 bytes
+ .../AppIcon.appiconset/Icon-App-40x40@3x.png       | Bin 0 -> 862 bytes
+ .../AppIcon.appiconset/Icon-App-60x60@2x.png       | Bin 0 -> 862 bytes
+ .../AppIcon.appiconset/Icon-App-60x60@3x.png       | Bin 0 -> 1674 bytes
+ .../AppIcon.appiconset/Icon-App-76x76@1x.png       | Bin 0 -> 762 bytes
+ .../AppIcon.appiconset/Icon-App-76x76@2x.png       | Bin 0 -> 1226 bytes
+ .../AppIcon.appiconset/Icon-App-83.5x83.5@2x.png   | Bin 0 -> 1418 bytes
+ .../LaunchImage.imageset/Contents.json             |  23 +
+ .../LaunchImage.imageset/LaunchImage.png           | Bin 0 -> 68 bytes
+ .../LaunchImage.imageset/LaunchImage@2x.png        | Bin 0 -> 68 bytes
+ .../LaunchImage.imageset/LaunchImage@3x.png        | Bin 0 -> 68 bytes
+ .../Assets.xcassets/LaunchImage.imageset/README.md |   5 +
+ app/ios/Runner/Base.lproj/LaunchScreen.storyboard  |  37 ++
+ app/ios/Runner/Base.lproj/Main.storyboard          |  26 +
+ app/ios/Runner/Info.plist                          |  70 +++
+ app/ios/Runner/Runner-Bridging-Header.h            |   1 +
+ app/ios/Runner/SceneDelegate.swift                 |   6 +
+ app/ios/RunnerTests/RunnerTests.swift              |  12 +
+ app/lib/app/ocean_delivery_app.dart                | 105 ++++
+ app/lib/data/delivery/delivery_repository.dart     |  15 +
+ .../data/delivery/sqlite_delivery_repository.dart  | 391 +++++++++++++
+ app/lib/data/delivery/sync_coordinator.dart        | 109 ++++
+ app/lib/harness_probe.dart                         | 274 +++++++++
+ app/lib/main.dart                                  |  30 +
+ app/lib/models/delivery.dart                       |  55 ++
+ app/lib/ui/delivery_screen.dart                    | 297 ++++++++++
+ app/lib/ui/delivery_view_model.dart                | 187 ++++++
+ app/pubspec.lock                                   | 397 +++++++++++++
+ app/pubspec.yaml                                   |  21 +
+ app/test/data/repository_fixture.dart              |  83 +++
+ app/test/data/sqlite_delivery_repository_test.dart | 406 +++++++++++++
+ app/test/sync/sync_coordinator_test.dart           | 354 +++++++++++
+ .../ui/delivery_view_model_lifecycle_test.dart     | 265 +++++++++
+ app/test/ui/fake_delivery_repository.dart          |  90 +++
+ app/test/widget_test.dart                          | 213 +++++++
+ harness/README.md                                  |  49 ++
+ harness/archive/2026-10-10-engineering.tar.gz      | Bin 0 -> 689185 bytes
+ harness/checks.py                                  | 167 ++++++
+ harness/gate.py                                    | 184 ++++++
+ harness/native.py                                  | 118 ++++
+ harness/project/backlog.json                       | 362 ++++++++++++
+ harness/project/contracts.md                       |  25 +
+ harness/project/mission.md                         |  59 ++
+ harness/project/work.json                          | 131 +++++
+ harness/reports/readiness.md                       |  32 +
+ harness/reports/rehearsal.md                       |  20 +
+ harness/reports/status.json                        |  88 +++
+ harness/reports/verification.tar.gz                | Bin 0 -> 18225 bytes
+ harness/run.py                                     | 203 +++++++
+ harness/state.py                                   | 179 ++++++
+ harness/tests/test_checks.py                       |  70 +++
+ harness/tests/test_gate.py                         | 254 ++++++++
+ harness/tests/test_native.py                       |  42 ++
+ harness/tests/test_state.py                        | 228 ++++++++
+ 138 files changed, 7900 insertions(+), 1 deletion(-)
+
+
+31b144b Merge pull request #34 from KuroGeo/codex/flutter-prototype-issues
+
+ .../skills/engineering-flutter-testing/SKILL.md    |    2 +
+ .agents/skills/flutter-native-acceptance/SKILL.md  |   10 +
+ .agents/skills/harness-engineering/SKILL.md        |   10 +
+ README.md                                          |   19 +-
+ app/README.md                                      |   82 +-
+ app/android/app/src/main/AndroidManifest.xml       |    3 +-
+ .../app/src/main/res/mipmap-hdpi/ic_launcher.png   |  Bin 544 -> 6244 bytes
+ .../app/src/main/res/mipmap-mdpi/ic_launcher.png   |  Bin 442 -> 3447 bytes
+ .../app/src/main/res/mipmap-xhdpi/ic_launcher.png  |  Bin 721 -> 9873 bytes
+ .../app/src/main/res/mipmap-xxhdpi/ic_launcher.png |  Bin 1031 -> 20189 bytes
+ .../src/main/res/mipmap-xxxhdpi/ic_launcher.png    |  Bin 1443 -> 34888 bytes
+ app/assets/InterVariable.ttf                       |  Bin 0 -> 876576 bytes
+ app/assets/app-icon.png                            |  Bin 0 -> 834032 bytes
+ app/assets/icons.json                              |    1 +
+ app/assets/licenses/CARBON-LICENSE                 |  201 +
+ app/assets/licenses/Inter-OFL.txt                  |   93 +
+ app/assets/licenses/flutter_map-LICENSE            |   30 +
+ .../licenses/flutter_map_marker_cluster-LICENSE    |   27 +
+ app/assets/licenses/flutter_svg-LICENSE            |   19 +
+ app/assets/licenses/latlong2-LICENSE               |   14 +
+ app/assets/licenses/url_launcher-LICENSE           |   25 +
+ app/integration_test/acceptance_driver.dart        | 1951 ++++++++
+ .../support/delivery_fault_fixtures.dart           |   42 +
+ .../support/native_acceptance_support.dart         |  759 +++
+ .../support/native_driver_support.dart             |  519 ++
+ .../support/native_gesture_command.dart            |   26 +
+ .../support/native_gesture_extension.dart          |  258 +
+ .../support/native_workbench_bridge.dart           |  319 ++
+ app/integration_test/workbench_driver.dart         |  405 ++
+ app/integration_test/workbench_entry.dart          |  251 +
+ .../AppIcon.appiconset/Icon-App-1024x1024@1x.png   |  Bin 10932 -> 834032 bytes
+ .../AppIcon.appiconset/Icon-App-20x20@1x.png       |  Bin 295 -> 1336 bytes
+ .../AppIcon.appiconset/Icon-App-20x20@2x.png       |  Bin 406 -> 2688 bytes
+ .../AppIcon.appiconset/Icon-App-20x20@3x.png       |  Bin 450 -> 4704 bytes
+ .../AppIcon.appiconset/Icon-App-29x29@1x.png       |  Bin 282 -> 1879 bytes
+ .../AppIcon.appiconset/Icon-App-29x29@2x.png       |  Bin 462 -> 4501 bytes
+ .../AppIcon.appiconset/Icon-App-29x29@3x.png       |  Bin 704 -> 8421 bytes
+ .../AppIcon.appiconset/Icon-App-40x40@1x.png       |  Bin 406 -> 2688 bytes
+ .../AppIcon.appiconset/Icon-App-40x40@2x.png       |  Bin 586 -> 7377 bytes
+ .../AppIcon.appiconset/Icon-App-40x40@3x.png       |  Bin 862 -> 14562 bytes
+ .../AppIcon.appiconset/Icon-App-60x60@2x.png       |  Bin 862 -> 14562 bytes
+ .../AppIcon.appiconset/Icon-App-60x60@3x.png       |  Bin 1674 -> 30585 bytes
+ .../AppIcon.appiconset/Icon-App-76x76@1x.png       |  Bin 762 -> 6785 bytes
+ .../AppIcon.appiconset/Icon-App-76x76@2x.png       |  Bin 1226 -> 22322 bytes
+ .../AppIcon.appiconset/Icon-App-83.5x83.5@2x.png   |  Bin 1418 -> 26693 bytes
+ app/lib/app/ocean_delivery_app.dart                |   55 +-
+ app/lib/app/runtime_configuration.dart             |   21 +
+ app/lib/data/delivery/delivery_repository.dart     |    7 +-
+ app/lib/data/delivery/delivery_settings_store.dart |    9 +
+ .../data/delivery/sqlite_delivery_repository.dart  |  216 +-
+ app/lib/data/delivery/sync_coordinator.dart        |  208 +-
+ app/lib/data/services/demo_transport.dart          |   24 +
+ app/lib/main.dart                                  |   42 +-
+ app/lib/models/delivery.dart                       |   12 +
+ app/lib/models/workbench.dart                      |   27 +
+ app/lib/ui/core/brand_icon.dart                    |  103 +
+ app/lib/ui/core/brand_theme.dart                   |   40 +
+ app/lib/ui/core/motion_settings.dart               |   11 +
+ .../ui/delivery/detail/delivery_detail_card.dart   |  505 ++
+ .../delivery/failure/delivery_failure_sheet.dart   |  366 ++
+ app/lib/ui/delivery/feedback/workbench_notice.dart |   15 +
+ app/lib/ui/delivery/list/stop_list_workspace.dart  |  657 +++
+ app/lib/ui/delivery/list/stop_status_badge.dart    |   67 +
+ .../ui/delivery/map/delivery_map_workspace.dart    |  981 ++++
+ app/lib/ui/delivery/map/map_viewport.dart          |   18 +
+ app/lib/ui/delivery/query/workbench_query.dart     |  109 +
+ app/lib/ui/delivery/query/workbench_session.dart   |   24 +
+ app/lib/ui/delivery_screen.dart                    | 1199 ++++-
+ app/lib/ui/delivery_view_model.dart                |  519 +-
+ app/pubspec.lock                                   |  436 ++
+ app/pubspec.yaml                                   |   18 +-
+ app/test/bootstrap/runtime_configuration_test.dart |   18 +
+ app/test/data/delivery_migration_test.dart         |  233 +
+ app/test/data/delivery_result_snapshot_test.dart   |  136 +
+ app/test/data/delivery_settings_test.dart          |  292 ++
+ app/test/data/legacy_repository_fixture.dart       |  103 +
+ app/test/data/repository_fixture.dart              |    2 +
+ app/test/data/sqlite_delivery_repository_test.dart |   15 +
+ app/test/detail/delivery_detail_card_test.dart     |  346 ++
+ app/test/detail/delivery_failure_sheet_test.dart   |  396 ++
+ app/test/detail/detail_test_fixture.dart           |  193 +
+ app/test/list/stop_list_workspace_test.dart        |  610 +++
+ app/test/map/delivery_map_workspace_test.dart      |  952 ++++
+ app/test/map/map_fixture.dart                      |  305 ++
+ app/test/map/map_viewport_test.dart                |   93 +
+ app/test/native_acceptance_stability_test.dart     |   77 +
+ app/test/native_observation_geometry_test.dart     |   93 +
+ app/test/query/query_repository_fixture.dart       |  110 +
+ app/test/query/workbench_query_test.dart           |  159 +
+ app/test/query/workbench_view_model_test.dart      |  162 +
+ .../confirmation_mode_combinations_test.dart       |  145 +
+ app/test/reliability/formal_workbench_test.dart    |  881 ++++
+ .../workbench_fault_combinations_test.dart         |  245 +
+ app/test/review/e03_list_focus_test.dart           |  247 +
+ .../review/prototype_map_interactions_test.dart    |  524 ++
+ app/test/support/delivery_risk_fixture.dart        |  123 +
+ app/test/support/formal_workbench_fixture.dart     |  370 ++
+ app/test/support/risk_workbench_host.dart          |  146 +
+ app/test/sync/demo_transport_test.dart             |   37 +
+ app/test/sync/sync_wakeup_timeout_test.dart        |  572 +++
+ .../ui/delivery_view_model_lifecycle_test.dart     |    3 +-
+ app/test/ui/fake_delivery_repository.dart          |    7 +
+ app/test/ui/overview_geometry_test.dart            |  451 ++
+ app/test/ui/platform_motion_test.dart              |  267 ++
+ app/test/widget_test.dart                          |  673 ++-
+ harness/README.md                                  |   42 +-
+ harness/checks.py                                  |  403 +-
+ harness/gate.py                                    | 1746 ++++++-
+ harness/native.py                                  |  137 +-
+ harness/native_workbench.py                        | 1231 +++++
+ harness/project/backlog.json                       | 1170 ++++-
+ harness/project/contracts.md                       |  101 +-
+ harness/project/issue-plan.md                      |  102 +
+ harness/project/issues/E00.md                      |   50 +
+ harness/project/issues/E01.md                      |   51 +
+ harness/project/issues/E02.md                      |   52 +
+ harness/project/issues/E03.md                      |   51 +
+ harness/project/issues/E04.md                      |   51 +
+ harness/project/issues/E05.md                      |   51 +
+ harness/project/issues/E06.md                      |   52 +
+ harness/project/issues/E07.md                      |   53 +
+ harness/project/issues/E08.md                      |   53 +
+ harness/project/issues/E09.md                      |   54 +
+ harness/project/issues/E10.md                      |   51 +
+ harness/project/issues/E11.md                      |   51 +
+ harness/project/issues/E12.md                      |   54 +
+ harness/project/issues/EPIC.md                     |   94 +
+ harness/project/issues/X00.md                      |   52 +
+ harness/project/issues/X01.md                      |   50 +
+ harness/project/issues/X02.md                      |   51 +
+ harness/project/issues/X03.md                      |   51 +
+ harness/project/issues/X04.md                      |   50 +
+ harness/project/issues/X05.md                      |   54 +
+ harness/project/mission.md                         |   21 +-
+ harness/project/native-acceptance-contract.json    |  181 +
+ harness/project/requirement-matrix.json            | 1171 +++++
+ harness/project/work.json                          | 2391 +++++++++-
+ harness/reports/issue-planning-2026-10-10.tar.gz   |  Bin 0 -> 42369 bytes
+ harness/reports/iteration-2026-10-11.md            |   51 +
+ harness/reports/iteration-evidence-index.json      |   78 +
+ harness/reports/iteration-requirement-trace.json   | 5033 ++++++++++++++++++++
+ harness/reports/pr34-final-evidence.tar.gz         |  Bin 0 -> 15204111 bytes
+ harness/reports/pr34-final-review.json             |  144 +
+ harness/reports/pr34-final-review.md               |   19 +
+ harness/reports/prototype-feedback-2026-10-11.json |  119 +
+ harness/reports/prototype-feedback-2026-10-11.md   |   18 +
+ .../reports/prototype-feedback-2026-10-11.tar.gz   |  Bin 0 -> 15901201 bytes
+ harness/reports/readiness.md                       |   22 +-
+ harness/reports/status.json                        |  782 ++-
+ harness/run.py                                     |  694 ++-
+ harness/state.py                                   |   43 +-
+ harness/tests/test_checks.py                       |  348 ++
+ harness/tests/test_gate.py                         |  568 ++-
+ harness/tests/test_gate_native.py                  |  449 ++
+ harness/tests/test_native.py                       |   77 +-
+ harness/tests/test_native_workbench.py             | 1115 +++++
+ harness/tests/test_runner.py                       |  351 ++
+ harness/tests/test_runner_options.py               |  129 +
+ harness/tests/test_state.py                        |  240 +-
+ 159 files changed, 38695 insertions(+), 1098 deletions(-)
+
+
+76a4630 fix: make maximum-text map, stops and delivery results readable (#37)
+ app/integration_test/acceptance_driver.dart        |  918 +++-
+ .../support/native_acceptance_support.dart         |  149 +-
+ .../ui/delivery/detail/delivery_detail_card.dart   |   31 +-
+ app/lib/ui/delivery/list/stop_list_workspace.dart  |  304 +-
+ app/lib/ui/delivery_screen.dart                    |  813 ++-
+ app/test/list/stop_list_workspace_test.dart        |   35 +-
+ app/test/reliability/formal_workbench_test.dart    |   82 +-
+ .../review/prototype_map_interactions_test.dart    |   18 +-
+ app/test/support/formal_workbench_fixture.dart     |    5 +
+ app/test/ui/large_text_layout_test.dart            |  876 ++++
+ app/test/ui/overview_geometry_test.dart            |  212 +-
+ app/test/widget_test.dart                          |    4 +
+ harness/native_workbench.py                        |    9 +-
+ harness/project/mission.md                         |    1 +
+ harness/project/work.json                          |  337 +-
+ harness/reports/large-text-evidence-index.json     | 2814 ++++++++++
+ .../reports/large-text-final-evidence-index.json   | 5434 ++++++++++++++++++++
+ harness/reports/large-text-final-evidence.tar.gz   |  Bin 0 -> 40464589 bytes
+ harness/reports/large-text-map-preview.png         |  Bin 0 -> 1458948 bytes
+ harness/reports/large-text-metadata-ci-failed.log  |   18 +
+ .../reports/large-text-native-list-iphone16.png    |  Bin 0 -> 233310 bytes
+ harness/reports/large-text-native-list.png         |  Bin 0 -> 243530 bytes
+ harness/reports/large-text-partial-evidence.tar.gz |  Bin 0 -> 21865994 bytes
+ harness/reports/large-text-repair.json             |  574 +++
+ harness/reports/large-text-repair.md               |   39 +
+ harness/reports/readiness.md                       |    6 +
+ harness/reports/status.json                        |   54 +-
+ harness/tests/test_native_workbench.py             |   69 +
+ 28 files changed, 12266 insertions(+), 536 deletions(-)
+
+
+bebda78 docs: showcase Flutter delivery workbench with simulator captures (#38)
+ README.md                                      |  33 +++++++-
+ assets/readme/README.md                        |  59 +++++++++++++
+ assets/readme/capture-manifest.json            | 110 +++++++++++++++++++++++++
+ assets/readme/hero.svg                         |  13 +++
+ assets/readme/screenshots/completed-record.png | Bin 0 -> 1364935 bytes
+ assets/readme/screenshots/delivery-detail.png  | Bin 0 -> 1265006 bytes
+ assets/readme/screenshots/failure-form.png     | Bin 0 -> 255293 bytes
+ assets/readme/screenshots/failure-record.png   | Bin 0 -> 1366466 bytes
+ assets/readme/screenshots/map-overview.png     | Bin 0 -> 1862581 bytes
+ assets/readme/screenshots/stop-list.png        | Bin 0 -> 551483 bytes
+ assets/readme/showcase.png                     | Bin 0 -> 730128 bytes
+ assets/readme/source/render-showcase.cjs       |  70 ++++++++++++++++
+ assets/readme/source/showcase.html             |  46 +++++++++++
+ 13 files changed, 329 insertions(+), 2 deletions(-)
