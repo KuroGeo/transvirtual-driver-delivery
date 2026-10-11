@@ -78,8 +78,9 @@ class UrlNavigationGateway implements NavigationGateway {
     required RouteCoordinate destination,
     RouteCoordinate? origin,
   }) {
-    if (!destination.isValid || (origin != null && !origin.isValid))
+    if (!destination.isValid || (origin != null && !origin.isValid)) {
       return null;
+    }
     switch (app) {
       case NavigationApp.appleMaps:
         if (platform != TargetPlatform.iOS) return null;

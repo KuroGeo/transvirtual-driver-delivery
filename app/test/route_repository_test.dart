@@ -249,8 +249,9 @@ void main() {
         RouteFailure.providerFailure,
       ]) {
         final port = RoadPort((_) async {
-          if (failure == RouteFailure.providerFailure)
+          if (failure == RouteFailure.providerFailure) {
             throw StateError('private credentials');
+          }
           return ThirdPartyRouteResponse.failure(failure);
         });
         final result = await RouteRepository(
