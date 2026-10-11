@@ -1,0 +1,89 @@
+{
+  "format": "WebP",
+  "quality": 84,
+  "max_width": 804,
+  "originals_unchanged": true,
+  "images": [
+    {
+      "original": "assets/readme/screenshots/completed-record.png",
+      "original_sha256": "c9f45437b64ca8c76bb32d076fdfd3f8453b2bb3b45f56e7c6789e2c6a2a7ec8",
+      "original_bytes": 1364935,
+      "web": "completed-record.webp",
+      "web_sha256": "6a62e76b4172f66222ab886d6b450e2c193948d868a90c1c74fc856d6efa8848",
+      "web_bytes": 102248,
+      "width": 804,
+      "height": 1748
+    },
+    {
+      "original": "assets/readme/screenshots/delivery-detail.png",
+      "original_sha256": "715f8411009a7c79f3101264265329fa2427aa6c80031bd54e6d1029c9530478",
+      "original_bytes": 1265006,
+      "web": "delivery-detail.webp",
+      "web_sha256": "6cb76c6c306c9196a3c75aa335e2ac73a3302145945210e4f55cc3b60f502a1c",
+      "web_bytes": 97758,
+      "width": 804,
+      "height": 1748
+    },
+    {
+      "original": "assets/readme/screenshots/failure-form.png",
+      "original_sha256": "364d41a5f8c42fd17008650cb87afc5d4f2bd99dbeedb0e8b3c5a91bb51939b3",
+      "original_bytes": 255293,
+      "web": "failure-form.webp",
+      "web_sha256": "4c0c8ac88d78804bd81d38cb04bcbc91f0b6187a2ec18584b8a2ce5544dc377f",
+      "web_bytes": 44950,
+      "width": 804,
+      "height": 1748
+    },
+    {
+      "original": "assets/readme/screenshots/failure-record.png",
+      "original_sha256": "89c19b2f80d889db341a6a02aca85beaf022e5184f921a31b0fadfa93bd8e9f4",
+      "original_bytes": 1366466,
+      "web": "failure-record.webp",
+      "web_sha256": "2ac1519286723fa181c18cca5168dc86e700c1b1244235a67497c79dfcf2ff7a",
+      "web_bytes": 104424,
+      "width": 804,
+      "height": 1748
+    },
+    {
+      "original": "assets/readme/screenshots/map-overview.png",
+      "original_sha256": "f122c4db59c60aca1184fd129b15501d6eef004089aa75bdc67588bdd0cda2a8",
+      "original_bytes": 1862581,
+      "web": "map-overview.webp",
+      "web_sha256": "8402c8f0b1f57ee417e7edf603d31213fb6d7c17cee1e0a8ffecd2296cfeaf4b",
+      "web_bytes": 129032,
+      "width": 804,
+      "height": 1748
+    },
+    {
+      "original": "assets/readme/screenshots/stop-list.png",
+      "original_sha256": "8b403f71ff4a37d6a4b0928a9b81625d0b8087705ff1269347c0d074e484383f",
+      "original_bytes": 551483,
+      "web": "stop-list.webp",
+      "web_sha256": "2ed6093fd87e7cc20d26d67a5f96cc1b86cae8fba834acfd6a0c49f5db258d3a",
+      "web_bytes": 73116,
+      "width": 804,
+      "height": 1748
+    }
+  ],
+  "readme_cover": {
+    "original": "assets/readme/showcase.png",
+    "original_bytes": 730128,
+    "original_sha256": "e2ac7286387e41d30c3ad746a29ba4b477702ef684b7df77324a177bbcfcaa81",
+    "web": "showcase.webp",
+    "web_bytes": 127226,
+    "web_sha256": "d676b01878484f989c8dd6dbbe36b581d6ad9fc210978c4e29d61d0fb3688b9b",
+    "width": 1119,
+    "height": 1600,
+    "quality": 86
+  },
+  "font": {
+    "original": "app/assets/InterVariable.ttf",
+    "original_bytes": 876576,
+    "original_sha256": "29160a80ff49ddcab2c97711247e08b1fab27a484a329ce8b813d820dc559031",
+    "web": "InterVariable.woff2",
+    "web_bytes": 350116,
+    "web_sha256": "6baee3991e52e2909652cedb6646e5815e7d8f85998fd1c4e85af642bf34141b",
+    "conversion": "WOFF2, no glyph removal"
+  },
+  "report_html_original_bytes": 13352102
+}

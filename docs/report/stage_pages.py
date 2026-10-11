@@ -23,6 +23,10 @@ def main():
     dest.mkdir(parents=True, exist_ok=True)
     for name in ['index.html', 'collaboration.json', 'commit-show.txt', 'ai-usage.md']:
         (dest / name).write_bytes((HERE / name).read_bytes())
+    media = ['ocean-delivery-demo.mp4', 'ocean-delivery-poster.webp', 'demo-proof.json', 'demo-transcript.md', 'image-compression.json']
+    (dest / 'media').mkdir(exist_ok=True)
+    for name in media:
+        (dest / 'media' / name).write_bytes((HERE / 'media' / name).read_bytes())
     history = json.loads((HERE / 'history.json').read_text())
     public_history = {
         'snapshot': history['snapshot'],
@@ -35,7 +39,7 @@ def main():
     }
     (dest / 'history.json').write_text(json.dumps(public_history, ensure_ascii=False, indent=2) + '\n')
     (dest / '.nojekyll').write_text('')
-    files = ['index.html', 'collaboration.json', 'history.json', 'commit-show.txt', 'ai-usage.md', '.nojekyll']
+    files = ['index.html', 'collaboration.json', 'history.json', 'commit-show.txt', 'ai-usage.md', '.nojekyll'] + ['media/' + name for name in media]
     manifest = {
         'source_repository': 'KuroGeo/transvirtual-driver-delivery',
         'source_commit': source,
