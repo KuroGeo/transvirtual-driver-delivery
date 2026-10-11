@@ -1,0 +1,1259 @@
+{
+  "schema_version": 1,
+  "contract_revision": 3,
+  "requirements": [
+    {
+      "id": "NP-R01",
+      "title": "企业已有身份登录",
+      "behavior": "选择受信公司后使用已有身份系统登录；取消、重复/迟到回调与失败可恢复。",
+      "sources": [
+        "prototype/next-phase/README.md",
+        "prototype/next-phase/next.js",
+        "docs/next-phase-solution-design.md",
+        "docs/next-phase/backend-go.md"
+      ],
+      "tasks": [
+        "NP00",
+        "NP02",
+        "NP04",
+        "NP10",
+        "NP12",
+        "NP13",
+        "NP15"
+      ],
+      "checks": [
+        {
+          "id": "NP-R01-NP00",
+          "task": "NP00",
+          "level": "contract",
+          "evidence_kind": "contract",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R01-NP02",
+          "task": "NP02",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R01-NP04",
+          "task": "NP04",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R01-NP10",
+          "task": "NP10",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R01-NP12",
+          "task": "NP12",
+          "level": "native",
+          "evidence_kind": "native",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R01-NP13",
+          "task": "NP13",
+          "level": "live",
+          "evidence_kind": "live",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R01-NP15",
+          "task": "NP15",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        "产品尚未实现；只有任务包与浏览器原型证据。",
+        "原生新协议/真实服务/真机性能依赖 NP01/NP12/NP13/NP14；旧门禁不能代签。"
+      ]
+    },
+    {
+      "id": "NP-R02",
+      "title": "账号数据归属",
+      "behavior": "同 email 不同 issuer、公司/司机切换、legacy 数据均隔离；退出不删除待同步。",
+      "sources": [
+        "prototype/next-phase/README.md",
+        "prototype/next-phase/next.js",
+        "docs/next-phase-solution-design.md",
+        "docs/next-phase/backend-go.md"
+      ],
+      "tasks": [
+        "NP00",
+        "NP02",
+        "NP03",
+        "NP04",
+        "NP11",
+        "NP12",
+        "NP13"
+      ],
+      "checks": [
+        {
+          "id": "NP-R02-NP00",
+          "task": "NP00",
+          "level": "contract",
+          "evidence_kind": "contract",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R02-NP02",
+          "task": "NP02",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R02-NP03",
+          "task": "NP03",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R02-NP04",
+          "task": "NP04",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R02-NP11",
+          "task": "NP11",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R02-NP12",
+          "task": "NP12",
+          "level": "native",
+          "evidence_kind": "native",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R02-NP13",
+          "task": "NP13",
+          "level": "live",
+          "evidence_kind": "live",
+          "status": "planned",
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        "产品尚未实现；只有任务包与浏览器原型证据。",
+        "原生新协议/真实服务/真机性能依赖 NP01/NP12/NP13/NP14；旧门禁不能代签。"
+      ]
+    },
+    {
+      "id": "NP-R03",
+      "title": "账号同步可靠性",
+      "behavior": "旧 scope 在途 ACK 不污染新账号；仅匹配持久确认清队列，重试原 operationId。",
+      "sources": [
+        "prototype/next-phase/README.md",
+        "prototype/next-phase/next.js",
+        "docs/next-phase-solution-design.md",
+        "docs/next-phase/backend-go.md"
+      ],
+      "tasks": [
+        "NP02",
+        "NP03",
+        "NP04",
+        "NP11",
+        "NP12",
+        "NP13"
+      ],
+      "checks": [
+        {
+          "id": "NP-R03-NP02",
+          "task": "NP02",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R03-NP03",
+          "task": "NP03",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R03-NP04",
+          "task": "NP04",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R03-NP11",
+          "task": "NP11",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R03-NP12",
+          "task": "NP12",
+          "level": "native",
+          "evidence_kind": "native",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R03-NP13",
+          "task": "NP13",
+          "level": "live",
+          "evidence_kind": "live",
+          "status": "planned",
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        "产品尚未实现；只有任务包与浏览器原型证据。",
+        "原生新协议/真实服务/真机性能依赖 NP01/NP12/NP13/NP14；旧门禁不能代签。"
+      ]
+    },
+    {
+      "id": "NP-R04",
+      "title": "道路路线与 ETA",
+      "behavior": "从可信起点计算到站点道路路线，标注来源/时间；权限/定位/服务失败可恢复。 本期客户端直连第三方道路能力，不新增自己的 routes/matrix/规划后端。",
+      "sources": [
+        "prototype/next-phase/README.md",
+        "prototype/next-phase/next.js",
+        "docs/next-phase-solution-design.md"
+      ],
+      "tasks": [
+        "NP00",
+        "NP05",
+        "NP06",
+        "NP10",
+        "NP11",
+        "NP12",
+        "NP13"
+      ],
+      "checks": [
+        {
+          "id": "NP-R04-NP00",
+          "task": "NP00",
+          "level": "contract",
+          "evidence_kind": "contract",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R04-NP05",
+          "task": "NP05",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R04-NP06",
+          "task": "NP06",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R04-NP10",
+          "task": "NP10",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R04-NP11",
+          "task": "NP11",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R04-NP12",
+          "task": "NP12",
+          "level": "native",
+          "evidence_kind": "native",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R04-NP13",
+          "task": "NP13",
+          "level": "live",
+          "evidence_kind": "live",
+          "status": "planned",
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        "产品尚未实现；只有任务包与浏览器原型证据。",
+        "原生新协议/真实服务/真机性能依赖 NP01/NP12/NP13/NP14；旧门禁不能代签。"
+      ]
+    },
+    {
+      "id": "NP-R05",
+      "title": "外部导航交接",
+      "behavior": "司机选择地图应用，失败有降级；交接状态与真正导航/到站分开。",
+      "sources": [
+        "prototype/next-phase/README.md",
+        "prototype/next-phase/next.js",
+        "docs/next-phase-solution-design.md"
+      ],
+      "tasks": [
+        "NP06",
+        "NP10",
+        "NP12",
+        "NP13"
+      ],
+      "checks": [
+        {
+          "id": "NP-R05-NP06",
+          "task": "NP06",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R05-NP10",
+          "task": "NP10",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R05-NP12",
+          "task": "NP12",
+          "level": "native",
+          "evidence_kind": "native",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R05-NP13",
+          "task": "NP13",
+          "level": "live",
+          "evidence_kind": "live",
+          "status": "planned",
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        "产品尚未实现；只有任务包与浏览器原型证据。",
+        "原生新协议/真实服务/真机性能依赖 NP01/NP12/NP13/NP14；旧门禁不能代签。"
+      ]
+    },
+    {
+      "id": "NP-R06",
+      "title": "来源返回与手动到站",
+      "behavior": "导航返回原站点和入口；到站、AI 提醒不自动改变配送终态。",
+      "sources": [
+        "prototype/next-phase/README.md",
+        "prototype/next-phase/next.js",
+        "docs/next-phase-solution-design.md"
+      ],
+      "tasks": [
+        "NP06",
+        "NP10",
+        "NP11",
+        "NP12"
+      ],
+      "checks": [
+        {
+          "id": "NP-R06-NP06",
+          "task": "NP06",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R06-NP10",
+          "task": "NP10",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R06-NP11",
+          "task": "NP11",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R06-NP12",
+          "task": "NP12",
+          "level": "native",
+          "evidence_kind": "native",
+          "status": "planned",
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        "产品尚未实现；只有任务包与浏览器原型证据。",
+        "原生新协议/真实服务/真机性能依赖 NP01/NP12/NP13/NP14；旧门禁不能代签。"
+      ]
+    },
+    {
+      "id": "NP-R07",
+      "title": "独立计划一致性",
+      "behavior": "计划站序/下一站/列表同版，事务应用与条件撤销；调序不改变配送 outbox。",
+      "sources": [
+        "prototype/next-phase/README.md",
+        "prototype/next-phase/next.js",
+        "docs/next-phase-solution-design.md"
+      ],
+      "tasks": [
+        "NP03",
+        "NP07",
+        "NP10",
+        "NP11",
+        "NP12"
+      ],
+      "checks": [
+        {
+          "id": "NP-R07-NP03",
+          "task": "NP03",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R07-NP07",
+          "task": "NP07",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R07-NP10",
+          "task": "NP10",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R07-NP11",
+          "task": "NP11",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R07-NP12",
+          "task": "NP12",
+          "level": "native",
+          "evidence_kind": "native",
+          "status": "planned",
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        "产品尚未实现；只有任务包与浏览器原型证据。",
+        "原生新协议/真实服务/真机性能依赖 NP01/NP12/NP13/NP14；旧门禁不能代签。"
+      ]
+    },
+    {
+      "id": "NP-R08",
+      "title": "智能派送规划",
+      "behavior": "基于道路矩阵、完整 pending 集、时窗/停留/约束求可行站序，先预览后应用。 本期客户端直连第三方道路能力，不新增自己的 routes/matrix/规划后端。",
+      "sources": [
+        "prototype/next-phase/README.md",
+        "prototype/next-phase/next.js",
+        "docs/next-phase-solution-design.md",
+        "docs/next-phase/assistant.md"
+      ],
+      "tasks": [
+        "NP00",
+        "NP05",
+        "NP07",
+        "NP09",
+        "NP10",
+        "NP11",
+        "NP13"
+      ],
+      "checks": [
+        {
+          "id": "NP-R08-NP00",
+          "task": "NP00",
+          "level": "contract",
+          "evidence_kind": "contract",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R08-NP05",
+          "task": "NP05",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R08-NP07",
+          "task": "NP07",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R08-NP09",
+          "task": "NP09",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R08-NP10",
+          "task": "NP10",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R08-NP11",
+          "task": "NP11",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R08-NP13",
+          "task": "NP13",
+          "level": "live",
+          "evidence_kind": "live",
+          "status": "planned",
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        "产品尚未实现；只有任务包与浏览器原型证据。",
+        "原生新协议/真实服务/真机性能依赖 NP01/NP12/NP13/NP14；旧门禁不能代签。"
+      ]
+    },
+    {
+      "id": "NP-R09",
+      "title": "时效与下一站提醒",
+      "behavior": "确定性时钟/时区规则驱动提醒、去重、暂缓和设置；终态/换账号清对应提醒。",
+      "sources": [
+        "prototype/next-phase/README.md",
+        "prototype/next-phase/next.js",
+        "docs/next-phase-solution-design.md"
+      ],
+      "tasks": [
+        "NP00",
+        "NP08",
+        "NP10",
+        "NP11",
+        "NP12"
+      ],
+      "checks": [
+        {
+          "id": "NP-R09-NP00",
+          "task": "NP00",
+          "level": "contract",
+          "evidence_kind": "contract",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R09-NP08",
+          "task": "NP08",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R09-NP10",
+          "task": "NP10",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R09-NP11",
+          "task": "NP11",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R09-NP12",
+          "task": "NP12",
+          "level": "native",
+          "evidence_kind": "native",
+          "status": "planned",
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        "产品尚未实现；只有任务包与浏览器原型证据。",
+        "原生新协议/真实服务/真机性能依赖 NP01/NP12/NP13/NP14；旧门禁不能代签。"
+      ]
+    },
+    {
+      "id": "NP-R10",
+      "title": "有来源的助手回答",
+      "behavior": "下一站/风险查询附数据来源、时间和新鲜度；未同步本地终态覆盖旧快照。",
+      "sources": [
+        "prototype/next-phase/README.md",
+        "prototype/next-phase/next.js",
+        "docs/next-phase-solution-design.md",
+        "docs/next-phase/assistant.md"
+      ],
+      "tasks": [
+        "NP09",
+        "NP10",
+        "NP11",
+        "NP13"
+      ],
+      "checks": [
+        {
+          "id": "NP-R10-NP09",
+          "task": "NP09",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R10-NP10",
+          "task": "NP10",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R10-NP11",
+          "task": "NP11",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R10-NP13",
+          "task": "NP13",
+          "level": "live",
+          "evidence_kind": "live",
+          "status": "planned",
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        "产品尚未实现；只有任务包与浏览器原型证据。",
+        "原生新协议/真实服务/真机性能依赖 NP01/NP12/NP13/NP14；旧门禁不能代签。"
+      ]
+    },
+    {
+      "id": "NP-R11",
+      "title": "人工提案与版本保护",
+      "behavior": "模型只查询/提案；Apply/Undo 检查 scope、revision、fingerprint、expiry 与站点集合。",
+      "sources": [
+        "prototype/next-phase/README.md",
+        "prototype/next-phase/next.js",
+        "docs/next-phase-solution-design.md",
+        "docs/next-phase/assistant.md"
+      ],
+      "tasks": [
+        "NP07",
+        "NP09",
+        "NP10",
+        "NP11",
+        "NP12"
+      ],
+      "checks": [
+        {
+          "id": "NP-R11-NP07",
+          "task": "NP07",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R11-NP09",
+          "task": "NP09",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R11-NP10",
+          "task": "NP10",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R11-NP11",
+          "task": "NP11",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R11-NP12",
+          "task": "NP12",
+          "level": "native",
+          "evidence_kind": "native",
+          "status": "planned",
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        "产品尚未实现；只有任务包与浏览器原型证据。",
+        "原生新协议/真实服务/真机性能依赖 NP01/NP12/NP13/NP14；旧门禁不能代签。"
+      ]
+    },
+    {
+      "id": "NP-R12",
+      "title": "离线与故障恢复",
+      "behavior": "失效登录、算路/AI 失败、进程重开不丢结果；没有真实来源不编造 ETA。",
+      "sources": [
+        "prototype/next-phase/README.md",
+        "prototype/next-phase/next.js",
+        "docs/next-phase-solution-design.md"
+      ],
+      "tasks": [
+        "NP03",
+        "NP04",
+        "NP05",
+        "NP07",
+        "NP08",
+        "NP09",
+        "NP10",
+        "NP11",
+        "NP12"
+      ],
+      "checks": [
+        {
+          "id": "NP-R12-NP03",
+          "task": "NP03",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R12-NP04",
+          "task": "NP04",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R12-NP05",
+          "task": "NP05",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R12-NP07",
+          "task": "NP07",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R12-NP08",
+          "task": "NP08",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R12-NP09",
+          "task": "NP09",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R12-NP10",
+          "task": "NP10",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R12-NP11",
+          "task": "NP11",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R12-NP12",
+          "task": "NP12",
+          "level": "native",
+          "evidence_kind": "native",
+          "status": "planned",
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        "产品尚未实现；只有任务包与浏览器原型证据。",
+        "原生新协议/真实服务/真机性能依赖 NP01/NP12/NP13/NP14；旧门禁不能代签。"
+      ]
+    },
+    {
+      "id": "NP-R13",
+      "title": "服务权限与预算",
+      "behavior": "Go 服务鉴权/配额，客户端本期受限工具/schema/预算/取消；模型 secret 不进入 App；后续服务端独立工具授权。",
+      "sources": [
+        "prototype/next-phase/README.md",
+        "prototype/next-phase/next.js",
+        "docs/next-phase-solution-design.md",
+        "docs/next-phase/assistant.md",
+        "docs/next-phase/backend-go.md"
+      ],
+      "tasks": [
+        "NP00",
+        "NP02",
+        "NP05",
+        "NP09",
+        "NP11",
+        "NP13",
+        "NP15"
+      ],
+      "checks": [
+        {
+          "id": "NP-R13-NP00",
+          "task": "NP00",
+          "level": "contract",
+          "evidence_kind": "contract",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R13-NP02",
+          "task": "NP02",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R13-NP05",
+          "task": "NP05",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R13-NP09",
+          "task": "NP09",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R13-NP11",
+          "task": "NP11",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R13-NP13",
+          "task": "NP13",
+          "level": "live",
+          "evidence_kind": "live",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R13-NP15",
+          "task": "NP15",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        "产品尚未实现；只有任务包与浏览器原型证据。",
+        "原生新协议/真实服务/真机性能依赖 NP01/NP12/NP13/NP14；旧门禁不能代签。"
+      ]
+    },
+    {
+      "id": "NP-R14",
+      "title": "Harness 机械边界",
+      "behavior": "新需求/场景纳入指纹、受控 fixture、观察与候选绑定门禁，反例失败闭合。",
+      "sources": [
+        "prototype/next-phase/README.md",
+        "prototype/next-phase/next.js",
+        "docs/next-phase-solution-design.md"
+      ],
+      "tasks": [
+        "NP00",
+        "NP01",
+        "NP11",
+        "NP12",
+        "NP13",
+        "NP14",
+        "NP15"
+      ],
+      "checks": [
+        {
+          "id": "NP-R14-NP00",
+          "task": "NP00",
+          "level": "contract",
+          "evidence_kind": "contract",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R14-NP01",
+          "task": "NP01",
+          "level": "harness",
+          "evidence_kind": "harness",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R14-NP11",
+          "task": "NP11",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R14-NP12",
+          "task": "NP12",
+          "level": "native",
+          "evidence_kind": "native",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R14-NP13",
+          "task": "NP13",
+          "level": "live",
+          "evidence_kind": "live",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R14-NP14",
+          "task": "NP14",
+          "level": "device-performance",
+          "evidence_kind": "device-performance",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R14-NP15",
+          "task": "NP15",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        "产品尚未实现；只有任务包与浏览器原型证据。",
+        "原生新协议/真实服务/真机性能依赖 NP01/NP12/NP13/NP14；旧门禁不能代签。"
+      ]
+    },
+    {
+      "id": "NP-R15",
+      "title": "独立原生与真实服务验收",
+      "behavior": "网页/fixture/模拟器/真机/真实 SSO 与服务分别签字，不能互相代签。",
+      "sources": [
+        "prototype/next-phase/README.md",
+        "prototype/next-phase/next.js",
+        "docs/next-phase-solution-design.md"
+      ],
+      "tasks": [
+        "NP01",
+        "NP11",
+        "NP12",
+        "NP13",
+        "NP14"
+      ],
+      "checks": [
+        {
+          "id": "NP-R15-NP01",
+          "task": "NP01",
+          "level": "harness",
+          "evidence_kind": "harness",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R15-NP11",
+          "task": "NP11",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R15-NP12",
+          "task": "NP12",
+          "level": "native",
+          "evidence_kind": "native",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R15-NP13",
+          "task": "NP13",
+          "level": "live",
+          "evidence_kind": "live",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R15-NP14",
+          "task": "NP14",
+          "level": "device-performance",
+          "evidence_kind": "device-performance",
+          "status": "planned",
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        "产品尚未实现；只有任务包与浏览器原型证据。",
+        "原生新协议/真实服务/真机性能依赖 NP01/NP12/NP13/NP14；旧门禁不能代签。"
+      ]
+    },
+    {
+      "id": "NP-R16",
+      "title": "增量性能与生产门槛",
+      "behavior": "真实 30 站工作负载与成本/耗时/电量预算有证据，交接 #31/#32/#33；生产 no-go。",
+      "sources": [
+        "prototype/next-phase/README.md",
+        "prototype/next-phase/next.js",
+        "docs/next-phase-solution-design.md"
+      ],
+      "tasks": [
+        "NP00",
+        "NP01",
+        "NP13",
+        "NP14"
+      ],
+      "checks": [
+        {
+          "id": "NP-R16-NP00",
+          "task": "NP00",
+          "level": "contract",
+          "evidence_kind": "contract",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R16-NP01",
+          "task": "NP01",
+          "level": "harness",
+          "evidence_kind": "harness",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R16-NP13",
+          "task": "NP13",
+          "level": "live",
+          "evidence_kind": "live",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R16-NP14",
+          "task": "NP14",
+          "level": "device-performance",
+          "evidence_kind": "device-performance",
+          "status": "planned",
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        "产品尚未实现；只有任务包与浏览器原型证据。",
+        "原生新协议/真实服务/真机性能依赖 NP01/NP12/NP13/NP14；旧门禁不能代签。"
+      ]
+    },
+    {
+      "id": "NP-R17",
+      "title": "Go 用户表与认证架构",
+      "behavior": "Go/PostgreSQL用户表、外部身份关联、会话/刷新/UTC时间与API支撑前端登录；不做B端/用户管理。",
+      "sources": [
+        "docs/next-phase/backend-go.md"
+      ],
+      "tasks": [
+        "NP00",
+        "NP02",
+        "NP11",
+        "NP13",
+        "NP15"
+      ],
+      "checks": [
+        {
+          "id": "NP-R17-NP00",
+          "task": "NP00",
+          "level": "contract",
+          "evidence_kind": "contract",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R17-NP02",
+          "task": "NP02",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R17-NP11",
+          "task": "NP11",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R17-NP13",
+          "task": "NP13",
+          "level": "live",
+          "evidence_kind": "live",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R17-NP15",
+          "task": "NP15",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        "仅方案/原型/任务准备，Go 用户/认证服务与执行器尚未实现；沿用已确认登录原型。"
+      ]
+    },
+    {
+      "id": "NP-R19",
+      "title": "Agent 执行位置可迁移",
+      "behavior": "本期客户端独立执行器/核心/工具协议，后续 Go 服务端实现；换执行器不重写页面和 Apply。",
+      "sources": [
+        "docs/next-phase/assistant.md"
+      ],
+      "tasks": [
+        "NP00",
+        "NP09",
+        "NP10",
+        "NP11",
+        "NP13"
+      ],
+      "checks": [
+        {
+          "id": "NP-R19-NP00",
+          "task": "NP00",
+          "level": "contract",
+          "evidence_kind": "contract",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R19-NP09",
+          "task": "NP09",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R19-NP10",
+          "task": "NP10",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R19-NP11",
+          "task": "NP11",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R19-NP13",
+          "task": "NP13",
+          "level": "live",
+          "evidence_kind": "live",
+          "status": "planned",
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        "仅方案/原型/任务准备，Go 用户/认证服务与执行器尚未实现；沿用已确认登录原型。"
+      ]
+    }
+  ]
+}

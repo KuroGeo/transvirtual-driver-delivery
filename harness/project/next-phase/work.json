@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "mode": "prepare",
+  "contract_revision": 3,
+  "product_execution_authorized": false,
+  "tasks": [
+    {
+      "id": "NP00",
+      "status": "planned",
+      "owner_agent_id": null,
+      "candidate": null,
+      "result_path": null,
+      "evidence": []
+    },
+    {
+      "id": "NP01",
+      "status": "planned",
+      "owner_agent_id": null,
+      "candidate": null,
+      "result_path": null,
+      "evidence": []
+    },
+    {
+      "id": "NP02",
+      "status": "planned",
+      "owner_agent_id": null,
+      "candidate": null,
+      "result_path": null,
+      "evidence": []
+    },
+    {
+      "id": "NP03",
+      "status": "planned",
+      "owner_agent_id": null,
+      "candidate": null,
+      "result_path": null,
+      "evidence": []
+    },
+    {
+      "id": "NP04",
+      "status": "planned",
+      "owner_agent_id": null,
+      "candidate": null,
+      "result_path": null,
+      "evidence": []
+    },
+    {
+      "id": "NP05",
+      "status": "planned",
+      "owner_agent_id": null,
+      "candidate": null,
+      "result_path": null,
+      "evidence": []
+    },
+    {
+      "id": "NP06",
+      "status": "planned",
+      "owner_agent_id": null,
+      "candidate": null,
+      "result_path": null,
+      "evidence": []
+    },
+    {
+      "id": "NP07",
+      "status": "planned",
+      "owner_agent_id": null,
+      "candidate": null,
+      "result_path": null,
+      "evidence": []
+    },
+    {
+      "id": "NP08",
+      "status": "planned",
+      "owner_agent_id": null,
+      "candidate": null,
+      "result_path": null,
+      "evidence": []
+    },
+    {
+      "id": "NP09",
+      "status": "planned",
+      "owner_agent_id": null,
+      "candidate": null,
+      "result_path": null,
+      "evidence": []
+    },
+    {
+      "id": "NP10",
+      "status": "planned",
+      "owner_agent_id": null,
+      "candidate": null,
+      "result_path": null,
+      "evidence": []
+    },
+    {
+      "id": "NP11",
+      "status": "planned",
+      "owner_agent_id": null,
+      "candidate": null,
+      "result_path": null,
+      "evidence": []
+    },
+    {
+      "id": "NP12",
+      "status": "planned",
+      "owner_agent_id": null,
+      "candidate": null,
+      "result_path": null,
+      "evidence": []
+    },
+    {
+      "id": "NP13",
+      "status": "planned",
+      "owner_agent_id": null,
+      "candidate": null,
+      "result_path": null,
+      "evidence": []
+    },
+    {
+      "id": "NP14",
+      "status": "planned",
+      "owner_agent_id": null,
+      "candidate": null,
+      "result_path": null,
+      "evidence": []
+    },
+    {
+      "id": "NP15",
+      "status": "planned",
+      "owner_agent_id": null,
+      "candidate": null,
+      "result_path": null,
+      "evidence": []
+    }
+  ]
+}
