@@ -713,7 +713,8 @@ class Validator:
         elif code != 0:
             raise EvidenceError("ordinary native command must succeed with exit_code0")
 
-    def compiled_archive(self, item, manifest):
+    @staticmethod
+    def compiled_archive(item, manifest):
         import io
         import tarfile
         expected = {}

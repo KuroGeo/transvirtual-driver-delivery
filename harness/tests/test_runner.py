@@ -200,6 +200,85 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(value["entrypoint"], "lib/main.dart")
         self.assertEqual(manifest["entrypoint"], "lib/main.dart")
         self.assertFalse(value["signed_for_production"])
+        self.assertFalse((output / "artifact-ios-build/Runner.app").exists())
+        self.assertEqual((application / "Runner").read_bytes(), b"test executable")
+        run.gate.Validator.compiled_archive({"raw": Path(value["path"]).read_bytes()}, manifest)
+
+    def native_build_fixture(self):
+        application = self.root / "app/build/ios/iphonesimulator/Runner.app"
+        application.mkdir(parents=True)
+        (application / "Runner").write_bytes(b"original native executable")
+        (application / "RunnerAlias").symlink_to("Runner")
+        disposable = self.root / "app/build/ios/Debug-iphonesimulator"
+        disposable.mkdir()
+        (disposable / "duplicate-intermediates").write_bytes(b"disposable duplicate")
+        untouched = self.root / "app/.dart_tool/current"
+        untouched.parent.mkdir()
+        untouched.write_bytes(b"keep compiler state")
+        options = {"configuration": "local-client", "build_mode": "debug", "ios_target": "simulator", "entrypoint": "integration_test/workbench_entry.dart"}
+        output = self.root / "harness/runs/artifacts"
+        output.mkdir(parents=True)
+        artifact = run.preserve_artifact(self.root, output, "workbench-build", options)
+        return application, disposable, untouched, options, output, artifact
+
+    def test_native_prune_keeps_install_archive_manifest_source_and_other_caches(self):
+        application, disposable, untouched, options, output, artifact = self.native_build_fixture()
+        archive, manifest = Path(artifact["path"]), output / "artifact-workbench-build/manifest.json"
+        original = {path: path.read_bytes() for path in (archive, manifest, application / "Runner", untouched)}
+        fingerprint = run.checks.fingerprint(self.root)
+        with lease(["app-workspace", "device:ios-task-simulator"], self.root / "held", self.locks) as context:
+            receipt = run.prune_native_build("native", self.root, output, "workbench-build", options, artifact, context)
+        self.assertTrue(receipt["removed"])
+        self.assertFalse(disposable.exists())
+        self.assertEqual(fingerprint, run.checks.fingerprint(self.root))
+        for path, raw in original.items():
+            self.assertEqual(path.read_bytes(), raw)
+        run.gate.Validator.compiled_archive({"raw": archive.read_bytes()}, json.loads(manifest.read_bytes()))
+
+    def test_native_prune_requires_exact_command_target_stage_and_actual_held_leases(self):
+        application, disposable, unused, options, output, artifact = self.native_build_fixture()
+        for command, stage, changes in (("build", "workbench-build", {}), ("quality", "workbench-build", {}),
+                                        ("native", "ios-build", {}), ("native", "workbench-build", {"ios_target": "device"}),
+                                        ("native", "workbench-build", {"build_mode": "release"})):
+            self.assertIsNone(run.prune_native_build(command, self.root, output, stage, {**options, **changes}, artifact, {}))
+            self.assertTrue(disposable.exists())
+        with self.assertRaisesRegex(ValueError, "lease context"):
+            run.prune_native_build("native", self.root, output, "workbench-build", options, artifact, {})
+        self.assertTrue(disposable.exists())
+        self.assertTrue(application.is_dir())
+
+    def test_native_prune_refuses_external_symlink_and_tampered_original_archive(self):
+        application, disposable, unused, options, output, artifact = self.native_build_fixture()
+        external = self.root / "outside-build"
+        external.mkdir()
+        (external / "keep").write_bytes(b"external data")
+        run.shutil.rmtree(disposable)
+        disposable.symlink_to(external, target_is_directory=True)
+        with lease(["app-workspace", "device:ios-task-simulator"], self.root / "held", self.locks) as context:
+            with self.assertRaisesRegex(ValueError, "canonical install/archive proof"):
+                run.prune_native_build("native", self.root, output, "workbench-build", options, artifact, context)
+            self.assertEqual((external / "keep").read_bytes(), b"external data")
+            disposable.unlink()
+            disposable.mkdir()
+            Path(artifact["path"]).write_bytes(b"tampered compressed archive")
+            with self.assertRaisesRegex(ValueError, "canonical install/archive proof"):
+                run.prune_native_build("native", self.root, output, "workbench-build", options, artifact, context)
+            self.assertTrue(disposable.is_dir())
+        self.assertTrue(application.is_dir())
+
+    def test_failed_archive_verification_preserves_expanded_diagnostics_and_install(self):
+        application = self.root / "app/build/ios/iphonesimulator/Runner.app"
+        application.mkdir(parents=True)
+        (application / "Runner").write_bytes(b"original install executable")
+        output = self.root / "harness/runs/artifacts"
+        output.mkdir(parents=True)
+        options = {"configuration": "local-client", "build_mode": "debug", "ios_target": "simulator", "entrypoint": "lib/main.dart"}
+        with patch.object(run.gate.Validator, "compiled_archive", side_effect=run.gate.EvidenceError("corrupt archive")):
+            with self.assertRaisesRegex(ValueError, "corrupt archive"):
+                run.preserve_artifact(self.root, output, "workbench-build", options)
+        self.assertEqual((output / "artifact-workbench-build/Runner.app/Runner").read_bytes(), b"original install executable")
+        self.assertEqual((application / "Runner").read_bytes(), b"original install executable")
+        self.assertTrue((output / "artifact-workbench-build/manifest.json").is_file())
 
     def test_resume_cleanup_requires_task_path_and_matching_ownership(self):
         directory = Path(tempfile.mkdtemp(prefix="ocean-harness-")).resolve()

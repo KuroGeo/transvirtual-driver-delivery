@@ -338,10 +338,10 @@ def preserve_artifact(execution_root, run_dir, stage_id, options, expected_finge
     target = "iphoneos" if options["ios_target"] == "device" else "iphonesimulator"
     application = execution_root / f"app/build/ios/{target}/Runner.app"
     directory = run_dir / f"artifact-{stage_id}"
-    directory.mkdir(exist_ok=True)
+    if application.resolve() != application or run_dir.resolve() != run_dir:
+        raise ValueError("compiled artifact source/attempt must be canonical")
+    directory.mkdir()
     retained = directory / "Runner.app"
-    if retained.exists():
-        shutil.rmtree(retained)
     shutil.copytree(application, retained, symlinks=True)
     files = []
     for path in sorted(retained.rglob("*")):
@@ -352,7 +352,39 @@ def preserve_artifact(execution_root, run_dir, stage_id, options, expected_finge
     archive = Path(shutil.make_archive(str(directory / "Runner"), "gztar", directory, "Runner.app"))
     value = {"path": str(archive), "sha256": sha(archive), "candidate": {"source_fingerprint": execution_fingerprint}, "files": files, "configuration": options["configuration"], "build_mode": options["build_mode"], "ios_target": options["ios_target"], "entrypoint": options["entrypoint"], "driver_target": options.get("driver_target"), "fixture": options.get("fixture"), "tile_url": options.get("tile_url"), "native_options": {key: options.get(key) for key in NATIVE_OPTION_KEYS}, "signed_for_production": False}
     save(directory / "manifest.json", value)
+    # Re-read the original tar/manifest through the same complete inventory
+    # verifier used by native acceptance before removing only our extra copy.
+    recorded = read_manifest(directory / "manifest.json")
+    if recorded != value or sha(archive) != recorded["sha256"]:
+        raise ValueError("compiled artifact changed before archive verification")
+    gate.Validator.compiled_archive({"raw": archive.read_bytes()}, recorded)
+    shutil.rmtree(retained)
     return {key: value[key] for key in ("path", "sha256", "candidate", "configuration", "build_mode", "ios_target", "entrypoint", "driver_target", "fixture", "tile_url", "native_options", "signed_for_production")}
+
+
+def prune_native_build(command, execution_root, run_dir, stage_id, options, artifact, lease_context):
+    """Discard one generated simulator intermediate directory under our lease."""
+    if command != "native" or stage_id not in {"probe-build", "startup-build", "workbench-build"} or options.get("ios_target") != "simulator" or options.get("build_mode") != "debug":
+        return None
+    require_lease_context(lease_context, execution_root, required=("app-workspace", "device:ios-task-simulator"))
+    application = execution_root / "app/build/ios/iphonesimulator/Runner.app"
+    disposable = execution_root / "app/build/ios/Debug-iphonesimulator"
+    archive = run_dir / f"artifact-{stage_id}/Runner.tar.gz"
+    manifest_path = archive.parent / "manifest.json"
+    if (application.resolve() != application or not application.is_dir() or disposable.resolve() != disposable
+            or archive.resolve() != archive or manifest_path.resolve() != manifest_path
+            or artifact.get("path") != str(archive) or artifact.get("sha256") != sha(archive)):
+        raise ValueError("native disposable build cleanup lacks canonical install/archive proof")
+    manifest = read_manifest(manifest_path)
+    if any(manifest.get(key) != value for key, value in artifact.items()) or checks.fingerprint(execution_root) != artifact["candidate"]["source_fingerprint"]:
+        raise ValueError("native disposable build cleanup candidate/manifest mismatch")
+    gate.Validator.compiled_archive({"raw": archive.read_bytes()}, manifest)
+    removed = disposable.exists()
+    if removed:
+        if not disposable.is_dir():
+            raise ValueError("native disposable build output must be a regular directory")
+        shutil.rmtree(disposable)
+    return {"path": str(disposable), "removed": removed, "install_application": str(application), "archive_verified": True}
 
 
 def cleanup_previous_isolation(report, source_root):
@@ -717,6 +749,7 @@ def main():
                         save_attempt(run_dir, attempt, report, mirror)
                     if record["status"] == "passed" and stage_id in {"ios-build", "probe-build", "startup-build", "workbench-build"}:
                         record["artifact"] = preserve_artifact(execution_root, attempt, stage_id, options, candidate["source_fingerprint"])
+                        record["disposable_build_cleanup"] = prune_native_build(args.command, execution_root, attempt, stage_id, options, record["artifact"], metadata)
                     save_attempt(run_dir, attempt, report, mirror)
                     print(f"{stage_id}: {record['status']} ({record['elapsed_seconds']}s); {record['log_path']}", flush=True)
                     if record["status"] != "passed":
