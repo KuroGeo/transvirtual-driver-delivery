@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "mode": "prepare",
-  "contract_revision": 1,
+  "contract_revision": 2,
   "product_execution_authorized": false,
   "tasks": [
     {
@@ -118,6 +118,22 @@
     },
     {
       "id": "NP14",
+      "status": "planned",
+      "owner_agent_id": null,
+      "candidate": null,
+      "result_path": null,
+      "evidence": []
+    },
+    {
+      "id": "NP15",
+      "status": "planned",
+      "owner_agent_id": null,
+      "candidate": null,
+      "result_path": null,
+      "evidence": []
+    },
+    {
+      "id": "NP16",
       "status": "planned",
       "owner_agent_id": null,
       "candidate": null,

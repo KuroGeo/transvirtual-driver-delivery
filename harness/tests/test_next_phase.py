@@ -5,6 +5,7 @@ import shutil
 import runpy
 import tempfile
 import unittest
+import subprocess
 
 from harness import checks, next_phase
 
@@ -23,7 +24,9 @@ class PreparationContract(unittest.TestCase):
             path.write_text('Fixture source')
         registry = self.read('feature-contracts.json')
         for feature in registry['features']:
-            for key in ('prototype','technical_design'):
+            for key in ('prototype','technical_design','backend_architecture','management_prototype'):
+                if key not in feature:
+                    continue
                 path = self.root/feature[key]
                 path.parent.mkdir(parents=True,exist_ok=True)
                 path.write_text('Fixture per-feature prototype or technical design')
@@ -34,6 +37,7 @@ class PreparationContract(unittest.TestCase):
             path.write_text('Fixture skill')
         # Normalize a repository that has already published back to draft.
         backlog['publication_status'] = 'draft'
+        backlog['source_ref_pending'] = True
         backlog['github_parent'] = None
         for task in backlog['tasks']:
             task['github'] = None
@@ -55,6 +59,10 @@ class PreparationContract(unittest.TestCase):
         self.write(name,value)
 
     def publish_fixture(self, reserved_number=False):
+        registry = self.read('feature-contracts.json')
+        identity = next(feature for feature in registry['features'] if feature['id']=='F2')
+        identity.update(management_prototype_status='approved',management_approval={'source':'user_message','scope':'identity-admin','statement':'Fixture user approval for management prototype'})
+        self.write('feature-contracts.json',registry)
         value = self.read('backlog.json')
         repo = value['repository']
         value['publication_status'] = 'published'
@@ -65,11 +73,68 @@ class PreparationContract(unittest.TestCase):
                 number = 31
                 task['external_dependencies'] = [31]
             task['github'] = {'number':number,'issue_id':50000+index,'url':f'https://github.com/{repo}/issues/{number}'}
+        materials = {'prototype/next-phase/README.md','prototype/next-phase/next.js','docs/next-phase-solution-design.md'}
+        for feature in registry['features']:
+            materials.update(feature[key] for key in ('prototype','technical_design','backend_architecture','management_prototype') if key in feature)
+        def git(*args):
+            return subprocess.run(['git','-C',str(self.root),*args],capture_output=True,check=True).stdout.decode().strip()
+        git('init','-q')
+        git('add',*sorted(materials))
+        git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','Bind fixture materials')
+        value.update(source_ref=git('rev-parse','HEAD'),source_ref_pending=False,source_manifest={source:hashlib.sha256((self.root/source).read_bytes()).hexdigest() for source in materials})
         self.write('backlog.json',value)
         runpy.run_path(str(self.package/'render_issues.py'))['render']()
+        # Controlled remote read-back fixture, separate from the local renderer.
+        value = self.read('backlog.json')
+        value['github_parent']['body_sha256'] = value['epic_body_sha256']
+        by_id = {task['id']:task for task in value['tasks']}
+        for task in value['tasks']:
+            task['github'].update(body_sha256=task['body_sha256'],parent_number=value['github_parent']['number'],blocked_by_numbers=[by_id[name]['github']['number'] for name in task['depends_on']]+task['external_dependencies'])
+        self.write('backlog.json',value)
 
     def test_complete_preparation_is_valid_without_product_evidence(self):
         self.assertEqual(self.errors(),[])
+
+    def test_user_architecture_decisions_cannot_drift(self):
+        self.mutate('backlog.json',lambda value:value['architecture_decisions'].update(identity='mobile-only'))
+        self.assertTrue(any('architecture decisions' in error for error in self.errors()))
+
+    def test_renderer_does_not_manufacture_remote_receipts(self):
+        value = self.read('backlog.json')
+        value['github_parent']={'number':9000,'issue_id':99000,'url':f"https://github.com/{value['repository']}/issues/9000",'body_sha256':'historical-receipt'}
+        self.write('backlog.json',value)
+        runpy.run_path(str(self.package/'render_issues.py'))['render']()
+        self.assertEqual(self.read('backlog.json')['github_parent']['body_sha256'],'historical-receipt')
+
+    def test_published_cannot_use_old_source_ref(self):
+        self.publish_fixture()
+        (self.root/'docs/next-phase/backend-go.md').write_text('New architecture absent from committed source')
+        self.assertTrue(any('stale/mismatched bytes' in error for error in self.errors()))
+
+    def test_published_cannot_borrow_original_mobile_approval(self):
+        self.publish_fixture()
+        self.mutate('feature-contracts.json',lambda value:value['features'][1].update(management_prototype_status='pending_user_review'))
+        self.assertTrue(any('separate user approval' in error for error in self.errors()))
+
+    def test_routing_cannot_add_own_service(self):
+        self.mutate('backlog.json',lambda value:next(t for t in value['tasks'] if t['id']=='NP05')['write_scope'].append('service/routes'))
+        self.assertTrue(any('own routing/planning backend forbidden' in error for error in self.errors()))
+
+    def test_go_backend_design_is_required_in_fingerprint(self):
+        self.inputs.remove('docs/next-phase/backend-go.md')
+        self.assertTrue(any('backend_architecture missing' in error for error in self.errors()))
+
+    def test_management_prototype_cannot_borrow_previous_approval(self):
+        self.mutate('feature-contracts.json',lambda value:value['features'][1].update(management_prototype_status='approved'))
+        self.assertTrue(any('management prototype review boundary' in error for error in self.errors()))
+
+    def test_agent_cannot_become_permanent_client_only(self):
+        self.mutate('feature-contracts.json',lambda value:value['features'][2].update(target_executor='client'))
+        self.assertTrue(any('executor migration contract' in error for error in self.errors()))
+
+    def test_real_server_agent_is_not_this_iteration_task(self):
+        self.mutate('backlog.json',lambda value:next(t for t in value['tasks'] if t['id']=='NP09')['write_scope'].append('service/internal/assistant'))
+        self.assertTrue(any('real server Agent is deferred' in error for error in self.errors()))
 
     def test_missing_requirement_and_task_join_are_rejected(self):
         self.mutate('requirement-matrix.json',lambda value:value['requirements'].pop())
@@ -177,7 +242,8 @@ class PreparationContract(unittest.TestCase):
         self.assertTrue(any('body hash mismatch' in error for error in self.errors()))
 
     def test_published_requires_real_bound_identities(self):
-        self.mutate('backlog.json',lambda value:value.update(publication_status='published'))
+        self.publish_fixture()
+        self.mutate('backlog.json',lambda value:value.update(github_parent=None))
         self.assertTrue(any('published identity missing' in error for error in self.errors()))
 
     def test_production_claim_is_rejected(self):

@@ -31,7 +31,10 @@ def render():
         for feature_id in task['features']:
             feature = features[feature_id]
             body += f"- {feature['title']}：[单项原型]({base}/blob/{ref}/{feature['prototype']}) · [单项技术方案]({base}/blob/{ref}/{feature['technical_design']})。\n"
+            if feature_id=='F2':
+                body += f"  [全站管理原型（待用户确认）]({base}/blob/{ref}/{feature['management_prototype']}) · [Go 后端架构]({base}/blob/{ref}/{feature['backend_architecture']})。\n"
         body += '\n每个需求须先具备这两项材料，再发布/更新对应 issue；总方案不能替代单项来源。\n\n'
+        body += '本地草稿按最新用户修正：路线客户端直连第三方且不建自己的路线后端；全站用户后端采用 Go；AI 本期独立客户端执行器，后续同协议 Go Agent。新管理原型待用户确认，远端正文尚未按本稿更新。\n\n'
         body += '## 依赖与所有权\n\n'
         body += f"依赖：{', '.join(dependencies) if dependencies else '无；合同冻结起点'}。内部依赖由主控核对 accepted 的实际证据，不凭 issue 关闭/PR 合并自动解锁。外部 #31/#32/#33 仅复用既有门槛，不代签本轮增量。\n\n"
         body += f"负责职能：`{task['role']}`；尚未派工，不预填人员账号或排期。允许写域：" + ', '.join(f'`{scope}`' for scope in task['write_scope']) + '。\n\n'
@@ -48,36 +51,35 @@ def render():
         body += '默认后台且使用任务专用资源；需要前台步骤时先说明并获得该步骤授权。生产继续 no-go；本条不授权部署、采购、创建凭据或发布。\n'
         (PACKAGE / 'issues' / f"{task['id']}.md").write_text(body)
         task['body_sha256'] = hashlib.sha256(body.encode()).hexdigest()
-        if task['github']:
-            task['github']['body_sha256'] = task['body_sha256']
-            task['github']['parent_number'] = parent['number']
-            task['github']['blocked_by_numbers'] = [tasks[name]['github']['number'] for name in task['depends_on'] if tasks[name]['github']] + task['external_dependencies']
+        # Rendering prepares local expectations; it never manufactures remote receipts.
     body = f"<!-- ocean-delivery-next-epic:NEXT-PHASE; contract:{backlog['contract_revision']} -->\n"
     body += '# 已确认原型后的账号、导航和 AI 助手工程任务\n\n'
     body += '用户于 2026-10-12 确认原型，并授权方案设计与带 Harness 的父子 issue。默认 A 地图首页、企业已有身份系统、外部地图导航、AI 提案人工应用。产品实施尚未开始；创建任务包不代表功能通过或生产发布。\n\n' + sources + '\n\n'
     body += '每项需求的材料：\n\n'
     for feature in features.values():
         body += f"- {feature['title']}：[原型]({base}/blob/{ref}/{feature['prototype']}) · [技术方案]({base}/blob/{ref}/{feature['technical_design']})。\n"
+        if feature['id']=='F2':
+            body += f"  [全站管理原型（待确认）]({base}/blob/{ref}/{feature['management_prototype']}) · [Go 架构]({base}/blob/{ref}/{feature['backend_architecture']})。\n"
     body += '\n'
+    body += '最新范围：导航直连第三方，不建自己的路线后端；全站 Go 用户/组织/RBAC；AI 本期可迁移客户端执行器、后续 Go Agent。管理原型尚待用户确认，远端发布暂缓；本地 draft hash 不是远端读回证据。\n\n'
     body += '## 子任务与顺序\n\n| 任务 | 结果 | 依赖 |\n| --- | --- | --- |\n'
     for task in tasks.values():
         github = task['github']
         link = f"[{task['id']} #{github['number']}]({github['url']})" if github else task['id']
         body += f"| {link} | {task['title']} | {', '.join(task['depends_on']) or '无'} |\n"
-    body += '\nGitHub 原生 sub-issues 和 blocked-by 与本地 DAG 同步；全部任务 planned，未虚构负责人/排期。每项正文包含写域、Skill、故障恢复、可运行/未来命令和关闭证据。\n\n'
+    body += '\nGitHub 原生 sub-issues 和 blocked-by 待按本地 DAG 读回核验；当前草稿不证明远端关系完整。全部任务 planned，未虚构负责人/排期。每项正文包含写域、Skill、故障恢复、可运行/未来命令和关闭证据。\n\n'
     body += '## 不变量与完成条件\n\n'
     body += '- [ ] 账号 A/B、legacy、在途 ACK 和 token 生命周期隔离；仅受信持久确认移出原 outbox。\n'
     body += '- [ ] 道路路线/ETA 有来源；外部交接与到站分开，返回正确来源，配送结果继续手动。\n'
     body += '- [ ] 计划 Apply/Undo 原子且版本匹配；站序、下一站、列表一致，不改配送终态/outbox。\n'
     body += '- [ ] 提醒由确定性规则计算，AI 工具权限/schema/配额有效，查询有来源，建议需司机应用。\n'
-    body += '- [ ] NP-R01–NP-R16 按候选逐项验收，fixture/网页/模拟器/真机/真实服务不互相代签；NP01 新协议真正实现。\n'
+    body += '- [ ] NP-R01–NP-R19 按候选逐项验收，fixture/网页/模拟器/真机/真实服务不互相代签；NP01 新协议真正实现。\n'
+    body += '- [ ] Go 全站组织/成员/权限/会话/审计完成隔离和并发反例；可迁移 AssistantExecutor 合同与受控替换通过；路线不经过自建服务。\n'
     body += '- [ ] 独立回归、原生、真实服务和增量真机性能证据完整，并交接既有发布门槛。\n\n'
     body += f"外部门槛保留 [#31 真机性能]({base}/issues/31)、[#32 强制执行]({base}/issues/32)、[#33 资源/签名/交付]({base}/issues/33)。缺企业 IdP/后端/地图合同/模型配置/设备/预算时对应任务 blocked；本父 issue 关闭不代表生产部署或交付。\n\n"
     body += '当前静态入口 `python3 harness/run.py check` 会核对本包需求、依赖、写域、状态和发布正文；`quality` 验证当前本地基线。新 host/native/live 检查仍为 planned，现有 N1–N7 不覆盖登录/路线/AI。默认后台操作，不占用用户前台。\n'
     (PACKAGE / 'issues/EPIC.md').write_text(body)
     backlog['epic_body_sha256'] = hashlib.sha256(body.encode()).hexdigest()
-    if parent:
-        parent['body_sha256'] = backlog['epic_body_sha256']
     path.write_text(json.dumps(backlog, ensure_ascii=False, indent=2) + '\n')
     index = '# 下一阶段 issue 任务图\n\n| 任务 | GitHub | 依赖 |\n| --- | --- | --- |\n'
     for task in tasks.values():

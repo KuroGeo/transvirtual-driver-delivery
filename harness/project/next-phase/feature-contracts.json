@@ -1,8 +1,42 @@
 {
   "schema_version": 1,
   "features": [
-    {"id": "F1", "title": "路径规划与导航", "prototype": "prototype/next-phase/routing.html", "technical_design": "docs/next-phase/routing.md", "prototype_basis": "2026-10-12 用户确认的共享原型，按本项流程独立展示", "status": "prepared"},
-    {"id": "F2", "title": "登录与用户系统", "prototype": "prototype/next-phase/identity.html", "technical_design": "docs/next-phase/identity.md", "prototype_basis": "2026-10-12 用户确认的共享原型，按本项流程独立展示", "status": "prepared"},
-    {"id": "F3", "title": "AI 助手与智能派送", "prototype": "prototype/next-phase/assistant.html", "technical_design": "docs/next-phase/assistant.md", "prototype_basis": "2026-10-12 用户确认的共享原型，按本项流程独立展示", "status": "prepared"}
-  ]
+    {
+      "id": "F1",
+      "title": "路径规划与导航",
+      "prototype": "prototype/next-phase/routing.html",
+      "technical_design": "docs/next-phase/routing.md",
+      "prototype_basis": "2026-10-12 用户确认的共享原型，按本项流程独立展示",
+      "status": "prepared",
+      "integration_policy": "client-direct-third-party-no-own-routing-backend"
+    },
+    {
+      "id": "F2",
+      "title": "全站用户、组织与权限",
+      "prototype": "prototype/next-phase/identity.html",
+      "technical_design": "docs/next-phase/identity.md",
+      "prototype_basis": "2026-10-12 用户确认的共享原型，按本项流程独立展示",
+      "status": "prepared",
+      "backend_language": "Go",
+      "backend_architecture": "docs/next-phase/backend-go.md",
+      "management_prototype": "prototype/next-phase/identity-admin.html",
+      "management_prototype_status": "pending_user_review"
+    },
+    {
+      "id": "F3",
+      "title": "AI 助手与智能派送",
+      "prototype": "prototype/next-phase/assistant.html",
+      "technical_design": "docs/next-phase/assistant.md",
+      "prototype_basis": "2026-10-12 用户确认的共享原型，按本项流程独立展示",
+      "status": "prepared",
+      "initial_executor": "client",
+      "target_executor": "server",
+      "protocol": "AssistantExecutor-v1"
+    }
+  ],
+  "architecture_decisions": {
+    "routing": "client-direct-third-party-no-own-routing-backend",
+    "identity": "site-wide-go-backend",
+    "assistant": "client-executor-now-server-executor-later"
+  }
 }

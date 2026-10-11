@@ -3,13 +3,19 @@ import hashlib
 import json
 from pathlib import Path, PurePosixPath
 import re
+import subprocess
 
 PACKAGE = 'harness/project/next-phase'
 LEVELS = {'contract', 'harness', 'host', 'native', 'live', 'device-performance'}
 NOW = {'python3 harness/run.py check', 'python3 harness/run.py quality'}
 SHARED = {'app/pubspec.yaml':'NP10','app/pubspec.lock':'NP10','app/lib/main.dart':'NP10',
           'app/lib/app':'NP10','app/lib/ui/core':'NP10','app/android':'NP10','app/ios':'NP10',
-          'app/lib/data/delivery':'NP03','app/lib/models/delivery.dart':'NP03','.github/workflows':'NP01'}
+          'app/lib/data/delivery':'NP03','app/lib/models/delivery.dart':'NP03','.github/workflows':'NP01',
+          'service/go.mod':'NP15','service/go.sum':'NP15','service/cmd/api':'NP15',
+          'service/internal/platform':'NP15','service/api':'NP15','service/migrations':'NP15'}
+ARCHITECTURE = {'routing':'client-direct-third-party-no-own-routing-backend',
+                'identity':'site-wide-go-backend',
+                'assistant':'client-executor-now-server-executor-later'}
 
 
 def validate(root, candidate_inputs):
@@ -83,6 +89,8 @@ def validate(root, candidate_inputs):
     if not isinstance(registry,dict) or type(registry.get('schema_version')) is not int or registry.get('schema_version')!=1 or not isinstance(registry.get('features'),list):
         fail('feature registry schema missing')
     else:
+        if registry.get('architecture_decisions')!=ARCHITECTURE or backlog.get('architecture_decisions')!=ARCHITECTURE:
+            fail('user architecture decisions missing/changed or inconsistent')
         for feature in registry['features']:
             if not isinstance(feature,dict) or not isinstance(feature.get('id'),str) or feature['id'] in features or feature.get('status')!='prepared':
                 fail('invalid/duplicate/unprepared feature')
@@ -94,6 +102,45 @@ def validate(root, candidate_inputs):
                     fail(f"{feature['id']}: {key} missing/unsafe or outside fingerprint")
         if set(features)!={'F1','F2','F3'}:
             fail('every user requirement must have a prototype and technical design')
+        routing,identity,assistant = [features.get(name,{}) for name in ('F1','F2','F3')]
+        if routing.get('integration_policy')!=ARCHITECTURE['routing']:
+            fail('F1: client third-party routing must not require own backend')
+        approval = identity.get('management_approval')
+        review_status = identity.get('management_prototype_status')
+        approved = review_status=='approved' and isinstance(approval,dict) and approval.get('source')=='user_message' and approval.get('scope')=='identity-admin' and isinstance(approval.get('statement'),str) and bool(approval['statement'].strip())
+        if identity.get('backend_language')!='Go' or review_status not in ('pending_user_review','approved') or (review_status=='approved' and not approved):
+            fail('F2: site-wide Go design/new management prototype review boundary missing')
+        if publication=='published' and not approved:
+            fail('published requires separate user approval for new management prototype')
+        for key,suffix in (('backend_architecture','.md'),('management_prototype','.html')):
+            value = identity.get(key)
+            if not canonical(value) or not value.endswith(suffix) or value not in candidate_inputs or not (root/value).is_file():
+                fail(f'F2: {key} missing/unsafe or outside fingerprint')
+        if assistant.get('initial_executor')!='client' or assistant.get('target_executor')!='server' or assistant.get('protocol')!='AssistantExecutor-v1':
+            fail('F3: client-to-server executor migration contract missing')
+    # Bind issue materials to real committed bytes, rather than checking URL spelling alone.
+    materials = {'prototype/next-phase/README.md','prototype/next-phase/next.js','docs/next-phase-solution-design.md'}
+    for feature in features.values():
+        materials.update(feature[key] for key in ('prototype','technical_design','backend_architecture','management_prototype') if isinstance(feature.get(key),str))
+    pending = backlog.get('source_ref_pending')
+    if type(pending) is not bool or (publication=='published' and pending):
+        fail('source binding pending/unknown cannot attest published materials')
+    if pending is False:
+        ref,manifest = backlog.get('source_ref'),backlog.get('source_manifest')
+        if not isinstance(ref,str) or not re.fullmatch(r'[a-f0-9]{40}',ref) or not isinstance(manifest,dict) or set(manifest)!=materials:
+            fail('committed source ref/manifest missing')
+        else:
+            for source in sorted(materials):
+                try:
+                    if not canonical(source) or source not in candidate_inputs:
+                        fail(f'{source}: source binding unsafe/outside fingerprint')
+                        continue
+                    current = (root/source).read_bytes()
+                    bound = subprocess.run(['git','-C',str(root),'show',f'{ref}:{source}'],capture_output=True,timeout=5,check=True).stdout
+                    if bound!=current or manifest[source]!=hashlib.sha256(current).hexdigest():
+                        fail(f'{source}: issue source ref contains stale/mismatched bytes')
+                except (OSError,subprocess.SubprocessError) as error:
+                    fail(f'{source}: committed issue source unavailable ({type(error).__name__})')
     tasks = backlog.get('tasks')
     if not isinstance(tasks,list) or not tasks:
         return errors+['next-phase: tasks missing']
@@ -112,6 +159,10 @@ def validate(root, candidate_inputs):
             fail(f'{name}: invalid dependencies')
         if not strings(task.get('write_scope')) or any(not canonical(scope) for scope in task['write_scope']):
             fail(f'{name}: invalid write scope')
+        elif name in ('NP05','NP07') and any(scope.startswith('service/') for scope in task['write_scope']):
+            fail(f'{name}: own routing/planning backend forbidden this iteration')
+        elif name=='NP09' and any(scope.startswith(('service/assistant','service/internal/assistant')) for scope in task['write_scope']):
+            fail('NP09: real server Agent is deferred; only modelproxy allowed this iteration')
         if not strings(task.get('acceptance')) or not strings(task.get('outputs')) or any(not isinstance(task.get(key),str) or not task[key].strip() for key in ('role','recovery','handoff')):
             fail(f'{name}: owner/acceptance/output/recovery/handoff missing')
         if task.get('status')!='planned':
@@ -230,7 +281,8 @@ def validate(root, candidate_inputs):
                 fail(f'{name}: local marker/body hash mismatch')
             required_features = by_id[name]['features'] if name in by_id else list(features)
             for feature_id in required_features:
-                for key in ('prototype','technical_design'):
+                source_keys = ('prototype','technical_design','backend_architecture','management_prototype') if feature_id=='F2' else ('prototype','technical_design')
+                for key in source_keys:
                     expected = f"https://github.com/{backlog['repository']}/blob/{backlog.get('source_ref')}/{features[feature_id][key]}"
                     if expected not in body.decode():
                         fail(f'{name}: corresponding feature {key} link missing')
@@ -242,7 +294,7 @@ def validate(root, candidate_inputs):
         if not isinstance(record,dict):
             fail(f'{name}: published identity missing')
             return
-        if any(type(record.get(key)) is not int or record[key]<=0 for key in ('number','issue_id')) or record.get('url')!=f"https://github.com/{backlog['repository']}/issues/{record.get('number')}" or record.get('body_sha256')!=digest:
+        if any(type(record.get(key)) is not int or record[key]<=0 for key in ('number','issue_id')) or record.get('url')!=f"https://github.com/{backlog['repository']}/issues/{record.get('number')}" or (publication=='published' and record.get('body_sha256')!=digest):
             fail(f'{name}: publication identity/hash mismatch')
         for key in identities:
             identity = record.get(key)

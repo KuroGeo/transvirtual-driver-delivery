@@ -6,22 +6,24 @@
 
 ## 产品行为与默认选择
 
-沿用推荐的 A 地图首页：地图、当前下一站、时间窗提醒和导航入口共存，助手按需打开。用户确认了原型整体，未单独指定 A/B/C。用户登录解释为司机通过企业已有身份系统登录；首版使用受信公司配置与 OIDC，公司内部非 OIDC 系统通过服务端身份桥接。自助注册、任意身份服务器地址和完整管理员门户不在本轮。
+沿用推荐的 A 地图首页：地图、当前下一站、时间窗提醒和导航入口共存，助手按需打开。用户确认了原型整体，未单独指定 A/B/C。用户登录解释为司机通过企业已有身份系统登录；首版使用受信公司配置与 OIDC，公司内部非 OIDC 系统通过服务端身份桥接。用户最新修正将第二项扩大为全站 Go 用户/组织/角色权限体系；司机端与其他站内应用复用同一身份和授权。新增管理原型待用户确认，详见 [单项方案](next-phase/identity.md) 与 [Go 架构](next-phase/backend-go.md)。自助注册与任意身份服务器不默认开放。
 
 站点详情进入道路路线预览，显示来源、计算时间、道路距离和 ETA；用户选择外部导航应用。返回后恢复原站点与来源，用户手动确认到站/配送结果。打开导航、推测到站或 AI 提醒均不能自动完成配送。
 
-AI 提供下一站、时效风险和派送顺序建议。提醒与约束计算由确定性代码执行，模型负责理解问题和解释已验证结果。规划先展示原方案/建议方案与原因，人工应用，可在版本未变化时撤销。首版没有持续后台定位、后台自动派送决策和自动修改配送结果。
+AI 本期使用可替换的客户端执行器，目标迁到 Go 服务端；模型代理不承担 Agent 循环。AI 提供下一站、时效风险和派送顺序建议。提醒与约束计算由确定性代码执行，模型负责理解问题和解释已验证结果。规划先展示原方案/建议方案与原因，人工应用，可在版本未变化时撤销。首版没有持续后台定位、后台自动派送决策和自动修改配送结果。
 
 ## 当前基础与增量边界
 
 现有 Flutter 使用 View/ViewModel、Repository、SQLite/outbox、串行 SyncCoordinator；当前 Transport 只有 demo/unavailable。SQLite v2 与 PendingUpdate/Ack 尚无企业/司机身份维度；查询层按固定参考点 Haversine 排序。必须先增加受信账号作用域和独立计划站序，不能把旧数据库默认归属新登录用户，也不能把直线距离作为道路 ETA。
 
-继续复用 `flutter_map` 与现有 Flutter/Harness，不引入另一套客户端状态框架或 Runner。域模型保持纯 Dart；I/O 放 data，系统登录回调、安全存储、定位、通知和外部应用交接放 platform，启动装配仍由一个负责人维护。后端优先扩展企业已有配送服务；若没有合适服务，采用同一协议的轻量 gateway。NP00 必须确定服务实现仓库、运行环境与负责人，缺少这些输入时服务实施任务不能进入 ready。
+继续复用 `flutter_map` 与现有 Flutter/Harness，不引入另一套客户端状态框架或 Runner。域模型保持纯 Dart；I/O 放 data，系统登录回调、安全存储、定位、通知和外部应用交接放 platform，启动装配仍由一个负责人维护。全站后端采用 Go 模块化单体/PostgreSQL/REST；模块为 identity/session、workspace/membership、authorization、delivery、audit、modelproxy。企业 IdP 与既有派单可经 adapter 接入，但本站用户体系统一管理。NP15 单写 Go 依赖、启动、OpenAPI 和迁移，NP02/NP16/NP09 写领域模块；详见 [Go 架构](next-phase/backend-go.md)。路线客户端直连第三方，不增加本站 routes/matrix 服务。
 
 | 边界 | 建议接口/职责 | 所有者任务 |
 | --- | --- | --- |
 | 共享域协议 | AccountScope、Session、RouteRequest/Result、PlanSnapshot/Proposal、Reminder、AssistantReply | NP00 冻结；实现写入者 NP03（账号）/NP05（路线）/NP07（计划）/NP08（提醒）/NP09（助手） |
-| 服务授权 | 身份验证、workspace/driver 映射、派送数据权限、ACK 合同、配额 | NP02 |
+| Go 平台 | 统一启动/依赖、OpenAPI、schema/迁移、HTTP/DB/日志基础 | NP15 单写 |
+| 全站用户授权 | 身份/会话与持久 ACK；组织成员/RBAC/管理审计 | NP02 / NP16 各自领域 |
+| 助手执行协议 | AssistantUseCase/Executor、独立 AgentCore/ToolPort/ModelPort；本期客户端，后续 Go | NP09 |
 | 账号容器 | 按作用域业务库、迁移、会话 generation、Transport 与同步生命周期 | NP03 |
 | 登录与系统能力 | OIDC 系统浏览器、凭据、安全回调；定位/外部地图；通知 | NP04 / NP06 / NP08 各自独占对应 platform 子目录 |
 | 装配与页面 | main/runtime、pubspec/lock、平台工程配置、导航、主题、主页/列表/详情集成 | NP10；消费者先提交依赖/配置需求 |
@@ -39,13 +41,13 @@ AI 提供下一站、时效风险和派送顺序建议。提醒与约束计算�
 
 ## 路线与外部导航
 
-`RouteRequest` 包含 scope、dataset、stopId、起终点、出发时间、定位时间/精度、出行模式、请求 ID 与输入版本。`RouteResult` 包含 provider/configRevision、computedAt/expiresAt/departureAt、距离米、时长秒、几何、定位来源、durationBasis（staticRoad 或 trafficAware）和降级原因。静态路网耗时必须注明不含实时交通；计算时间新鲜不代表交通数据实时。采用道路提供商明确允许的 OSM-compatible 路由与地图组合；NP00 冻结供应商、覆盖范围、许可/缓存策略、超时与配额。可以评估自托管 OSRM 的 route/table 能力，但公开 demo 不成为生产依赖；[OSRM API](https://project-osrm.org/docs/v5.24.0/api/) 定义道路 route/table 数据。服务不可用不伪造 ETA。
+用户明确“后端”仅指自己的后端，第三方能力可用。本期 RouteRepository 通过客户端 SDK/API 直连第三方道路/矩阵服务；不新增 Go routes API、私密密钥代理、自托管 OSRM 或道路缓存服务。本站账号/派单接口提供既有数据，不参与算路。供应商必须允许移动端调用、凭据分发和当前地图展示；不满足则换方案或降级外部地图，不能默默增加后端。具体合同见 [导航方案](next-phase/routing.md)。
 
-现有 OSM 地图版权继续显示；公共瓦片没有离线批量下载能力或生产 SLA，按 [OSM 瓦片政策](https://operations.osmfoundation.org/policies/tiles/) 选择商业/自托管资源。Google Routes 若作为备选，需要单独的地图/归属设计；其政策要求在 Google 地图上展示叠图结果，且限制缓存，不可直接把 Google 路线叠在现有 OSM 地图上，见 [Google Routes 政策](https://developers.google.com/maps/documentation/routes/policies)。
+RouteRequest/Result 保留 scope/dataset/stop/inputRevision 和来源/时间/geometry/distance/duration/trafficAware；scope 只用于本地隔离，不把本站 token/身份/备注发给道路供应商。第三方失败/缺配置显示预览不可用，基础 Maps URL/Intent 导航仍可使用。URL 交接不返回可用于应用内 ETA/矩阵的结构化道路结果。Google Maps URL 不需要 API key，见 [官方文档](https://developers.google.com/maps/documentation/urls/get-started)；Apple 见 [官方 Maps URLs](https://developer.apple.com/documentation/mapkit/unified-map-urls)。
 
-仅在请求与当前 scope/stop/inputRevision 匹配时展示结果；拒绝旧坐标/低精度，支持权限拒绝后手动选择可信起点并明确来源。离线可展示政策允许的缓存路线及其时间，过期数据不可称为实时；没有数据时显示 unavailable，重试带取消与有界退避。
+旧结果/定位失效/不可达/限额/缓存过期均明确处理。现有 OSM 底图继续署名；道路供应商的展示/缓存政策必须核验，[OSM 瓦片政策](https://operations.osmfoundation.org/policies/tiles/) 和 [Google Routes 政策](https://developers.google.com/maps/documentation/routes/policies) 保留。仅交接导航不新增道路后台，第三方在线依赖与本站后端分别记录。
 
-导航选择器优先系统支持的地图 App，使用合法编码的白名单目的地/模式；[Google Maps URLs](https://developers.google.com/maps/documentation/urls/guide) 与 [Apple Map Links](https://developer.apple.com/documentation/mapkit/unified-map-urls) 作为外部交接协议。打开成功只表示 handoff，导航可能进入预览/浏览器；定位、导航启动与到站分开记录。未安装/打开失败提供地址复制或另一应用，返回保存 origin/stopId/query/viewport。首版到站由司机确认，后续若增加地理围栏须另建定位与电量验收范围。
+保存 scope/dataset/stop/origin/query/viewport，返回核验当前用户和站点；handoffRequested/returned 不代表导航启动/到站。定位可交给地图应用；未安装/失败提供另一应用/浏览器地图/复制地址。配送终态继续手动。
 
 ## 派送计划与提醒
 
@@ -61,27 +63,30 @@ AI 提供下一站、时效风险和派送顺序建议。提醒与约束计算�
 
 ## AI 服务与权限
 
-App 通过已授权的服务端助手接口访问模型，模型 secret 留服务端。工具允许 `getNextStop`、`getDeliveryRisks`、`previewPlan`，所有参数服务端按 JSON schema、范围和当前用户权限再次验证；取数据由服务端决定 scope，不接受模型传入另一个用户标识。不存在 completeDelivery/clearOutbox 工具。提案产生后仍由客户端显式应用及事务版本检查。
+本期采用 View/ViewModel → AssistantUseCase → AssistantExecutor → LocalAssistantExecutor/AgentCore → ModelPort/ToolPort。AgentCore 纯 Dart，不依赖 Flutter、SQLite 或系统插件。未来 RemoteAssistantExecutor 访问 Go Agent，复用 v1 JSON 协议/工具 schema/错误码/合同案例；页面、客户端 Apply 事务与提醒分发继续复用。详见 [AI 单项方案与迁移步骤](next-phase/assistant.md)。
 
-助手回答包含结构化事实、来源对象/版本、observedAt/computedAt、数据新鲜度、proposalId 与拒绝/降级原因。显示“数据于…更新”；没有道路来源不回答确定 ETA。本地未同步终态覆盖旧服务端 pending 来决定本机下一站；联网请求可带原 scope 的 EffectiveSnapshot（serverSnapshotVersion + localRevision + operationId/status overlay + planRevision/inputFingerprint），服务端验证 scope、可访问站点、唯一 ID、合法状态与结构，计算同一有效 pending 集，标注未确认来源；它只能用于查询/提案，不能当持久接受回执。响应回传完整输入指纹，客户端拒绝已经变化的快照。站点备注、用户文本、工具返回均作为不可信数据，不能扩充工具权限；拦截越权 stop、错误数字、未知工具、超限站数、无效 schema、迟到响应与注入诱导。函数调用也需要应用层执行和验证，参见 [OpenAI 函数调用](https://developers.openai.com/api/docs/guides/function-calling)；协议保持供应商可替换，不预先创建密钥或采购模型。
+Go modelproxy 本期只保护模型 secret、身份/配额/预算/取消，不执行 Agent loop。工具仅 getNextStop/getDeliveryRisks/previewPlan，没有 completeDelivery/clearOutbox；执行器注入受信 scope，本地工具验证当前快照，远端读取仍由 Go 独立授权。相同 EffectiveSnapshot 排除本地已完成/远端 pending，clientReported overlay 不充当 ACK；返回附 inputFingerprint、来源、时间与事实，旧 scope/generation/fingerprint 拒绝。
 
-工具调用有每用户/公司配额、总时限、最大轮数、取消、请求去重、审计与敏感信息脱敏。NP00 冻结容量/延迟/成本预算；AI 不可用时司机仍能看站点、手动导航与配送。离线问题仅回答允许访问的缓存事实，不能假装调用在线模型；语音提醒是可选后续能力，首版不承诺麦克风或语音识别。
+本期验收 Local→受控 Remote adapter 的协议/事实/拒绝等价及核心依赖边界，不称真实 Go Agent 已交付。后续 Go 运行器独立重建服务端权限、校验 overlay，完成真实服务验收再按 workspace 切换；remote 失败禁止静默 local 重放。工具预算/轮数/配额/总时限/取消/日志脱敏按 NP00 冻结。离线只显示可访问缓存事实，模型不可用不阻塞普通配送。函数调用背景见 [官方文档](https://developers.openai.com/api/docs/guides/function-calling)。
 
 ## Harness 与实施顺序
 
-下一阶段使用 NP-R01–NP-R16 与 NP00–NP14 独立命名空间，不改写旧 R01–R17/已接受任务。此次增加的静态检查验证需求覆盖、无环依赖、共享写域、计划状态、命令分类和 issue 正文/发布身份；纳入原型源码与方案指纹。它验证任务包结构，不证明新功能已实现。新增 host/native/live 检查均 planned。
+下一阶段使用 NP-R01–NP-R19 与 NP00–NP16 独立命名空间，不改写旧 R01–R17/已接受任务。此次增加的静态检查验证需求覆盖、无环依赖、共享写域、计划状态、命令分类和 issue 正文/发布身份；纳入原型源码与方案指纹。它验证任务包结构，不证明新功能已实现。新增 host/native/live 检查均 planned。
 
 ```mermaid
 flowchart LR
   NP00[NP00 合同/外部配置] --> NP01[NP01 Harness 新协议]
-  NP01 --> NP02[NP02 受信服务边界]
+  NP01 --> NP15[NP15 Go 平台/协议/迁移]
+  NP15 --> NP16[NP16 全站成员/RBAC/审计]
+  NP16 --> NP02[NP02 Go 身份/会话/ACK]
+  NP15 --> NP02
   NP02 --> NP03[NP03 账号数据隔离]
   NP03 --> NP04[NP04 登录生命周期]
-  NP03 --> NP05[NP05 道路路线]
-  NP05 --> NP06[NP06 外部导航]
+  NP03 --> NP05[NP05 第三方道路直连]
+  NP04 --> NP06[NP06 基础外部导航]
   NP05 --> NP07[NP07 计划应用/撤销]
   NP07 --> NP08[NP08 提醒]
-  NP07 --> NP09[NP09 AI 工具网关]
+  NP07 --> NP09[NP09 客户端可迁移执行器]
   NP04 --> NP10[NP10 页面/装配]
   NP06 --> NP10
   NP08 --> NP10
@@ -94,7 +99,7 @@ flowchart LR
 
 NP01 扩展现有 native 合同、fixture、可观察工具和门禁，支持新验收 ID 与服务配置指纹；当前 Runner 只有旧 N1–N7，不能用它们代签登录/导航/Agent。要求账号 A/B、超时/撤销/旧回调、在途 ACK、路线失败、错 scope、stale plan、原子应用失败、时区、重复提醒、注入和限流等确定性 fixture。独立原生进程检查需真正杀进程重开，记录数据库/站序/operationId、导航系统返回及原始 trace；真实企业 SSO、道路/模型服务与物理设备另签 NP13/NP14。
 
-NP11 用 held-out 故障与对抗样本测“正确/拒绝/恢复”，记录逐案例判定、输入来源、模型/服务配置版本、工具参数与预算；网页、fixture、debug、模拟器和真实服务证据分别表达。运行报告沿用候选前后指纹、设备/资源租用、精确 attempt 路径、原日志 hash；旧报告只作为 historical，不复签当前候选。取消工具任务时只清理自有后代与租用，保留已落盘记录，恢复创建新 attempt。
+NP15/NP16 提供 Go 与受控 PostgreSQL 基线，NP11 加入跨租户/会话/邀请/最后 owner 并发/审计失败、Local/Remote-fixture 协议替换及路线直连/凭据反例；新管理原型尚待确认，生产管理 Web 实施另拆后续任务。NP11 用 held-out 故障与对抗样本测“正确/拒绝/恢复”，记录逐案例判定、输入来源、模型/服务配置版本、工具参数与预算；网页、fixture、debug、模拟器和真实服务证据分别表达。运行报告沿用候选前后指纹、设备/资源租用、精确 attempt 路径、原日志 hash；旧报告只作为 historical，不复签当前候选。取消工具任务时只清理自有后代与租用，保留已落盘记录，恢复创建新 attempt。
 
 首次产品派工前 NP00 要确认身份 issuer/client/redirect/scopes、业务授权和 ACK、供应商/缓存许可、数据时区和窗口、服务实现源、模型/隐私/配额、设备/容量/性能预算。外部值未取得则对应任务 blocked，不妨碍已准备好的合同校验与 fixture 工作。真正执行仍须另有产品实施指令。
 

@@ -1,32 +1,33 @@
-# 需求 2：登录与用户系统
+# 需求 2：全站登录、用户与组织权限
 
-本项单独对应用户的“让用户可以用自己的系统登录”。工程默认是企业已有身份系统；具体协议/供应商/公司配置由 NP00 冻结，非 OIDC 系统可采用服务端身份桥接。
+2026-10-12 用户修正：用户管理是全站需求，后端采用 Go，必须完成后端架构设计。本项覆盖统一身份、组织/成员、角色权限、会话和审计，供司机端、管理端及后续站内应用共用。详细设计见 [全站 Go 后端架构](backend-go.md)。
 
 ## 原型与用户流程
 
-[单项可点击原型](http://127.0.0.1:8764/next-phase/identity.html) · [原型源码](../../prototype/next-phase/identity.html)
+[司机登录原型](http://127.0.0.1:8764/next-phase/identity.html) · [全站用户管理原型](http://127.0.0.1:8764/next-phase/identity-admin.html)
 
-1. 输入公司工作区，进入公司的身份登录流程，登录后展示本人当天任务。
-2. 账号页查看司机与所属公司、偏好和退出入口。
-3. 会话过期时提示重新登录；已保存的待同步结果保留，原账号恢复后继续。
-4. 退出清登录凭据并锁业务视图，明确保留待同步数量；另一个账号使用独立数据。
+1. 司机选择公司，使用受信企业身份登录，进入本人派单；账号页查看组织与退出。
+2. 会话过期/退出时保留原账号待同步数据；原账号恢复，其他账号/组织隔离。
+3. 管理员选择有权限的组织，查看成员和角色，邀请成员、修改普通角色、停用成员或撤销会话。
+4. 管理操作需确认影响：停用本组织访问，不删除配送/outbox 或影响其他组织；审计可查看变更。
+5. 只读角色看不到可写能力，版本冲突/最后 owner 保护有明确拒绝；邀请期限与受信身份核验由后台合同单独验收。
 
-原型身份与认证为模拟，尚未连接 IdP、安全存储或真实 A/B 账号。原型确认记录与证据见 [README](../../prototype/next-phase/README.md)。
+司机流程沿用已确认原型；全站管理为此次范围扩展的新原型，待用户确认，不借旧原型确认签字。原型数据、成员、权限与审计全在内存，不发送邀请或调用真实后台。
 
 ## 技术方案
 
-SessionRepository 提供登录/刷新/过期/退出状态机；platform 提供系统浏览器认证回调与安全存储。采用受信公司配置、Authorization Code + PKCE、一次消费 state/nonce、issuer/audience 与回调核验；App 不持 client secret，不收企业密码。身份认证与业务派单授权分开，官方依据见 [总方案账号章节](../next-phase-solution-design.md#账号与同步一致性)。
+Go 模块化单体 + PostgreSQL + REST/OpenAPI，按 identity/session、workspace/membership、authorization、delivery、audit、modelproxy 划分。统一 userId 与 issuer+subject 外部身份映射；同 email 不自动合并。成员资格是 workspace+user，受保护资源必须校验租户和角色/资源权限。组织 admin 不得停用全站用户或越权升角色；管理变更、会话撤销/授权版本和审计保持事务一致。
 
-服务端将受信 issuer+subject 映射为 workspaceId+principalId，邮箱/昵称不作为身份主键。所有派单、结果、路线、工具及 ACK 都验证 scope/dataset/站点权限；同 operationId 不同 payload 拒绝，服务端持久接受并去重后才 ACK。去重保留覆盖最大离线与重试期；401 暂停待原账号重认证，403/撤权/永久业务拒绝保留结果/outbox 和依据并停止自动重发。
+原生端使用系统浏览器 OIDC Code+PKCE，Go 验证受信身份与一次性登录事务后签发本站会话；Web 使用同源 BFF/HttpOnly cookie/CSRF。本站短期访问会话和轮换 refresh、撤销、企业再验证/离线期限独立建模。App 不收企业密码或持 client secret。跨端 API、模块依赖、Go 目录、表/唯一约束、租户防御、API 草案、并发与部署/恢复均见 [backend-go.md](backend-go.md)。
 
-每 scope 独立业务容器、SQLite、计划/提醒设置与同步协调器。退出、授权失效、开始新认证、换号均递增 sessionGeneration；旧查询/refresh/路线/AI 不得恢复会话或污染新 UI/凭据。尚未超时且匹配原请求的 ACK 可在开放的隔离旧容器收尾，不能触碰新账号；超时 ACK 拒收。原账号重新认证可以恢复其原 operationId 队列。
+服务端持久接受原 operationId/payload 后才 ACK；客户端匹配 scope/dataset/operationId/stopId 并事务确认后才移 outbox。去重覆盖离线/重试，401 待重认证，403/永久拒绝保留结果/outbox/依据并停止自动重发。登录和管理变更不删除配送结果；原 scope 有效已接受 ACK 只能收尾原隔离容器。
 
-SQLite v2 旧库无账号归属，先进入 legacy/demo 隔离区，只有服务端证明 dataset 归属才事务迁移；迁移失败回滚。退出不删除业务记录，清除本地数据是独立显式操作。refresh 单一在途，按 IdP 旋转或 sender constraint 处理重放防护；安全存储失败不宣告登录成功。离线读写期限与撤权由企业策略冻结，超限锁操作但保留已保存结果。
+每 scope 独立 SQLite/计划/提醒与同步协调器；退出、换号、授权失效和重登推进 sessionGeneration，旧 refresh/路线/AI 不污染新 UI 或凭据。legacy/demo 库只有受信 dataset 归属证据才事务迁移，失败回滚。离线超过策略期限锁操作但保留已保存记录。
 
-## Harness 与 issue 拆分依据
+## Harness 与任务
 
-覆盖 NP-R01–NP-R03；拆分 NP02 服务授权与 ACK、NP03 账号数据隔离、NP04 登录生命周期，NP10 负责共享装配。NP01 先实现 scope/generation/身份 fixture 和门禁，NP11 独立回归，NP12 真正杀原生进程恢复，NP13 真实企业身份与派单联调。
+NP-R01–NP-R03 保留司机生命周期；新增 NP-R17 全站 Go 架构、NP-R18 管理/RBAC/审计。NP15 Go 基础与共享 schema/OpenAPI/迁移，NP02 身份/会话/派单 ACK，NP16 管理 API/权限/审计，NP03 客户端数据隔离，NP04 登录，NP10 装配。管理 Web 原型明确 API 消费边界，生产管理 Web 实施可另拆后续任务，本轮不把浏览器原型当其交付。
 
-必须验证：A 离线保存→退出→B 无法读/发送 A→A 重登保留原队列；A 在途 ACK 后切 B 只收尾 A；同 email 不同 issuer 不合并；退出后迟到刷新不能复活；持久接受但响应丢失重试一次；本地 ACK 落盘失败不清队列；迁移/凭据失败可恢复。真实 SSO、撤权与后台服务日志单独签字，fixture 不代签。
+NP01 补 Go/数据库/HTTP 观察及门禁，NP11 独立租户/权限/并发/恢复测试，NP12 原生生命周期，NP13 真实 IdP/Go 服务。必须验证 A 离线保存→B 隔离→A 原队列恢复、同 email 不同 issuer、ACK 丢响应/落盘失败、退出后刷新迟到、会话撤销、新请求权限拒绝、跨组织管理员操作、最后 owner 并发保护、邀请/审计事务、Go 进程/数据库重启及迁移恢复。
 
-先准备本项原型和技术方案，再以这些来源编写对应 issue。真实 IdP、客户端/回调、角色账号、派单服务与离线策略属于外部依赖，不预先创建密钥或部署服务。
+本项管理原型与新架构齐备后供用户评审，再整理对应 issue。真实 IdP/企业配置、数据库环境和离线期限在 NP00 冻结，产品实现与部署未开始。

@@ -13,11 +13,16 @@ FEATURES = {
 }
 template = (ROOT/'index.html').read_text()
 for feature,(title,headline,summary,scenes) in FEATURES.items():
+    additions = {
+        'routing':'客户端直连第三方道路能力，不新增自己的路线后端。预览不可用时仍可交接地图导航。',
+        'identity':'用户系统扩展为全站 Go 账号、组织与权限。<a href="identity-admin.html">查看新增用户管理原型（待确认） ↗</a>',
+        'assistant':'本期客户端执行器与核心/工具分层，后续切换 Go 服务端执行器；用户交互保持一致。',
+    }
     flow = ''.join(f'<button data-scene="{scene}"><span>{number}</span><div><strong>{label}</strong><small>{hint}</small></div><span>↗</span></button>' for scene,number,label,hint in scenes)
     panel = f'''<aside class="review-panel"><a class="review-brand" href="index.html"><img src="../assets/app-icon-180.png" alt=""><span>ocean delivery</span><span class="review-stage">{title}</span></a>
 <p class="review-eyebrow">单项需求原型</p><h1>{headline}</h1><p class="review-summary">{summary}</p>
 <nav class="review-flow" aria-label="{title}评审流程">{flow}</nav>
-<div class="review-boundary"><span class="boundary-dot"></span><p>采用 2026-10-12 已确认的同一套交互。账号、道路路线、导航交接和 AI 均为模拟。本入口单独对应本项需求；技术方案与验收映射在对应需求文档。</p></div>
+<div class="review-boundary"><span class="boundary-dot"></span><p>采用已确认的手机交互，账号、道路路线、导航交接和 AI 均为模拟。{additions[feature]} 本项技术方案与验收映射在对应需求文档。</p></div>
 <p class="canvas-hint"><a href="index.html">返回三项需求总览</a></p></aside>'''
     page = re.sub(r'<aside class="review-panel">.*?</aside>',panel,template,flags=re.S)
     page = page.replace('<body>',f'<body data-feature="{feature}" data-default-scene="{scenes[0][0]}">')

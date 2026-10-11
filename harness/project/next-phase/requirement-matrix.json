@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "contract_revision": 1,
+  "contract_revision": 2,
   "requirements": [
     {
       "id": "NP-R01",
@@ -9,7 +9,8 @@
       "sources": [
         "prototype/next-phase/README.md",
         "prototype/next-phase/next.js",
-        "docs/next-phase-solution-design.md"
+        "docs/next-phase-solution-design.md",
+        "docs/next-phase/backend-go.md"
       ],
       "tasks": [
         "NP00",
@@ -17,7 +18,8 @@
         "NP04",
         "NP10",
         "NP12",
-        "NP13"
+        "NP13",
+        "NP15"
       ],
       "checks": [
         {
@@ -67,6 +69,14 @@
           "evidence_kind": "live",
           "status": "planned",
           "evidence": []
+        },
+        {
+          "id": "NP-R01-NP15",
+          "task": "NP15",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
         }
       ],
       "gaps": [
@@ -81,7 +91,8 @@
       "sources": [
         "prototype/next-phase/README.md",
         "prototype/next-phase/next.js",
-        "docs/next-phase-solution-design.md"
+        "docs/next-phase-solution-design.md",
+        "docs/next-phase/backend-go.md"
       ],
       "tasks": [
         "NP00",
@@ -90,7 +101,8 @@
         "NP04",
         "NP11",
         "NP12",
-        "NP13"
+        "NP13",
+        "NP16"
       ],
       "checks": [
         {
@@ -148,6 +160,14 @@
           "evidence_kind": "live",
           "status": "planned",
           "evidence": []
+        },
+        {
+          "id": "NP-R02-NP16",
+          "task": "NP16",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
         }
       ],
       "gaps": [
@@ -162,7 +182,8 @@
       "sources": [
         "prototype/next-phase/README.md",
         "prototype/next-phase/next.js",
-        "docs/next-phase-solution-design.md"
+        "docs/next-phase-solution-design.md",
+        "docs/next-phase/backend-go.md"
       ],
       "tasks": [
         "NP02",
@@ -230,7 +251,7 @@
     {
       "id": "NP-R04",
       "title": "道路路线与 ETA",
-      "behavior": "从可信起点计算到站点道路路线，标注来源/时间；权限/定位/服务失败可恢复。",
+      "behavior": "从可信起点计算到站点道路路线，标注来源/时间；权限/定位/服务失败可恢复。 本期客户端直连第三方道路能力，不新增自己的 routes/matrix/规划后端。",
       "sources": [
         "prototype/next-phase/README.md",
         "prototype/next-phase/next.js",
@@ -482,11 +503,12 @@
     {
       "id": "NP-R08",
       "title": "智能派送规划",
-      "behavior": "基于道路矩阵、完整 pending 集、时窗/停留/约束求可行站序，先预览后应用。",
+      "behavior": "基于道路矩阵、完整 pending 集、时窗/停留/约束求可行站序，先预览后应用。 本期客户端直连第三方道路能力，不新增自己的 routes/matrix/规划后端。",
       "sources": [
         "prototype/next-phase/README.md",
         "prototype/next-phase/next.js",
-        "docs/next-phase-solution-design.md"
+        "docs/next-phase-solution-design.md",
+        "docs/next-phase/assistant.md"
       ],
       "tasks": [
         "NP00",
@@ -630,7 +652,8 @@
       "sources": [
         "prototype/next-phase/README.md",
         "prototype/next-phase/next.js",
-        "docs/next-phase-solution-design.md"
+        "docs/next-phase-solution-design.md",
+        "docs/next-phase/assistant.md"
       ],
       "tasks": [
         "NP09",
@@ -684,7 +707,8 @@
       "sources": [
         "prototype/next-phase/README.md",
         "prototype/next-phase/next.js",
-        "docs/next-phase-solution-design.md"
+        "docs/next-phase-solution-design.md",
+        "docs/next-phase/assistant.md"
       ],
       "tasks": [
         "NP07",
@@ -842,11 +866,13 @@
     {
       "id": "NP-R13",
       "title": "服务权限与预算",
-      "behavior": "服务端鉴权、工具白名单/schema/配额/取消/脱敏；secret 不进入 App。",
+      "behavior": "Go 服务鉴权/配额，客户端本期受限工具/schema/预算/取消；模型 secret 不进入 App；后续服务端独立工具授权。",
       "sources": [
         "prototype/next-phase/README.md",
         "prototype/next-phase/next.js",
-        "docs/next-phase-solution-design.md"
+        "docs/next-phase-solution-design.md",
+        "docs/next-phase/assistant.md",
+        "docs/next-phase/backend-go.md"
       ],
       "tasks": [
         "NP00",
@@ -854,7 +880,9 @@
         "NP05",
         "NP09",
         "NP11",
-        "NP13"
+        "NP13",
+        "NP15",
+        "NP16"
       ],
       "checks": [
         {
@@ -904,6 +932,22 @@
           "evidence_kind": "live",
           "status": "planned",
           "evidence": []
+        },
+        {
+          "id": "NP-R13-NP15",
+          "task": "NP15",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R13-NP16",
+          "task": "NP16",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
         }
       ],
       "gaps": [
@@ -926,7 +970,8 @@
         "NP11",
         "NP12",
         "NP13",
-        "NP14"
+        "NP14",
+        "NP15"
       ],
       "checks": [
         {
@@ -974,6 +1019,14 @@
           "task": "NP14",
           "level": "device-performance",
           "evidence_kind": "device-performance",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R14-NP15",
+          "task": "NP15",
+          "level": "host",
+          "evidence_kind": "host",
           "status": "planned",
           "evidence": []
         }
@@ -1098,6 +1151,196 @@
       "gaps": [
         "产品尚未实现；只有任务包与浏览器原型证据。",
         "原生新协议/真实服务/真机性能依赖 NP01/NP12/NP13/NP14；旧门禁不能代签。"
+      ]
+    },
+    {
+      "id": "NP-R17",
+      "title": "全站 Go 后端架构",
+      "behavior": "Go 模块化单体/PostgreSQL/统一用户组织和 API，跨端共享授权；迁移、部署和恢复具备边界。",
+      "sources": [
+        "docs/next-phase/backend-go.md"
+      ],
+      "tasks": [
+        "NP00",
+        "NP02",
+        "NP11",
+        "NP13",
+        "NP15",
+        "NP16"
+      ],
+      "checks": [
+        {
+          "id": "NP-R17-NP00",
+          "task": "NP00",
+          "level": "contract",
+          "evidence_kind": "contract",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R17-NP02",
+          "task": "NP02",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R17-NP11",
+          "task": "NP11",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R17-NP13",
+          "task": "NP13",
+          "level": "live",
+          "evidence_kind": "live",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R17-NP15",
+          "task": "NP15",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R17-NP16",
+          "task": "NP16",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        "仅方案/原型/任务准备，Go 服务与执行器尚未实现；新增管理原型待确认。"
+      ]
+    },
+    {
+      "id": "NP-R18",
+      "title": "全站用户管理与权限",
+      "behavior": "邀请/角色/停用/撤销会话/审计服务端授权，跨组织隔离和最后 owner 并发保护。",
+      "sources": [
+        "docs/next-phase/identity.md",
+        "docs/next-phase/backend-go.md"
+      ],
+      "tasks": [
+        "NP00",
+        "NP02",
+        "NP11",
+        "NP13",
+        "NP16"
+      ],
+      "checks": [
+        {
+          "id": "NP-R18-NP00",
+          "task": "NP00",
+          "level": "contract",
+          "evidence_kind": "contract",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R18-NP02",
+          "task": "NP02",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R18-NP11",
+          "task": "NP11",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R18-NP13",
+          "task": "NP13",
+          "level": "live",
+          "evidence_kind": "live",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R18-NP16",
+          "task": "NP16",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        "仅方案/原型/任务准备，Go 服务与执行器尚未实现；新增管理原型待确认。"
+      ]
+    },
+    {
+      "id": "NP-R19",
+      "title": "Agent 执行位置可迁移",
+      "behavior": "本期客户端独立执行器/核心/工具协议，后续 Go 服务端实现；换执行器不重写页面和 Apply。",
+      "sources": [
+        "docs/next-phase/assistant.md"
+      ],
+      "tasks": [
+        "NP00",
+        "NP09",
+        "NP10",
+        "NP11",
+        "NP13"
+      ],
+      "checks": [
+        {
+          "id": "NP-R19-NP00",
+          "task": "NP00",
+          "level": "contract",
+          "evidence_kind": "contract",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R19-NP09",
+          "task": "NP09",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R19-NP10",
+          "task": "NP10",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R19-NP11",
+          "task": "NP11",
+          "level": "host",
+          "evidence_kind": "host",
+          "status": "planned",
+          "evidence": []
+        },
+        {
+          "id": "NP-R19-NP13",
+          "task": "NP13",
+          "level": "live",
+          "evidence_kind": "live",
+          "status": "planned",
+          "evidence": []
+        }
+      ],
+      "gaps": [
+        "仅方案/原型/任务准备，Go 服务与执行器尚未实现；新增管理原型待确认。"
       ]
     }
   ]
