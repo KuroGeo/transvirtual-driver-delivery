@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ocean Delivery — README showcase</title>
+  <style>
+    @font-face { font-family: Inter; src: url('../../../app/assets/InterVariable.ttf'); font-weight: 100 900; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #fff9f0; color: #2e2b27; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .board { width: 1440px; padding: 76px 86px 64px; }
+    .brand { display: flex; align-items: center; gap: 18px; font-size: 40px; font-weight: 760; letter-spacing: -1.5px; }
+    .marker { width: 46px; height: 46px; border-radius: 50%; background: #ff6a32; display: grid; place-items: center; }
+    .marker::after { content: ''; width: 21px; height: 21px; border: 3px solid #fff; border-radius: 50%; }
+    h1 { font-size: 100px; line-height: 1.04; font-weight: 750; letter-spacing: -5px; margin: 48px 0 24px; }
+    h1 span { color: #e95223; }
+    .intro { font-size: 29px; color: #736c61; line-height: 1.45; margin: 0; max-width: 990px; }
+    .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin-top: 54px; }
+    figure { margin: 0; min-width: 0; }
+    .screen { padding: 10px; border-radius: 48px; background: #2e2b27; }
+    .screen img { display: block; width: 100%; height: auto; border-radius: 39px; }
+    figcaption { display: flex; gap: 15px; align-items: baseline; margin: 22px 4px 0; font-size: 28px; font-weight: 640; letter-spacing: -.6px; }
+    .number { color: #cc542b; font-size: 22px; font-weight: 600; }
+    .footer { display: flex; justify-content: space-between; gap: 25px; padding-top: 40px; margin-top: 36px; border-top: 1px solid #ded2c1; font-size: 24px; color: #786e61; }
+    .footer strong { color: #177657; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <main class="board">
+    <div class="brand"><span class="marker" aria-hidden="true"></span>ocean delivery</div>
+    <h1>Every stop.<br><span>One clear view.</span></h1>
+    <p class="intro">A map-first Flutter delivery workbench.<br>Browse stops. Record outcomes. Keep updates locally when offline.</p>
+    <div class="gallery">
+      <figure>
+        <div class="screen"><img src="../screenshots/map-overview.png" alt="Actual iOS simulator: Sydney map, status clusters, delivery progress and one update waiting to sync."></div>
+        <figcaption><span class="number">01</span>Map workspace</figcaption>
+      </figure>
+      <figure>
+        <div class="screen"><img src="../screenshots/stop-list.png" alt="Actual iOS simulator: nearest-first stop list with addresses, time windows and delivery status."></div>
+        <figcaption><span class="number">02</span>Browse stops</figcaption>
+      </figure>
+    </div>
+    <div class="footer"><span>30 Sydney stops · Flutter</span><strong>Real iOS simulator captures · Demo mode</strong></div>
+  </main>
+</body>
+</html>
