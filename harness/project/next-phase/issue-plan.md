@@ -17,6 +17,6 @@
 | NP12 | https://github.com/KuroGeo/transvirtual-driver-delivery/issues/55 | NP11 |
 | NP13 | https://github.com/KuroGeo/transvirtual-driver-delivery/issues/56 | NP12 |
 | NP14 | https://github.com/KuroGeo/transvirtual-driver-delivery/issues/57 | NP13 |
-| NP15 | 待发布 | NP00, NP01 |
+| NP15 | https://github.com/KuroGeo/transvirtual-driver-delivery/issues/59 | NP00, NP01 |
 
 全部为 planned。真实负责人/接受证据在 work.json；派工前需用户授权产品实施。

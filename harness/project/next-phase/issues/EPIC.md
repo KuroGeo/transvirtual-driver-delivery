@@ -33,7 +33,7 @@
 | [NP12 #55](https://github.com/KuroGeo/transvirtual-driver-delivery/issues/55) | 独立原生验收登录、导航返回与杀进程恢复 | NP11 |
 | [NP13 #56](https://github.com/KuroGeo/transvirtual-driver-delivery/issues/56) | 验收真实企业身份、派单 ACK、道路和模型服务 | NP12 |
 | [NP14 #57](https://github.com/KuroGeo/transvirtual-driver-delivery/issues/57) | 验证增量真机性能并交接现有发布门槛 | NP13 |
-| NP15 | 建立 Go 用户认证后端的模块、OpenAPI 与迁移基线 | NP00, NP01 |
+| [NP15 #59](https://github.com/KuroGeo/transvirtual-driver-delivery/issues/59) | 建立 Go 用户认证后端的模块、OpenAPI 与迁移基线 | NP00, NP01 |
 
 GitHub 原生 sub-issues 和 blocked-by 按本地 DAG 读回核验；实际发布结果以 publication.json 的回执为准。全部任务 planned，未虚构负责人/排期。每项正文包含写域、Skill、故障恢复、可运行/未来命令和关闭证据。
 

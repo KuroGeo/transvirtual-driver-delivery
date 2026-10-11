@@ -11,12 +11,13 @@
     "default_home": "A",
     "identity_assumption": "Go 用户表/认证/会话+前端登录；沿用受信身份原型，不做B端/用户管理"
   },
-  "publication_status": "draft",
+  "publication_status": "published",
   "github_parent": {
     "number": 42,
     "issue_id": 5803761182,
     "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/42",
-    "state": "open"
+    "state": "open",
+    "body_sha256": "a26bb7c349a81fab462c269fe1b16409834b7d580cb862e00b2db00be7c013e2"
   },
   "source_ref": "c67a0dd29b8b8e10c3beabbb4e1a70a1861951e3",
   "concurrency_limit": 4,
@@ -103,7 +104,10 @@
         "number": 43,
         "issue_id": 5803761849,
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/43",
-        "state": "open"
+        "state": "open",
+        "body_sha256": "fbf58ad639df059410e3b6f04c129af01f7fb4616d405542478cd038fb4328fd",
+        "parent_number": 42,
+        "blocked_by_numbers": []
       },
       "body_sha256": "fbf58ad639df059410e3b6f04c129af01f7fb4616d405542478cd038fb4328fd",
       "features": [
@@ -175,7 +179,12 @@
         "number": 44,
         "issue_id": 5803762325,
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/44",
-        "state": "open"
+        "state": "open",
+        "body_sha256": "7988d2fa065556251a86645beb846007d61b55320f52dd2b97ee0ab652a9b6fe",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          43
+        ]
       },
       "body_sha256": "7988d2fa065556251a86645beb846007d61b55320f52dd2b97ee0ab652a9b6fe",
       "features": [
@@ -250,9 +259,14 @@
         "number": 45,
         "issue_id": 5803762780,
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/45",
-        "state": "open"
+        "state": "open",
+        "body_sha256": "ea0d8f074549eb3edf83edbb986f8b28cd735b9661ffda6c176713c9189dced3",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          59
+        ]
       },
-      "body_sha256": "4aa33034058af194f06943616b9cb25913356b7618e88b52dc30fdb024554d51",
+      "body_sha256": "ea0d8f074549eb3edf83edbb986f8b28cd735b9661ffda6c176713c9189dced3",
       "features": [
         "F2"
       ]
@@ -317,7 +331,12 @@
         "number": 46,
         "issue_id": 5803763335,
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/46",
-        "state": "open"
+        "state": "open",
+        "body_sha256": "b97dc51e585538e133ec8c9e05e13667dc1597aa27e3e8e66f74bf94ea9a7af2",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          45
+        ]
       },
       "body_sha256": "b97dc51e585538e133ec8c9e05e13667dc1597aa27e3e8e66f74bf94ea9a7af2",
       "features": [
@@ -381,7 +400,12 @@
         "number": 47,
         "issue_id": 5803764088,
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/47",
-        "state": "open"
+        "state": "open",
+        "body_sha256": "c80d1c8b48a98864aa07a3439f480f6e90bf9b5aee0a993fb4f3fb54abc78fde",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          46
+        ]
       },
       "body_sha256": "c80d1c8b48a98864aa07a3439f480f6e90bf9b5aee0a993fb4f3fb54abc78fde",
       "features": [
@@ -445,7 +469,12 @@
         "number": 48,
         "issue_id": 5803764884,
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/48",
-        "state": "open"
+        "state": "open",
+        "body_sha256": "b2cfb3b7495b3a44c98a8d2bb13c2da17cce7868fb1615d2d072945618d1dbd3",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          46
+        ]
       },
       "body_sha256": "b2cfb3b7495b3a44c98a8d2bb13c2da17cce7868fb1615d2d072945618d1dbd3",
       "features": [
@@ -509,7 +538,12 @@
         "number": 49,
         "issue_id": 5803765741,
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/49",
-        "state": "open"
+        "state": "open",
+        "body_sha256": "7ea1ac486ba643df31e1d0ce22cd6ccf07bc97e03f5f09dd9e8f9d852797a829",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          47
+        ]
       },
       "body_sha256": "7ea1ac486ba643df31e1d0ce22cd6ccf07bc97e03f5f09dd9e8f9d852797a829",
       "features": [
@@ -573,7 +607,12 @@
         "number": 50,
         "issue_id": 5803766380,
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/50",
-        "state": "open"
+        "state": "open",
+        "body_sha256": "a52430632bacef020d38e212fbeec9c3cfb0f8a5e9446dd54c58733891fd8367",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          48
+        ]
       },
       "body_sha256": "a52430632bacef020d38e212fbeec9c3cfb0f8a5e9446dd54c58733891fd8367",
       "features": [
@@ -637,7 +676,13 @@
         "number": 51,
         "issue_id": 5803767043,
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/51",
-        "state": "open"
+        "state": "open",
+        "body_sha256": "6af2e4184b420a47fa69cc247ecbea1df44ab996615cf1269a2c0fe12dada7a8",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          47,
+          50
+        ]
       },
       "body_sha256": "6af2e4184b420a47fa69cc247ecbea1df44ab996615cf1269a2c0fe12dada7a8",
       "features": [
@@ -710,7 +755,14 @@
         "number": 52,
         "issue_id": 5803767578,
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/52",
-        "state": "open"
+        "state": "open",
+        "body_sha256": "4548b653c1af4b4c00dc6d267e5b892f9596d2a65a980955c68d1fb7525d8ce5",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          45,
+          50,
+          51
+        ]
       },
       "body_sha256": "4548b653c1af4b4c00dc6d267e5b892f9596d2a65a980955c68d1fb7525d8ce5",
       "features": [
@@ -795,7 +847,14 @@
         "number": 53,
         "issue_id": 5803768606,
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/53",
-        "state": "open"
+        "state": "open",
+        "body_sha256": "d206762ec2a1f3fb333ae6900f018b2ea33946fd3770123bca83feb6f9d4fb40",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          49,
+          51,
+          52
+        ]
       },
       "body_sha256": "d206762ec2a1f3fb333ae6900f018b2ea33946fd3770123bca83feb6f9d4fb40",
       "features": [
@@ -876,7 +935,12 @@
         "number": 54,
         "issue_id": 5803769348,
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/54",
-        "state": "open"
+        "state": "open",
+        "body_sha256": "9c2e41703516e33034af845b1afb22e5c3a67f0e6a71eaee8a418620ee1bad62",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          53
+        ]
       },
       "body_sha256": "9c2e41703516e33034af845b1afb22e5c3a67f0e6a71eaee8a418620ee1bad62",
       "features": [
@@ -952,7 +1016,12 @@
         "number": 55,
         "issue_id": 5803770149,
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/55",
-        "state": "open"
+        "state": "open",
+        "body_sha256": "1209ca8f8e3fd69abb80effaf3cc3c95c3236eb04d7f976d4cc865ba2fbef21f",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          54
+        ]
       },
       "body_sha256": "1209ca8f8e3fd69abb80effaf3cc3c95c3236eb04d7f976d4cc865ba2fbef21f",
       "features": [
@@ -994,11 +1063,11 @@
         "flutter-native-acceptance"
       ],
       "acceptance": [
-        "真实受信企业 A/B 角色鉴权、派单源与服务端持久接受/去重记录；撤权/过期/同账号恢复与跨账号拒绝实际有效。",
+        "真实受信企业 A/B 账号鉴权、派单源与服务端持久接受/去重记录；撤权/过期/同账号恢复与跨账号拒绝实际有效。",
         "真实道路供应商路线/矩阵/不可达/30 站约束与地图许可；真实导航 App 交接行为，ETA 新鲜度和缓存依据可追溯。",
-        "真实 Go 用户/角色/会话与模型代理配置验证鉴权、来源、预算/限流/取消；客户端 LocalAssistantExecutor 使用真实代理，记录 executorKind 和部署版本。真实 Go Agent 尚属后续，remote-fixture 不代签服务端执行。"
+        "真实 Go 用户身份/会话与模型代理配置验证鉴权、来源、预算/限流/取消；客户端 LocalAssistantExecutor 使用真实代理，记录 executorKind 和部署版本。真实 Go Agent 尚属后续，remote-fixture 不代签服务端执行。"
       ],
-      "recovery": "缺 IdP/后端/地图合同/模型/测试角色/设备则 blocked，不以模拟服务关闭；无部署/采购授权不擅自发布或创建凭据。",
+      "recovery": "缺 IdP/后端/地图合同/模型/测试账号/设备则 blocked，不以模拟服务关闭；无部署/采购授权不擅自发布或创建凭据。",
       "outputs": [
         "脱敏真实服务回执、服务/模型版本、权限与接受证据、依赖缺口和逐需求结论。"
       ],
@@ -1031,9 +1100,14 @@
         "number": 56,
         "issue_id": 5803770679,
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/56",
-        "state": "open"
+        "state": "open",
+        "body_sha256": "aae72cf94cc76c12a611500c610c5f07ec69c9c842025229a147dc060e67b6b3",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          55
+        ]
       },
-      "body_sha256": "73dadb986f4748b3f42b782ff41bf73e7e90bee20fb576ff315100474a608aaa",
+      "body_sha256": "aae72cf94cc76c12a611500c610c5f07ec69c9c842025229a147dc060e67b6b3",
       "features": [
         "F1",
         "F2",
@@ -1100,7 +1174,12 @@
         "number": 57,
         "issue_id": 5803771416,
         "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/57",
-        "state": "open"
+        "state": "open",
+        "body_sha256": "09b0d0a35f830cf90ec5e78fc5a5a30c7f8238e158a29967f268312782704f4c",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          56
+        ]
       },
       "body_sha256": "09b0d0a35f830cf90ec5e78fc5a5a30c7f8238e158a29967f268312782704f4c",
       "handoff_issue_numbers": [
@@ -1177,14 +1256,25 @@
         }
       ],
       "status": "planned",
-      "github": null,
+      "github": {
+        "number": 59,
+        "issue_id": 5804231215,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/59",
+        "state": "open",
+        "body_sha256": "98b4cc3c41ae11264b2dc5656c64191650e1d2a3e229994d35a94b0bd26ca341",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          43,
+          44
+        ]
+      },
       "features": [
         "F2"
       ],
       "body_sha256": "98b4cc3c41ae11264b2dc5656c64191650e1d2a3e229994d35a94b0bd26ca341"
     }
   ],
-  "epic_body_sha256": "68d0d67a69b8c3940be84a5ff7008babe470d028af4c05eddb494e3f42aae327",
+  "epic_body_sha256": "a26bb7c349a81fab462c269fe1b16409834b7d580cb862e00b2db00be7c013e2",
   "architecture_decisions": {
     "routing": "client-direct-third-party-no-own-routing-backend",
     "identity": "go-user-auth-no-b-end",
