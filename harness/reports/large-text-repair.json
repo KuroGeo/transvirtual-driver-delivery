@@ -65,7 +65,19 @@
       "sha256": "adc0092db890dd46b23ce334cb16f71ee21b79bf0f22db5fc0454ed9846fbea0",
       "bytes": 21639
     },
-    "metadata_head_CI": "Not claimed by this source report; check actual latest PR head separately."
+    "metadata_head_CI": "Not claimed by this source report; check actual latest PR head separately.",
+    "metadata_failure_retained": {
+      "head": "317d418a5101b80a3c68285da429d22bcf670875",
+      "run": 38138406290,
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38138406290",
+      "status": "failed_repository_broken_ignored_local_links",
+      "original_failure_log": {
+        "path": "harness/reports/large-text-metadata-ci-failed.log",
+        "sha256": "562b6b7668613bfef5274e59ee688cb73ab81778e8170de66ef0a87741ed85d3",
+        "bytes": 2762
+      },
+      "repair": "Tracked exact-byte OS PNG copies and archive-member references; no gate/code relaxation."
+    }
   },
   "native": {
     "status": "partial_scope_accepted_single_maximum_viewport",
@@ -202,7 +214,8 @@
       "path": "harness/runs/large-text-repair/formal-v7-113713/formal-build-independent.json",
       "sha256": "bb09b8ac0b006487e845b3e5ca66aa35452306798063eaa82b837b8b38a40b6d",
       "bytes": 40328
-    }
+    },
+    "simulator_signature": "ad_hoc; not production signed"
   },
   "preview": {
     "receipt": {
@@ -287,7 +300,7 @@
     "G3": "unverified_physical",
     "G4_local": "Targeted cold SQL/ACK and preserved business upgrade observed; not full current matrix",
     "G4_resource_connected": "production_pending",
-    "G5": "unsigned_simulator_Demo_only",
+    "G5": "simulator_Demo_not_production_signed; ad_hoc_CodeSignature_present",
     "G6": "local_install_receipt_only"
   },
   "merge": {
@@ -312,5 +325,18 @@
     "binary_artifacts_in_archive": false,
     "user_business_rows_in_archive": false,
     "scope": "Partial acceptance; retains both max16 ENOSPC failures."
+  },
+  "tracked_visual_copies": {
+    "formal_map": {
+      "path": "harness/reports/large-text-map-preview.png",
+      "sha256": "11734aa032027bbeb61972bdece1ff585f6dbaf01d055b63ccbb102762f2fcb5",
+      "bytes": 1458948
+    },
+    "controlled_native_list": {
+      "path": "harness/reports/large-text-native-list.png",
+      "sha256": "f5932ef5b03694e0b511c0223e37bfc51d9fe3028bea05ad94aefb06856d90cc",
+      "bytes": 243530
+    },
+    "copied_without_edit": true
   }
 }

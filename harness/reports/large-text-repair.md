@@ -14,12 +14,12 @@
 | 冷启动与保存 | outbox2→0→0；受控 HTTP0→2→2，真实 fixture ACK 与持久 ack_committed 对应；第三进程无重发 | 模拟器受控服务，非真实业务后端 |
 | 最大字号 iPhone16 | 两轮 ENOSPC 失败，原日志和清理错误保留 | 393×852 所需复验尚未接受；不将部分画面或失败改写成通过 |
 | 普通字号原生/两尺寸聚合 | 当前候选未执行完成 | G1 的普通字号回归通过不能替代这些原生检查 |
-| 正式入口 Demo | lib/main.dart 无签名 simulator 构建，84 文件与归档一致，已安装/启动 | 使用真实公共地图；不含私有 driver/fixture/tile 覆盖 |
+| 正式入口 Demo | lib/main.dart 未生产签名 simulator 构建，84 文件与归档一致，已安装/启动 | 使用真实公共地图；不含私有 driver/fixture/tile 覆盖 |
 | 升级保留数据 | 安装前、安装后启动前及启动后全部业务行相同：30 stops、0 outbox | 用户原数据未重置；行快照仅本地保存 |
 
-[当前正式地图画面](../runs/preview/20261011T113855Z-large-text/formal-maximum-text-map.png) 来自实际系统截图，Browse 箭头和23剩余完整可见；该单帧的顶部状态筛选仅部分露出，不能声称整个页头首屏可见。列表/详情和实际滚动阅读的同源码证据由独立 UI 审查接受。OS 输入区截图包含 QuickPath 初次使用界面；文字由 driver 输入，不声称物理按键输入。
+[当前正式地图画面](large-text-map-preview.png) 来自实际系统截图，Browse 箭头和23剩余完整可见；该单帧的顶部状态筛选仅部分露出，不能声称整个页头首屏可见。列表/详情和实际滚动阅读的同源码证据由独立 UI 审查接受。OS 输入区截图包含 QuickPath 初次使用界面；文字由 driver 输入，不声称物理按键输入。
 
-[正式产物审查](../runs/large-text-repair/formal-v7-113713/formal-build-independent.md)、[安装审查](../runs/preview/20261011T113855Z-large-text/final-preview-independent.md)、[画面审查](../runs/large-text-repair/global-map-v7-max17-visual-accepted.md)、[数据审查](../runs/large-text-repair/native-v7-max17-independent.md) 与 [环境失败审查](../runs/large-text-repair/storage/intermediate-115158-independent.md) 分别签署自身范围。
+正式产物、安装、画面、数据和环境失败审查分别签署自身范围；原件随[可回读证据包](large-text-partial-evidence.tar.gz)提供，按[索引](large-text-evidence-index.json)中的原路径提取。独立报告分别为 `formal-build-independent`、`final-preview-independent`、`global-map-v7-max17-visual-accepted`、`native-v7-max17-independent` 和 `intermediate-115158-independent`。[最大字号列表的实际 OS 画面](large-text-native-list.png)来自受控 N7 模拟器，与当前正式安装源码一致。
 
 磁盘目前约1.9GiB空闲，需约5GiB总空闲再执行完整新进程复验。只回收已核实且可由原始归档恢复的本任务副本和完成构建后的隔离中间产物，保留原件；未删除用户其他模拟器。等待空间解决后，以相同262输入运行 fresh max16 和 normal17，再独立核验真实两尺寸聚合；ENOSPC attempts 不覆盖、不转成通过。
 
@@ -33,3 +33,5 @@ python3 harness/run.py native --scope workbench --driver-target integration_test
 [PR37](https://github.com/KuroGeo/transvirtual-driver-delivery/pull/37) 尚未合入。旧 PR34 已合入，但它的完整/局部原生结果不能冒充当前候选。完整34项原生矩阵和真机/真实服务/生产资源/签名发布仍未在此候选接受；#31/#32/#33 与生产 no-go 保留。
 
 [可回读证据包](large-text-partial-evidence.tar.gz)包含 560 个原始/独立审查文件，各成员字节和 SHA256 已逐项验证；[索引](large-text-evidence-index.json)说明二进制归档和用户业务行未公开。包内保留两次 ENOSPC 失败，不代表完整验收。
+
+元数据提交317d418的[CI38138406290](https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38138406290)曾因本地忽略目录中的文档链接在干净检出不存在而失败。现改为已跟踪的逐字节相同截图与可回读归档引用，原[失败日志](large-text-metadata-ci-failed.log)保留；不放宽门禁。最新元数据提交 CI 单独读取。

@@ -1,0 +1,18 @@
+quality	Run repository and Flutter gates	﻿2026-10-11T12:13:20.9898497Z ##[group]Run python3 harness/run.py quality
+quality	Run repository and Flutter gates	2026-10-11T12:13:20.9899206Z ^[[36;1mpython3 harness/run.py quality^[[0m
+quality	Run repository and Flutter gates	2026-10-11T12:13:20.9965911Z shell: /usr/bin/bash -e {0}
+quality	Run repository and Flutter gates	2026-10-11T12:13:20.9966214Z env:
+quality	Run repository and Flutter gates	2026-10-11T12:13:20.9966558Z   FLUTTER_ROOT: /opt/hostedtoolcache/flutter/stable-3.44.2-x64/flutter
+quality	Run repository and Flutter gates	2026-10-11T12:13:20.9966997Z   PUB_CACHE: /home/runner/.pub-cache
+quality	Run repository and Flutter gates	2026-10-11T12:13:20.9967301Z ##[endgroup]
+quality	Run repository and Flutter gates	2026-10-11T12:13:21.3375698Z Run: /home/runner/work/transvirtual-driver-delivery/transvirtual-driver-delivery/harness/runs/20261011T121321335903Z-quality
+quality	Run repository and Flutter gates	2026-10-11T12:13:21.3403588Z Attempt report: /home/runner/work/transvirtual-driver-delivery/transvirtual-driver-delivery/harness/runs/20261011T121321335903Z-quality/attempts/000001/report.json
+quality	Run repository and Flutter gates	2026-10-11T12:13:21.8145828Z repository: failed (0.47s); /home/runner/work/transvirtual-driver-delivery/transvirtual-driver-delivery/harness/runs/20261011T121321335903Z-quality/attempts/000001/repository.log
+quality	Run repository and Flutter gates	2026-10-11T12:13:21.9985804Z harness/reports/large-text-repair.md: broken local link ../runs/preview/20261011T113855Z-large-text/formal-maximum-text-map.png
+quality	Run repository and Flutter gates	2026-10-11T12:13:21.9987675Z harness/reports/large-text-repair.md: broken local link ../runs/large-text-repair/formal-v7-113713/formal-build-independent.md
+quality	Run repository and Flutter gates	2026-10-11T12:13:22.0005186Z harness/reports/large-text-repair.md: broken local link ../runs/preview/20261011T113855Z-large-text/final-preview-independent.md
+quality	Run repository and Flutter gates	2026-10-11T12:13:22.0006980Z harness/reports/large-text-repair.md: broken local link ../runs/large-text-repair/global-map-v7-max17-visual-accepted.md
+quality	Run repository and Flutter gates	2026-10-11T12:13:22.0008436Z harness/reports/large-text-repair.md: broken local link ../runs/large-text-repair/native-v7-max17-independent.md
+quality	Run repository and Flutter gates	2026-10-11T12:13:22.0009416Z harness/reports/large-text-repair.md: broken local link ../runs/large-text-repair/storage/intermediate-115158-independent.md
+quality	Run repository and Flutter gates	2026-10-11T12:13:22.0010196Z 
+quality	Run repository and Flutter gates	2026-10-11T12:13:22.0113074Z ##[error]Process completed with exit code 1.
