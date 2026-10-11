@@ -37,7 +37,7 @@ void main() {
 
   for (final scale in [1.0, 53 / 17]) {
     testWidgets(
-      'left map tools stay in one hittable column in overview and detail at scale $scale',
+      'map tool column survives detail task and return at scale $scale',
       (tester) async {
         mapTestSize(tester);
         tester.platformDispatcher.textScaleFactorTestValue = scale;
@@ -47,7 +47,21 @@ void main() {
         await tapFormalControl(tester, 'nearest-stop');
         expect(model.panel, WorkbenchPanel.detail);
         expect(model.detailContext!.origin, DetailOrigin.nearest);
-        _expectSingleToolColumn(tester);
+        if (scale > 1.6) {
+          expect(
+            tester
+                .getSize(find.byKey(const ValueKey('delivery-detail-card')))
+                .height,
+            greaterThan(700),
+          );
+          expect(find.byKey(const ValueKey('zoom-in')), findsNothing);
+          expect(
+            find.byKey(const ValueKey('detail-close')).hitTestable(),
+            findsOneWidget,
+          );
+        } else {
+          _expectSingleToolColumn(tester);
+        }
         await tapFormalControl(tester, 'detail-close');
         expect(model.panel, WorkbenchPanel.map);
         _expectSingleToolColumn(tester);

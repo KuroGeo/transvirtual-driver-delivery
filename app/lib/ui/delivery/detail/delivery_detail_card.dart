@@ -14,10 +14,12 @@ class DeliveryDetailCard extends StatefulWidget {
     super.key,
     required this.viewModel,
     required this.onClose,
+    this.feedback,
   });
 
   final DeliveryViewModel viewModel;
   final VoidCallback onClose;
+  final Widget? feedback;
 
   @override
   State<DeliveryDetailCard> createState() => _DeliveryDetailCardState();
@@ -171,6 +173,7 @@ class _DeliveryDetailCardState extends State<DeliveryDetailCard> {
                                 MediaQuery.textScalerOf(context).scale(12) > 20;
                             final reference = Text(
                               stop.reference,
+                              key: const ValueKey('detail-reference'),
                               style: Theme.of(context).textTheme.labelMedium
                                   ?.copyWith(color: OceanColors.muted),
                             );
@@ -213,12 +216,18 @@ class _DeliveryDetailCardState extends State<DeliveryDetailCard> {
                         Text(
                           street,
                           key: const ValueKey('detail-street'),
-                          style: Theme.of(context).textTheme.headlineLarge
-                              ?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: -1.1,
-                                height: 1.15,
-                              ),
+                          style:
+                              (MediaQuery.textScalerOf(context).scale(14) > 22
+                                      ? Theme.of(context).textTheme.titleLarge
+                                            ?.copyWith(fontSize: 18)
+                                      : Theme.of(
+                                          context,
+                                        ).textTheme.headlineLarge)
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: -1.1,
+                                    height: 1.15,
+                                  ),
                         ),
                         if (locality.isNotEmpty) ...[
                           const SizedBox(height: 5),
@@ -326,6 +335,10 @@ class _DeliveryDetailCardState extends State<DeliveryDetailCard> {
                               style: TextStyle(color: OceanColors.red),
                             ),
                           ),
+                        ],
+                        if (widget.feedback != null) ...[
+                          const SizedBox(height: 12),
+                          widget.feedback!,
                         ],
                         const SizedBox(height: 22),
                         if (status == DeliveryStatus.pending) ...[
@@ -462,13 +475,17 @@ class _TerminalResult extends StatelessWidget {
                   status == DeliveryStatus.completed
                       ? 'Delivery completed'
                       : 'Delivery failed',
+                  key: const ValueKey('detail-terminal-result'),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 5),
                 if (status == DeliveryStatus.failed)
-                  Text(reason ?? 'No reason provided in the source record.'),
+                  Text(
+                    reason ?? 'No reason provided in the source record.',
+                    key: const ValueKey('detail-terminal-reason'),
+                  ),
                 if (status == DeliveryStatus.failed && note != null) ...[
                   const SizedBox(height: 5),
                   Text(note!),

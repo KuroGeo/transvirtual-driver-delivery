@@ -204,222 +204,340 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
               resizeToAvoidBottomInset: false,
               body: SafeArea(
                 child: LayoutBuilder(
-                  builder: (context, constraints) => Column(
-                    children: [
-                      ConstrainedBox(
-                        constraints: BoxConstraints(
-                          // Large business text also expands the footer and
-                          // Browse. Keep room for both by scrolling the header
-                          // sooner; its complete content keeps the OS scaler.
-                          maxHeight:
-                              constraints.maxHeight *
-                              (MediaQuery.textScalerOf(context).scale(14) > 22
-                                  ? .32
-                                  : .43),
-                        ),
-                        child: SingleChildScrollView(child: _header(context)),
-                      ),
-                      const Divider(height: 1),
-                      Expanded(
-                        child: model.stops.isEmpty
-                            ? _empty(context)
-                            : LayoutBuilder(
-                                builder: (context, _) {
-                                  return DeliveryMapWorkspace(
-                                    key: const ValueKey('formal-map'),
-                                    result: model.result,
-                                    datasetId: model.settings!.datasetId,
-                                    initialViewport: model.settings?.viewport,
-                                    controller: _map,
-                                    tileProvider: widget.tileProvider,
-                                    tileUrlTemplate: widget.tileUrlTemplate,
-                                    selectedStopId: model.selectedStop?.id,
-                                    onOpenStop: _open,
-                                    toolbarTop: 12,
-                                    showTools: !list,
-                                    showTileError: false,
-                                    fitPaddingBuilder: (area) {
-                                      if (!detail) {
-                                        if (_compact(context, area)) {
-                                          // Fit beside the single tool column
-                                          // and the compact card/feedback.
-                                          return _compactFitPadding(area);
-                                        }
-                                        return const EdgeInsets.fromLTRB(
-                                          35,
-                                          35,
-                                          35,
-                                          260,
-                                        );
-                                      }
-                                      final compact = _compact(context, area);
-                                      final height = _cardHeight(
-                                        area.maxHeight,
-                                        _compact(context, area),
-                                      );
-                                      if (compact) {
-                                        return _compactFitPadding(area);
-                                      }
-                                      if (_map.tileStatus.value ==
-                                          MapTileStatus.error) {
-                                        return EdgeInsets.fromLTRB(
-                                          80,
-                                          172,
-                                          math.max(0, area.maxWidth - 91),
-                                          height + 36,
-                                        );
-                                      }
-                                      return EdgeInsets.fromLTRB(
-                                        35,
-                                        156,
-                                        35,
-                                        height + 36,
-                                      );
-                                    },
-                                    onViewportChanged: (viewport) =>
-                                        unawaited(model.saveViewport(viewport)),
-                                    onSync: () => unawaited(model.sync()),
-                                    syncing: model.isSyncing,
-                                    onAttributionTap: _mapInformation,
-                                    overlayBuilder: (context, area) => Stack(
-                                      children: [
-                                        if (_listMounted)
-                                          Positioned(
-                                            // The prototype drawer joins the
-                                            // bottom edge. Reserve a separate
-                                            // notice lane only while needed.
-                                            bottom: 0,
-                                            left: 0,
-                                            right: 0,
-                                            height: math.min(
-                                              530,
-                                              math.max(
-                                                0,
-                                                area.maxHeight -
-                                                    (!_compact(context, area) &&
-                                                            (model
-                                                                        .notice
-                                                                        .value !=
-                                                                    null ||
-                                                                model.loadError !=
-                                                                    null)
-                                                        ? 112
-                                                        : 12),
-                                              ),
-                                            ),
-                                            child: Offstage(
-                                              offstage: !list,
-                                              child: ExcludeFocus(
-                                                excluding: !list,
-                                                child: Column(
-                                                  children: [
-                                                    if (_compact(context, area))
-                                                      ClipRect(
-                                                        key: const ValueKey(
-                                                          'list-feedback-viewport',
+                  builder: (context, constraints) {
+                    final largeText =
+                        MediaQuery.textScalerOf(context).scale(14) > 22;
+                    final task = largeText && (list || detail);
+                    return Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Offstage(
+                          offstage: task,
+                          child: ExcludeFocus(
+                            excluding: task,
+                            child: Column(
+                              children: [
+                                ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    // Large business text also expands the footer and
+                                    // Browse. Keep room for both by scrolling the header
+                                    // sooner; its complete content keeps the OS scaler.
+                                    maxHeight:
+                                        constraints.maxHeight *
+                                        (MediaQuery.textScalerOf(
+                                                  context,
+                                                ).scale(14) >
+                                                22
+                                            ? .32
+                                            : .43),
+                                  ),
+                                  child: SingleChildScrollView(
+                                    child: _header(context),
+                                  ),
+                                ),
+                                const Divider(height: 1),
+                                Expanded(
+                                  child: model.stops.isEmpty
+                                      ? _empty(context)
+                                      : LayoutBuilder(
+                                          builder: (context, _) {
+                                            return DeliveryMapWorkspace(
+                                              key: const ValueKey('formal-map'),
+                                              result: model.result,
+                                              datasetId:
+                                                  model.settings!.datasetId,
+                                              initialViewport:
+                                                  model.settings?.viewport,
+                                              controller: _map,
+                                              tileProvider: widget.tileProvider,
+                                              tileUrlTemplate:
+                                                  widget.tileUrlTemplate,
+                                              selectedStopId:
+                                                  model.selectedStop?.id,
+                                              onOpenStop: _open,
+                                              toolbarTop: 12,
+                                              showTools: !list,
+                                              showTileError: false,
+                                              fitPaddingBuilder: (area) {
+                                                if (!detail) {
+                                                  if (_compact(context, area)) {
+                                                    // Fit beside the single tool column
+                                                    // and the compact card/feedback.
+                                                    return _compactFitPadding(
+                                                      area,
+                                                    );
+                                                  }
+                                                  return const EdgeInsets.fromLTRB(
+                                                    35,
+                                                    35,
+                                                    35,
+                                                    260,
+                                                  );
+                                                }
+                                                final compact = _compact(
+                                                  context,
+                                                  area,
+                                                );
+                                                final height = _cardHeight(
+                                                  area.maxHeight,
+                                                  _compact(context, area),
+                                                );
+                                                if (compact) {
+                                                  return _compactFitPadding(
+                                                    area,
+                                                  );
+                                                }
+                                                if (_map.tileStatus.value ==
+                                                    MapTileStatus.error) {
+                                                  return EdgeInsets.fromLTRB(
+                                                    80,
+                                                    172,
+                                                    math.max(
+                                                      0,
+                                                      area.maxWidth - 91,
+                                                    ),
+                                                    height + 36,
+                                                  );
+                                                }
+                                                return EdgeInsets.fromLTRB(
+                                                  35,
+                                                  156,
+                                                  35,
+                                                  height + 36,
+                                                );
+                                              },
+                                              onViewportChanged: (viewport) =>
+                                                  unawaited(
+                                                    model.saveViewport(
+                                                      viewport,
+                                                    ),
+                                                  ),
+                                              onSync: () =>
+                                                  unawaited(model.sync()),
+                                              syncing: model.isSyncing,
+                                              onAttributionTap: _mapInformation,
+                                              overlayBuilder: (context, area) => Stack(
+                                                children: [
+                                                  if (_listMounted &&
+                                                      !largeText)
+                                                    Positioned(
+                                                      // The prototype drawer joins the
+                                                      // bottom edge. Reserve a separate
+                                                      // notice lane only while needed.
+                                                      bottom: 0,
+                                                      left: 0,
+                                                      right: 0,
+                                                      height: math.min(
+                                                        530,
+                                                        math.max(
+                                                          0,
+                                                          area.maxHeight -
+                                                              (!_compact(
+                                                                        context,
+                                                                        area,
+                                                                      ) &&
+                                                                      (model.notice.value !=
+                                                                              null ||
+                                                                          model.loadError !=
+                                                                              null)
+                                                                  ? 112
+                                                                  : 12),
                                                         ),
-                                                        child: list
-                                                            ? _feedback(
-                                                                true,
-                                                                area.maxHeight *
-                                                                    .18,
-                                                              )
-                                                            : const SizedBox.shrink(),
                                                       ),
-                                                    Expanded(
-                                                      child: StopListWorkspace(
-                                                        viewModel: model,
-                                                        onClose:
-                                                            model.closeList,
-                                                        onOpenStop: (stop) =>
-                                                            _open(
-                                                              stop,
-                                                              DetailOrigin.list,
-                                                            ),
-                                                        onSync: () => unawaited(
-                                                          model.sync(),
+                                                      child: Offstage(
+                                                        offstage: !list,
+                                                        child: ExcludeFocus(
+                                                          excluding: !list,
+                                                          child: Column(
+                                                            children: [
+                                                              if (_compact(
+                                                                context,
+                                                                area,
+                                                              ))
+                                                                ClipRect(
+                                                                  key: const ValueKey(
+                                                                    'list-feedback-viewport',
+                                                                  ),
+                                                                  child: list
+                                                                      ? _feedback(
+                                                                          true,
+                                                                          area.maxHeight *
+                                                                              .18,
+                                                                        )
+                                                                      : const SizedBox.shrink(),
+                                                                ),
+                                                              Expanded(
+                                                                child: StopListWorkspace(
+                                                                  viewModel:
+                                                                      model,
+                                                                  onClose: model
+                                                                      .closeList,
+                                                                  onOpenStop:
+                                                                      (
+                                                                        stop,
+                                                                      ) => _open(
+                                                                        stop,
+                                                                        DetailOrigin
+                                                                            .list,
+                                                                      ),
+                                                                  onSync: () =>
+                                                                      unawaited(
+                                                                        model
+                                                                            .sync(),
+                                                                      ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        if (!list && !detail)
-                                          Positioned(
-                                            left: _compact(context, area)
-                                                ? 114
-                                                : 12,
-                                            right: 12,
-                                            bottom: 12,
-                                            child: ConstrainedBox(
-                                              constraints: BoxConstraints(
-                                                maxHeight: math.max(
-                                                  0,
-                                                  area.maxHeight -
-                                                      (_compact(context, area)
-                                                          ? 24
-                                                          : 225),
-                                                ),
-                                              ),
-                                              child: _compact(context, area)
-                                                  ? _overview(
-                                                      context,
-                                                      compact: true,
-                                                    )
-                                                  : SingleChildScrollView(
-                                                      child: _overview(context),
-                                                    ),
-                                            ),
-                                          ),
-                                        if (detail)
-                                          Positioned(
-                                            left: _compact(context, area)
-                                                ? 114
-                                                : 12,
-                                            right: 12,
-                                            bottom: 12,
-                                            height: _cardHeight(
-                                              area.maxHeight,
-                                              _compact(context, area),
-                                            ),
-                                            child: DeliveryDetailCard(
-                                              key: ValueKey(
-                                                'detail-${model.selectedStop?.id}',
-                                              ),
-                                              viewModel: model,
-                                              onClose: model.closeDetail,
-                                            ),
-                                          ),
-                                        if (detail || !_compact(context, area))
-                                          Positioned(
-                                            top: 12,
-                                            left: list ? 20 : 114,
-                                            right: 12,
-                                            child: _feedback(
-                                              list,
-                                              detail
-                                                  ? area.maxHeight -
-                                                        _cardHeight(
-                                                          area.maxHeight,
+                                                  if (!list && !detail)
+                                                    Positioned(
+                                                      left:
                                                           _compact(
                                                             context,
                                                             area,
+                                                          )
+                                                          ? 114
+                                                          : 12,
+                                                      right: 12,
+                                                      bottom: 12,
+                                                      child: ConstrainedBox(
+                                                        constraints: BoxConstraints(
+                                                          maxHeight: math.max(
+                                                            0,
+                                                            area.maxHeight -
+                                                                (_compact(
+                                                                      context,
+                                                                      area,
+                                                                    )
+                                                                    ? 24
+                                                                    : 225),
                                                           ),
-                                                        ) -
-                                                        36
-                                                  : area.maxHeight - 24,
-                                            ),
+                                                        ),
+                                                        child:
+                                                            _compact(
+                                                              context,
+                                                              area,
+                                                            )
+                                                            ? _overview(
+                                                                context,
+                                                                compact: true,
+                                                              )
+                                                            : SingleChildScrollView(
+                                                                child:
+                                                                    _overview(
+                                                                      context,
+                                                                    ),
+                                                              ),
+                                                      ),
+                                                    ),
+                                                  if (detail && !largeText)
+                                                    Positioned(
+                                                      left:
+                                                          _compact(
+                                                            context,
+                                                            area,
+                                                          )
+                                                          ? 114
+                                                          : 12,
+                                                      right: 12,
+                                                      bottom: 12,
+                                                      height: _cardHeight(
+                                                        area.maxHeight,
+                                                        _compact(context, area),
+                                                      ),
+                                                      child: DeliveryDetailCard(
+                                                        key: ValueKey(
+                                                          'detail-${model.selectedStop?.id}',
+                                                        ),
+                                                        viewModel: model,
+                                                        onClose:
+                                                            model.closeDetail,
+                                                      ),
+                                                    ),
+                                                  if (!task &&
+                                                      (detail ||
+                                                          !_compact(
+                                                            context,
+                                                            area,
+                                                          )))
+                                                    Positioned(
+                                                      top: 12,
+                                                      left: list ? 20 : 114,
+                                                      right: 12,
+                                                      child: _feedback(
+                                                        list,
+                                                        detail
+                                                            ? area.maxHeight -
+                                                                  _cardHeight(
+                                                                    area.maxHeight,
+                                                                    _compact(
+                                                                      context,
+                                                                      area,
+                                                                    ),
+                                                                  ) -
+                                                                  36
+                                                            : area.maxHeight -
+                                                                  24,
+                                                      ),
+                                                    ),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        if (largeText && (_listMounted || detail))
+                          Positioned.fill(
+                            child: Offstage(
+                              offstage: !task,
+                              child: Stack(
+                                key: const ValueKey(
+                                  'large-text-task-workspace',
+                                ),
+                                fit: StackFit.expand,
+                                children: [
+                                  if (_listMounted)
+                                    Offstage(
+                                      offstage: !list,
+                                      child: ExcludeFocus(
+                                        excluding: !list,
+                                        child: StopListWorkspace(
+                                          viewModel: model,
+                                          onClose: model.closeList,
+                                          onOpenStop: (stop) =>
+                                              _open(stop, DetailOrigin.list),
+                                          onSync: () => unawaited(model.sync()),
+                                          feedback: WorkbenchNoticeView(
+                                            viewModel: model,
                                           ),
-                                      ],
+                                        ),
+                                      ),
                                     ),
-                                  );
-                                },
+                                  if (detail)
+                                    DeliveryDetailCard(
+                                      key: ValueKey(
+                                        'detail-${model.selectedStop?.id}',
+                                      ),
+                                      viewModel: model,
+                                      onClose: model.closeDetail,
+                                      feedback: WorkbenchNoticeView(
+                                        viewModel: model,
+                                      ),
+                                    ),
+                                ],
                               ),
-                      ),
-                    ],
-                  ),
+                            ),
+                          ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),

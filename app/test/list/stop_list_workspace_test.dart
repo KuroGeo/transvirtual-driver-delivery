@@ -453,7 +453,7 @@ void main() {
   );
 
   testWidgets(
-    'prototype drawer keeps tools and matching row reachable at full OS scale',
+    'full-height large text task preserves query, readable row and typed return',
     (tester) async {
       tester.view.physicalSize = const Size(390, 844);
       tester.view.devicePixelRatio = 1;
@@ -475,7 +475,7 @@ void main() {
           listHost(
             model,
             textScale: 53 / 17,
-            panelHeight: 267,
+            panelHeight: 763,
             safePadding: const EdgeInsets.only(top: 47, bottom: 34),
             onSync: () {},
           ),
@@ -494,13 +494,15 @@ void main() {
         await tester.tap(find.byKey(const ValueKey('list-query-controls')));
         await tester.pump();
         final primary = find.byKey(const ValueKey('stop-list-scroll'));
-        final scrollable = find
-            .descendant(of: primary, matching: find.byType(Scrollable))
+        final tools = find.byKey(const ValueKey('list-query-scroll'));
+        final toolsScrollable = find
+            .descendant(of: tools, matching: find.byType(Scrollable))
             .first;
+        expect(primary, findsNothing);
         await tester.scrollUntilVisible(
           find.byKey(const ValueKey('stop-search')),
           160,
-          scrollable: scrollable,
+          scrollable: toolsScrollable,
           maxScrolls: 12,
         );
         await Scrollable.ensureVisible(
@@ -522,18 +524,19 @@ void main() {
         expect(model.query.search, 'REF-20');
         expect(model.result.stops.single.reference, 'REF-20');
         final row = find.byKey(const ValueKey('stop-REF-20'));
-        await tester.scrollUntilVisible(
-          row,
-          160,
-          scrollable: scrollable,
-          maxScrolls: 12,
-        );
         final customer = find.text('Harbour Foods 20');
-        await Scrollable.ensureVisible(
-          tester.element(customer),
-          alignment: 0.5,
-        );
-        await tester.pump();
+        final viewport = tester.getRect(primary);
+        expect(viewport.height, greaterThan(500));
+        for (final key in [
+          'list-customer-REF-20',
+          'list-reference-REF-20',
+          'list-status-REF-20',
+        ]) {
+          final bounds = tester.getRect(find.byKey(ValueKey(key)));
+          expect(viewport.contains(bounds.topLeft), isTrue);
+          expect(viewport.contains(bounds.bottomRight), isTrue);
+        }
+        expect(find.byTooltip('Search and filters'), findsOneWidget);
         expect(
           MediaQuery.textScalerOf(tester.element(customer)).scale(16) / 16,
           closeTo(53 / 17, 1e-12),

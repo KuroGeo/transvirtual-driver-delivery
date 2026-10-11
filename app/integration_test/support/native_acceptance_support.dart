@@ -503,7 +503,10 @@ Future<void> acceptanceListQueryTools(NativeWorkbenchDriver client) async {
       'within 12 drags and 15 seconds.',
     );
     final bounds = nativeObject(value['bounds']);
-    final scroll = nativeObject((bounds['stop-list-scroll'] as List).single);
+    final scrollKey = bounds.containsKey('list-query-scroll')
+        ? 'list-query-scroll'
+        : 'stop-list-scroll';
+    final scroll = nativeObject((bounds[scrollKey] as List).single);
     final search = bounds['stop-search'];
     final heading = bounds['list-title'];
     final double drag;
@@ -527,7 +530,7 @@ Future<void> acceptanceListQueryTools(NativeWorkbenchDriver client) async {
           : 160;
     }
     await client
-        .scrollKey('stop-list-scroll', drag)
+        .scrollKey(scrollKey, drag)
         .timeout(
           NativeWorkbenchDriver.observationDeadline - searchClock.elapsed,
         );
@@ -593,6 +596,17 @@ Future<void> acceptanceOpenListStop(
         nativeObject(acceptanceModel(value)['query'])['search'] == reference &&
         nativeObject(value['result'])['matchedCount'] == 1,
   );
+  // Large text uses a separate full-height filter task. Return through its
+  // real control before searching the result list; retain query and session.
+  if (nativeObject(searched['bounds']).containsKey('list-query-scroll')) {
+    await client.tapKey('list-query-controls');
+    searched = await client.waitForSnapshot(
+      'close large-text query tools before reading $reference',
+      (s) =>
+          !nativeObject(s['bounds']).containsKey('list-query-scroll') &&
+          acceptanceModel(s)['panel'] == 'list',
+    );
+  }
   // SliverList may omit unbuilt rows or retain cached offstage RenderBoxes
   // that the SDK finder cannot reveal. Move the actual primary scroll view
   // until the target's real center is hittable, then use the existing

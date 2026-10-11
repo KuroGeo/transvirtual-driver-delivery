@@ -1,5 +1,5 @@
 {
-  "mode": "execute",
+  "mode": "repair",
   "contract_revision": 5,
   "source_head": "cae7fca40760e67567c3e29d39b9b295ffa002e5",
   "coordinator": "/root",
@@ -2114,7 +2114,7 @@
     "native_rerun": false,
     "production_eligible": false
   },
-  "updated_at": "2026-10-11T07:28:48.610653+00:00",
+  "updated_at": "2026-10-11T09:49:55.430923+00:00",
   "native_protocol_revision": 6,
   "source_writers": [],
   "active_execution": {
@@ -2158,9 +2158,9 @@
     "source_writers": [],
     "future_readback_dispatch": "requirements_review will only read APIs/CI when supplied actual newHEAD/run; no source/SDK writer"
   },
-  "source_frozen": true,
+  "source_frozen": false,
   "candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
-  "active_sdk_controller": null,
+  "active_sdk_controller": "/root",
   "root_execution_checkpoint": {
     "updated_at": "2026-10-11T02:59:18.750923+00:00",
     "candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
@@ -2498,5 +2498,40 @@
       "sha256": "39e29a87a0823a9440be8f9c50973735fa5cd9b9de34041e4cd5ccf20f86e7fc"
     },
     "handoff_report": "harness/reports/pr34-final-review.json"
+  },
+  "large_text_repair": {
+    "id": "LTX-01",
+    "status": "validating",
+    "base_sha": "31b144b4fb20126e86ff75460a9b11414030a419",
+    "source": "User iOS max-text screenshot 2026-10-11",
+    "coordinator": "/root",
+    "scope": "Full-size accessible task layout for list/detail, readable initial stop summary, uncut feedback and separate query tools; preserve actual platform scaler and normal prototype layout",
+    "writers": {
+      "/root": [
+        "app/lib/ui/delivery_screen.dart",
+        "app/lib/ui/delivery/list/stop_list_workspace.dart",
+        "app/lib/ui/delivery/detail/delivery_detail_card.dart",
+        "harness/project/work.json",
+        "harness/reports",
+        "app/test/ui/overview_geometry_test.dart",
+        "app/integration_test/support/native_acceptance_support.dart",
+        "app/test/review/prototype_map_interactions_test.dart",
+        "harness/project/mission.md",
+        "app/test/list/stop_list_workspace_test.dart",
+        "app/test/reliability/formal_workbench_test.dart"
+      ],
+      "/root/pr34_data_review": [
+        "app/test/ui/large_text_layout_test.dart"
+      ],
+      "/root/pr34_harness_review": [
+        "app/integration_test/acceptance_driver.dart"
+      ]
+    },
+    "independent_UI_reviewer": "/root/pr34_ui_review",
+    "SDK_and_device_executor": "/root",
+    "acceptance": "First task screen readable without hunting; full OS text; actual max iOS N7 + normal-layout regressions; preserved-data formal Demo simulator install",
+    "production_go": false,
+    "issue": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/36",
+    "source_writers_frozen": true
   }
 }
