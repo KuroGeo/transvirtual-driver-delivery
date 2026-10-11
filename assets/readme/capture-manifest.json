@@ -1,0 +1,110 @@
+{
+  "schema": 1,
+  "application": "Ocean Delivery",
+  "source_commit": "76a46307850b59113e64708a2bc272c401987120",
+  "compiled_source_commit": "256de9fd360040a52ed3e7ec5948dbbaf4529e90",
+  "compiled_candidate_fingerprint": "7b077f55197263c571fb33fce1b561f7ccd5cdc0d2a7252aab34c15a9eb184bf",
+  "configuration": "demo",
+  "entry_point": "lib/main.dart",
+  "installed_bundle_verified_files": 84,
+  "compiled_archive_sha256": "68c066a6d3795078a0ae6bc2ca9d89a5621a9227261ac06e12427f4d36c4e74a",
+  "device_name": "Ocean Delivery Preview",
+  "device_type": "iPhone 17 Pro",
+  "OS": "iOS 26.4",
+  "viewport_points": {
+    "width": 402,
+    "height": 874
+  },
+  "OS_content_size": "large",
+  "capture_command": "xcrun simctl io <device> screenshot <absolute-path>",
+  "business_records_before_after_equal": true,
+  "business_counts": {
+    "stops": 30,
+    "outbox": 1,
+    "statuses": {
+      "completed": 5,
+      "failed": 4,
+      "pending": 21
+    }
+  },
+  "screenshots": [
+    {
+      "path": "screenshots/completed-record.png",
+      "sha256": "c9f45437b64ca8c76bb32d076fdfd3f8453b2bb3b45f56e7c6789e2c6a2a7ec8",
+      "bytes": 1364935,
+      "width": 1206,
+      "height": 2622,
+      "captured_at": "2026-10-11T13:19:44.074489+00:00",
+      "kind": "unmodified_native_OS_screenshot",
+      "content": "Existing completed result, recorded time and simulated Demo acknowledgement"
+    },
+    {
+      "path": "screenshots/delivery-detail.png",
+      "sha256": "715f8411009a7c79f3101264265329fa2427aa6c80031bd54e6d1029c9530478",
+      "bytes": 1265006,
+      "width": 1206,
+      "height": 2622,
+      "captured_at": "2026-10-11T13:16:54.813930+00:00",
+      "kind": "unmodified_native_OS_screenshot",
+      "content": "Pending delivery address, time window and result entry points"
+    },
+    {
+      "path": "screenshots/failure-form.png",
+      "sha256": "364d41a5f8c42fd17008650cb87afc5d4f2bd99dbeedb0e8b3c5a91bb51939b3",
+      "bytes": 255293,
+      "width": 1206,
+      "height": 2622,
+      "captured_at": "2026-10-11T13:17:13.299253+00:00",
+      "kind": "unmodified_native_OS_screenshot",
+      "content": "Business closed selected in an unsubmitted form"
+    },
+    {
+      "path": "screenshots/failure-record.png",
+      "sha256": "89c19b2f80d889db341a6a02aca85beaf022e5184f921a31b0fadfa93bd8e9f4",
+      "bytes": 1366466,
+      "width": 1206,
+      "height": 2622,
+      "captured_at": "2026-10-11T13:16:34.739739+00:00",
+      "kind": "unmodified_native_OS_screenshot",
+      "content": "Existing Address not found result, recorded time and waiting-to-sync state"
+    },
+    {
+      "path": "screenshots/map-overview.png",
+      "sha256": "f122c4db59c60aca1184fd129b15501d6eef004089aa75bdc67588bdd0cda2a8",
+      "bytes": 1862581,
+      "width": 1206,
+      "height": 2622,
+      "captured_at": "2026-10-11T13:16:12.714996+00:00",
+      "kind": "unmodified_native_OS_screenshot",
+      "content": "All stops, map clusters, delivery progress and existing queued update"
+    },
+    {
+      "path": "screenshots/stop-list.png",
+      "sha256": "8b403f71ff4a37d6a4b0928a9b81625d0b8087705ff1269347c0d074e484383f",
+      "bytes": 551483,
+      "width": 1206,
+      "height": 2622,
+      "captured_at": "2026-10-11T13:16:24.539571+00:00",
+      "kind": "unmodified_native_OS_screenshot",
+      "content": "Nearest-first list with completed/failed/pending states"
+    }
+  ],
+  "limits": [
+    "Simulator Demo screenshots; simulated acknowledgements, no real backend upload claim.",
+    "Fixed test reference and straight-line distance; not live GPS or route planning.",
+    "Form screenshot was captured without submitting a new delivery result."
+  ],
+  "showcase": {
+    "path": "showcase.png",
+    "sha256": "e2ac7286387e41d30c3ad746a29ba4b477702ef684b7df77324a177bbcfcaa81",
+    "bytes": 730128,
+    "kind": "deterministic_HTML_CSS_composition_of_two_original_OS_screenshots",
+    "source": "source/showcase.html",
+    "original_screenshot_pixels_unmodified": true
+  },
+  "vector_title": {
+    "path": "hero.svg",
+    "sha256": "3e28279ab39bc9f093299083b3c90eaf0dbf9fbfaa5942fdf5084ac3a7e6c7e3",
+    "kind": "hand_authored_static_vector_title"
+  }
+}

@@ -1,8 +1,37 @@
 # ocean delivery
 
-地图为基础的司机配送 App，包含交互原型和 Flutter 客户端。使用题目附件中的 30 个悉尼站点，让司机从位置与状态找到任务，完成配送或记录失败，并在离线时保留更新。
+**看清每一站，离线也能继续工作。**
 
-<img src="prototype/evidence/direct-sync/home/page.png" alt="ocean delivery 地图工作台" width="320">
+地图优先的 Flutter 司机配送工作台。使用题目附件中的 30 个悉尼站点，从位置与状态找到任务，查看地址和时间窗，记录完成或失败原因，并在离线时保留更新。
+
+<p align="center">
+  <a href="assets/readme/showcase.png"><img src="assets/readme/showcase.png" alt="Ocean Delivery：真实 Flutter iOS 模拟器中的地图工作台、状态聚合与配送列表" width="100%"></a>
+</p>
+
+上图为 **iOS 26.4 模拟器中的正式 Flutter Demo 实拍**。画面中的一条待同步更新保留在本机；Demo 使用模拟确认。完整截图与可编辑宣传素材见 [README 素材包](assets/readme/README.md)。
+
+- **从地图找到任务**：状态点位与聚合、搜索筛选、最近站点和列表联动。
+- **清楚记录配送结果**：地址与时间窗、完成记录、必填失败原因，以及按原入口返回。
+- **离线保留更新**：SQLite 和 outbox 持久保存，显示待确认更新，重连后自动尝试同步。
+- **跟随系统字号**：普通字号保留地图工作台，大字模式展开摘要、列表和详情以完整阅读。
+
+<details>
+<summary>查看更多实拍：配送详情、失败原因和离线记录</summary>
+
+<table>
+  <tr>
+    <td align="center"><b>配送详情</b><br><a href="assets/readme/screenshots/delivery-detail.png"><img src="assets/readme/screenshots/delivery-detail.png" width="300" alt="客户地址、时间窗及完成或失败操作入口"></a></td>
+    <td align="center"><b>失败原因</b><br><a href="assets/readme/screenshots/failure-form.png"><img src="assets/readme/screenshots/failure-form.png" width="300" alt="失败原因必选、备注可选的真实表单，截图时未提交"></a></td>
+  </tr>
+  <tr>
+    <td align="center"><b>离线保存的失败记录</b><br><a href="assets/readme/screenshots/failure-record.png"><img src="assets/readme/screenshots/failure-record.png" width="300" alt="已保存的 Address not found 原因、记录时间和 Waiting to sync 状态"></a></td>
+    <td align="center"><b>完成记录与 Demo 确认</b><br><a href="assets/readme/screenshots/completed-record.png"><img src="assets/readme/screenshots/completed-record.png" width="300" alt="已完成配送的记录时间和模拟确认时间"></a></td>
+  </tr>
+</table>
+
+点击图片可查看完整分辨率。地图、列表的独立原图也在 [截图目录](assets/readme/screenshots/) 中。
+
+</details>
 
 ## Flutter 客户端
 
