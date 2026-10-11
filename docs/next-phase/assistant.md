@@ -36,7 +36,7 @@ flowchart LR
   REMOTE -.-> GO[Go Agent 服务与服务端工具]
 ```
 
-页面只能依赖 UseCase 和结构化结果，不能直接调模型、选择工具或读数据库。AgentCore 不读 Widget/BuildContext、ChangeNotifier、SQLite DAO、安全存储或通知插件；协议和工具模型为纯 Dart/JSON。NP09 提供核心和适配器，NP10 单写依赖及启动装配。本期 Go 模型代理只处理身份、模型凭据、配额与受限模型请求，不承担 Agent 循环、工具执行或站序应用。代理使用受限业务 DTO 与服务端 model/schema/token policy；按用户/组织原子预留/结算预算，并发不能超支，取消后的已发生费用仍结算；未知供应商接受状态保留记录，不自动重放付费请求。客户端循环预算不能替代服务端费用边界。
+页面只能依赖 UseCase 和结构化结果，不能直接调模型、选择工具或读数据库。AgentCore 不读 Widget/BuildContext、ChangeNotifier、SQLite DAO、安全存储或通知插件；协议和工具模型为纯 Dart/JSON。NP09 提供核心和适配器，NP10 单写依赖及启动装配。本期 Go 模型代理只处理身份、模型凭据、配额与受限模型请求，不承担 Agent 循环、工具执行或站序应用。代理使用受限业务 DTO 与服务端 model/schema/token policy；按用户/受信业务 namespace 原子预留/结算预算，并发不能超支，取消后的已发生费用仍结算；未知供应商接受状态保留记录，不自动重放付费请求。客户端循环预算不能替代服务端费用边界。
 
 ## 可迁移协议
 
@@ -69,4 +69,4 @@ NP07 负责计划/Apply/Undo，NP08 提醒，NP09 本期可迁移客户端执行
 
 必须验证：核心无 Flutter/平台依赖；Local→受控 Remote 替换不改页面和持久化；协议 round-trip、工具 schema 与事实等价；stale/双击/落盘失败/Undo 冲突；完整唯一站点集；本地终态 overlay/outbox 不变；DST/snooze；注入/越权/超额/取消/迟到；真正杀进程恢复计划和设置。原日志必须写清执行位置与 fixture/live 边界。
 
-模型凭据、数据地区/保留、企业权限和预算由 NP00 冻结。原型与方案先于 issue；本轮只改设计和草稿，产品实现未开始。模型协议的官方背景见 [函数调用](https://developers.openai.com/api/docs/guides/function-calling)，执行循环分层为本项目设计决策。
+模型凭据、数据地区/保留、身份权限和预算由 NP00 冻结。原型与方案先于 issue；本轮范围为设计、Harness 准备与 issue 发布，产品实现未开始。模型协议的官方背景见 [函数调用](https://developers.openai.com/api/docs/guides/function-calling)，执行循环分层为本项目设计决策。

@@ -34,7 +34,7 @@ def render():
             if feature_id=='F2':
                 body += f"  [Go 用户与认证架构]({base}/blob/{ref}/{feature['backend_architecture']})。\n"
         body += '\n每个需求须先具备这两项材料，再发布/更新对应 issue；总方案不能替代单项来源。\n\n'
-        body += '本地草稿按最新用户修正：路线客户端直连第三方且不建自己的路线后端；Go后端用户表/认证/会话支撑前端登录，不做B端/用户管理；AI 本期独立客户端执行器，后续同协议 Go Agent。登录沿用已确认原型，不再等待已取消的管理原型确认；远端回执与本地草稿分开记录。\n\n'
+        body += '当前任务按最新用户修正：路线客户端直连第三方且不建自己的路线后端；Go后端用户表/认证/会话支撑前端登录，不做B端/用户管理；AI 本期独立客户端执行器，后续同协议 Go Agent。登录沿用已确认原型，不再等待已取消的管理原型确认；发布回执与本地正文分开记录。\n\n'
         body += '## 依赖与所有权\n\n'
         body += f"依赖：{', '.join(dependencies) if dependencies else '无；合同冻结起点'}。内部依赖由主控核对 accepted 的实际证据，不凭 issue 关闭/PR 合并自动解锁。外部 #31/#32/#33 仅复用既有门槛，不代签本轮增量。\n\n"
         body += f"负责职能：`{task['role']}`；尚未派工，不预填人员账号或排期。允许写域：" + ', '.join(f'`{scope}`' for scope in task['write_scope']) + '。\n\n'
@@ -67,7 +67,7 @@ def render():
         github = task['github']
         link = f"[{task['id']} #{github['number']}]({github['url']})" if github else task['id']
         body += f"| {link} | {task['title']} | {', '.join(task['depends_on']) or '无'} |\n"
-    body += '\nGitHub 原生 sub-issues 和 blocked-by 待按本地 DAG 读回核验；当前草稿不证明远端关系完整。全部任务 planned，未虚构负责人/排期。每项正文包含写域、Skill、故障恢复、可运行/未来命令和关闭证据。\n\n'
+    body += '\nGitHub 原生 sub-issues 和 blocked-by 按本地 DAG 读回核验；实际发布结果以 publication.json 的回执为准。全部任务 planned，未虚构负责人/排期。每项正文包含写域、Skill、故障恢复、可运行/未来命令和关闭证据。\n\n'
     body += '## 不变量与完成条件\n\n'
     body += '- [ ] 账号 A/B、legacy、在途 ACK 和 token 生命周期隔离；仅受信持久确认移出原 outbox。\n'
     body += '- [ ] 道路路线/ETA 有来源；外部交接与到站分开，返回正确来源，配送结果继续手动。\n'
