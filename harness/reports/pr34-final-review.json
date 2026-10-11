@@ -1,0 +1,144 @@
+{
+  "schema": 1,
+  "status": "accepted_local_final_review",
+  "PR": 34,
+  "scope": "Complete PR review, Browse trailing arrow, three bounded review repairs; source merge authorized",
+  "candidate": {
+    "source_head": "cae7fca40760e67567c3e29d39b9b295ffa002e5",
+    "source_fingerprint": "9ca3cc8caf2d0a1eb46570153b38205a3bb1f831266e00551f4c0ea07719f69d",
+    "counted_inputs": 261,
+    "all_counted_inputs_match_source_commit": true,
+    "binding": {
+      "path": "harness/runs/pr34-final-review/source-commit-binding.json",
+      "sha256": "ff410070a1ee877e792555a57e8aa3c4e96d948267c6cd58fd073961574581be"
+    }
+  },
+  "coverage": {
+    "path": "harness/runs/pr34-final-review/review-coverage.json",
+    "sha256": "fdbef3a2a485465767415fac41232441027b67ef447f521bed8b086dad36fb9c"
+  },
+  "quality": {
+    "path": "harness/runs/20261011T085246150851Z-quality/attempts/000001/report.json",
+    "sha256": "d646e5f4df5ffc49df5a2433c303b2a8d7395f18b56e116056ba6c2e7bfc5368",
+    "Harness_tests": 162,
+    "Darwin_platform_NA": 1,
+    "Flutter_tests": 188,
+    "stages": 7
+  },
+  "native": {
+    "N4": {
+      "path": "harness/runs/20261011T090458660857Z-native/attempts/000001/report.json",
+      "sha256": "ea98bb45df09920c2ef5c0a12f5ce232721adfadb9463bf6b44c3c8099325a50"
+    },
+    "N7": {
+      "path": "harness/runs/20261011T085359662508Z-native/attempts/000001/report.json",
+      "sha256": "096c2e787ad7890ec2b50a18e3425226d2b1444aec87091c26645a05dbbfc755"
+    },
+    "checks": 10,
+    "processes": 6,
+    "full34_on_current_candidate": false,
+    "physical_OS_pinch": false,
+    "text_input": "driver-emulated; realOS input-area Insets/Save geometry and scale/motion captured",
+    "tiles_ACK": "controlled loopback simulator fixture",
+    "independent_review": {
+      "path": "harness/runs/pr34-final-review/final-native-independent-review.json",
+      "sha256": "e9a6900ed7a2b4f1e66e4c7f2e9d4387f800d6af6c46311054c06a2aa149d3c4"
+    },
+    "independent_review_md": {
+      "path": "harness/runs/pr34-final-review/final-native-independent-review.md",
+      "sha256": "cda335b5b31e6f445b6f7787e3a8d2d75ef5277d25b623eb5ff5766731165821"
+    }
+  },
+  "formal_demo_build": {
+    "path": "harness/runs/20261011T090840235809Z-build/attempts/000001/report.json",
+    "sha256": "1825b41c4db997695dd3619b283b61df9fcba2752f1ecce66f605fd82b3f3e5d",
+    "manifest": {
+      "path": "harness/runs/20261011T090840235809Z-build/attempts/000001/artifact-ios-build/manifest.json",
+      "sha256": "fa566642482aef580e75b652ba7b2a2c57d68ba57a9db2f03a58f0d89604e0ba"
+    },
+    "archive_sha256": "41b2ee1fc3c52b6bebd07ad474eccab72d61c59d892c46aa803614b589da6b7c",
+    "files": 84,
+    "entrypoint": "lib/main.dart",
+    "signed_for_production": false,
+    "independent_review": {
+      "path": "harness/runs/pr34-final-review/formal-artifact-independent.json",
+      "sha256": "39e29a87a0823a9440be8f9c50973735fa5cd9b9de34041e4cd5ccf20f86e7fc"
+    }
+  },
+  "independent_reviews": {
+    "data-review.json": {
+      "path": "harness/runs/pr34-final-review/data-review.json",
+      "sha256": "fb821d2d20e8c8c539e3c119e2aa41c319f5e4ad8ebcbae865573479ff8c49b3"
+    },
+    "ui-review.json": {
+      "path": "harness/runs/pr34-final-review/ui-review.json",
+      "sha256": "6c0cd4cd0d6ea26b6589a6aafc744911b5b75f988739ca9cd7d50870bc59248e"
+    },
+    "harness-review.json": {
+      "path": "harness/runs/pr34-final-review/harness-review.json",
+      "sha256": "2221b84e1c31bb78eb11b7b0da2aaeb9bc0d59d620f57cb7e9c0e95e301c113e"
+    },
+    "final-independent-gate.json": {
+      "path": "harness/runs/pr34-final-review/final-independent-gate.json",
+      "sha256": "236e33ed5e6d7be7466677bc67ac0782f3292f47335733be4d51482fa0e975af"
+    },
+    "final-independent-ui.json": {
+      "path": "harness/runs/pr34-final-review/final-independent-ui.json",
+      "sha256": "813c2bee82f16f2c661b52b638edf487424108865df9c5b894e6ad5bdf5f0293"
+    },
+    "final-quality-independent.json": {
+      "path": "harness/runs/pr34-final-review/final-quality-independent.json",
+      "sha256": "f2e986e5e2e1210ea89243ff7249f5bdb80678a8f8b7b02be42783ef9d76f58b"
+    },
+    "ui-root-delta-review.json": {
+      "path": "harness/runs/pr34-final-review/ui-root-delta-review.json",
+      "sha256": "9dc295164e93ebc7325eb3af2a1259d5e4baff30a740eccbfbb2341260fe7e59"
+    },
+    "ui-assets-review.json": {
+      "path": "harness/runs/pr34-final-review/ui-assets-review.json",
+      "sha256": "09aa42d2e18fdeadaed940995922cf0493854620e383e1258a252e64af6e83e1"
+    }
+  },
+  "findings": [
+    {
+      "id": "UI-01",
+      "priority": "P2",
+      "status": "fixed_independent_accepted"
+    },
+    {
+      "id": "HREV-1",
+      "priority": "P2",
+      "status": "fixed_independent_accepted"
+    },
+    {
+      "id": "HREV-2",
+      "priority": "P2",
+      "status": "fixed_independent_accepted"
+    }
+  ],
+  "red_regression": {
+    "path": "harness/runs/20261011T085040509646Z-test/attempts/000001/report.json",
+    "sha256": "23e22085b5fb165d7d4a1346e92231c73662ba59ab226c76d3792528b5b54ac6"
+  },
+  "environment_failure": {
+    "path": "harness/runs/pr34-final-review/environment-failure.json",
+    "sha256": "55e47b9f919c0be9af1fbd0b0bb5dc5a45126fc04b3010e8a305d12cfc6ce9d1"
+  },
+  "production_eligible": false,
+  "production_gaps": [
+    "E09#31 physicalG3",
+    "X05#32 enforcedrequiredchecks/release",
+    "E12#33 realservice/resources/signing/publication/delivery"
+  ],
+  "merge_decision": "Local source/G1/targeted-native/formal-build review accepted; merge requires live exact-head Linux CI; actual GitHub merge receipt is separate",
+  "publication_authorized": false,
+  "evidence_archive": {
+    "path": "harness/reports/pr34-final-evidence.tar.gz",
+    "sha256": "0ff1ab897702b6dd7eb7d0ed144673e4814b301cdd3192b4541b6a157c51ba06",
+    "bytes": 15204111,
+    "members": 494,
+    "payload_files": 493,
+    "all_payload_hashes_verified": true,
+    "binary_artifacts_in_archive": false
+  }
+}

@@ -1,7 +1,7 @@
 {
   "mode": "execute",
   "contract_revision": 5,
-  "source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+  "source_head": "cae7fca40760e67567c3e29d39b9b295ffa002e5",
   "coordinator": "/root",
   "scope": "Implement full prototype/architecture Flutter demo and local-client with independently verified Harness evidence; production no-go remains",
   "tasks": [
@@ -2123,7 +2123,7 @@
     "source_writers": [],
     "sole_sdk_executor": "/root"
   },
-  "current_source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+  "current_source_fingerprint": "9ca3cc8caf2d0a1eb46570153b38205a3bb1f831266e00551f4c0ea07719f69d",
   "runtime_execution": {
     "executor": "/root",
     "active_controller": null,
@@ -2423,5 +2423,80 @@
     "handoff_report": "harness/reports/prototype-feedback-2026-10-11.json",
     "full34_on_current_candidate": false,
     "production_eligible": false
+  },
+  "final_pr_review": {
+    "status": "accepted_local_final_review",
+    "PR": 34,
+    "merge_authorized": true,
+    "production_publish_authorized": false,
+    "base_sha": "3e0300848fcded055abcc47448c06a165d0472d6",
+    "previous_head": "3233a2e0f99bde286fe1faa710e9f3955d1da628",
+    "started_at": "2026-10-11T08:41:28.893613+00:00",
+    "request": "Add trailing Browse stops arrow; review entire PR; merge into main if clean",
+    "owners": {
+      "arrow_change": "/root",
+      "UI_model_and_tests": "/root/pr34_ui_review",
+      "data_sync_viewmodel_and_tests": "/root/pr34_data_review",
+      "Harness_native_skills": "/root/pr34_harness_review",
+      "bootstrap_dependencies_docs_assets_and_integration": "/root",
+      "map_toolbar_fix": "/root/pr34_ui_review",
+      "compact_fit_fix": "/root",
+      "gate_fix": "/root/pr34_harness_review",
+      "fix_independent_acceptance": "/root/pr34_data_review"
+    },
+    "source_writers": [
+      "/root",
+      "/root/pr34_ui_review",
+      "/root/pr34_harness_review"
+    ],
+    "SDK_executor": "/root",
+    "review_scope": "Entire156-file PR against origin/main, not arrow-only",
+    "evidence_root": "harness/runs/pr34-final-review",
+    "red_regression": {
+      "report": "harness/runs/20261011T085040509646Z-test/attempts/000001/report.json",
+      "source_fingerprint": "79711386e2d9b3b9e7ec6e3266b2aa6883c017b53995d5c21c9b05f314278ed7",
+      "result": "three expected failures: clipped Sync on200/240px maps and matching marker clipped on844x390 formal landscape"
+    },
+    "quality": {
+      "path": "harness/runs/20261011T085246150851Z-quality/attempts/000001/report.json",
+      "sha256": "d646e5f4df5ffc49df5a2433c303b2a8d7395f18b56e116056ba6c2e7bfc5368"
+    },
+    "candidate": {
+      "source_head": "cae7fca40760e67567c3e29d39b9b295ffa002e5",
+      "source_fingerprint": "9ca3cc8caf2d0a1eb46570153b38205a3bb1f831266e00551f4c0ea07719f69d",
+      "counted_inputs": 261,
+      "all_counted_inputs_match_source_commit": true,
+      "binding": {
+        "path": "harness/runs/pr34-final-review/source-commit-binding.json",
+        "sha256": "ff410070a1ee877e792555a57e8aa3c4e96d948267c6cd58fd073961574581be"
+      }
+    },
+    "source_writers_frozen": true,
+    "findings": [
+      {
+        "id": "UI-01",
+        "priority": "P2",
+        "status": "fixed_independent_accepted"
+      },
+      {
+        "id": "HREV-1",
+        "priority": "P2",
+        "status": "fixed_independent_accepted"
+      },
+      {
+        "id": "HREV-2",
+        "priority": "P2",
+        "status": "fixed_independent_accepted"
+      }
+    ],
+    "independent_native_review": {
+      "path": "harness/runs/pr34-final-review/final-native-independent-review.json",
+      "sha256": "e9a6900ed7a2b4f1e66e4c7f2e9d4387f800d6af6c46311054c06a2aa149d3c4"
+    },
+    "formal_artifact_review": {
+      "path": "harness/runs/pr34-final-review/formal-artifact-independent.json",
+      "sha256": "39e29a87a0823a9440be8f9c50973735fa5cd9b9de34041e4cd5ccf20f86e7fc"
+    },
+    "handoff_report": "harness/reports/pr34-final-review.json"
   }
 }
