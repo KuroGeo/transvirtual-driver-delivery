@@ -523,13 +523,13 @@ Future<Map<String, dynamic>> acceptanceSummaryKey(
       }
       if ((target['top'] as num) < (actualViewport['top'] as num)) {
         drag = ((actualViewport['top'] as num) - (target['top'] as num) + 8)
-            .clamp(8, 160)
+            .clamp(48, 160)
             .toDouble();
       } else if ((target['bottom'] as num) >
           (actualViewport['bottom'] as num)) {
         drag =
             -((target['bottom'] as num) - (actualViewport['bottom'] as num) + 8)
-                .clamp(8, 160)
+                .clamp(48, 160)
                 .toDouble();
       }
     }
