@@ -1,42 +1,130 @@
 {
   "schema_version": 2,
   "audit_date": "2026-10-11",
-  "scope": "Full current local Flutter/Harness handoff accepted;16local Issues closed/3external open;production no-go",
+  "scope": "Targeted prototype UI feedback accepted and formal Demo installed; historical full local baseline retained; production no-go",
   "production_eligible": false,
   "production_verdict": "no-go: E09 physical G3, X05 enforced remote checks, E12 real service/resources/signing/approval/delivery",
   "enforcement_deployed": false,
   "current_validation": {
-    "status": "accepted_full_local_handoff",
+    "status": "accepted_targeted_ui_repair_and_installed_demo",
+    "scope": "Four user simulator/prototype feedback items; current G1 and targeted N4/N7 only",
     "candidate": {
-      "source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a"
+      "source_head": "a6d473d2b9b91126d4d689dddfc4b9b8ee19e48f",
+      "source_fingerprint": "fcc573639cd8ba9fe4cf4a9951636cc5f8fbd1e94c8bc248f6906f2f27d9fff5",
+      "counted_inputs": 261,
+      "all_counted_inputs_match_source_commit": true
     },
-    "source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
-    "counted_inputs": 260,
-    "quality_report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
-    "harness_tests": 161,
-    "Mac_platform_NA": 1,
-    "Flutter_tests": 177,
-    "Linux_harness_tests": 161,
-    "Linux_skipped": 0,
-    "native_matrix_jobs": 12,
-    "native_contract_checks": 34,
-    "native_unique_pids": 36,
-    "non_author_native_acceptance": "harness/runs/implementation/E08-independent-381730f-full34-reviewer-metadata.json",
-    "non_author_aggregate_acceptance": "harness/runs/implementation/E08-independent-381730f-full-aggregate-verdict.json",
-    "local_gate_010": "harness/runs/implementation/E08-independent-381730f-actual-localgate-010.json",
-    "production_refusal": "harness/runs/implementation/E08-independent-381730f-actual-production-refusal.json",
-    "formal_build_modes": [
-      "demo",
-      "local-client"
-    ],
-    "formal_main_startup_scope": "one OS launch per mode; captured mode label/loading/zero counts, not initialized map/business acceptance",
-    "formal_artifact_review": "harness/runs/implementation/E10-381730-artifact-observation/four-formal-jobs-observation.json",
-    "source_CI_run": 38102904327,
+    "requirements": {
+      "single_column_tools": "Five vertical 44px controls with divider; fixed at normal and OS-scaled sizes",
+      "pinch": "Production interaction flags already supported pinch; actual paired Flutter touch input reaches map, zoom15->16.459431618637296->15, no camera-controller substitution. Physical OS input unverified; Simulator uses Option-drag.",
+      "explicit_status_tab": "Close selected detail to map and fit current matches plus fixed reference (maxZoom14); empty locates reference14; passive model changes do not refit",
+      "browse": "Cream full-width bottom sheet, grip, count/Nearest first header, continuous rows, left status circle/name/address/distance/time/status/arrow; additional query controls folded by default; large OS font scrolls header"
+    },
+    "quality": {
+      "path": "harness/runs/20261011T075012562118Z-quality/attempts/000001/report.json",
+      "sha256": "f275f8975402e4b4876e4cb3a02a0b122e9718ba5e1be4f732ef43706eaf251c",
+      "stages": 7,
+      "Harness_tests": 161,
+      "Darwin_platform_NA": 1,
+      "Flutter_tests": 185,
+      "format_analyze": "passed"
+    },
+    "native": {
+      "N4": {
+        "path": "harness/runs/20261011T075729932356Z-native/attempts/000001/report.json",
+        "sha256": "31f19b0c9cdc71dd4ba682d47e6fb29b47618eea730ff07a7347143fd8008fcf"
+      },
+      "N7": {
+        "path": "harness/runs/20261011T075134499170Z-native/attempts/000001/report.json",
+        "sha256": "6edde2197dd89bbd1906422e21ff3a4a0e85bb81bbfdece18903a9882608e8b7"
+      },
+      "checks": 10,
+      "processes": 6,
+      "geometry": {
+        "width": 402,
+        "height": 874,
+        "N7_text_scale_at16": 3.1176470588235294,
+        "iOS_reduceMotion": true
+      },
+      "independent_review": {
+        "path": "harness/runs/repair-20261011-prototype/final-native-independent-review.json",
+        "sha256": "2be2e2b9e0c3af3a697598f22c8148f54116f3d789dcc5acd6578c06d320cc45"
+      },
+      "review_md": {
+        "path": "harness/runs/repair-20261011-prototype/final-native-independent-review.md",
+        "sha256": "92daa5011a87d25d43014c0f31e40536da6bb04d8ef2732362b5b477b2da5874"
+      },
+      "full34_on_current_candidate": false,
+      "physical_OS_pinch": false,
+      "text_input": "driver-emulated; OS keyboard Insets/Save geometry captured",
+      "tiles_ACK": "controlled loopback simulator fixture"
+    },
+    "formal_demo_build": {
+      "path": "harness/runs/20261011T080102059864Z-build/attempts/000001/report.json",
+      "sha256": "73477a6ea33a676680279808502d4b7b9a980204d0bfab8119bed44db8375884",
+      "artifact_manifest": {
+        "path": "harness/runs/20261011T080102059864Z-build/attempts/000001/artifact-ios-build/manifest.json",
+        "sha256": "007e3e549cc5eba8862972be654857df51683ef9be6e0e887b8edf243b7ea5d9"
+      },
+      "archive_sha256": "e94671cebc94ef02ab1feea15c775f90066c8a3550a965d627d0a305e8bbd2b2",
+      "files_verified": 84,
+      "entrypoint": "lib/main.dart",
+      "signed_for_production": false
+    },
+    "preview": {
+      "path": "harness/runs/repair-20261011-prototype/preview/preview.json",
+      "sha256": "14b68f4d2401d84296b847fed91991baa557d2af03bcc83cfb0c719979168308",
+      "udid": "D2B958C6-486D-4C17-A0CE-A8135717F3A6",
+      "pid": 25842,
+      "business_data_equal": true,
+      "stops": 30,
+      "outbox": 0,
+      "screenshot": {
+        "path": "harness/runs/repair-20261011-prototype/preview/initialized-preview.png",
+        "sha256": "d3b3d92dc0b32a2566e25b447831420bae8cd16727659831e4f5b618680071f1"
+      },
+      "public_tiles_initialized": true
+    },
+    "source_manifest": {
+      "path": "harness/runs/repair-20261011-prototype/source-manifest.json",
+      "sha256": "fe8531222f8bbbefe5f9bdc16abbf904b874fbd2471897ced17245c44d6d1033"
+    },
+    "artifact_preview_review": {
+      "path": "harness/runs/repair-20261011-prototype/final-artifact-preview-independent-review.json",
+      "sha256": "aac3840e16c95c6b0d6d4e9a384539082eb15fb8f30ee0ff4af11ce3c4e56472"
+    },
+    "history": {
+      "previous_full_local_candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "prior_N4_and_failed_N7_candidate": "4213e29d98c9b6d2af5b9155fc70f33cf6a5770f46befa032e9f33df7a61fdaa",
+      "failed_N7": {
+        "path": "harness/runs/20261011T074459493063Z-native/attempts/000001/report.json",
+        "sha256": "fa5f3e4d4e3381be6126331cd708eee556b5eb1761c8e1398ee6ac0c51d0c60b"
+      },
+      "repair": "Driver chose +160 at list offset0 when OS-scaled query was below viewport; now selects real drag direction from observed search/scroll/header bounds, preserving12-drag15-second budget."
+    },
+    "evidence_archive": {
+      "path": "harness/reports/prototype-feedback-2026-10-11.tar.gz",
+      "sha256": "4ba975f2dc929a9569209bbcd5a2adca1f3e0e53477f7c463faac0905fc8a251",
+      "bytes": 15901201,
+      "members": 383,
+      "payload_files": 382,
+      "verified_payload_sha256": true,
+      "binary_artifacts_in_archive": false
+    },
     "production_eligible": false,
-    "archive_independent_review": "harness/runs/implementation/E10-381730-archive-nonauthor-review/archive-mechanical-observation.json",
-    "archive_index": "harness/reports/iteration-evidence-index.json",
-    "root_scope_acceptance": "harness/runs/implementation/E10-381730-local-handoff-root-decision/report.json",
-    "final_metadata_identity_record": "harness/runs/implementation/final-metadata-381730-independent-actual/review.json"
+    "production_gaps": [
+      "E09#31 physical G3",
+      "X05#32 actual required checks/release enforcement",
+      "E12#33 real service/resources/signing/publication authorization"
+    ],
+    "PR": 34,
+    "issues": [
+      19,
+      22
+    ],
+    "CI": "New metadata commit CI reported separately after push; past success is historical.",
+    "report": "harness/reports/prototype-feedback-2026-10-11.json",
+    "full_native_matrix_on_current_candidate": false
   },
   "historical_rehearsal": {
     "candidate": {
@@ -528,5 +616,38 @@
       "terminal_proof": "raw stages/reaped/groups/lease/clones/actual kernel resume passed",
       "independent_review": "N2 historical145d actual7checks54assertions accepted by /root/e08_acceptance_review"
     }
+  },
+  "previous_full_local_handoff": {
+    "status": "accepted_full_local_handoff",
+    "candidate": {
+      "source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a"
+    },
+    "source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+    "counted_inputs": 260,
+    "quality_report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+    "harness_tests": 161,
+    "Mac_platform_NA": 1,
+    "Flutter_tests": 177,
+    "Linux_harness_tests": 161,
+    "Linux_skipped": 0,
+    "native_matrix_jobs": 12,
+    "native_contract_checks": 34,
+    "native_unique_pids": 36,
+    "non_author_native_acceptance": "harness/runs/implementation/E08-independent-381730f-full34-reviewer-metadata.json",
+    "non_author_aggregate_acceptance": "harness/runs/implementation/E08-independent-381730f-full-aggregate-verdict.json",
+    "local_gate_010": "harness/runs/implementation/E08-independent-381730f-actual-localgate-010.json",
+    "production_refusal": "harness/runs/implementation/E08-independent-381730f-actual-production-refusal.json",
+    "formal_build_modes": [
+      "demo",
+      "local-client"
+    ],
+    "formal_main_startup_scope": "one OS launch per mode; captured mode label/loading/zero counts, not initialized map/business acceptance",
+    "formal_artifact_review": "harness/runs/implementation/E10-381730-artifact-observation/four-formal-jobs-observation.json",
+    "source_CI_run": 38102904327,
+    "production_eligible": false,
+    "archive_independent_review": "harness/runs/implementation/E10-381730-archive-nonauthor-review/archive-mechanical-observation.json",
+    "archive_index": "harness/reports/iteration-evidence-index.json",
+    "root_scope_acceptance": "harness/runs/implementation/E10-381730-local-handoff-root-decision/report.json",
+    "final_metadata_identity_record": "harness/runs/implementation/final-metadata-381730-independent-actual/review.json"
   }
 }

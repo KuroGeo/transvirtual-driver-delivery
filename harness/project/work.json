@@ -2114,7 +2114,7 @@
     "native_rerun": false,
     "production_eligible": false
   },
-  "updated_at": "2026-10-11T02:59:18.750923+00:00",
+  "updated_at": "2026-10-11T07:28:48.610653+00:00",
   "native_protocol_revision": 6,
   "source_writers": [],
   "active_execution": {
@@ -2295,5 +2295,133 @@
         }
       ]
     }
+  },
+  "active_repair": {
+    "id": "prototype-feedback-20261011",
+    "base_sha": "68dcbabec7460e0ce2724b176b24213641158b8b",
+    "previous_accepted_candidate": {
+      "source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+      "source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "scope": "G0/current G1/full local G2/local G4/actual gates/formal builds/narrow startup/bounded local archive;production no-go",
+      "counted_source_inputs": 260
+    },
+    "status": "accepted",
+    "reason": "User simulator review: single-column tools, pinch zoom, explicit status camera fit, Browse list fidelity",
+    "started_at": "2026-10-11T06:59:02.412740+00:00",
+    "tasks": [
+      {
+        "id": "map-interactions",
+        "owner": "/root",
+        "status": "accepted_targeted_scope",
+        "requirements": [
+          "R07",
+          "R08",
+          "R13",
+          "R14"
+        ],
+        "write_scope": [
+          "app/lib/ui/delivery/map/delivery_map_workspace.dart",
+          "app/lib/ui/delivery_screen.dart",
+          "app/test/map/delivery_map_workspace_test.dart",
+          "harness/project/contracts.md"
+        ],
+        "source_frozen": true
+      },
+      {
+        "id": "browse-fidelity",
+        "owner": "/root/query_development",
+        "status": "accepted_targeted_scope",
+        "requirements": [
+          "R08",
+          "R10",
+          "R14"
+        ],
+        "write_scope": [
+          "app/lib/ui/delivery/list",
+          "app/test/list/stop_list_workspace_test.dart"
+        ],
+        "result": "harness/runs/repair-20261011-prototype/browse-development.md",
+        "source_frozen": true
+      },
+      {
+        "id": "prototype-contract-review",
+        "owner": "/root/requirements_review",
+        "status": "accepted_targeted_scope",
+        "write_scope": [
+          "harness/runs/repair-20261011-prototype/requirements-review.md"
+        ],
+        "source_frozen": true
+      },
+      {
+        "id": "independent-regressions",
+        "owner": "/root/e08_acceptance_review",
+        "status": "accepted_targeted_scope",
+        "write_scope": [
+          "app/test/review/prototype_map_interactions_test.dart"
+        ],
+        "result": "harness/runs/repair-20261011-prototype/independent-test-review.md",
+        "source_frozen": true
+      }
+    ],
+    "native_preview_device": "D2B958C6-486D-4C17-A0CE-A8135717F3A6",
+    "sdk_execution": "Only root after all source authors freeze; preserve old evidence and preview business data",
+    "source_frozen": true,
+    "candidate": {
+      "source_head": "a6d473d2b9b91126d4d689dddfc4b9b8ee19e48f",
+      "source_fingerprint": "fcc573639cd8ba9fe4cf4a9951636cc5f8fbd1e94c8bc248f6906f2f27d9fff5",
+      "counted_inputs": 261,
+      "all_counted_inputs_match_source_commit": true
+    },
+    "issue_numbers": [
+      22,
+      19
+    ],
+    "focused_host_report": "harness/runs/20261011T072605267388Z-test/attempts/000001/report.json",
+    "test_fixture_repair": "Approved SVGs must complete before first RiskWorkbenchHost mount; original 5s deadline and failure assertions unchanged.",
+    "fixture_repair_focused_report": "harness/runs/20261011T073402606757Z-test/attempts/000001/report.json",
+    "driver_lazy_query_repair": "Observe actual IconButton.isSelected from readonly bridge; no toggling from offscreen search absence; preserve bounded real scroll.",
+    "quality_report": "harness/runs/20261011T075012562118Z-quality/attempts/000001/report.json",
+    "quality_status": "passed",
+    "raw_native_failures": [
+      "harness/runs/20261011T074459493063Z-native/attempts/000001/report.json"
+    ],
+    "driver_direction_repair": "Use actual search / scroll / heading bounds for +/-160 real drag; original 12/15 budget and centerHit preserved.",
+    "native_reports": [
+      "harness/runs/20261011T075729932356Z-native/attempts/000001/report.json",
+      "harness/runs/20261011T075134499170Z-native/attempts/000001/report.json"
+    ],
+    "native_review": {
+      "path": "harness/runs/repair-20261011-prototype/final-native-independent-review.json",
+      "sha256": "2be2e2b9e0c3af3a697598f22c8148f54116f3d789dcc5acd6578c06d320cc45"
+    },
+    "formal_build": {
+      "path": "harness/runs/20261011T080102059864Z-build/attempts/000001/report.json",
+      "sha256": "73477a6ea33a676680279808502d4b7b9a980204d0bfab8119bed44db8375884",
+      "artifact_manifest": {
+        "path": "harness/runs/20261011T080102059864Z-build/attempts/000001/artifact-ios-build/manifest.json",
+        "sha256": "007e3e549cc5eba8862972be654857df51683ef9be6e0e887b8edf243b7ea5d9"
+      },
+      "archive_sha256": "e94671cebc94ef02ab1feea15c775f90066c8a3550a965d627d0a305e8bbd2b2",
+      "files_verified": 84,
+      "entrypoint": "lib/main.dart",
+      "signed_for_production": false
+    },
+    "installed_preview": {
+      "path": "harness/runs/repair-20261011-prototype/preview/preview.json",
+      "sha256": "14b68f4d2401d84296b847fed91991baa557d2af03bcc83cfb0c719979168308",
+      "udid": "D2B958C6-486D-4C17-A0CE-A8135717F3A6",
+      "pid": 25842,
+      "business_data_equal": true,
+      "stops": 30,
+      "outbox": 0,
+      "screenshot": {
+        "path": "harness/runs/repair-20261011-prototype/preview/initialized-preview.png",
+        "sha256": "d3b3d92dc0b32a2566e25b447831420bae8cd16727659831e4f5b618680071f1"
+      },
+      "public_tiles_initialized": true
+    },
+    "handoff_report": "harness/reports/prototype-feedback-2026-10-11.json",
+    "full34_on_current_candidate": false,
+    "production_eligible": false
   }
 }
