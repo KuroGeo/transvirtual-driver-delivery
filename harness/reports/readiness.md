@@ -30,3 +30,9 @@
 私有 GitHub 仓库保护设置 API 实际返回 403。历史源码 HEAD `0693165` 的 Linux CI 38102904327 已真实通过并独立核验，但 required checks 和发布强制路径仍未部署。当前生产 gate 的实际首个短路检查因 `enforcement_deployed=false` 返回 exit1；不宣称这一次逐项执行了后续生产检查。未修改仓库隐私、套餐或保护设置。生产还缺约定真机预算、真实服务、适用资源许可、签名、具体发布授权与交付回执。
 
 [正式门禁回归](../tests/test_gate.py) 保留：缺失/失败/跳过/旧候选/hash错配/网页冒充原生/debug冒充真机/fake冒充connected/未签产物/授权与交付错配均拒绝。不能用主控评分、合成正向 fixture 或改交付名字覆盖实际缺口。
+
+## 最大系统字号修复 LTX-01
+
+当前 `256de9f` / `7b077f55197263c571fb33fce1b561f7ccd5cdc0d2a7252aab34c15a9eb184bf` 的 G1 与精确源码 Linux CI 通过；iPhone17Pro 最大字号的画面、4 个唯一 N7 条目及3进程冷 SQL/受控 ACK 已独立接受。当前正式 main Demo 已保留30条配送/0 outbox安装到 Preview，业务行未重置。
+
+两次 iPhone16 最大字号复验因 ENOSPC 失败，保留原日志及 log-reader 清理错误；普通字号原生与真实两尺寸聚合尚未完成。PR37 保持 Draft，Issue36 开放。详见 [当前修复交付记录](large-text-repair.md)；本轮不代签完整34项、真机或生产门槛，生产 no-go 原因继续适用。

@@ -1,0 +1,316 @@
+{
+  "schema": 1,
+  "generated_at": "2026-10-11T12:07:12.696158+00:00",
+  "requirement": "LTX-01",
+  "issue": 36,
+  "PR": 37,
+  "status": "implemented_installed_partial_acceptance_blocked_disk",
+  "coordinator": "/root",
+  "scope": "System maximum text across map actions, full SafeArea summary/list/detail, query and source/focus returns; preserved-data formal Demo simulator update",
+  "candidate": {
+    "source_head": "256de9fd360040a52ed3e7ec5948dbbaf4529e90",
+    "source_fingerprint": "7b077f55197263c571fb33fce1b561f7ccd5cdc0d2a7252aab34c15a9eb184bf",
+    "counted_inputs": 262,
+    "source_manifest": {
+      "path": "harness/runs/large-text-repair/source-manifest-global-map-v7.json",
+      "sha256": "fc39b2939f314cf4aee4bbed2a0335fe3a10a9d11ea5c130195999b3d0fe236d",
+      "bytes": 41212
+    },
+    "source_commit_binding": {
+      "path": "harness/runs/large-text-repair/source-commit-binding-global-v7.json",
+      "sha256": "302aafb60ba8042d0176781ba550843595e56ec42f7cdb7eb709606fad3a6b36",
+      "bytes": 394
+    },
+    "live_fingerprint_rechecked": true
+  },
+  "changes": [
+    "Preserve actual system business text scaling; decorative brand wordmark uses fixed typography.",
+    "At large text, summary/list/detail use full SafeArea with scrollable business content and feedback; hidden views excluded from focus.",
+    "Full remaining count, explicit 44px Browse stops with arrow, and full summary nearest/reference/distance.",
+    "Separate scrollable query tools; actual typed return preserves list scroll/focus and map query/camera.",
+    "Summary requests focus; real Tab stays inside task, Escape and platform back return to map.",
+    "Native real-drag exposure has minimum48px within original12-drag/15-second budget; no controller substitution.",
+    "Observation journal fixed16MiB; action journal retains8MiB and all strict per-row identities. Exact limits and late-invalid rows have bounded realistic JSON regression tests."
+  ],
+  "quality": {
+    "status": "passed_G1",
+    "runner": {
+      "path": "harness/runs/20261011T113211673144Z-quality/attempts/000001/report.json",
+      "sha256": "18ca68e157610fd665fe546a055eb3ad95bb586ceaa4b6d3939cdcccc2c6e1e7",
+      "bytes": 12197
+    },
+    "stages": 7,
+    "Flutter_tests_passed": 196,
+    "Harness_tests_run": 166,
+    "Darwin_passed": 165,
+    "Darwin_platform_NA": 1,
+    "format_analyze": "passed",
+    "independent_review": {
+      "path": "harness/runs/large-text-repair/global-map-quality-v7-independent-accepted.json",
+      "sha256": "2c7e10445b01c72bafadd5e0bf1826119960e8676ecd410f214c185c07407b9c",
+      "bytes": 11155
+    }
+  },
+  "CI": {
+    "source_head": "256de9fd360040a52ed3e7ec5948dbbaf4529e90",
+    "run": 38135929033,
+    "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38135929033",
+    "status": "success_exact_source_head",
+    "Harness_tests_run": 166,
+    "Harness_skipped": 0,
+    "Harness_NA": 0,
+    "Flutter_tests_passed": 196,
+    "independent_review": {
+      "path": "harness/runs/large-text-repair/ci-256de9fd-38135929033/ci-independent-review.json",
+      "sha256": "adc0092db890dd46b23ce334cb16f71ee21b79bf0f22db5fc0454ed9846fbea0",
+      "bytes": 21639
+    },
+    "metadata_head_CI": "Not claimed by this source report; check actual latest PR head separately."
+  },
+  "native": {
+    "status": "partial_scope_accepted_single_maximum_viewport",
+    "runner": {
+      "path": "harness/runs/20261011T113319446983Z-native/attempts/000001/report.json",
+      "sha256": "99e7f6876962e37397108ff46afee69233771fbdf7b7b21d5d5d8f61383cac94",
+      "bytes": 11813
+    },
+    "raw": {
+      "path": "harness/runs/20261011T113319446983Z-native/attempts/000001/native/result.json",
+      "sha256": "5e8765294e238b9d3163792f15999ec3b44cd5722948a6226f47789c9cce4ed5",
+      "bytes": 3168850
+    },
+    "actual_viewport": [
+      402,
+      874
+    ],
+    "OS_content_size": "accessibility-extra-extra-extra-large",
+    "reduce_motion": true,
+    "actual_process_ids": [
+      69668,
+      70311,
+      70389
+    ],
+    "raw_check_count": 5,
+    "mandatory_assertions": 681,
+    "independently_mechanically_accepted_unique_ids": [
+      "N7.os-keyboard",
+      "N7.text-scale",
+      "N7.reduced-motion-semantics",
+      "N7.platform-back"
+    ],
+    "two_sizes_safearea": "Original Validator.native_check refuses one actual viewport. Two-size gate NOT passed.",
+    "true_OS_PNGs": 28,
+    "named_captures": 20,
+    "cold_SQL_outbox": [
+      2,
+      0,
+      0
+    ],
+    "HTTP_requests_per_phase": [
+      0,
+      2,
+      2
+    ],
+    "real_fixture_ACK_and_persisted_ack_committed": true,
+    "third_process_no_resend": true,
+    "data_review": {
+      "path": "harness/runs/large-text-repair/native-v7-max17-independent.json",
+      "sha256": "71a661e6d424e2c52a42e36647295816688ee71133c908ee9d30856b75ddac74",
+      "bytes": 151508
+    },
+    "visual_review": {
+      "path": "harness/runs/large-text-repair/global-map-v7-max17-visual-accepted.json",
+      "sha256": "7e32e0c02d4fc18f84c8bf3e6d1611f2c3d7eadcbeb303045c8badde3104f12d",
+      "bytes": 95716
+    },
+    "text_input": "Driver-emulated text; actual OS keyboard inset/Save geometry. Captured QuickPath first-use surface is not physical key typing.",
+    "tiles_ACK": "Controlled loopback simulator fixtures.",
+    "full34_on_current_candidate": false,
+    "normal_font_native_on_current_candidate": "not_run"
+  },
+  "remaining_native_acceptance": {
+    "status": "blocked_disk",
+    "max16": "Two fresh same-source runs failed ENOSPC; UI acceptance inconclusive.",
+    "ordinary_font": "Fresh current-candidate native N7 not run. Host ordinary-font regressions are in G1.",
+    "two_viewport_aggregate": "not_run; cannot substitute historical differently-fingerprinted runs.",
+    "failures": [
+      {
+        "runner": {
+          "path": "harness/runs/20261011T114038212204Z-native/attempts/000001/report.json",
+          "sha256": "2628bb2d85d5921e652faf955113ff95c1f0a678742cb52fc44eef6f70db8d55",
+          "bytes": 11791
+        },
+        "raw": {
+          "path": "harness/runs/20261011T114038212204Z-native/attempts/000001/native/result.json",
+          "sha256": "2ae4a532b3c3936307052865f5f487e33a957cc494bde67eb26ada52a3602c71",
+          "bytes": 568869
+        },
+        "status": "failed_ENOSPC_inconclusive_UI",
+        "error": "[Errno 28] No space left on device: '/Users/yeyufeng/.codex/worktrees/5bde/transvirtual-driver-delivery/harness/runs/20261011T114038212204Z-native/attempts/000001/native/result.tmp'",
+        "original_log_reader_cleanup_error": "[Errno 28] No space left on device: '/Users/yeyufeng/.codex/worktrees/5bde/transvirtual-driver-delivery/harness/runs/20261011T114038212204Z-native/attempts/000001/native/result.tmp'",
+        "phases": [],
+        "device_cleaned": true,
+        "isolation_cleaned": true,
+        "lease_released": true,
+        "promoted_to_pass": false
+      },
+      {
+        "runner": {
+          "path": "harness/runs/20261011T115158969693Z-native/attempts/000001/report.json",
+          "sha256": "6b668bcd565e5afb32f4be3327519e2b617696c1eb9005025c3f696bfd36e727",
+          "bytes": 11791
+        },
+        "raw": {
+          "path": "harness/runs/20261011T115158969693Z-native/attempts/000001/native/result.json",
+          "sha256": "9e1cf33533439d18c5844aac11f38e31fdcef2465b6be7ff072538e604062f2c",
+          "bytes": 1480838
+        },
+        "status": "failed_ENOSPC_inconclusive_UI",
+        "error": "[Errno 28] No space left on device: '/Users/yeyufeng/.codex/worktrees/5bde/transvirtual-driver-delivery/harness/runs/20261011T115158969693Z-native/attempts/000001/native/result.tmp'",
+        "original_log_reader_cleanup_error": "[Errno 28] No space left on device",
+        "phases": [],
+        "device_cleaned": true,
+        "isolation_cleaned": true,
+        "lease_released": true,
+        "promoted_to_pass": false
+      }
+    ],
+    "restart": "Free approximately5GiB total, then fresh max16 and normal17 runs with unchanged source; original ENOSPC/log-reader failures remain immutable. Resume not promoted past unknown cleanup.",
+    "cleanup_boundary": "Only task-owned verified duplicate expanded artifacts and completed isolated Xcode intermediate cache reclaimed. User devices and original raw archives retained.",
+    "user_owned_device_deletion": "Not authorized; explicit question pending. Preview protected."
+  },
+  "formal_demo": {
+    "status": "built_installed_and_initialized",
+    "runner": {
+      "path": "harness/runs/20261011T113713063320Z-build/attempts/000001/report.json",
+      "sha256": "9a0306fd07f40821acea62663cf93223bcd43336a3aee027ecddfd10b162bd11",
+      "bytes": 7760
+    },
+    "manifest": {
+      "path": "harness/runs/20261011T113713063320Z-build/attempts/000001/artifact-ios-build/manifest.json",
+      "sha256": "5c27bc1e38f6609abae954d42fd0651a171371c7f319c8581b5df109e822ae93",
+      "bytes": 16653
+    },
+    "archive_sha256": "68c066a6d3795078a0ae6bc2ca9d89a5621a9227261ac06e12427f4d36c4e74a",
+    "verified_files": 84,
+    "entrypoint": "lib/main.dart",
+    "configuration": "demo",
+    "build_mode": "debug",
+    "signed_for_production": false,
+    "private_driver_fixture_override_included": false,
+    "artifact_review": {
+      "path": "harness/runs/large-text-repair/formal-v7-113713/formal-build-independent.json",
+      "sha256": "bb09b8ac0b006487e845b3e5ca66aa35452306798063eaa82b837b8b38a40b6d",
+      "bytes": 40328
+    }
+  },
+  "preview": {
+    "receipt": {
+      "path": "harness/runs/preview/20261011T113855Z-large-text/preview.json",
+      "sha256": "b8a0d522b4b0a43aee4f7fd192774280887ade272ceb9ad13043a3c95dc510ab",
+      "bytes": 1569
+    },
+    "verification": {
+      "path": "harness/runs/preview/20261011T113855Z-large-text/formal-preview-verification.json",
+      "sha256": "da5b6b770d48fe5d9d4271cecf9c35c07f6f40d0e1ba4cb8985eb14f2d95b41a",
+      "bytes": 750
+    },
+    "review": {
+      "path": "harness/runs/preview/20261011T113855Z-large-text/final-preview-independent.json",
+      "sha256": "b05e377b74f3a7dfde87f3417efd4b3d971cbc6aca110b07be2dfb41d750e3d7",
+      "bytes": 16240
+    },
+    "device": "Ocean Delivery Preview",
+    "device_udid": "D2B958C6-486D-4C17-A0CE-A8135717F3A6",
+    "PID_at_install_and_capture": 71667,
+    "installed_files_equal_formal_artifact": 84,
+    "business_stops": 30,
+    "business_outbox": 0,
+    "all_business_rows_unchanged_before_launch_and_after_launch": true,
+    "user_business_row_snapshots_published": false,
+    "foreground_changed": false,
+    "OS_content_size": "accessibility-extra-extra-extra-large",
+    "system_map_frame": {
+      "path": "harness/runs/preview/20261011T113855Z-large-text/formal-maximum-text-map.png",
+      "sha256": "11734aa032027bbeb61972bdece1ff585f6dbaf01d055b63ccbb102762f2fcb5",
+      "bytes": 1458948
+    },
+    "public_tiles_rendered": true,
+    "frame_scope": "Full Browse arrow and23 remaining visible; header chips partly exposed in this single bounded-scroll frame. This formal map frame does not self-accept all business flows."
+  },
+  "independent_reviews": {
+    "G1": {
+      "path": "harness/runs/large-text-repair/global-map-quality-v7-independent-accepted.json",
+      "sha256": "2c7e10445b01c72bafadd5e0bf1826119960e8676ecd410f214c185c07407b9c",
+      "bytes": 11155
+    },
+    "collector_source": {
+      "path": "harness/runs/large-text-repair/native-capacity-v7-independent.json",
+      "sha256": "d42a3c5af5acc51e85f90e14e29228af98d7cb50f3dca4539a1c03a1bb0077f4",
+      "bytes": 3259
+    },
+    "native_data": {
+      "path": "harness/runs/large-text-repair/native-v7-max17-independent.json",
+      "sha256": "71a661e6d424e2c52a42e36647295816688ee71133c908ee9d30856b75ddac74",
+      "bytes": 151508
+    },
+    "native_pixels": {
+      "path": "harness/runs/large-text-repair/global-map-v7-max17-visual-accepted.json",
+      "sha256": "7e32e0c02d4fc18f84c8bf3e6d1611f2c3d7eadcbeb303045c8badde3104f12d",
+      "bytes": 95716
+    },
+    "Linux_source_CI": {
+      "path": "harness/runs/large-text-repair/ci-256de9fd-38135929033/ci-independent-review.json",
+      "sha256": "adc0092db890dd46b23ce334cb16f71ee21b79bf0f22db5fc0454ed9846fbea0",
+      "bytes": 21639
+    },
+    "formal_artifact": {
+      "path": "harness/runs/large-text-repair/formal-v7-113713/formal-build-independent.json",
+      "sha256": "bb09b8ac0b006487e845b3e5ca66aa35452306798063eaa82b837b8b38a40b6d",
+      "bytes": 40328
+    },
+    "formal_preview": {
+      "path": "harness/runs/preview/20261011T113855Z-large-text/final-preview-independent.json",
+      "sha256": "b05e377b74f3a7dfde87f3417efd4b3d971cbc6aca110b07be2dfb41d750e3d7",
+      "bytes": 16240
+    },
+    "environment_failure_and_task_GC": {
+      "path": "harness/runs/large-text-repair/storage/intermediate-115158-independent.json",
+      "sha256": "1a81837684b5adc0eef6a3daef078233b8c75ed85e0de59ad444cc060013cc0f",
+      "bytes": 57218
+    }
+  },
+  "gates": {
+    "G0": "passed_targeted_contract",
+    "G1": "passed",
+    "G2": "partial_targeted_max17; required_two_viewports_and_normal_native_pending",
+    "G3": "unverified_physical",
+    "G4_local": "Targeted cold SQL/ACK and preserved business upgrade observed; not full current matrix",
+    "G4_resource_connected": "production_pending",
+    "G5": "unsigned_simulator_Demo_only",
+    "G6": "local_install_receipt_only"
+  },
+  "merge": {
+    "state": "PR37_draft_open",
+    "decision": "Wait for required native acceptance and latest exact-head CI before merge. Issue36 stays open.",
+    "prior_PR34": "Merged historical prototype/review repair; not this candidate."
+  },
+  "production_eligible": false,
+  "production_gaps": [
+    "E09#31 physicalG3",
+    "X05#32 enforcedrequiredchecks/release",
+    "E12#33 realservice/resources/signing/publication/delivery"
+  ],
+  "next_action": "Resolve disk dependency without deleting user apps/data absent explicit authorization; run fresh required native validations, independent aggregate review, then reconsider merge.",
+  "evidence_archive": {
+    "path": "harness/reports/large-text-partial-evidence.tar.gz",
+    "sha256": "156153d3f3ba2c53aeac36fd46c13bf3717f0f5b7b851489cca50fa70216e4de",
+    "bytes": 21865994,
+    "members": 561,
+    "payload_files": 560,
+    "all_payload_hashes_verified": true,
+    "binary_artifacts_in_archive": false,
+    "user_business_rows_in_archive": false,
+    "scope": "Partial acceptance; retains both max16 ENOSPC failures."
+  }
+}

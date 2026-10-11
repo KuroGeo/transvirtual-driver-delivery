@@ -645,6 +645,53 @@
   },
   "current_validation": {
     "schema": 1,
+    "status": "implemented_installed_partial_acceptance_blocked_disk",
+    "PR": 37,
+    "issue": 36,
+    "scope": "System maximum text across map actions, full SafeArea summary/list/detail, query and source/focus returns; preserved-data formal Demo simulator update",
+    "candidate": {
+      "source_head": "256de9fd360040a52ed3e7ec5948dbbaf4529e90",
+      "source_fingerprint": "7b077f55197263c571fb33fce1b561f7ccd5cdc0d2a7252aab34c15a9eb184bf",
+      "counted_inputs": 262,
+      "source_manifest": {
+        "path": "harness/runs/large-text-repair/source-manifest-global-map-v7.json",
+        "sha256": "fc39b2939f314cf4aee4bbed2a0335fe3a10a9d11ea5c130195999b3d0fe236d",
+        "bytes": 41212
+      },
+      "source_commit_binding": {
+        "path": "harness/runs/large-text-repair/source-commit-binding-global-v7.json",
+        "sha256": "302aafb60ba8042d0176781ba550843595e56ec42f7cdb7eb709606fad3a6b36",
+        "bytes": 394
+      },
+      "live_fingerprint_rechecked": true
+    },
+    "report": "harness/reports/large-text-repair.json",
+    "G1": "passed",
+    "native": "partial_max17_four_unique_N7; max16_ENVfailed; normal_not_run; two-size_not_accepted",
+    "formal_Demo": "installed_without_reset_current_source",
+    "merge": "draft_open_wait_required_acceptance",
+    "production_eligible": false,
+    "evidence_archive": {
+      "path": "harness/reports/large-text-partial-evidence.tar.gz",
+      "sha256": "156153d3f3ba2c53aeac36fd46c13bf3717f0f5b7b851489cca50fa70216e4de",
+      "bytes": 21865994,
+      "members": 561,
+      "payload_files": 560,
+      "all_payload_hashes_verified": true,
+      "binary_artifacts_in_archive": false,
+      "user_business_rows_in_archive": false,
+      "scope": "Partial acceptance; retains both max16 ENOSPC failures."
+    }
+  },
+  "historical_full_local_validation": {
+    "scope": "Historical 381730 candidate: complete iOS simulator functional/local gate evidence",
+    "status": "accepted full local functionality/gates/archive; production no-go",
+    "candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+    "production_eligible": false,
+    "quality_report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json"
+  },
+  "previous_PR34_review_validation": {
+    "schema": 1,
     "status": "accepted_local_final_review",
     "PR": 34,
     "scope": "Complete PR review, Browse trailing arrow, three bounded review repairs; source merge authorized",
@@ -787,12 +834,5 @@
       "all_payload_hashes_verified": true,
       "binary_artifacts_in_archive": false
     }
-  },
-  "historical_full_local_validation": {
-    "scope": "Historical 381730 candidate: complete iOS simulator functional/local gate evidence",
-    "status": "accepted full local functionality/gates/archive; production no-go",
-    "candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
-    "production_eligible": false,
-    "quality_report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json"
   }
 }

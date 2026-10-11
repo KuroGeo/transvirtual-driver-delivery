@@ -1,7 +1,7 @@
 {
   "mode": "repair",
   "contract_revision": 5,
-  "source_head": "cae7fca40760e67567c3e29d39b9b295ffa002e5",
+  "source_head": "256de9fd360040a52ed3e7ec5948dbbaf4529e90",
   "coordinator": "/root",
   "scope": "Implement full prototype/architecture Flutter demo and local-client with independently verified Harness evidence; production no-go remains",
   "tasks": [
@@ -2085,13 +2085,8 @@
       "event": "Actual nonauthor archive stream/hash/CRC/sourceZIP17Runner/originals audit accepted; root localhandoff decision accepted. Actual Issues27-30 closed and16C3O/parent14OPEN API readback. Final metadata CI follows separate commit identity; production no-go."
     }
   ],
-  "status": "Full current local Flutter/Harness handoff accepted;16localIssues CLOSED,3external OPEN;production no-go",
-  "accepted_candidate": {
-    "source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
-    "source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
-    "scope": "G0/current G1/full local G2/local G4/actual gates/formal builds/narrow startup/bounded local archive;production no-go",
-    "counted_source_inputs": 260
-  },
+  "status": "LTX-01 implemented/installed; partial native acceptance blocked disk; PR37draft; production no-go",
+  "accepted_candidate": null,
   "runtime_observation": {
     "observed_at": "2026-10-11T02:51:43.510921+00:00",
     "active_run": null,
@@ -2099,7 +2094,7 @@
     "note": "All SDK controllers terminal; only excluded metadata/archive/remote closure work remains."
   },
   "evidence_archive": "harness/runs/E10/381730-local-handoff/index.json",
-  "next_task": "Verify this final metadata commit exactHEAD CI/remote status in independent excluded record; then externalE09/X05/E12 remain.",
+  "next_task": "Resolve disk dependency without deleting user apps/data absent explicit authorization; run fresh required native validations, independent aggregate review, then reconsider merge.",
   "issue_planning_validation": {
     "status": "passed",
     "candidate": {
@@ -2114,16 +2109,16 @@
     "native_rerun": false,
     "production_eligible": false
   },
-  "updated_at": "2026-10-11T09:49:55.430923+00:00",
+  "updated_at": "2026-10-11T12:07:12.696158+00:00",
   "native_protocol_revision": 6,
   "source_writers": [],
   "active_execution": {
-    "candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
-    "status": "All SDK jobs terminal; local archive nonauthor verification",
+    "candidate": "7b077f55197263c571fb33fce1b561f7ccd5cdc0d2a7252aab34c15a9eb184bf",
+    "status": "All SDK/device jobs terminal; remaining native acceptance blocked disk",
     "source_writers": [],
     "sole_sdk_executor": "/root"
   },
-  "current_source_fingerprint": "9ca3cc8caf2d0a1eb46570153b38205a3bb1f831266e00551f4c0ea07719f69d",
+  "current_source_fingerprint": "7b077f55197263c571fb33fce1b561f7ccd5cdc0d2a7252aab34c15a9eb184bf",
   "runtime_execution": {
     "executor": "/root",
     "active_controller": null,
@@ -2131,8 +2126,8 @@
     "source_frozen": true,
     "SDK_serialized_by_OS_lease": true,
     "session": null,
-    "last_terminal_controller": "E10-381730-formal-main-actual",
-    "terminal_exit": 0
+    "last_terminal_controller": "20261011T115158969693Z-native",
+    "terminal_exit": 1
   },
   "agent_runtime_observation": {
     "captured_at": "2026-10-11T02:59:18.750923+00:00",
@@ -2158,8 +2153,8 @@
     "source_writers": [],
     "future_readback_dispatch": "requirements_review will only read APIs/CI when supplied actual newHEAD/run; no source/SDK writer"
   },
-  "source_frozen": false,
-  "candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+  "source_frozen": true,
+  "candidate": "7b077f55197263c571fb33fce1b561f7ccd5cdc0d2a7252aab34c15a9eb184bf",
   "active_sdk_controller": "/root",
   "root_execution_checkpoint": {
     "updated_at": "2026-10-11T02:59:18.750923+00:00",
@@ -2501,11 +2496,11 @@
   },
   "large_text_repair": {
     "id": "LTX-01",
-    "status": "validating",
+    "status": "blocked_disk_native_acceptance",
     "base_sha": "31b144b4fb20126e86ff75460a9b11414030a419",
     "source": "User iOS max-text screenshot 2026-10-11",
     "coordinator": "/root",
-    "scope": "Full-size accessible task layout for list/detail, readable initial stop summary, uncut feedback and separate query tools; preserve actual platform scaler and normal prototype layout",
+    "scope": "System large text: full SafeArea list/detail/summary, first readable stop, full remaining total and explicit map entry, scrollable feedback/nearest, separate query tools; preserve OS scaler, typed return, focus/camera/query and normal prototype",
     "writers": {
       "/root": [
         "app/lib/ui/delivery_screen.dart",
@@ -2514,24 +2509,138 @@
         "harness/project/work.json",
         "harness/reports",
         "app/test/ui/overview_geometry_test.dart",
-        "app/integration_test/support/native_acceptance_support.dart",
         "app/test/review/prototype_map_interactions_test.dart",
         "harness/project/mission.md",
         "app/test/list/stop_list_workspace_test.dart",
-        "app/test/reliability/formal_workbench_test.dart"
+        "app/test/reliability/formal_workbench_test.dart",
+        "app/test/support/formal_workbench_fixture.dart",
+        "app/test/widget_test.dart"
       ],
       "/root/pr34_data_review": [
         "app/test/ui/large_text_layout_test.dart"
       ],
       "/root/pr34_harness_review": [
-        "app/integration_test/acceptance_driver.dart"
+        "app/integration_test/acceptance_driver.dart",
+        "app/integration_test/support/native_acceptance_support.dart",
+        "harness/native_workbench.py",
+        "harness/tests/test_native_workbench.py"
       ]
     },
     "independent_UI_reviewer": "/root/pr34_ui_review",
     "SDK_and_device_executor": "/root",
-    "acceptance": "First task screen readable without hunting; full OS text; actual max iOS N7 + normal-layout regressions; preserved-data formal Demo simulator install",
+    "acceptance": "First map/task screen readable; actual system maximum on two physical simulator viewports and normal N7; summary/list/detail/feedback and keyboard/return; preserved-data formal Demo preview install",
     "production_go": false,
     "issue": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/36",
-    "source_writers_frozen": true
+    "source_writers_frozen": true,
+    "historical_candidate": "e3dc915b3de710e55cb93172f0f408720010dc58effea1a56e4f3803aa64abc7",
+    "review_finding": "LTNATIVE-MAP-01: large map summary must be independently readable; use full SafeArea summary task, retain map/query and normal prototype",
+    "historical_failures": [
+      "20261011T101833041200Z-native ENOSPC (environment, inconclusive UI)",
+      "20261011T103637874345Z-native All chip horizontally clipped in retained query; actual centerHit=false, preserved original failure"
+    ],
+    "candidate": {
+      "source_fingerprint": "7b077f55197263c571fb33fce1b561f7ccd5cdc0d2a7252aab34c15a9eb184bf",
+      "counted_inputs": 262,
+      "manifest": "harness/runs/large-text-repair/source-manifest-global-map-v7.json",
+      "source_head": "256de9fd360040a52ed3e7ec5948dbbaf4529e90",
+      "binding": "harness/runs/large-text-repair/source-commit-binding-global-v7.json"
+    },
+    "raw_focus_failure": "harness/runs/20261011T110206433054Z-test/attempts/000001/report.json",
+    "narrow_report": "harness/runs/20261011T110622529545Z-test/attempts/000001/report.json",
+    "narrow_failed_reports": [
+      "harness/runs/20261011T110206433054Z-test/attempts/000001/report.json",
+      "harness/runs/20261011T110434432601Z-test/attempts/000001/report.json"
+    ],
+    "failed_current_quality": "harness/runs/20261011T110657247757Z-quality/attempts/000001/report.json",
+    "fixture_contract_update": "Old 2x keyboard form scenario opens nearest through the actual new summary button; all original Save/keyboard/overflow/storage assertions preserved.",
+    "raw_native_failures": [
+      "harness/runs/20261011T111030320436Z-native/attempts/000001/report.json",
+      "harness/runs/20261011T112005908261Z-native/attempts/000001/report.json",
+      "harness/runs/20261011T114038212204Z-native/attempts/000001/report.json",
+      "harness/runs/20261011T115158969693Z-native/attempts/000001/report.json"
+    ],
+    "native_gesture_repair": "Original12/15 bounded real exposure retained; observed repeated21.34px drag produced unchanged bounds. Minimum48px requires actual post-drag full visibility; touch threshold explanation is inference until current native proof.",
+    "native_capacity_repair": {
+      "raw_observation_bytes": 10821972,
+      "original_limit_bytes": 8388608,
+      "raw_ui_checks": {
+        "passed": 5,
+        "acceptance_status": "failed"
+      },
+      "decision": "Keep every raw observation; fixed16MiB observation budget, original8MiB action budget; all identities and later predicates remain required. Boundary tests then fresh same-source G1/native."
+    },
+    "quality_report": "harness/runs/20261011T113211673144Z-quality/attempts/000001/report.json",
+    "independent_static_and_quality": [
+      {
+        "path": "harness/runs/large-text-repair/global-map-quality-v7-independent-accepted.json",
+        "sha256": "2c7e10445b01c72bafadd5e0bf1826119960e8676ecd410f214c185c07407b9c"
+      },
+      {
+        "path": "harness/runs/large-text-repair/native-capacity-v7-independent.json",
+        "sha256": "d42a3c5af5acc51e85f90e14e29228af98d7cb50f3dca4539a1c03a1bb0077f4"
+      }
+    ],
+    "native_reports": [
+      "harness/runs/20261011T113319446983Z-native/attempts/000001/report.json"
+    ],
+    "CI_source_head": "256de9fd360040a52ed3e7ec5948dbbaf4529e90",
+    "CI_run": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38135929033",
+    "installed_preview": "harness/runs/preview/20261011T113855Z-large-text/preview.json",
+    "normal_native": "not_run_current_candidate",
+    "two_viewport_aggregate": "not_run_required_second_viewport_missing",
+    "handoff_report": "harness/reports/large-text-repair.json",
+    "PR": {
+      "number": 37,
+      "state": "draft_open",
+      "merge": "blocked_required_native_acceptance"
+    },
+    "environment_dependency": {
+      "kind": "disk_capacity",
+      "observed_available_GiB": 1.9,
+      "target_total_available_GiB": 5,
+      "user_owned_device_deletion_authorization": "pending_explicit_answer",
+      "protected_preview": "D2B958C6-486D-4C17-A0CE-A8135717F3A6"
+    },
+    "accepted_scope": "G1, exact source LinuxCI, max17 readability/four uniqueN7/coldSQL, formalDemo preserved-data install; no two-size/normal/fullG2/production acceptance",
+    "evidence_archive": {
+      "path": "harness/reports/large-text-partial-evidence.tar.gz",
+      "sha256": "156153d3f3ba2c53aeac36fd46c13bf3717f0f5b7b851489cca50fa70216e4de",
+      "bytes": 21865994,
+      "members": 561,
+      "payload_files": 560,
+      "all_payload_hashes_verified": true,
+      "binary_artifacts_in_archive": false,
+      "user_business_rows_in_archive": false,
+      "scope": "Partial acceptance; retains both max16 ENOSPC failures."
+    }
+  },
+  "historical_root_work_before_large_text": {
+    "status": "Full current local Flutter/Harness handoff accepted;16localIssues CLOSED,3external OPEN;production no-go",
+    "source_head": "cae7fca40760e67567c3e29d39b9b295ffa002e5",
+    "accepted_candidate": {
+      "source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+      "source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "scope": "G0/current G1/full local G2/local G4/actual gates/formal builds/narrow startup/bounded local archive;production no-go",
+      "counted_source_inputs": 260
+    },
+    "active_execution": {
+      "candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+      "status": "All SDK jobs terminal; local archive nonauthor verification",
+      "source_writers": [],
+      "sole_sdk_executor": "/root"
+    },
+    "candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+    "source_frozen": false,
+    "runtime_execution": {
+      "executor": "/root",
+      "active_controller": null,
+      "background_cli_only": true,
+      "source_frozen": true,
+      "SDK_serialized_by_OS_lease": true,
+      "session": null,
+      "last_terminal_controller": "E10-381730-formal-main-actual",
+      "terminal_exit": 0
+    },
+    "next_task": "Verify this final metadata commit exactHEAD CI/remote status in independent excluded record; then externalE09/X05/E12 remain."
   }
 }
