@@ -1,0 +1,45 @@
+WEBVTT
+
+00:00.000 --> 00:05.000
+Deliver even without a signal.
+Historical iOS simulator build · Controlled Demo
+
+00:05.000 --> 00:14.000
+Switch Offline and keep working.
+Results will be saved on this device.
+
+00:14.000 --> 00:21.000
+Complete the first stop.
+The result and its queued event commit together.
+
+00:21.000 --> 00:27.000
+Record a failed delivery with a reason.
+Both terminal outcomes are saved locally.
+
+00:27.000 --> 00:43.000
+Two results saved; two confirmations still pending.
+Saved does not mean confirmed.
+
+00:43.000 --> 00:49.000
+Terminate the actual OS process.
+Keep the same installation and database.
+
+00:49.000 --> 00:54.000
+A new process reopens the database.
+Both results and the two queued updates survive.
+
+00:54.000 --> 00:59.000
+Return Online. Send the queue serially.
+Confirmations come from a controlled HTTP fixture.
+
+00:59.000 --> 01:06.000
+Both matching confirmations are now durable.
+Only then does the queue reach zero.
+
+01:06.000 --> 01:11.000
+Restart once more.
+Confirmed operations are not resent.
+
+01:11.000 --> 01:22.000
+Three real processes: 21377 → 21604 → 21697.
+Reliable local saving; traceable simulated confirmation.
