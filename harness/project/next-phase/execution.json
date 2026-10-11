@@ -40,17 +40,24 @@
     "NP01": {
       "status": "review",
       "owner_agent_id": "/root/f1_harness",
-      "candidate": null,
+      "candidate": {
+        "source_fingerprint": "d651e5c96ec8410cdebd97368c10bc2caabb43a91016919a9d23874a8df985cb",
+        "source_code_sha": "453582ac7b196ad5ddbf05a70143111060d23b78"
+      },
       "evidence": [],
       "functional_depends_on": [
         "NP00"
       ],
-      "interface_dependencies": []
+      "interface_dependencies": [],
+      "result_path": "harness/project/next-phase/results/NP01-F1.md"
     },
     "NP05": {
-      "status": "running",
+      "status": "review",
       "owner_agent_id": "/root/f1_routes",
-      "candidate": null,
+      "candidate": {
+        "source_fingerprint": "d651e5c96ec8410cdebd97368c10bc2caabb43a91016919a9d23874a8df985cb",
+        "source_code_sha": "453582ac7b196ad5ddbf05a70143111060d23b78"
+      },
       "evidence": [],
       "functional_depends_on": [
         "NP00",
@@ -59,12 +66,16 @@
       "interface_dependencies": [
         "NP03 AccountScope",
         "NP04 sessionGeneration"
-      ]
+      ],
+      "result_path": "harness/project/next-phase/results/NP05-NP06-F1.md"
     },
     "NP06": {
-      "status": "running",
+      "status": "review",
       "owner_agent_id": "/root/f1_routes",
-      "candidate": null,
+      "candidate": {
+        "source_fingerprint": "d651e5c96ec8410cdebd97368c10bc2caabb43a91016919a9d23874a8df985cb",
+        "source_code_sha": "453582ac7b196ad5ddbf05a70143111060d23b78"
+      },
       "evidence": [],
       "functional_depends_on": [
         "NP00",
@@ -74,37 +85,50 @@
       "interface_dependencies": [
         "NP03 AccountScope",
         "NP04 sessionGeneration"
-      ]
+      ],
+      "result_path": "harness/project/next-phase/results/NP05-NP06-F1.md"
     },
     "NP10": {
-      "status": "running",
+      "status": "review",
       "owner_agent_id": "/root",
-      "candidate": null,
+      "candidate": {
+        "source_fingerprint": "d651e5c96ec8410cdebd97368c10bc2caabb43a91016919a9d23874a8df985cb",
+        "source_code_sha": "453582ac7b196ad5ddbf05a70143111060d23b78"
+      },
       "evidence": [],
       "functional_depends_on": [
         "NP06"
       ],
-      "interface_dependencies": []
+      "interface_dependencies": [],
+      "result_path": "docs/next-phase/f1-client-handoff.md"
     },
     "NP11": {
-      "status": "running",
+      "status": "review",
       "owner_agent_id": "/root/f1_acceptance",
-      "candidate": null,
+      "candidate": {
+        "source_fingerprint": "d651e5c96ec8410cdebd97368c10bc2caabb43a91016919a9d23874a8df985cb",
+        "source_code_sha": "453582ac7b196ad5ddbf05a70143111060d23b78"
+      },
       "evidence": [],
       "functional_depends_on": [
         "NP10"
       ],
-      "interface_dependencies": []
+      "interface_dependencies": [],
+      "result_path": "harness/project/next-phase/results/NP11-NP12-F1.md"
     },
     "NP12": {
-      "status": "planned",
+      "status": "review",
       "owner_agent_id": "/root/f1_acceptance",
-      "candidate": null,
+      "candidate": {
+        "source_fingerprint": "d651e5c96ec8410cdebd97368c10bc2caabb43a91016919a9d23874a8df985cb",
+        "source_code_sha": "453582ac7b196ad5ddbf05a70143111060d23b78"
+      },
       "evidence": [],
       "functional_depends_on": [
         "NP11"
       ],
-      "interface_dependencies": []
+      "interface_dependencies": [],
+      "result_path": "harness/project/next-phase/results/NP11-NP12-F1.md"
     },
     "NP13": {
       "status": "blocked",
@@ -124,5 +148,6 @@
     "real_gps": "not_run: physical device not assigned",
     "physical_device": "not_run: not assigned",
     "production": "no-go: existing #31/#32/#33 and no publication authorization"
-  }
+  },
+  "registry_note": "Portable review index. It grants no product acceptance. Exact locally gated candidate and original raw evidence are in harness/reports/f1-navigation.json; CI independently produces the host gate."
 }
