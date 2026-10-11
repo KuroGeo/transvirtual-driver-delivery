@@ -1992,6 +1992,29 @@ Future<void> _largeTextBrowse(NativeWorkbenchDriver d) async {
   );
   _visible(observed, 'close-list');
   _visible(observed, 'list-sync');
+  final message = nativeObject(acceptanceModel(observed)['notice'])['message'];
+  nativeRequire(
+    message == 'Saved locally · waiting to sync.',
+    'Feedback scroll must exercise the actual saved notice.',
+  );
+  final originalResults = _rect(observed, 'stop-list-scroll');
+  final originalClose = _rect(observed, 'close-list');
+  final originalSync = _rect(observed, 'list-sync');
+  await d.scrollKey('list-feedback-viewport', -160);
+  final feedback = await d.waitForSnapshot(
+    'saved notice final line exposed after actual drag',
+    (s) =>
+        nativeObject(acceptanceModel(s)['notice'])['message'] == message &&
+        (_rect(s, 'notice-message')['bottom'] as num) <=
+            (_rect(s, 'list-feedback-viewport')['bottom'] as num) + .5,
+  );
+  nativeRequire(
+    acceptanceEqual(_rect(feedback, 'stop-list-scroll'), originalResults) &&
+        acceptanceEqual(_rect(feedback, 'close-list'), originalClose) &&
+        acceptanceEqual(_rect(feedback, 'list-sync'), originalSync),
+    'Scrolling feedback moved the pinned actions or result viewport.',
+  );
+  await d.captureNamed('large-text-feedback-scroll', feedback);
   await d.revealKey('filter-failed');
   await d.tapKey('filter-failed');
   await d.waitForSnapshot(
