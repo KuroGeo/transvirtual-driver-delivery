@@ -262,6 +262,7 @@ void main() {
       );
       await tapFormalControl(tester, 'browse-stops');
       const rawQuery = '  HARBOUR  ';
+      await revealFormalQueryTools(tester);
       await tester.enterText(
         find.byKey(const ValueKey('stop-search')),
         rawQuery,
@@ -451,6 +452,7 @@ void main() {
     await tapFormalControl(tester, 'detail-return');
     await tapFormalControl(tester, 'browse-stops');
     const rawQuery = '  no matching customer  ';
+    await revealFormalQueryTools(tester);
     await tester.enterText(find.byKey(const ValueKey('stop-search')), rawQuery);
     await pumpFormalFrames(tester);
     expect(model.result.stops, isEmpty);
@@ -761,6 +763,7 @@ void main() {
       );
       await tapFormalControl(tester, 'detail-return');
       await tapFormalControl(tester, 'browse-stops');
+      await revealFormalQueryTools(tester);
       await tester.enterText(
         find.byKey(const ValueKey('stop-search')),
         ' Harbour ',

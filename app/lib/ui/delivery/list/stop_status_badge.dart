@@ -23,34 +23,44 @@ IconData deliveryStatusIcon(DeliveryStatus status) => switch (status) {
 
 /// Shared symbol, colour and text for status affordances across the workbench.
 class StopStatusBadge extends StatelessWidget {
-  const StopStatusBadge({super.key, required this.status});
+  const StopStatusBadge({
+    super.key,
+    required this.status,
+    this.showSymbol = true,
+    this.textStyle,
+  });
 
   final DeliveryStatus status;
+
+  /// Rows with their own leading outcome symbol only need the status text.
+  final bool showSymbol;
+  final TextStyle? textStyle;
 
   @override
   Widget build(BuildContext context) {
     final color = deliveryStatusColor(status);
+    final text = Text(
+      deliveryStatusLabel(status),
+      style: (Theme.of(context).textTheme.labelMedium ?? const TextStyle())
+          .copyWith(
+            color: status == DeliveryStatus.pending ? OceanColors.ink : color,
+            fontWeight: FontWeight.w500,
+          )
+          .merge(textStyle),
+    );
     return Semantics(
       label: 'Status: ${deliveryStatusLabel(status)}',
       child: ExcludeSemantics(
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(deliveryStatusIcon(status), size: 16, color: color),
-            const SizedBox(width: 5),
-            Flexible(
-              child: Text(
-                deliveryStatusLabel(status),
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: status == DeliveryStatus.pending
-                      ? OceanColors.ink
-                      : color,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ],
-        ),
+        child: showSymbol
+            ? Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(deliveryStatusIcon(status), size: 16, color: color),
+                  const SizedBox(width: 5),
+                  Flexible(child: text),
+                ],
+              )
+            : text,
       ),
     );
   }

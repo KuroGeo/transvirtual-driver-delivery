@@ -707,12 +707,13 @@ void main() {
       for (final rect in [zoomIn, zoomOut, fit, locate]) {
         expect(rect.size, const Size(44, 44));
       }
-      expect(zoomIn.top, zoomOut.top);
-      expect(zoomOut.left, zoomIn.right);
-      expect(fit.top, zoomIn.bottom);
-      expect(locate.top, fit.top);
-      expect(locate.left, fit.right);
-      expect(tester.getSize(sync), const Size(88, 44));
+      expect(zoomOut.left, zoomIn.left);
+      expect(zoomOut.top, zoomIn.bottom);
+      expect(fit.left, zoomIn.left);
+      expect(fit.top, zoomOut.bottom);
+      expect(locate.left, zoomIn.left);
+      expect(locate.top, fit.bottom);
+      expect(tester.getSize(sync), const Size(44, 44));
       expect(controller.mapController.camera.center, camera.center);
       expect(controller.mapController.camera.zoom, camera.zoom);
       expect(tester.takeException(), isNull);

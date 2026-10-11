@@ -927,6 +927,21 @@ Future<void> _n4(NativeAcceptanceRecorder r) async {
         'Zoom Out restores camera',
         (s) => ((nativeObject(s['camera'])['zoom'] as num) - zoom).abs() < .01,
       );
+      final outGesture = await d.pinchMap(outward: true);
+      c.metadata['pinch_out_input'] = outGesture;
+      final pinchedOut = await d.waitForSnapshot(
+        'two actual touch pointers increase map zoom',
+        (s) => (nativeObject(s['camera'])['zoom'] as num) > zoom + .5,
+      );
+      final outRef = await c.sample('pinch-out', pinchedOut);
+      await c.expect('/camera/zoom', 'gte', zoom + .5, artifact: outRef);
+      final pinchZoom = nativeObject(pinchedOut['camera'])['zoom'] as num;
+      c.metadata['pinch_in_input'] = await d.pinchMap(outward: false);
+      final pinchedIn = await d.waitForSnapshot(
+        'two actual touch pointers decrease map zoom',
+        (s) => (nativeObject(s['camera'])['zoom'] as num) < pinchZoom - .5,
+      );
+      await c.sample('pinch-in', pinchedIn);
       await d.tapKey('fit-stops');
       await c.sample('fit', await d.snapshot());
       String? cluster;
@@ -1081,6 +1096,7 @@ Future<void> _n4(NativeAcceptanceRecorder r) async {
     'N4.query-intersection-empty',
     (c) async {
       await acceptanceList(d);
+      await acceptanceListQueryTools(d);
       await d.enterText('stop-search', 'Coastal Electronics');
       await d.tapKey('filter-pending');
       final pending = await d.waitForSnapshot(
@@ -1104,6 +1120,7 @@ Future<void> _n4(NativeAcceptanceRecorder r) async {
       await c.expect('/result/totalQueueCount', 'eq', 1, artifact: emptyRef);
       await d.tapKey('waiting-only');
       await d.tapKey('filter-all');
+      await acceptanceListQueryTools(d);
       await d.enterText('stop-search', 'Sydney NSW');
       await d.waitForSnapshot(
         'actual address search',
@@ -1183,6 +1200,7 @@ Future<void> _n4(NativeAcceptanceRecorder r) async {
       await acceptanceReturn(d);
       await c.sample('terminal-map-return', await d.snapshot());
       await acceptanceList(d);
+      await acceptanceListQueryTools(d);
       await d.enterText('stop-search', '');
       final scrollDeadline = Stopwatch()..start();
       Map<String, dynamic>? scrolled;

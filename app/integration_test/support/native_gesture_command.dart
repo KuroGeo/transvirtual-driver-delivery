@@ -8,3 +8,19 @@ class DoubleComplete extends Command {
   @override
   String get kind => 'oceanDoubleComplete';
 }
+
+/// Fixed two-touch map gestures. The host cannot supply coordinates, a finder,
+/// business values, or an imperative camera command.
+class MapPinchOut extends Command {
+  const MapPinchOut() : super(timeout: const Duration(seconds: 8));
+
+  @override
+  String get kind => 'oceanMapPinchOut';
+}
+
+class MapPinchIn extends Command {
+  const MapPinchIn() : super(timeout: const Duration(seconds: 8));
+
+  @override
+  String get kind => 'oceanMapPinchIn';
+}

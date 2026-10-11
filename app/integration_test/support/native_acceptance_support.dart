@@ -456,6 +456,96 @@ Future<void> acceptanceMap(NativeWorkbenchDriver client) async {
   );
 }
 
+Future<void> acceptanceListQueryTools(NativeWorkbenchDriver client) async {
+  final initial = await client.snapshot();
+  final bounds = nativeObject(initial['bounds']);
+  final toggles = bounds['list-query-controls'];
+  nativeRequire(
+    toggles is List && toggles.length == 1 && toggles.single is Map,
+    'Query controls require their actual persistent header button.',
+  );
+  // An expanded query can be outside the lazy-list cache after a typed Return.
+  // Observe the actual button state rather than toggling from missing bounds.
+  final selected = (toggles as List).single['isSelected'];
+  nativeRequire(
+    selected is bool,
+    'Query button must expose its actual bool state.',
+  );
+  if (selected != true) {
+    await client.tapKey('list-query-controls');
+    await client.waitForSnapshot('expanded list search controls', (snapshot) {
+      final controls = nativeObject(snapshot['bounds'])['list-query-controls'];
+      return controls is List &&
+          controls.length == 1 &&
+          controls.single is Map &&
+          controls.single['isSelected'] == true;
+    });
+  }
+  bool searchIsExposed(Map<String, dynamic> snapshot) {
+    final rows = nativeObject(snapshot['bounds'])['stop-search'];
+    return rows is List &&
+        rows.length == 1 &&
+        rows.single is Map &&
+        rows.single['centerHit'] == true;
+  }
+
+  var value = await client.snapshot();
+  // A typed Return preserves the offset; a scaled heading can put the query
+  // below the viewport. Choose a real drag from observed geometry in either
+  // direction rather than resetting the session or inferring a hit.
+  final searchClock = Stopwatch()..start();
+  const maxScrolls = 12;
+  for (var scrolls = 0; !searchIsExposed(value); scrolls++) {
+    nativeRequire(
+      scrolls < maxScrolls &&
+          searchClock.elapsed < NativeWorkbenchDriver.observationDeadline,
+      'List search was not exposed with a hittable center '
+      'within 12 drags and 15 seconds.',
+    );
+    final bounds = nativeObject(value['bounds']);
+    final scroll = nativeObject((bounds['stop-list-scroll'] as List).single);
+    final search = bounds['stop-search'];
+    final heading = bounds['list-title'];
+    final double drag;
+    if (search is List && search.length == 1 && search.single is Map) {
+      final rect = nativeObject(search.single);
+      drag =
+          ((rect['top'] as num) + (rect['bottom'] as num)) / 2 >
+              (scroll['bottom'] as num)
+          ? -160
+          : 160;
+    } else {
+      // An unbuilt query follows an exposed scrollable heading. Otherwise
+      // the retained deep offset requires moving back toward the beginning.
+      drag =
+          heading is List &&
+              heading.length == 1 &&
+              heading.single is Map &&
+              (nativeObject(heading.single)['bottom'] as num) >
+                  (scroll['top'] as num)
+          ? -160
+          : 160;
+    }
+    await client
+        .scrollKey('stop-list-scroll', drag)
+        .timeout(
+          NativeWorkbenchDriver.observationDeadline - searchClock.elapsed,
+        );
+    nativeRequire(
+      searchClock.elapsed < NativeWorkbenchDriver.observationDeadline,
+      'List search was not exposed with a hittable center '
+      'within its 15-second lookup deadline.',
+    );
+    value = await client.snapshot().timeout(
+      NativeWorkbenchDriver.observationDeadline - searchClock.elapsed,
+    );
+    nativeRequire(
+      acceptanceModel(value)['panel'] == 'list',
+      'Search exposure left the actual list panel.',
+    );
+  }
+}
+
 Future<void> acceptanceList(NativeWorkbenchDriver client) async {
   await acceptanceMap(client);
   await client.revealKey('browse-stops');
@@ -466,6 +556,9 @@ Future<void> acceptanceList(NativeWorkbenchDriver client) async {
   );
   final value = await client.snapshot();
   final query = nativeObject(acceptanceModel(value)['query']);
+  if (query['status'] != null || query['waitingOnly'] == true) {
+    await acceptanceListQueryTools(client);
+  }
   if (query['status'] != null) await client.tapKey('filter-all');
   if (query['waitingOnly'] == true) await client.tapKey('waiting-only');
 }
@@ -491,35 +584,7 @@ Future<void> acceptanceOpenListStop(
     acceptanceModel(value)['panel'] == 'list',
     'Search exposure requires the actual list panel.',
   );
-  // A typed Return preserves the real list offset and focus. Reach its search
-  // control with actual upward drags instead of resetting that saved session.
-  final searchClock = Stopwatch()..start();
-  const maxScrolls = 12;
-  for (var scrolls = 0; !keyIsExposed(value, 'stop-search'); scrolls++) {
-    nativeRequire(
-      scrolls < maxScrolls &&
-          searchClock.elapsed < NativeWorkbenchDriver.observationDeadline,
-      'List search was not exposed with a hittable center '
-      'within 12 drags and 15 seconds.',
-    );
-    await client
-        .scrollKey('stop-list-scroll', 160)
-        .timeout(
-          NativeWorkbenchDriver.observationDeadline - searchClock.elapsed,
-        );
-    nativeRequire(
-      searchClock.elapsed < NativeWorkbenchDriver.observationDeadline,
-      'List search was not exposed with a hittable center '
-      'within its 15-second lookup deadline.',
-    );
-    value = await client.snapshot().timeout(
-      NativeWorkbenchDriver.observationDeadline - searchClock.elapsed,
-    );
-    nativeRequire(
-      acceptanceModel(value)['panel'] == 'list',
-      'Search exposure left the actual list panel.',
-    );
-  }
+  await acceptanceListQueryTools(client);
   await client.enterText('stop-search', reference);
   var searched = await client.waitForSnapshot(
     'list search $reference',
@@ -534,6 +599,7 @@ Future<void> acceptanceOpenListStop(
   // reveal/tap path. Each drag and observation remains journalled.
   final rowKey = 'stop-$reference';
   final lookupClock = Stopwatch()..start();
+  const maxScrolls = 12;
   for (var scrolls = 0; !keyIsExposed(searched, rowKey); scrolls++) {
     nativeRequire(
       scrolls < maxScrolls &&

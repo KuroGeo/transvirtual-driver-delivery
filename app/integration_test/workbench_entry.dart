@@ -22,7 +22,11 @@ Future<void> main() async {
   final ready = Completer<NativeWorkbenchBridge>();
   // Driver binding must exist before the real sqflite platform path lookup.
   enableFlutterDriverExtension(
-    commands: [DoubleCompleteExtension()],
+    commands: [
+      DoubleCompleteExtension(),
+      MapPinchOutExtension(),
+      MapPinchInExtension(),
+    ],
     handler: (command) async {
       if (command != 'snapshot') {
         throw UnsupportedError('Readonly bridge accepts only snapshot.');

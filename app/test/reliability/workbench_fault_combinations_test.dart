@@ -29,6 +29,9 @@ void main() {
     'filtered real list retains Other draft after rollback, then returns with truthful global queue',
     (tester) async {
       mapTestSize(tester);
+      // Warm every real SVG before widgets can cache a pending load in this
+      // test's FakeAsync zone; later tests cannot drain that zone's microtasks.
+      await fixtureProvider(tester);
       final sandbox = (await tester.runAsync(DeliveryRiskSandbox.create))!;
       final repository = sandbox.repository(_databaseName);
       late final DeliveryViewModel model;

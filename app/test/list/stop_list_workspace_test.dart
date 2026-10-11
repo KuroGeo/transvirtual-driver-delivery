@@ -17,33 +17,41 @@ Widget listHost(
   DeliveryViewModel model, {
   double textScale = 1,
   VoidCallback? onSync,
+  double? panelHeight,
+  EdgeInsets safePadding = EdgeInsets.zero,
 }) => MaterialApp(
   theme: oceanTheme(),
   home: MediaQuery(
-    data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
+    data: MediaQueryData(
+      textScaler: TextScaler.linear(textScale),
+      padding: safePadding,
+    ),
     child: Scaffold(
       body: SafeArea(
-        child: ListenableBuilder(
-          listenable: model,
-          builder: (context, _) => model.panel == WorkbenchPanel.list
-              ? StopListWorkspace(
-                  viewModel: model,
-                  onOpenStop: (stop) =>
-                      model.openDetail(stop.id, origin: DetailOrigin.list),
-                  onClose: model.closeList,
-                  onSync: onSync,
-                )
-              : model.panel == WorkbenchPanel.detail
-              ? Column(
-                  children: [
-                    Text('Detail ${model.selectedStop?.reference}'),
-                    TextButton(
-                      onPressed: model.closeDetail,
-                      child: const Text('Back to stops'),
-                    ),
-                  ],
-                )
-              : const Text('Map workspace'),
+        child: SizedBox(
+          height: panelHeight,
+          child: ListenableBuilder(
+            listenable: model,
+            builder: (context, _) => model.panel == WorkbenchPanel.list
+                ? StopListWorkspace(
+                    viewModel: model,
+                    onOpenStop: (stop) =>
+                        model.openDetail(stop.id, origin: DetailOrigin.list),
+                    onClose: model.closeList,
+                    onSync: onSync,
+                  )
+                : model.panel == WorkbenchPanel.detail
+                ? Column(
+                    children: [
+                      Text('Detail ${model.selectedStop?.reference}'),
+                      TextButton(
+                        onPressed: model.closeDetail,
+                        child: const Text('Back to stops'),
+                      ),
+                    ],
+                  )
+                : const Text('Map workspace'),
+          ),
         ),
       ),
     ),
@@ -89,39 +97,98 @@ void main() {
         ),
       );
       final semantics = tester.ensureSemantics();
-      await tester.pumpWidget(listHost(model));
-      expect(find.byKey(const ValueKey('list-workspace')), findsOneWidget);
-      expect(find.byKey(const ValueKey('stop-REF-01')), findsOneWidget);
-      expect(find.text('Harbour Foods'), findsOneWidget);
-      expect(find.text('10 Ocean Street, Sydney NSW'), findsOneWidget);
-      expect(find.text('08:00–10:00'), findsOneWidget);
-      expect(find.text('Waiting to sync'), findsOneWidget);
-      expect(
-        find.text('1 matching stops · 2 waiting in total'),
-        findsOneWidget,
-      );
-      expect(
-        find.text('Nearest first · straight-line from test reference'),
-        findsOneWidget,
-      );
-      final rowSemantics = tester
-          .getSemantics(find.byType(StopStatusBadge))
-          .getSemanticsData();
-      for (final label in [
-        'REF-01',
-        'Harbour Foods',
-        '10 Ocean Street, Sydney NSW',
-        'Status: Failed',
-        'Delivery window 08:00-10:00',
-        'Waiting to sync',
-      ]) {
-        expect(rowSemantics.label, contains(label));
+      try {
+        await tester.pumpWidget(listHost(model));
+        expect(find.byKey(const ValueKey('list-workspace')), findsOneWidget);
+        expect(find.byKey(const ValueKey('stop-REF-01')), findsOneWidget);
+        expect(find.text('Stops on the map'), findsOneWidget);
+        expect(find.text('1 stop · Nearest first'), findsOneWidget);
+        expect(find.byKey(const ValueKey('list-grip')), findsOneWidget);
+        expect(find.byKey(const ValueKey('stop-search')), findsNothing);
+        expect(find.byKey(const ValueKey('waiting-only')), findsNothing);
+        expect(find.text('REF-01'), findsNothing);
+        expect(find.text('Harbour Foods'), findsOneWidget);
+        expect(find.text('10 Ocean Street, Sydney NSW'), findsOneWidget);
+        expect(find.text('08:00–10:00'), findsOneWidget);
+        expect(find.text('Waiting to sync'), findsOneWidget);
+        final row = find.byKey(const ValueKey('stop-REF-01'));
+        expect(tester.getSize(row).height, greaterThanOrEqualTo(112));
+        expect(
+          tester.getSize(
+            find.byKey(const ValueKey('list-status-symbol-REF-01')),
+          ),
+          const Size(30, 30),
+        );
+        final customer = tester.getRect(find.text('Harbour Foods'));
+        final address = tester.getRect(
+          find.text('10 Ocean Street, Sydney NSW'),
+        );
+        final distance = tester.getRect(find.text('0 m'));
+        final window = tester.getRect(find.text('08:00–10:00'));
+        final status = tester.getRect(find.text('Failed'));
+        expect(customer.top, lessThan(address.top));
+        expect(address.bottom, lessThanOrEqualTo(distance.top));
+        expect(
+          distance.top < window.top || distance.left < window.left,
+          isTrue,
+          reason: 'Distance precedes the delivery window in reading order',
+        );
+        expect(
+          window.top < status.top || window.left < status.left,
+          isTrue,
+          reason: 'Outcome follows distance and delivery window',
+        );
+        final rowIcons = tester.widgetList<BrandIcon>(
+          find.descendant(of: row, matching: find.byType(BrandIcon)),
+        );
+        expect(rowIcons.map((icon) => icon.name), ['warning', 'arrow']);
+        expect(rowIcons.last.size, 14);
+        expect(
+          tester
+              .widget<StopStatusBadge>(find.byType(StopStatusBadge))
+              .showSymbol,
+          isFalse,
+          reason: 'The leading outcome symbol is not repeated in metadata',
+        );
+        expect(
+          find.text('1 matching stops · 2 waiting in total'),
+          findsNothing,
+        );
+        expect(
+          find.text('Nearest first · straight-line from test reference'),
+          findsNothing,
+        );
+        final rowSemantics = tester
+            .getSemantics(find.byType(StopStatusBadge))
+            .getSemanticsData();
+        for (final label in [
+          'REF-01',
+          'Harbour Foods',
+          '10 Ocean Street, Sydney NSW',
+          'Status: Failed',
+          'Delivery window 08:00-10:00',
+          'Waiting to sync',
+        ]) {
+          expect(rowSemantics.label, contains(label));
+        }
+        expect(rowSemantics.hasAction(SemanticsAction.tap), isTrue);
+        expect(rowSemantics.hasAction(SemanticsAction.focus), isTrue);
+        await tester.tap(find.byKey(const ValueKey('list-query-controls')));
+        await tester.pump();
+        expect(find.byKey(const ValueKey('stop-search')), findsOneWidget);
+        expect(
+          find.text('1 matching stops · 2 waiting in total'),
+          findsOneWidget,
+        );
+        expect(
+          find.text('Nearest first · straight-line from test reference'),
+          findsOneWidget,
+        );
+        expect(tester.takeException(), isNull);
+      } finally {
+        semantics.dispose();
+        await closeHost(tester, model);
       }
-      expect(rowSemantics.hasAction(SemanticsAction.tap), isTrue);
-      expect(rowSemantics.hasAction(SemanticsAction.focus), isTrue);
-      expect(tester.takeException(), isNull);
-      semantics.dispose();
-      await closeHost(tester, model);
     },
   );
 
@@ -226,6 +293,8 @@ void main() {
         ),
       );
       await tester.pumpWidget(listHost(model));
+      await tester.tap(find.byKey(const ValueKey('list-query-controls')));
+      await tester.pump();
       await tester.enterText(
         find.byKey(const ValueKey('stop-search')),
         'HARBOUR',
@@ -236,6 +305,22 @@ void main() {
       expect(model.result.stops.single.reference, 'REF-02');
       expect(find.byKey(const ValueKey('stop-REF-02')), findsOneWidget);
       expect(find.byKey(const ValueKey('stop-REF-01')), findsNothing);
+      final retainedQuery = model.query;
+      await tester.tap(find.byKey(const ValueKey('list-query-controls')));
+      await tester.pump();
+      expect(find.byKey(const ValueKey('stop-search')), findsNothing);
+      expect(find.text('1 stop · Nearest first'), findsOneWidget);
+      expect(model.query, retainedQuery);
+      await tester.tap(find.byKey(const ValueKey('list-query-controls')));
+      await tester.pump();
+      expect(
+        tester
+            .widget<TextField>(find.byKey(const ValueKey('stop-search')))
+            .controller
+            ?.text,
+        'HARBOUR',
+      );
+      expect(model.query, retainedQuery);
       await tester.enterText(
         find.byKey(const ValueKey('stop-search')),
         'missing',
@@ -313,6 +398,7 @@ void main() {
       );
       expect(ink.focusNode!.hasFocus, isTrue);
       expect(model.query.search, 'Ocean');
+      expect(find.byKey(const ValueKey('stop-search')), findsNothing);
       expect(tester.takeException(), isNull);
       await closeHost(tester, model);
     },
@@ -353,11 +439,127 @@ void main() {
       );
       expect(close.focusNode!.hasFocus, isFalse);
       expect(find.byKey(const ValueKey('list-sync')), findsNothing);
+      expect(find.byKey(const ValueKey('stop-search')), findsNothing);
+      expect(
+        find.byKey(const ValueKey('list-query-controls')).hitTestable(),
+        findsOneWidget,
+      );
       await tester.tap(find.byKey(const ValueKey('close-list')));
       await tester.pump();
       expect(find.text('Map workspace'), findsOneWidget);
       expect(model.panel, WorkbenchPanel.map);
       await closeHost(tester, model);
+    },
+  );
+
+  testWidgets(
+    'prototype drawer keeps tools and matching row reachable at full OS scale',
+    (tester) async {
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final model = await loadList(
+        QueryRepositoryFixture(
+          stops: List.generate(
+            30,
+            (index) => queryStop(
+              'REF-${(index + 1).toString().padLeft(2, '0')}',
+              customer: 'Harbour Foods ${index + 1}',
+            ),
+          ),
+        ),
+      );
+      try {
+        await tester.pumpWidget(
+          listHost(
+            model,
+            textScale: 53 / 17,
+            panelHeight: 267,
+            safePadding: const EdgeInsets.only(top: 47, bottom: 34),
+            onSync: () {},
+          ),
+        );
+        final panel = tester.getRect(
+          find.byKey(const ValueKey('list-workspace')),
+        );
+        expect(panel.top, greaterThanOrEqualTo(47));
+        expect(panel.bottom, lessThanOrEqualTo(810));
+        for (final key in ['list-query-controls', 'list-sync', 'close-list']) {
+          final control = find.byKey(ValueKey(key));
+          expect(tester.getSize(control), const Size(44, 44));
+          expect(control.hitTestable(), findsOneWidget);
+        }
+        expect(find.byKey(const ValueKey('stop-search')), findsNothing);
+        await tester.tap(find.byKey(const ValueKey('list-query-controls')));
+        await tester.pump();
+        final primary = find.byKey(const ValueKey('stop-list-scroll'));
+        final scrollable = find
+            .descendant(of: primary, matching: find.byType(Scrollable))
+            .first;
+        await tester.scrollUntilVisible(
+          find.byKey(const ValueKey('stop-search')),
+          160,
+          scrollable: scrollable,
+          maxScrolls: 12,
+        );
+        await Scrollable.ensureVisible(
+          tester.element(find.byKey(const ValueKey('stop-search'))),
+          alignment: 0.5,
+        );
+        await tester.pump();
+        expect(
+          find.byKey(const ValueKey('stop-search')).hitTestable(),
+          findsOneWidget,
+        );
+        await tester.enterText(
+          find.byKey(const ValueKey('stop-search')),
+          'REF-20',
+        );
+        await tester.pump();
+        await tester.tap(find.byKey(const ValueKey('list-query-controls')));
+        await tester.pump();
+        expect(model.query.search, 'REF-20');
+        expect(model.result.stops.single.reference, 'REF-20');
+        final row = find.byKey(const ValueKey('stop-REF-20'));
+        await tester.scrollUntilVisible(
+          row,
+          160,
+          scrollable: scrollable,
+          maxScrolls: 12,
+        );
+        final customer = find.text('Harbour Foods 20');
+        await Scrollable.ensureVisible(
+          tester.element(customer),
+          alignment: 0.5,
+        );
+        await tester.pump();
+        expect(
+          MediaQuery.textScalerOf(tester.element(customer)).scale(16) / 16,
+          closeTo(53 / 17, 1e-12),
+        );
+        expect(customer.hitTestable(), findsOneWidget);
+        expect(tester.takeException(), isNull);
+        await tester.tap(customer.hitTestable());
+        await tester.pump();
+        expect(model.detailContext?.origin, DetailOrigin.list);
+        expect(model.selectedStop?.reference, 'REF-20');
+        final offset = model.detailContext!.listSession!.scrollOffset;
+        await tester.tap(find.text('Back to stops'));
+        await tester.pump();
+        await tester.pump();
+        final scroll = tester.widget<CustomScrollView>(primary).controller!;
+        expect(scroll.offset, closeTo(offset, 0.1));
+        final ink = tester.widget<InkWell>(
+          find.descendant(of: row, matching: find.byType(InkWell)),
+        );
+        expect(ink.focusNode!.hasFocus, isTrue);
+        expect(model.query.search, 'REF-20');
+        expect(find.byKey(const ValueKey('stop-search')), findsNothing);
+        expect(tester.takeException(), isNull);
+      } finally {
+        await closeHost(tester, model);
+      }
     },
   );
 

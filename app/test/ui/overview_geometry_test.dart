@@ -137,7 +137,7 @@ void main() {
       await tapFormalControl(tester, 'browse-stops');
       expect(model.panel, WorkbenchPanel.list);
 
-      final title = find.text('Stop list');
+      final title = find.text('Stops on the map');
       final primary = find.byKey(const ValueKey('stop-list-scroll'));
       final scrollable = find
           .descendant(of: primary, matching: find.byType(Scrollable))
@@ -147,12 +147,20 @@ void main() {
         MediaQuery.of(tester.element(title)).textScaler.scale(16) / 16,
         closeTo(53 / 17, 1e-12),
       );
-      expect(find.text('Stop list'), findsOneWidget);
+      expect(find.text('Stops on the map'), findsOneWidget);
       _expectListActionsExposed(tester);
       final viewport = tester.getRect(primary);
       // In the actual failed run, the fixed heading left only65.84px. There
       // must now be room for the full scaled field and an actual row target.
+      await tapFormalControl(tester, 'list-query-controls');
       final search = find.byKey(const ValueKey('stop-search'));
+      await tester.scrollUntilVisible(
+        search,
+        100,
+        scrollable: scrollable,
+        maxScrolls: 12,
+      );
+      await pumpFormalFrames(tester);
       expect(viewport.height, greaterThan(tester.getSize(search).height));
       final feedback = tester.getRect(
         find.byKey(const ValueKey('list-feedback-viewport')),

@@ -235,6 +235,9 @@ void main() {
 
     await tapKey(tester, 'browse-stops');
     expect(session.model.panel, WorkbenchPanel.list);
+    expect(find.text('Stops on the map'), findsOneWidget);
+    expect(find.text('30 stops · Nearest first'), findsOneWidget);
+    await tapKey(tester, 'list-query-controls');
     expect(find.text('30 matching stops · 0 waiting in total'), findsOneWidget);
     await tapKey(tester, 'close-list');
     await tapKey(tester, 'header-filter-failed');

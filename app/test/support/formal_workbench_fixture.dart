@@ -258,7 +258,20 @@ Future<void> revealFormalControl(WidgetTester tester, String key) async {
   );
 }
 
+Future<void> revealFormalQueryTools(WidgetTester tester) async {
+  final toggle = find.byKey(const ValueKey('list-query-controls'));
+  if (toggle.evaluate().isNotEmpty &&
+      tester.widget<IconButton>(toggle).isSelected != true) {
+    await tapFormalControl(tester, 'list-query-controls');
+  }
+}
+
 Future<void> tapFormalControl(WidgetTester tester, String key) async {
+  if (key == 'stop-search' ||
+      key == 'waiting-only' ||
+      key.startsWith('filter-')) {
+    await revealFormalQueryTools(tester);
+  }
   final target = find.byKey(ValueKey(key));
   await revealFormalControl(tester, key);
   final tapped = await tester.runAsync(() async {

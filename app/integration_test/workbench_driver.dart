@@ -231,6 +231,11 @@ Future<void> _openListStop(
   Map<String, dynamic> stop,
 ) async {
   final reference = stop['reference'] as String;
+  if (!nativeObject(
+    (await client.snapshot())['bounds'],
+  ).containsKey('stop-search')) {
+    await client.tapKey('list-query-controls');
+  }
   await client.enterText('stop-search', reference);
   await client.waitForSnapshot(
     'search $reference via actual TextField',

@@ -92,6 +92,15 @@ class RiskWorkbenchHost extends StatelessWidget {
 }
 
 Future<void> tapRiskControl(WidgetTester tester, String key) async {
+  if (key == 'stop-search' ||
+      key == 'waiting-only' ||
+      key.startsWith('filter-')) {
+    final toggle = find.byKey(const ValueKey('list-query-controls'));
+    if (toggle.evaluate().isNotEmpty &&
+        tester.widget<IconButton>(toggle).isSelected != true) {
+      await tapRiskControl(tester, 'list-query-controls');
+    }
+  }
   final target = find.byKey(ValueKey(key));
   await tester.ensureVisible(target);
   await tester.pumpAndSettle();

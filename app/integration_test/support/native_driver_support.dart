@@ -367,6 +367,18 @@ class NativeWorkbenchDriver {
         );
       });
 
+  Future<Map<String, dynamic>> pinchMap({required bool outward}) =>
+      _action('pinch-map:${outward ? 'out' : 'in'}', () {
+        return driver.runUnsynchronized(
+          () async => nativeObject(
+            await driver.sendCommand(
+              outward ? const MapPinchOut() : const MapPinchIn(),
+            ),
+          ),
+          timeout: actionDeadline,
+        );
+      });
+
   /// Immutable per-check raw evidence. Does not replace the phase-final
   /// capture used by the existing X02 orchestration/identity guard.
   Future<Map<String, dynamic>> captureNamed(

@@ -281,6 +281,7 @@ class NativeWorkbenchBridge {
             'width': render.size.width,
             'height': render.size.height,
             'centerHit': hits.path.any((hit) => identical(hit.target, render)),
+            if (widget is IconButton) 'isSelected': widget.isSelected,
           });
         }
       }

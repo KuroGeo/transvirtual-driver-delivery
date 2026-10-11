@@ -293,13 +293,16 @@ class _DeliveryMapWorkspaceState extends State<DeliveryMapWorkspace> {
 
   void _fitMatches() {
     if (!_ready || widget.result.stops.isEmpty) return;
-    _fitPoints(_markers.map((marker) => marker.point).toList());
+    _fitPoints([
+      ..._markers.map((marker) => marker.point),
+      _reference,
+    ], maxZoom: 14);
   }
 
   void _focusStop(Stop stop) =>
       _fitPoints([LatLng(stop.latitude, stop.longitude)]);
 
-  void _fitPoints(List<LatLng> points) {
+  void _fitPoints(List<LatLng> points, {double maxZoom = 15}) {
     if (!_ready || points.isEmpty) return;
     final constraints = _mapConstraints;
     final padding = constraints == null
@@ -310,7 +313,7 @@ class _DeliveryMapWorkspaceState extends State<DeliveryMapWorkspace> {
         coordinates: points,
         padding: padding,
         minZoom: 0,
-        maxZoom: 15,
+        maxZoom: maxZoom,
       ),
     );
     _scheduleViewport();
@@ -318,8 +321,7 @@ class _DeliveryMapWorkspaceState extends State<DeliveryMapWorkspace> {
 
   void _locate() {
     if (!_ready) return;
-    final camera = _controller.mapController.camera;
-    _controller.mapController.move(_reference, math.max(14, camera.zoom));
+    _controller.mapController.move(_reference, 14);
     _scheduleViewport();
   }
 
@@ -533,7 +535,10 @@ class _DeliveryMapWorkspaceState extends State<DeliveryMapWorkspace> {
                             point: _reference,
                             width: 44,
                             height: 44,
-                            child: _TestReferenceMarker(),
+                            // This geographic reference has no action. Let
+                            // stops remain tappable when a tight fitted view
+                            // places their markers beneath the reference.
+                            child: IgnorePointer(child: _TestReferenceMarker()),
                           ),
                         ],
                       ),
@@ -641,34 +646,24 @@ class _DeliveryMapWorkspaceState extends State<DeliveryMapWorkspace> {
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _tool('zoom-in', 'Zoom in', Icons.add, _controller.zoomIn),
-            _tool('zoom-out', 'Zoom out', Icons.remove, _controller.zoomOut),
-          ],
+        _tool('zoom-in', 'Zoom in', Icons.add, _controller.zoomIn),
+        _tool('zoom-out', 'Zoom out', Icons.remove, _controller.zoomOut),
+        _tool(
+          'fit-stops',
+          'Fit matching stops',
+          Icons.crop_free,
+          widget.result.stops.isEmpty ? null : _controller.fitMatches,
         ),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _tool(
-              'fit-stops',
-              'Fit matching stops',
-              Icons.crop_free,
-              widget.result.stops.isEmpty ? null : _controller.fitMatches,
-            ),
-            _tool(
-              'locate-reference',
-              'Locate test reference',
-              Icons.near_me_outlined,
-              _controller.locateTestReference,
-            ),
-          ],
+        _tool(
+          'locate-reference',
+          'Locate test reference',
+          Icons.near_me_outlined,
+          _controller.locateTestReference,
         ),
         if (widget.onSync != null) ...[
-          const SizedBox(width: 88, child: Divider(height: 1)),
+          const SizedBox(width: 44, child: Divider(height: 1)),
           SizedBox(
-            width: 88,
+            width: 44,
             height: 44,
             child: IconButton(
               key: const ValueKey('map-sync'),

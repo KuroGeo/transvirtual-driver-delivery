@@ -32,6 +32,7 @@ class StopListWorkspace extends StatefulWidget {
 class _StopListWorkspaceState extends State<StopListWorkspace> {
   late final ScrollController _scroll;
   late final TextEditingController _search;
+  bool _queryExpanded = false;
   final _closeFocus = FocusNode(debugLabel: 'Close stop list');
   final _rowFocus = <String, FocusNode>{};
   late WorkbenchPanel _lastPanel;
@@ -58,7 +59,14 @@ class _StopListWorkspaceState extends State<StopListWorkspace> {
     widget.viewModel.addListener(_modelChanged);
     _lastPanel = widget.viewModel.panel;
     _search.text = widget.viewModel.query.search;
+    _queryExpanded = false;
     _restoreLater();
+  }
+
+  void _toggleQueryTools() {
+    setState(() {
+      _queryExpanded = !_queryExpanded;
+    });
   }
 
   void _modelChanged() {
@@ -145,8 +153,10 @@ class _StopListWorkspaceState extends State<StopListWorkspace> {
     final result = model.result;
     return Material(
       key: const ValueKey('list-workspace'),
-      color: OceanColors.cream,
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      color: _StopListStyle.paper,
+      elevation: 8,
+      shadowColor: const Color(0x26563817),
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(23)),
       clipBehavior: Clip.antiAlias,
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -155,16 +165,40 @@ class _StopListWorkspaceState extends State<StopListWorkspace> {
               MediaQuery.textScalerOf(context).scale(14) > 22;
           return Column(
             children: [
+              const Padding(
+                padding: EdgeInsets.only(top: 10, bottom: 8),
+                child: SizedBox(
+                  key: ValueKey('list-grip'),
+                  width: 32,
+                  height: 3,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Color(0xFFD9C3A3),
+                      borderRadius: BorderRadius.all(Radius.circular(2)),
+                    ),
+                  ),
+                ),
+              ),
               Padding(
                 padding: compact
-                    ? const EdgeInsets.fromLTRB(20, 6, 12, 6)
-                    : const EdgeInsets.fromLTRB(20, 14, 12, 12),
+                    ? const EdgeInsets.fromLTRB(20, 0, 12, 6)
+                    : const EdgeInsets.fromLTRB(20, 9, 12, 18),
                 child: Row(
                   children: [
-                    if (compact)
-                      const Spacer()
-                    else
-                      Expanded(child: _title(context)),
+                    if (compact) const Spacer() else Expanded(child: _title()),
+                    SizedBox.square(
+                      dimension: 44,
+                      child: IconButton(
+                        key: const ValueKey('list-query-controls'),
+                        tooltip: 'Search and filters',
+                        isSelected: _queryExpanded,
+                        onPressed: _toggleQueryTools,
+                        icon: const BrandIcon(
+                          'search',
+                          color: _StopListStyle.ink,
+                        ),
+                      ),
+                    ),
                     if (widget.onSync != null)
                       SizedBox.square(
                         dimension: 44,
@@ -177,17 +211,22 @@ class _StopListWorkspaceState extends State<StopListWorkspace> {
                           icon: SyncActionIcon(syncing: model.isSyncing),
                         ),
                       ),
-                    IconButton(
-                      key: const ValueKey('close-list'),
-                      focusNode: _closeFocus,
-                      tooltip: 'Back to map',
-                      onPressed: widget.onClose,
-                      icon: const Icon(Icons.close, size: 21),
+                    SizedBox.square(
+                      dimension: 44,
+                      child: IconButton(
+                        key: const ValueKey('close-list'),
+                        focusNode: _closeFocus,
+                        tooltip: 'Close stop list',
+                        onPressed: widget.onClose,
+                        icon: const BrandIcon(
+                          'close',
+                          color: _StopListStyle.ink,
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
-              const Divider(height: 1),
               Expanded(
                 child: CustomScrollView(
                   key: const ValueKey('stop-list-scroll'),
@@ -201,10 +240,11 @@ class _StopListWorkspaceState extends State<StopListWorkspace> {
                       SliverToBoxAdapter(
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-                          child: _title(context),
+                          child: _title(),
                         ),
                       ),
-                    SliverToBoxAdapter(child: _queryControls(context, model)),
+                    if (_queryExpanded)
+                      SliverToBoxAdapter(child: _queryControls(context, model)),
                     if (model.isLoading && model.stops.isEmpty)
                       const SliverFillRemaining(
                         hasScrollBody: false,
@@ -227,7 +267,7 @@ class _StopListWorkspaceState extends State<StopListWorkspace> {
                         child: _empty(
                           context,
                           title: 'No matching stops',
-                          message: 'Try another search or clear your filters.',
+                          message: 'Try another status or search term.',
                           action: 'Clear search and filters',
                           onPressed: model.resetQuery,
                         ),
@@ -247,7 +287,7 @@ class _StopListWorkspaceState extends State<StopListWorkspace> {
                           );
                         },
                       ),
-                    const SliverToBoxAdapter(child: SizedBox(height: 20)),
+                    const SliverToBoxAdapter(child: SizedBox(height: 16)),
                   ],
                 ),
               ),
@@ -258,15 +298,38 @@ class _StopListWorkspaceState extends State<StopListWorkspace> {
     );
   }
 
-  Widget _title(BuildContext context) => Semantics(
+  Widget _title() => Semantics(
     header: true,
-    child: Text(
-      'Stop list',
-      key: const ValueKey('list-title'),
-      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-        fontWeight: FontWeight.w600,
-        letterSpacing: -0.6,
-      ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Stops on the map',
+          key: ValueKey('list-title'),
+          style: TextStyle(
+            fontSize: 22,
+            height: 1.3,
+            fontWeight: FontWeight.w500,
+            letterSpacing: -0.7,
+            color: _StopListStyle.ink,
+          ),
+        ),
+        const SizedBox(height: 5),
+        Semantics(
+          liveRegion: true,
+          child: Text(
+            '${widget.viewModel.result.matchedCount} '
+            '${widget.viewModel.result.matchedCount == 1 ? 'stop' : 'stops'} '
+            '· Nearest first',
+            key: const ValueKey('list-matching-count'),
+            style: const TextStyle(
+              fontSize: 13,
+              height: 1.5,
+              color: Color(0xFF7C6349),
+            ),
+          ),
+        ),
+      ],
     ),
   );
 
@@ -284,14 +347,15 @@ class _StopListWorkspaceState extends State<StopListWorkspace> {
             decoration: InputDecoration(
               labelText: 'Search stops',
               hintText: 'Reference, customer or address',
-              prefixIcon: const Icon(Icons.search, size: 21),
+              fillColor: _StopListStyle.row,
+              prefixIcon: const BrandIcon('search'),
               suffixIcon: model.query.search.isEmpty
                   ? null
                   : IconButton(
                       key: const ValueKey('clear-search'),
                       tooltip: 'Clear search',
                       onPressed: () => model.setSearch(''),
-                      icon: const Icon(Icons.close, size: 18),
+                      icon: const BrandIcon('close', size: 18),
                     ),
             ),
           ),
@@ -396,6 +460,22 @@ class _StopListWorkspaceState extends State<StopListWorkspace> {
   );
 }
 
+// Resolved map.css values for the Browse stops drawer. Presentation stays local
+// so the shared map/detail status helpers keep their existing contract.
+abstract final class _StopListStyle {
+  static const paper = Color(0xFFFFF9EE);
+  static const row = Color(0xFFFFFAF3);
+  static const ink = Color(0xFF30271F);
+  static const divider = Color(0xFFEBDDC8);
+  static const metadata = Color(0xFF805B3B);
+
+  static Color outcome(DeliveryStatus status) => switch (status) {
+    DeliveryStatus.pending => const Color(0xFF746656),
+    DeliveryStatus.completed => const Color(0xFF245D43),
+    DeliveryStatus.failed => const Color(0xFF8F2F2B),
+  };
+}
+
 class _StopRow extends StatelessWidget {
   const _StopRow({
     super.key,
@@ -414,105 +494,161 @@ class _StopRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = deliveryStatusColor(stop.status);
+    final symbolColor = switch (stop.status) {
+      DeliveryStatus.pending => const Color(0xFF924A23),
+      DeliveryStatus.completed => const Color(0xFF245D43),
+      DeliveryStatus.failed => const Color(0xFF8F2F2B),
+    };
+    final symbolBackground = switch (stop.status) {
+      DeliveryStatus.pending => const Color(0xFFFFE3C8),
+      DeliveryStatus.completed => const Color(0xFFE5EDDE),
+      DeliveryStatus.failed => const Color(0xFFF5E4DC),
+    };
     return DecoratedBox(
       decoration: const BoxDecoration(
-        border: Border(top: BorderSide(color: OceanColors.border)),
+        color: _StopListStyle.row,
+        border: Border(top: BorderSide(color: _StopListStyle.divider)),
       ),
       child: InkWell(
         focusNode: focusNode,
         onTap: onPressed,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ExcludeSemantics(
-                child: Container(
-                  width: 30,
-                  height: 30,
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(
-                      stop.status == DeliveryStatus.failed ? 8 : 15,
-                    ),
-                  ),
-                  child: Icon(
-                    deliveryStatusIcon(stop.status),
-                    size: 18,
-                    color: color,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      stop.reference,
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: OceanColors.muted,
-                        letterSpacing: 0.4,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      stop.customerName,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: -0.3,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      stop.address,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: OceanColors.muted,
-                        height: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Wrap(
-                      spacing: 12,
-                      runSpacing: 7,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        StopStatusBadge(status: stop.status),
-                        Text(
-                          straightLineDistanceLabel(distance),
-                          semanticsLabel:
-                              '${straightLineDistanceLabel(distance)}, straight-line from test reference',
-                          style: Theme.of(context).textTheme.labelMedium,
+        hoverColor: const Color(0xFFFFF1DF),
+        child: Semantics(
+          label: stop.reference,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 112),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ExcludeSemantics(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Container(
+                        key: ValueKey('list-status-symbol-${stop.reference}'),
+                        width: 30,
+                        height: 30,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: symbolBackground,
+                          borderRadius: BorderRadius.circular(
+                            stop.status == DeliveryStatus.failed ? 8 : 15,
+                          ),
                         ),
-                        if (stop.timeWindow?.isNotEmpty ?? false)
-                          Text(
-                            stop.timeWindow!.replaceAll('-', '–'),
-                            semanticsLabel:
-                                'Delivery window ${stop.timeWindow}',
-                            style: Theme.of(context).textTheme.labelMedium
-                                ?.copyWith(color: OceanColors.muted),
+                        child: stop.status == DeliveryStatus.pending
+                            ? Container(
+                                width: 12,
+                                height: 12,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: symbolColor,
+                                    width: 2,
+                                  ),
+                                ),
+                              )
+                            : BrandIcon(
+                                stop.status == DeliveryStatus.completed
+                                    ? 'check'
+                                    : 'warning',
+                                size: 17,
+                                color: symbolColor,
+                              ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          stop.customerName,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            height: 1.5,
+                            fontWeight: FontWeight.w500,
+                            fontVariations: [FontVariation('wght', 550)],
+                            letterSpacing: -0.3,
+                            color: _StopListStyle.ink,
                           ),
-                        if (waiting)
-                          Text(
-                            'Waiting to sync',
-                            style: Theme.of(context).textTheme.labelMedium
-                                ?.copyWith(color: OceanColors.muted),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          stop.address,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            height: 1.5,
+                            color: Color(0xFF7D6145),
                           ),
+                        ),
+                        const SizedBox(height: 9),
+                        DefaultTextStyle.merge(
+                          style: const TextStyle(
+                            fontSize: 13,
+                            height: 1.5,
+                            color: _StopListStyle.metadata,
+                          ),
+                          child: Wrap(
+                            spacing: 12,
+                            runSpacing: 5,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              Text(
+                                straightLineDistanceLabel(distance),
+                                semanticsLabel:
+                                    '${straightLineDistanceLabel(distance)}, straight-line from test reference',
+                                style: const TextStyle(
+                                  color: Color(0xFF6B4C31),
+                                  fontWeight: FontWeight.w500,
+                                  fontFeatures: [FontFeature.tabularFigures()],
+                                ),
+                              ),
+                              if (stop.timeWindow?.isNotEmpty ?? false)
+                                Text(
+                                  stop.timeWindow!.replaceAll('-', '–'),
+                                  semanticsLabel:
+                                      'Delivery window ${stop.timeWindow}',
+                                ),
+                              StopStatusBadge(
+                                status: stop.status,
+                                showSymbol: false,
+                                textStyle: TextStyle(
+                                  fontSize: 13,
+                                  height: 1.5,
+                                  fontWeight: FontWeight.w400,
+                                  fontVariations: const [
+                                    FontVariation('wght', 450),
+                                  ],
+                                  color: _StopListStyle.outcome(stop.status),
+                                ),
+                              ),
+                              if (waiting)
+                                const Text(
+                                  'Waiting to sync',
+                                  style: TextStyle(color: Color(0xFF964B28)),
+                                ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 12),
+                  const ExcludeSemantics(
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 7),
+                      child: BrandIcon(
+                        'arrow',
+                        size: 14,
+                        color: Color(0xFF96744F),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 8),
-              const ExcludeSemantics(
-                child: Icon(
-                  Icons.chevron_right,
-                  size: 18,
-                  color: OceanColors.muted,
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

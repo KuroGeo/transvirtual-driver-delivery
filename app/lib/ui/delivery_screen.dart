@@ -40,6 +40,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
   final _searchFocus = FocusNode(debugLabel: 'Map search');
   bool _searchOpen = false;
   bool _listMounted = false;
+  late final Listenable _workbenchChanges;
   DeliveryViewModel get model => widget.viewModel;
 
   @override
@@ -47,6 +48,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
     super.initState();
     _map = widget.mapController ?? DeliveryMapController();
     model.addListener(_modelChanged);
+    _workbenchChanges = Listenable.merge([model, model.notice]);
   }
 
   void _modelChanged() {
@@ -72,6 +74,24 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
     model.openDetail(stop.id, origin: origin);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && model.selectedStop?.id == stop.id) _map.focusStop(stop);
+    });
+  }
+
+  void _selectStatus(DeliveryStatus? status) {
+    if (model.panel == WorkbenchPanel.detail) {
+      model.closeDetail();
+      if (model.panel == WorkbenchPanel.list) model.closeList();
+    }
+    model.setStatus(status);
+    // Fit only for this explicit action, after markers and overlay padding
+    // reflect the new selection. Storage/sync notifications keep the camera.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || model.query.status != status) return;
+      if (model.result.stops.isEmpty) {
+        _map.locateTestReference();
+      } else {
+        _map.fitMatches();
+      }
     });
   }
 
@@ -157,7 +177,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
-    listenable: model,
+    listenable: _workbenchChanges,
     builder: (context, _) {
       final detail = model.panel == WorkbenchPanel.detail;
       final list = model.panel == WorkbenchPanel.list;
@@ -221,12 +241,12 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                                     fitPaddingBuilder: (area) {
                                       if (!detail) {
                                         if (_compact(context, area)) {
-                                          // Compact overview occupies the
-                                          // same right lane as the detail.
+                                          // Fit beside the single tool column
+                                          // and the compact card/feedback.
                                           return EdgeInsets.fromLTRB(
-                                            8,
+                                            80,
                                             170,
-                                            math.max(0, area.maxWidth - 106),
+                                            math.max(0, area.maxWidth - 91),
                                             24,
                                           );
                                         }
@@ -244,18 +264,18 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                                       );
                                       if (compact) {
                                         return EdgeInsets.fromLTRB(
-                                          8,
+                                          80,
                                           170,
-                                          math.max(0, area.maxWidth - 106),
+                                          math.max(0, area.maxWidth - 91),
                                           24,
                                         );
                                       }
                                       if (_map.tileStatus.value ==
                                           MapTileStatus.error) {
                                         return EdgeInsets.fromLTRB(
-                                          8,
+                                          80,
                                           172,
-                                          math.max(0, area.maxWidth - 106),
+                                          math.max(0, area.maxWidth - 91),
                                           height + 36,
                                         );
                                       }
@@ -274,15 +294,29 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                                     overlayBuilder: (context, area) => Stack(
                                       children: [
                                         if (_listMounted)
-                                          Positioned.fill(
-                                            // List mode hides the map tools;
-                                            // compact layouts can use that
-                                            // space for actual list content.
-                                            top: _compact(context, area)
-                                                ? 12
-                                                : 112,
-                                            left: 8,
-                                            right: 8,
+                                          Positioned(
+                                            // The prototype drawer joins the
+                                            // bottom edge. Reserve a separate
+                                            // notice lane only while needed.
+                                            bottom: 0,
+                                            left: 0,
+                                            right: 0,
+                                            height: math.min(
+                                              530,
+                                              math.max(
+                                                0,
+                                                area.maxHeight -
+                                                    (!_compact(context, area) &&
+                                                            (model
+                                                                        .notice
+                                                                        .value !=
+                                                                    null ||
+                                                                model.loadError !=
+                                                                    null)
+                                                        ? 112
+                                                        : 12),
+                                              ),
+                                            ),
                                             child: Offstage(
                                               offstage: !list,
                                               child: ExcludeFocus(
@@ -628,7 +662,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
     final selected = model.query.status == status;
     return OutlinedButton(
       key: ValueKey('header-filter-${label.toLowerCase()}'),
-      onPressed: () => model.setStatus(status),
+      onPressed: () => _selectStatus(status),
       style: OutlinedButton.styleFrom(
         minimumSize: const Size(0, 44),
         padding: const EdgeInsets.symmetric(horizontal: 10),
