@@ -30,3 +30,9 @@
 私有 GitHub 仓库保护设置 API 实际返回 403。历史源码 HEAD `0693165` 的 Linux CI 38102904327 已真实通过并独立核验，但 required checks 和发布强制路径仍未部署。当前生产 gate 的实际首个短路检查因 `enforcement_deployed=false` 返回 exit1；不宣称这一次逐项执行了后续生产检查。未修改仓库隐私、套餐或保护设置。生产还缺约定真机预算、真实服务、适用资源许可、签名、具体发布授权与交付回执。
 
 [正式门禁回归](../tests/test_gate.py) 保留：缺失/失败/跳过/旧候选/hash错配/网页冒充原生/debug冒充真机/fake冒充connected/未签产物/授权与交付错配均拒绝。不能用主控评分、合成正向 fixture 或改交付名字覆盖实际缺口。
+
+## 最大系统字号修复 LTX-01
+
+当前256de9f / `7b077f55197263c571fb33fce1b561f7ccd5cdc0d2a7252aab34c15a9eb184bf` 的G1、精确源码/元数据LinuxCI和指定N7三配置已独立接受：最大字号402×874/393×852、普通OSlarge；五唯一ID/13passed+2authenticNA/1382断言/9PID、可读性与coldSQL/受控ACK/noresend通过。正式main Demo已保留30条配送/0outbox安装到Preview。
+
+原两次max16 ENOSPC失败和清理错误保留，资源恢复后fresh同候选复验通过，不改写旧尝试。最终报告/归档元数据CI和PR37合入单独取证，详见[当前交付记录](large-text-repair.md)。指定字体修复不代签完整当前34项/G2、真机或生产门槛；#31/#32/#33和生产no-go继续适用。

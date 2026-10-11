@@ -184,6 +184,10 @@ Future<void> _openNearest(
     session.model.setSearch(search);
     await settle(tester);
   }
+  if (find.byKey(const ValueKey('nearest-stop')).evaluate().isEmpty &&
+      find.byKey(const ValueKey('map-summary-open')).evaluate().isNotEmpty) {
+    await tapKey(tester, 'map-summary-open');
+  }
   await tapKey(tester, 'nearest-stop');
   expect(session.model.panel, WorkbenchPanel.detail);
   expect(session.model.detailContext!.origin, DetailOrigin.nearest);

@@ -15,6 +15,10 @@ import 'delivery/list/stop_list_workspace.dart';
 import 'delivery/map/delivery_map_workspace.dart';
 import 'delivery_view_model.dart';
 
+class _DismissWorkbenchIntent extends Intent {
+  const _DismissWorkbenchIntent();
+}
+
 class DeliveryScreen extends StatefulWidget {
   const DeliveryScreen({
     super.key,
@@ -40,6 +44,9 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
   final _searchFocus = FocusNode(debugLabel: 'Map search');
   bool _searchOpen = false;
   bool _listMounted = false;
+  bool _summaryOpen = false;
+  final _summaryEntryFocus = FocusNode(debugLabel: 'Delivery summary');
+  final _summaryCloseFocus = FocusNode(debugLabel: 'Summary close');
   late final Listenable _workbenchChanges;
   DeliveryViewModel get model => widget.viewModel;
 
@@ -52,6 +59,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
   }
 
   void _modelChanged() {
+    if (model.panel != WorkbenchPanel.map) _summaryOpen = false;
     if (_search.text != model.query.search) {
       _search.value = TextEditingValue(
         text: model.query.search,
@@ -65,12 +73,15 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
     model.removeListener(_modelChanged);
     _search.dispose();
     _searchFocus.dispose();
+    _summaryEntryFocus.dispose();
+    _summaryCloseFocus.dispose();
     if (widget.mapController == null) _map.dispose();
     super.dispose();
   }
 
   void _open(Stop stop, DetailOrigin origin) {
     FocusScope.of(context).unfocus();
+    _summaryOpen = false;
     model.openDetail(stop.id, origin: origin);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && model.selectedStop?.id == stop.id) _map.focusStop(stop);
@@ -97,7 +108,9 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
 
   void _back() {
     if (model.isSaving || ModalRoute.of(context)?.isCurrent != true) return;
-    if (model.panel == WorkbenchPanel.detail) {
+    if (_summaryOpen) {
+      _closeSummary();
+    } else if (model.panel == WorkbenchPanel.detail) {
       model.closeDetail();
     } else if (model.panel == WorkbenchPanel.list) {
       model.closeList();
@@ -183,17 +196,18 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
       final list = model.panel == WorkbenchPanel.list;
       if (list) _listMounted = true;
       return PopScope(
-        canPop: !detail && !list && !_searchOpen,
+        canPop: !detail && !list && !_searchOpen && !_summaryOpen,
         onPopInvokedWithResult: (didPop, _) {
           if (!didPop) _back();
         },
         child: Shortcuts(
           shortcuts: const {
-            SingleActivator(LogicalKeyboardKey.escape): DismissIntent(),
+            SingleActivator(LogicalKeyboardKey.escape):
+                _DismissWorkbenchIntent(),
           },
           child: Actions(
             actions: {
-              DismissIntent: CallbackAction<DismissIntent>(
+              _DismissWorkbenchIntent: CallbackAction<_DismissWorkbenchIntent>(
                 onInvoke: (_) {
                   _back();
                   return null;
@@ -204,222 +218,344 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
               resizeToAvoidBottomInset: false,
               body: SafeArea(
                 child: LayoutBuilder(
-                  builder: (context, constraints) => Column(
-                    children: [
-                      ConstrainedBox(
-                        constraints: BoxConstraints(
-                          // Large business text also expands the footer and
-                          // Browse. Keep room for both by scrolling the header
-                          // sooner; its complete content keeps the OS scaler.
-                          maxHeight:
-                              constraints.maxHeight *
-                              (MediaQuery.textScalerOf(context).scale(14) > 22
-                                  ? .32
-                                  : .43),
-                        ),
-                        child: SingleChildScrollView(child: _header(context)),
-                      ),
-                      const Divider(height: 1),
-                      Expanded(
-                        child: model.stops.isEmpty
-                            ? _empty(context)
-                            : LayoutBuilder(
-                                builder: (context, _) {
-                                  return DeliveryMapWorkspace(
-                                    key: const ValueKey('formal-map'),
-                                    result: model.result,
-                                    datasetId: model.settings!.datasetId,
-                                    initialViewport: model.settings?.viewport,
-                                    controller: _map,
-                                    tileProvider: widget.tileProvider,
-                                    tileUrlTemplate: widget.tileUrlTemplate,
-                                    selectedStopId: model.selectedStop?.id,
-                                    onOpenStop: _open,
-                                    toolbarTop: 12,
-                                    showTools: !list,
-                                    showTileError: false,
-                                    fitPaddingBuilder: (area) {
-                                      if (!detail) {
-                                        if (_compact(context, area)) {
-                                          // Fit beside the single tool column
-                                          // and the compact card/feedback.
-                                          return _compactFitPadding(area);
-                                        }
-                                        return const EdgeInsets.fromLTRB(
-                                          35,
-                                          35,
-                                          35,
-                                          260,
-                                        );
-                                      }
-                                      final compact = _compact(context, area);
-                                      final height = _cardHeight(
-                                        area.maxHeight,
-                                        _compact(context, area),
-                                      );
-                                      if (compact) {
-                                        return _compactFitPadding(area);
-                                      }
-                                      if (_map.tileStatus.value ==
-                                          MapTileStatus.error) {
-                                        return EdgeInsets.fromLTRB(
-                                          80,
-                                          172,
-                                          math.max(0, area.maxWidth - 91),
-                                          height + 36,
-                                        );
-                                      }
-                                      return EdgeInsets.fromLTRB(
-                                        35,
-                                        156,
-                                        35,
-                                        height + 36,
-                                      );
-                                    },
-                                    onViewportChanged: (viewport) =>
-                                        unawaited(model.saveViewport(viewport)),
-                                    onSync: () => unawaited(model.sync()),
-                                    syncing: model.isSyncing,
-                                    onAttributionTap: _mapInformation,
-                                    overlayBuilder: (context, area) => Stack(
-                                      children: [
-                                        if (_listMounted)
-                                          Positioned(
-                                            // The prototype drawer joins the
-                                            // bottom edge. Reserve a separate
-                                            // notice lane only while needed.
-                                            bottom: 0,
-                                            left: 0,
-                                            right: 0,
-                                            height: math.min(
-                                              530,
-                                              math.max(
-                                                0,
-                                                area.maxHeight -
-                                                    (!_compact(context, area) &&
-                                                            (model
-                                                                        .notice
-                                                                        .value !=
-                                                                    null ||
-                                                                model.loadError !=
-                                                                    null)
-                                                        ? 112
-                                                        : 12),
-                                              ),
-                                            ),
-                                            child: Offstage(
-                                              offstage: !list,
-                                              child: ExcludeFocus(
-                                                excluding: !list,
-                                                child: Column(
-                                                  children: [
-                                                    if (_compact(context, area))
-                                                      ClipRect(
-                                                        key: const ValueKey(
-                                                          'list-feedback-viewport',
+                  builder: (context, constraints) {
+                    final largeText =
+                        MediaQuery.textScalerOf(context).scale(14) > 22;
+                    final task = largeText && (list || detail || _summaryOpen);
+                    return Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Offstage(
+                          offstage: task,
+                          child: ExcludeFocus(
+                            excluding: task,
+                            child: Column(
+                              children: [
+                                ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    // Large business text also expands the footer and
+                                    // Browse. Keep room for both by scrolling the header
+                                    // sooner; its complete content keeps the OS scaler.
+                                    maxHeight:
+                                        constraints.maxHeight *
+                                        (MediaQuery.textScalerOf(
+                                                  context,
+                                                ).scale(14) >
+                                                22
+                                            ? .32
+                                            : .43),
+                                  ),
+                                  child: SingleChildScrollView(
+                                    child: _header(context),
+                                  ),
+                                ),
+                                const Divider(height: 1),
+                                Expanded(
+                                  child: model.stops.isEmpty
+                                      ? _empty(context)
+                                      : LayoutBuilder(
+                                          builder: (context, _) {
+                                            return DeliveryMapWorkspace(
+                                              key: const ValueKey('formal-map'),
+                                              result: model.result,
+                                              datasetId:
+                                                  model.settings!.datasetId,
+                                              initialViewport:
+                                                  model.settings?.viewport,
+                                              controller: _map,
+                                              tileProvider: widget.tileProvider,
+                                              tileUrlTemplate:
+                                                  widget.tileUrlTemplate,
+                                              selectedStopId:
+                                                  model.selectedStop?.id,
+                                              onOpenStop: _open,
+                                              toolbarTop: 12,
+                                              showTools: !list,
+                                              showTileError: false,
+                                              fitPaddingBuilder: (area) {
+                                                if (!detail) {
+                                                  if (_compact(context, area)) {
+                                                    // Fit beside the single tool column
+                                                    // and the compact card/feedback.
+                                                    return _compactFitPadding(
+                                                      area,
+                                                    );
+                                                  }
+                                                  return const EdgeInsets.fromLTRB(
+                                                    35,
+                                                    35,
+                                                    35,
+                                                    260,
+                                                  );
+                                                }
+                                                final compact = _compact(
+                                                  context,
+                                                  area,
+                                                );
+                                                final height = _cardHeight(
+                                                  area.maxHeight,
+                                                  _compact(context, area),
+                                                );
+                                                if (compact) {
+                                                  return _compactFitPadding(
+                                                    area,
+                                                  );
+                                                }
+                                                if (_map.tileStatus.value ==
+                                                    MapTileStatus.error) {
+                                                  return EdgeInsets.fromLTRB(
+                                                    80,
+                                                    172,
+                                                    math.max(
+                                                      0,
+                                                      area.maxWidth - 91,
+                                                    ),
+                                                    height + 36,
+                                                  );
+                                                }
+                                                return EdgeInsets.fromLTRB(
+                                                  35,
+                                                  156,
+                                                  35,
+                                                  height + 36,
+                                                );
+                                              },
+                                              onViewportChanged: (viewport) =>
+                                                  unawaited(
+                                                    model.saveViewport(
+                                                      viewport,
+                                                    ),
+                                                  ),
+                                              onSync: () =>
+                                                  unawaited(model.sync()),
+                                              syncing: model.isSyncing,
+                                              onAttributionTap: _mapInformation,
+                                              overlayBuilder: (context, area) => Stack(
+                                                children: [
+                                                  if (_listMounted &&
+                                                      !largeText)
+                                                    Positioned(
+                                                      // The prototype drawer joins the
+                                                      // bottom edge. Reserve a separate
+                                                      // notice lane only while needed.
+                                                      bottom: 0,
+                                                      left: 0,
+                                                      right: 0,
+                                                      height: math.min(
+                                                        530,
+                                                        math.max(
+                                                          0,
+                                                          area.maxHeight -
+                                                              (!_compact(
+                                                                        context,
+                                                                        area,
+                                                                      ) &&
+                                                                      (model.notice.value !=
+                                                                              null ||
+                                                                          model.loadError !=
+                                                                              null)
+                                                                  ? 112
+                                                                  : 12),
                                                         ),
-                                                        child: list
-                                                            ? _feedback(
-                                                                true,
-                                                                area.maxHeight *
-                                                                    .18,
-                                                              )
-                                                            : const SizedBox.shrink(),
                                                       ),
-                                                    Expanded(
-                                                      child: StopListWorkspace(
-                                                        viewModel: model,
-                                                        onClose:
-                                                            model.closeList,
-                                                        onOpenStop: (stop) =>
-                                                            _open(
-                                                              stop,
-                                                              DetailOrigin.list,
-                                                            ),
-                                                        onSync: () => unawaited(
-                                                          model.sync(),
+                                                      child: Offstage(
+                                                        offstage: !list,
+                                                        child: ExcludeFocus(
+                                                          excluding: !list,
+                                                          child: Column(
+                                                            children: [
+                                                              if (_compact(
+                                                                context,
+                                                                area,
+                                                              ))
+                                                                ClipRect(
+                                                                  key: const ValueKey(
+                                                                    'list-feedback-viewport',
+                                                                  ),
+                                                                  child: list
+                                                                      ? _feedback(
+                                                                          true,
+                                                                          area.maxHeight *
+                                                                              .18,
+                                                                        )
+                                                                      : const SizedBox.shrink(),
+                                                                ),
+                                                              Expanded(
+                                                                child: StopListWorkspace(
+                                                                  viewModel:
+                                                                      model,
+                                                                  onClose: model
+                                                                      .closeList,
+                                                                  onOpenStop:
+                                                                      (
+                                                                        stop,
+                                                                      ) => _open(
+                                                                        stop,
+                                                                        DetailOrigin
+                                                                            .list,
+                                                                      ),
+                                                                  onSync: () =>
+                                                                      unawaited(
+                                                                        model
+                                                                            .sync(),
+                                                                      ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        if (!list && !detail)
-                                          Positioned(
-                                            left: _compact(context, area)
-                                                ? 114
-                                                : 12,
-                                            right: 12,
-                                            bottom: 12,
-                                            child: ConstrainedBox(
-                                              constraints: BoxConstraints(
-                                                maxHeight: math.max(
-                                                  0,
-                                                  area.maxHeight -
-                                                      (_compact(context, area)
-                                                          ? 24
-                                                          : 225),
-                                                ),
-                                              ),
-                                              child: _compact(context, area)
-                                                  ? _overview(
-                                                      context,
-                                                      compact: true,
-                                                    )
-                                                  : SingleChildScrollView(
-                                                      child: _overview(context),
-                                                    ),
-                                            ),
-                                          ),
-                                        if (detail)
-                                          Positioned(
-                                            left: _compact(context, area)
-                                                ? 114
-                                                : 12,
-                                            right: 12,
-                                            bottom: 12,
-                                            height: _cardHeight(
-                                              area.maxHeight,
-                                              _compact(context, area),
-                                            ),
-                                            child: DeliveryDetailCard(
-                                              key: ValueKey(
-                                                'detail-${model.selectedStop?.id}',
-                                              ),
-                                              viewModel: model,
-                                              onClose: model.closeDetail,
-                                            ),
-                                          ),
-                                        if (detail || !_compact(context, area))
-                                          Positioned(
-                                            top: 12,
-                                            left: list ? 20 : 114,
-                                            right: 12,
-                                            child: _feedback(
-                                              list,
-                                              detail
-                                                  ? area.maxHeight -
-                                                        _cardHeight(
-                                                          area.maxHeight,
+                                                  if (!list && !detail)
+                                                    Positioned(
+                                                      left:
                                                           _compact(
                                                             context,
                                                             area,
+                                                          )
+                                                          ? 114
+                                                          : 12,
+                                                      right: 12,
+                                                      bottom: 12,
+                                                      child: ConstrainedBox(
+                                                        constraints: BoxConstraints(
+                                                          maxHeight: math.max(
+                                                            0,
+                                                            area.maxHeight -
+                                                                (_compact(
+                                                                      context,
+                                                                      area,
+                                                                    )
+                                                                    ? 24
+                                                                    : 225),
                                                           ),
-                                                        ) -
-                                                        36
-                                                  : area.maxHeight - 24,
-                                            ),
+                                                        ),
+                                                        child: largeText
+                                                            ? _largeMapActions()
+                                                            : _compact(
+                                                                context,
+                                                                area,
+                                                              )
+                                                            ? _overview(
+                                                                context,
+                                                                compact: true,
+                                                              )
+                                                            : SingleChildScrollView(
+                                                                child:
+                                                                    _overview(
+                                                                      context,
+                                                                    ),
+                                                              ),
+                                                      ),
+                                                    ),
+                                                  if (detail && !largeText)
+                                                    Positioned(
+                                                      left:
+                                                          _compact(
+                                                            context,
+                                                            area,
+                                                          )
+                                                          ? 114
+                                                          : 12,
+                                                      right: 12,
+                                                      bottom: 12,
+                                                      height: _cardHeight(
+                                                        area.maxHeight,
+                                                        _compact(context, area),
+                                                      ),
+                                                      child: DeliveryDetailCard(
+                                                        key: ValueKey(
+                                                          'detail-${model.selectedStop?.id}',
+                                                        ),
+                                                        viewModel: model,
+                                                        onClose:
+                                                            model.closeDetail,
+                                                      ),
+                                                    ),
+                                                  if (!task &&
+                                                      (detail ||
+                                                          !_compact(
+                                                            context,
+                                                            area,
+                                                          )))
+                                                    Positioned(
+                                                      top: 12,
+                                                      left: list ? 20 : 114,
+                                                      right: 12,
+                                                      child: _feedback(
+                                                        list,
+                                                        detail
+                                                            ? area.maxHeight -
+                                                                  _cardHeight(
+                                                                    area.maxHeight,
+                                                                    _compact(
+                                                                      context,
+                                                                      area,
+                                                                    ),
+                                                                  ) -
+                                                                  36
+                                                            : area.maxHeight -
+                                                                  24,
+                                                      ),
+                                                    ),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        if (largeText &&
+                            (_listMounted || detail || _summaryOpen))
+                          Positioned.fill(
+                            child: Offstage(
+                              offstage: !task,
+                              child: Stack(
+                                key: const ValueKey(
+                                  'large-text-task-workspace',
+                                ),
+                                fit: StackFit.expand,
+                                children: [
+                                  if (_summaryOpen && !list && !detail)
+                                    _largeSummary(),
+                                  if (_listMounted)
+                                    Offstage(
+                                      offstage: !list,
+                                      child: ExcludeFocus(
+                                        excluding: !list,
+                                        child: StopListWorkspace(
+                                          viewModel: model,
+                                          onClose: model.closeList,
+                                          onOpenStop: (stop) =>
+                                              _open(stop, DetailOrigin.list),
+                                          onSync: () => unawaited(model.sync()),
+                                          feedback: WorkbenchNoticeView(
+                                            viewModel: model,
                                           ),
-                                      ],
+                                        ),
+                                      ),
                                     ),
-                                  );
-                                },
+                                  if (detail)
+                                    DeliveryDetailCard(
+                                      key: ValueKey(
+                                        'detail-${model.selectedStop?.id}',
+                                      ),
+                                      viewModel: model,
+                                      onClose: model.closeDetail,
+                                      feedback: WorkbenchNoticeView(
+                                        viewModel: model,
+                                      ),
+                                    ),
+                                ],
                               ),
-                      ),
-                    ],
-                  ),
+                            ),
+                          ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
@@ -728,6 +864,267 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
       ),
     ),
   );
+
+  void _openSummary() {
+    FocusScope.of(context).unfocus();
+    setState(() => _summaryOpen = true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _summaryOpen && _summaryCloseFocus.context != null) {
+        _summaryCloseFocus.requestFocus();
+      }
+    });
+  }
+
+  void _closeSummary() {
+    FocusScope.of(context).unfocus();
+    setState(() => _summaryOpen = false);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted &&
+          !_summaryOpen &&
+          model.panel == WorkbenchPanel.map &&
+          _summaryEntryFocus.context != null) {
+        _summaryEntryFocus.requestFocus();
+      }
+    });
+  }
+
+  String get _remainingLabel => model.loadError == null
+      ? '${model.pendingCount} left to deliver'
+      : 'Reload for current totals';
+
+  Widget _largeMapActions() => Material(
+    key: const ValueKey('delivery-overview'),
+    color: OceanColors.cream,
+    elevation: 3,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(22),
+      side: const BorderSide(color: OceanColors.border),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: TextButton.icon(
+                  key: const ValueKey('browse-stops'),
+                  onPressed: model.openList,
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(0, 44),
+                    textStyle: const TextStyle(fontSize: 12),
+                  ),
+                  label: const Text(
+                    'Browse stops',
+                    textAlign: TextAlign.center,
+                  ),
+                  icon: const Icon(Icons.arrow_forward, size: 18),
+                  iconAlignment: IconAlignment.end,
+                ),
+              ),
+              ValueListenableBuilder<MapTileStatus>(
+                valueListenable: _map.tileStatus,
+                builder: (context, status, _) => status != MapTileStatus.error
+                    ? const SizedBox.shrink()
+                    : SizedBox.square(
+                        key: const ValueKey('root-map-error'),
+                        dimension: 44,
+                        child: IconButton(
+                          key: const ValueKey('retry-map'),
+                          tooltip: 'Map unavailable. Retry map',
+                          onPressed: _map.retryTiles,
+                          icon: const Icon(Icons.refresh),
+                        ),
+                      ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Flexible(
+            child: SingleChildScrollView(
+              child: TextButton(
+                key: const ValueKey('map-summary-open'),
+                focusNode: _summaryEntryFocus,
+                onPressed: _openSummary,
+                style: TextButton.styleFrom(
+                  minimumSize: const Size(0, 44),
+                  foregroundColor: OceanColors.ink,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _remainingLabel,
+                        key: const ValueKey('map-summary-remaining'),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          height: 1.2,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Icon(Icons.expand_more, size: 24),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+
+  Widget _largeSummary() {
+    final nearest = model.loadError == null ? model.result.nearest : null;
+    final finished = model.stops.length - model.pendingCount;
+    return Material(
+      key: const ValueKey('large-summary-workspace'),
+      color: OceanColors.cream,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 12, 8),
+            child: Row(
+              children: [
+                const Expanded(
+                  child: Text(
+                    'Today',
+                    key: ValueKey('summary-title'),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                ),
+                SizedBox.square(
+                  dimension: 44,
+                  child: IconButton(
+                    key: const ValueKey('summary-close'),
+                    focusNode: _summaryCloseFocus,
+                    tooltip: 'Return to map',
+                    onPressed: _closeSummary,
+                    icon: const Icon(Icons.close),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              key: const ValueKey('large-summary-scroll'),
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    _remainingLabel,
+                    key: const ValueKey('summary-remaining'),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      height: 1.2,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    model.loadError == null
+                        ? '$finished of ${model.stops.length} finished'
+                        : 'Saved state needs reload',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: OceanColors.muted,
+                    ),
+                  ),
+                  TextButton(
+                    key: const ValueKey('map-waiting-only'),
+                    onPressed: () =>
+                        model.setWaitingOnly(!model.query.waitingOnly),
+                    style: TextButton.styleFrom(minimumSize: const Size(0, 44)),
+                    child: Text(
+                      '${model.query.waitingOnly ? '✓ ' : ''}${model.loadError == null ? model.queueCount : '—'} waiting to sync',
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ),
+                  const Divider(height: 24),
+                  InkWell(
+                    key: const ValueKey('nearest-stop'),
+                    onTap: nearest == null
+                        ? null
+                        : () => _open(nearest, DetailOrigin.nearest),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const Text(
+                            'NEAREST MATCH',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: OceanColors.muted,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            nearest?.customerName ??
+                                (model.loadError == null
+                                    ? 'No matching stops'
+                                    : 'Reload to view stops'),
+                            key: const ValueKey('summary-nearest-customer'),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              height: 1.25,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          if (nearest != null) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              nearest.reference,
+                              key: const ValueKey('summary-nearest-reference'),
+                              style: const TextStyle(fontSize: 12, height: 1.3),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '${straightLineDistanceLabel(model.result.distanceMeters(nearest)!)} straight-line',
+                              key: const ValueKey('summary-nearest-distance'),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                height: 1.3,
+                                color: OceanColors.muted,
+                              ),
+                            ),
+                            const Icon(Icons.arrow_forward, size: 24),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                  const Divider(height: 24),
+                  _feedbackContent(false),
+                  const SizedBox(height: 12),
+                  FilledButton.icon(
+                    key: const ValueKey('summary-browse-stops'),
+                    onPressed: () {
+                      FocusScope.of(context).unfocus();
+                      _summaryOpen = false;
+                      model.openList();
+                    },
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(0, 44),
+                    ),
+                    icon: const Icon(Icons.arrow_forward),
+                    label: const Text('Browse stops'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _overview(BuildContext context, {bool compact = false}) {
     final nearest = model.result.nearest;

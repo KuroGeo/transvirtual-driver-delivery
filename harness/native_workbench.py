@@ -29,6 +29,10 @@ MIGRATION_TRIGGER = "ocean_native_fault_migration_backfill"
 SCENARIOS = tuple(f"N{number}" for number in range(1, 8))
 CONTENT_SIZES = ("large", "accessibility-extra-extra-extra-large")
 COLD_FIXTURES = ("none", "viewport-corrupt", "viewport-nonfinite")
+# Every full readonly sample is retained, including UI bounds and both model
+# and persisted stop rows. Accessibility reading adds samples, not UI actions.
+DRIVER_ACTION_JOURNAL_MAX_BYTES = 8 * 1024 * 1024
+DRIVER_OBSERVATION_JOURNAL_MAX_BYTES = 16 * 1024 * 1024
 # A deterministic, valid one-pixel PNG served through the real HTTP tile path.
 def png_chunk(kind, value):
     return struct.pack(">I", len(value)) + kind + value + struct.pack(">I", zlib.crc32(kind + value))
@@ -451,9 +455,10 @@ def validate_driver_result(directory, phase, pid, candidate, configuration, sess
     if not isinstance(snapshot.get("outbox"), list):
         raise ValueError("readonly snapshot lacks actual outbox membership")
     identity = {key: expected[key] for key in ("processId", "candidate", "configuration", "session")}
-    for name in ("actions.jsonl", "observations.jsonl"):
+    for name, limit in (("actions.jsonl", DRIVER_ACTION_JOURNAL_MAX_BYTES),
+                        ("observations.jsonl", DRIVER_OBSERVATION_JOURNAL_MAX_BYTES)):
         path = directory / name
-        if not path.is_file() or not path.stat().st_size or path.stat().st_size > 8 * 1024 * 1024:
+        if not path.is_file() or not path.stat().st_size or path.stat().st_size > limit:
             raise ValueError("driver action/observation journal missing, empty or outside bounds")
         for line in path.read_text().splitlines():
             row = json.loads(line)

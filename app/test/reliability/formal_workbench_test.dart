@@ -74,8 +74,8 @@ void main() {
       await tapFormalControl(tester, 'detail-close');
       expect(local.panel, WorkbenchPanel.map);
 
-      // A 390px/2x user selection must put the real 44px marker in the exposed
-      // lane, rather than merely configuring a plausible padding constant.
+      // At 2x text, detail uses the full task area. Returning to the retained
+      // map must still put the real 44px selected marker in the exposed lane.
       tester.platformDispatcher.textScaleFactorTestValue = 2;
       addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
       await pumpFormalFrames(tester);
@@ -114,36 +114,20 @@ void main() {
       expect(localMap.tileStatus.value, MapTileStatus.error);
       await tapFormalControl(tester, 'nearest-stop');
       final selected = local.selectedStop!;
-      final mapRect = tester.getRect(
-        find.byKey(const ValueKey('delivery-map')),
+      final taskRect = tester.getRect(
+        find.byKey(const ValueKey('large-text-task-workspace')),
       );
-      final marker = Rect.fromCenter(
-        center:
-            mapRect.topLeft +
-            localMap.mapController.camera.latLngToScreenOffset(
-              LatLng(selected.latitude, selected.longitude),
-            ),
-        width: 44,
-        height: 44,
+      final detailRect = tester.getRect(
+        find.byKey(const ValueKey('delivery-detail-card')),
       );
-      expect(mapRect.contains(marker.topLeft), isTrue);
-      expect(mapRect.contains(marker.bottomRight), isTrue);
-      for (final key in [
-        'delivery-detail-card',
-        'map-sync',
-        'zoom-in',
-        'zoom-out',
-        'fit-stops',
-        'locate-reference',
-        'map-attribution',
-        'root-map-error',
-      ]) {
-        expect(
-          marker.overlaps(tester.getRect(find.byKey(ValueKey(key)))),
-          isFalse,
-          reason: 'Selected marker hidden by $key',
-        );
-      }
+      expect(detailRect, taskRect);
+      expect(detailRect.height, greaterThan(700));
+      expect(find.byKey(const ValueKey('delivery-map')), findsNothing);
+      expect(find.byKey(const ValueKey('detail-customer')), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('detail-close')).hitTestable(),
+        findsOneWidget,
+      );
       await tapFormalTransition(
         tester,
         local,
@@ -156,6 +140,15 @@ void main() {
       expect(local.queueCount, 1);
       expect(local.notice.value!.message, contains('Service unavailable'));
       expect(local.notice.value!.message, contains('still saved'));
+      await tapFormalControl(tester, 'detail-close');
+      expect(local.panel, WorkbenchPanel.map);
+      expect(
+        identical(
+          tester.state(find.byKey(const ValueKey('formal-map'))),
+          mapState,
+        ),
+        isTrue,
+      );
       final currentMap = tester.getRect(
         find.byKey(const ValueKey('delivery-map')),
       );
@@ -168,11 +161,32 @@ void main() {
         width: 44,
         height: 44,
       );
+      expect(currentMap.contains(currentMarker.topLeft), isTrue);
+      expect(currentMap.contains(currentMarker.bottomRight), isTrue);
+      for (final key in [
+        'map-sync',
+        'zoom-in',
+        'zoom-out',
+        'fit-stops',
+        'locate-reference',
+        'map-attribution',
+        'root-map-error',
+      ]) {
+        expect(
+          currentMarker.overlaps(tester.getRect(find.byKey(ValueKey(key)))),
+          isFalse,
+          reason: 'Returned selected marker hidden by $key',
+        );
+      }
+      expect(find.byKey(const ValueKey('workbench-notice')), findsNothing);
+      await tapFormalControl(tester, 'map-summary-open');
+      await revealFormalControl(tester, 'workbench-notice');
+      expect(find.textContaining('Service unavailable'), findsOneWidget);
+      await tapFormalControl(tester, 'summary-close');
+      expect(local.panel, WorkbenchPanel.map);
       expect(
-        currentMarker.overlaps(
-          tester.getRect(find.byKey(const ValueKey('workbench-notice'))),
-        ),
-        isFalse,
+        find.byKey(const ValueKey('large-summary-workspace')),
+        findsNothing,
       );
       final localOperation = (await awaitFormalIO(
         tester,

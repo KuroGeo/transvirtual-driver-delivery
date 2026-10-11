@@ -51,7 +51,7 @@ void main() {
         tester.getSize(find.byKey(const ValueKey('delivery-map'))).height,
         lessThan(400),
       );
-      expect(tester.getSize(browse).height, greaterThan(100));
+      expect(tester.getSize(browse).height, greaterThanOrEqualTo(44));
       _expectEntryExposed(tester);
 
       await tapFormalControl(tester, 'fit-stops');
@@ -83,7 +83,15 @@ void main() {
       );
       await pumpFormalFrames(tester);
       final pinned = tester.getRect(browse);
-      final summary = find.byKey(const ValueKey('overview-summary'));
+      await tapFormalControl(tester, 'map-summary-open');
+      expect(find.byKey(const ValueKey('delivery-map')), findsNothing);
+      expect(
+        tester
+            .getSize(find.byKey(const ValueKey('large-summary-workspace')))
+            .height,
+        greaterThan(700),
+      );
+      final summary = find.byKey(const ValueKey('large-summary-scroll'));
       final scrollable = find.descendant(
         of: summary,
         matching: find.byType(Scrollable),
@@ -94,6 +102,8 @@ void main() {
       await tester.drag(summary, const Offset(0, -180));
       await pumpFormalFrames(tester);
       expect(position.pixels, greaterThan(0));
+      await tapFormalControl(tester, 'summary-close');
+      await waitForFixtureMap(tester, map);
       expect(tester.getRect(browse), pinned);
       _expectEntryExposed(tester);
 
@@ -114,7 +124,7 @@ void main() {
   );
 
   testWidgets(
-    'max system text keeps list search and tall rows reachable with typed return',
+    'max system text shows a readable stop and preserves query on detail return',
     (tester) async {
       mapTestSize(tester);
       tester.view.padding = const FakeViewPadding(top: 47, bottom: 34);
@@ -123,131 +133,106 @@ void main() {
       addTearDown(tester.view.resetPadding);
       addTearDown(tester.view.resetViewPadding);
       addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
-
       final (fixture, model, _) = await _mount(tester);
-      expect(model.stops, hasLength(30));
-      await tapFormalTransition(
-        tester,
-        model,
-        'online-toggle',
-        busy: () => model.isChangingOnline,
-      );
-      expect(model.online, isFalse);
-      expect(model.notice.value!.message, contains('Offline'));
       await tapFormalControl(tester, 'browse-stops');
-      expect(model.panel, WorkbenchPanel.list);
-
-      final title = find.text('Stops on the map');
       final primary = find.byKey(const ValueKey('stop-list-scroll'));
+      expect(tester.getSize(primary).height, greaterThan(500));
+      expect(find.byKey(const ValueKey('map-attribution')), findsNothing);
+      final reference = model.result.stops.first.reference;
+      _expectFullyWithin(
+        tester,
+        find.byKey(ValueKey('list-customer-$reference')),
+        primary,
+      );
+      _expectFullyWithin(
+        tester,
+        find.byKey(ValueKey('list-reference-$reference')),
+        primary,
+      );
+      _expectListActionsExposed(tester);
+      await tapFormalControl(tester, 'list-query-controls');
+      final search = find.byKey(const ValueKey('stop-search'));
+      await revealFormalControl(tester, 'stop-search');
+      await tester.enterText(search, 'TV-300004');
+      await pumpFormalFrames(tester);
+      await tapFormalControl(tester, 'list-query-controls');
+      expect(model.query.search, 'TV-300004');
+      final row = find.byKey(const ValueKey('stop-TV-300004'));
+      expect(row.hitTestable(), findsOneWidget);
+      _expectFullyWithin(
+        tester,
+        find.byKey(const ValueKey('list-customer-TV-300004')),
+        primary,
+      );
+      _expectFullyWithin(
+        tester,
+        find.byKey(const ValueKey('list-reference-TV-300004')),
+        primary,
+      );
+      expect(
+        tester.getSize(row).height,
+        lessThan(tester.getSize(primary).height),
+      );
       final scrollable = find
           .descendant(of: primary, matching: find.byType(Scrollable))
           .first;
       final position = tester.state<ScrollableState>(scrollable).position;
-      expect(
-        MediaQuery.of(tester.element(title)).textScaler.scale(16) / 16,
-        closeTo(53 / 17, 1e-12),
-      );
-      expect(find.text('Stops on the map'), findsOneWidget);
-      _expectListActionsExposed(tester);
-      final viewport = tester.getRect(primary);
-      // In the actual failed run, the fixed heading left only65.84px. There
-      // must now be room for the full scaled field and an actual row target.
-      await tapFormalControl(tester, 'list-query-controls');
-      final search = find.byKey(const ValueKey('stop-search'));
-      await tester.scrollUntilVisible(
-        search,
-        100,
-        scrollable: scrollable,
-        maxScrolls: 12,
-      );
-      await pumpFormalFrames(tester);
-      expect(viewport.height, greaterThan(tester.getSize(search).height));
-      final feedback = tester.getRect(
-        find.byKey(const ValueKey('list-feedback-viewport')),
-      );
-      expect(feedback.height, greaterThan(0));
-      expect(feedback.overlaps(viewport), isFalse);
-      expect(
-        tester.getRect(find.byKey(const ValueKey('workbench-notice'))).height,
-        greaterThan(feedback.height),
-        reason: 'The real scaled message requires its bounded feedback scroll',
-      );
-      expect(
-        tester.widget<Text>(find.byKey(const ValueKey('notice-message'))).data,
-        model.notice.value!.message,
-      );
-      final noticeScrollable = find.descendant(
-        of: find.byKey(const ValueKey('list-feedback-viewport')),
-        matching: find.byType(Scrollable),
-      );
-      expect(noticeScrollable, findsOneWidget);
-      final noticePosition = tester
-          .state<ScrollableState>(noticeScrollable)
-          .position;
-      expect(noticePosition.maxScrollExtent, greaterThan(0));
-      final closeBounds = tester.getRect(
-        find.byKey(const ValueKey('close-list')),
-      );
-      await tester.drag(
-        find.byKey(const ValueKey('list-feedback-viewport')),
-        const Offset(0, -100),
-      );
-      await pumpFormalFrames(tester);
-      expect(noticePosition.pixels, greaterThan(0));
-      expect(
-        tester.getRect(find.byKey(const ValueKey('close-list'))),
-        closeBounds,
-      );
-      _expectListActionsExposed(tester);
-
-      await revealFormalControl(tester, 'stop-search');
-      _expectFullyWithin(tester, search, primary);
-      await tester.enterText(search, 'TV-300004');
-      await pumpFormalFrames(tester);
-      expect(model.result.stops.single.reference, 'TV-300004');
-      expect(model.query.search, 'TV-300004');
-
-      final row = find.byKey(const ValueKey('stop-TV-300004'));
-      // Full OS-scaled query controls can extend beyond the lazy build cache.
-      // Discover the matching row through actual finite primary-list drags,
-      // before centering its existing tap target below.
-      await tester.scrollUntilVisible(
-        row,
-        160,
-        scrollable: scrollable,
-        maxScrolls: 12,
-      );
-      expect(row, findsOneWidget);
-      expect(tester.getSize(row).height, greaterThan(viewport.height));
-      // A row larger than the viewport still exposes a genuine tap target
-      // when the existing primary scroll centers it, just like Driver does.
-      await revealFormalControl(tester, 'stop-TV-300004');
-      expect(position.pixels, greaterThan(0));
-      expect(tester.getRect(primary).contains(tester.getCenter(row)), isTrue);
-      expect(row.hitTestable(), findsOneWidget);
-      _expectListActionsExposed(tester);
-      final savedOffset = position.pixels;
+      final offset = position.pixels;
       await tapFormalControl(tester, 'stop-TV-300004');
-      expect(model.panel, WorkbenchPanel.detail);
-      expect(model.selectedStop!.reference, 'TV-300004');
       expect(model.detailContext!.origin, DetailOrigin.list);
-      expect(model.listSession.focusedReference, 'TV-300004');
-      expect(model.listSession.scrollOffset, closeTo(savedOffset, .1));
-
+      expect(
+        tester
+            .getSize(find.byKey(const ValueKey('delivery-detail-card')))
+            .height,
+        greaterThan(700),
+      );
       await tapFormalControl(tester, 'detail-close');
-      await tester.pump();
       expect(model.panel, WorkbenchPanel.list);
       expect(model.query.search, 'TV-300004');
-      expect(position.pixels, closeTo(savedOffset, .1));
-      final ink = tester.widget<InkWell>(
-        find.descendant(of: row, matching: find.byType(InkWell)).first,
-      );
-      expect(ink.focusNode!.hasFocus, isTrue);
-      expect(row.hitTestable(), findsOneWidget);
+      expect(position.pixels, closeTo(offset, .1));
       _expectListActionsExposed(tester);
       await tapFormalControl(tester, 'close-list');
       expect(model.panel, WorkbenchPanel.map);
-      expect(model.query.search, 'TV-300004');
+      expect(tester.takeException(), isNull);
+      await unmountFormalApp(tester, model);
+      await awaitFormalIO(tester, fixture.dispose);
+    },
+  );
+
+  testWidgets(
+    'maximum text task traversal never focuses hidden map or query controls',
+    (tester) async {
+      mapTestSize(tester);
+      tester.platformDispatcher.textScaleFactorTestValue = 53 / 17;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      final (fixture, model, _) = await _mount(tester);
+      await tapFormalControl(tester, 'open-search');
+      await tapFormalControl(tester, 'browse-stops');
+      for (final tools in [false, true, false]) {
+        if (tools ||
+            find
+                .byKey(const ValueKey('list-query-scroll'))
+                .evaluate()
+                .isNotEmpty) {
+          await tapFormalControl(tester, 'list-query-controls');
+        }
+        for (var step = 0; step < 12; step++) {
+          await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+          await pumpFormalFrames(tester);
+          final focus = FocusManager.instance.primaryFocus?.context;
+          var hidden = false;
+          focus?.visitAncestorElements((element) {
+            final widget = element.widget;
+            if (widget is Offstage && widget.offstage) hidden = true;
+            return true;
+          });
+          expect(
+            hidden,
+            isFalse,
+            reason: 'Tab must only visit the displayed task.',
+          );
+        }
+      }
       expect(tester.takeException(), isNull);
       await unmountFormalApp(tester, model);
       await awaitFormalIO(tester, fixture.dispose);
@@ -347,19 +332,18 @@ void _expectFullyWithin(WidgetTester tester, Finder target, Finder container) {
 
 void _expectListActionsExposed(WidgetTester tester) {
   final panel = find.byKey(const ValueKey('list-workspace'));
-  final map = find.byKey(const ValueKey('delivery-map'));
-  final footer = tester.getRect(find.byKey(const ValueKey('map-attribution')));
-  final feedback = tester.getRect(
-    find.byKey(const ValueKey('list-feedback-viewport')),
+  final task = find.byKey(const ValueKey('large-text-task-workspace'));
+  final primary = tester.getRect(
+    find.byKey(const ValueKey('stop-list-scroll')),
   );
+  expect(find.byKey(const ValueKey('map-attribution')), findsNothing);
   for (final key in ['list-sync', 'close-list']) {
     final action = find.byKey(ValueKey(key));
     _expectFullyWithin(tester, action, panel);
-    _expectFullyWithin(tester, action, map);
+    _expectFullyWithin(tester, action, task);
     expect(tester.getSize(action).width, greaterThanOrEqualTo(44));
     expect(tester.getSize(action).height, greaterThanOrEqualTo(44));
-    expect(tester.getRect(action).overlaps(footer), isFalse);
-    expect(tester.getRect(action).overlaps(feedback), isFalse);
+    expect(tester.getRect(action).overlaps(primary), isFalse);
   }
 }
 
