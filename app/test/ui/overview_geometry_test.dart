@@ -29,6 +29,7 @@ void main() {
       tester.platformDispatcher.textScaleFactorTestValue = 53 / 17;
       addTearDown(tester.view.resetPadding);
       addTearDown(tester.view.resetViewPadding);
+      addTearDown(tester.view.resetViewInsets);
       addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
 
       final (fixture, model, map) = await _mount(tester);
@@ -45,11 +46,11 @@ void main() {
       expect(inherited.textScaler.scale(16) / 16, closeTo(53 / 17, 1e-12));
       expect(inherited.viewInsets.bottom, 0);
 
-      // Reproduce the short map area beneath the expanded/scaled header.
-      // The old 69px overview viewport could not contain this >100px button.
+      // The compact map still has to contain the complete scaled entry, even
+      // with its search field open. Attribution no longer repeats the reference.
       expect(
         tester.getSize(find.byKey(const ValueKey('delivery-map'))).height,
-        lessThan(400),
+        lessThan(500),
       );
       expect(tester.getSize(browse).height, greaterThan(100));
       _expectEntryExposed(tester);
@@ -253,6 +254,160 @@ void main() {
       await awaitFormalIO(tester, fixture.dispose);
     },
   );
+
+  for (final size in [const Size(390, 844), const Size(320, 640)]) {
+    testWidgets('max text Browse has a usable viewport at $size', (
+      tester,
+    ) async {
+      mapTestSize(tester);
+      tester.view.physicalSize = size;
+      addTearDown(tester.view.resetViewInsets);
+      tester.view.padding = const FakeViewPadding(top: 47, bottom: 34);
+      tester.view.viewPadding = const FakeViewPadding(top: 47, bottom: 34);
+      tester.platformDispatcher.textScaleFactorTestValue = 53 / 17;
+      addTearDown(tester.view.resetPadding);
+      addTearDown(tester.view.resetViewPadding);
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      final (fixture, model, _) = await _mount(tester);
+      await tapFormalControl(tester, 'open-search');
+      await tester.enterText(
+        find.byKey(const ValueKey('map-search')),
+        'TV-300006',
+      );
+      await pumpFormalFrames(tester);
+      await tapFormalControl(tester, 'header-filter-pending');
+      expect(model.query.status?.name, 'pending');
+      model.showNotice(
+        'Saved locally · Waiting for confirmation',
+        kind: NoticeKind.information,
+        persistent: true,
+      );
+      await pumpFormalFrames(tester);
+      await tapFormalControl(tester, 'browse-stops');
+      final primary = find.byKey(const ValueKey('stop-list-scroll'));
+      final viewport = tester.getRect(primary);
+      expect(
+        viewport.height,
+        greaterThan(size.height * .45),
+        reason:
+            'Large-text Browse must reserve room for results, not repeated map controls',
+      );
+      final footer = tester.getRect(
+        find.byKey(const ValueKey('map-attribution')),
+      );
+      debugPrint(
+        'Large-text geometry ${size.width}x${size.height}: '
+        'results=${viewport.height}, attribution=${footer.height}, scale=${53 / 17}',
+      );
+      expect(footer.height, lessThanOrEqualTo(104));
+      expect(viewport.overlaps(footer), isFalse);
+      _expectListActionsExposed(tester);
+      await tapFormalControl(tester, 'list-query-controls');
+      final scrollable = find
+          .descendant(of: primary, matching: find.byType(Scrollable))
+          .first;
+      final search = find.byKey(const ValueKey('stop-search'));
+      await tester.scrollUntilVisible(
+        search,
+        120,
+        scrollable: scrollable,
+        maxScrolls: 12,
+      );
+      await pumpFormalFrames(tester);
+      _expectFullyWithin(tester, search, primary);
+      tester.view.viewInsets = FakeViewPadding(bottom: size.height * .3);
+      await pumpFormalFrames(tester);
+      await revealFormalControl(tester, 'stop-search');
+      _expectFullyWithin(tester, search, primary);
+      _expectListActionsExposed(tester);
+      tester.view.resetViewInsets();
+      await pumpFormalFrames(tester);
+      await tester.enterText(search, 'TV-300006');
+      await pumpFormalFrames(tester);
+      expect(model.result.stops.single.reference, 'TV-300006');
+      await tapFormalControl(tester, 'filter-failed');
+      expect(model.result.stops, isEmpty);
+      await tapFormalControl(tester, 'filter-pending');
+      expect(model.result.stops.single.reference, 'TV-300006');
+      await tapFormalControl(tester, 'waiting-only');
+      expect(model.result.stops, isEmpty);
+      await tapFormalControl(tester, 'waiting-only');
+      expect(model.result.stops.single.reference, 'TV-300006');
+      final row = find.byKey(const ValueKey('stop-TV-300006'));
+      await tester.scrollUntilVisible(
+        row,
+        160,
+        scrollable: scrollable,
+        maxScrolls: 16,
+      );
+      await revealFormalControl(tester, 'stop-TV-300006');
+      expect(row.hitTestable(), findsOneWidget);
+      expect(
+        MediaQuery.textScalerOf(tester.element(row)).scale(16) / 16,
+        closeTo(53 / 17, 1e-12),
+      );
+      await tapFormalControl(tester, 'stop-TV-300006');
+      expect(model.detailContext!.origin, DetailOrigin.list);
+      await tapFormalControl(tester, 'detail-close');
+      expect(model.panel, WorkbenchPanel.list);
+      expect(model.query.search, 'TV-300006');
+      _expectListActionsExposed(tester);
+      await tapFormalControl(tester, 'close-list');
+      expect(model.panel, WorkbenchPanel.map);
+      expect(model.query.search, 'TV-300006');
+      await tapFormalControl(tester, 'map-attribution');
+      expect(find.text('Map information'), findsOneWidget);
+      expect(
+        find.textContaining('Map data © OpenStreetMap contributors'),
+        findsOneWidget,
+      );
+      await tapFormalControl(tester, 'close-map-information');
+      expect(find.text('Map information'), findsNothing);
+      expect(tester.takeException(), isNull);
+      await unmountFormalApp(tester, model);
+      await awaitFormalIO(tester, fixture.dispose);
+    });
+  }
+
+  testWidgets('normal text narrow phone keeps Browse controls usable', (
+    tester,
+  ) async {
+    mapTestSize(tester);
+    tester.view.physicalSize = const Size(320, 640);
+    final (fixture, model, _) = await _mount(tester);
+    await tapFormalControl(tester, 'browse-stops');
+    _expectListActionsExposed(tester);
+    await tapFormalControl(tester, 'list-query-controls');
+    await tapFormalControl(tester, 'stop-search');
+    await tester.enterText(
+      find.byKey(const ValueKey('stop-search')),
+      'TV-300006',
+    );
+    await tester.testTextInput.receiveAction(TextInputAction.search);
+    await pumpFormalFrames(tester);
+    expect(model.result.stops.single.reference, 'TV-300006');
+    final scrollable = find
+        .descendant(
+          of: find.byKey(const ValueKey('stop-list-scroll')),
+          matching: find.byType(Scrollable),
+        )
+        .first;
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey('stop-TV-300006')),
+      120,
+      scrollable: scrollable,
+      maxScrolls: 12,
+    );
+    await tapFormalControl(tester, 'stop-TV-300006');
+    expect(model.detailContext!.origin, DetailOrigin.list);
+    await tapFormalControl(tester, 'detail-close');
+    await tapFormalControl(tester, 'close-list');
+    expect(model.panel, WorkbenchPanel.map);
+    expect(model.query.search, 'TV-300006');
+    expect(tester.takeException(), isNull);
+    await unmountFormalApp(tester, model);
+    await awaitFormalIO(tester, fixture.dispose);
+  });
 
   testWidgets('normal overview keeps its summary and Browse in one card', (
     tester,

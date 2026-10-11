@@ -120,9 +120,22 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                'Map information',
-                style: Theme.of(context).textTheme.titleLarge,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Map information',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                  ),
+                  IconButton(
+                    key: const ValueKey('close-map-information'),
+                    tooltip: 'Close map information',
+                    onPressed: () => Navigator.of(sheetContext).pop(),
+                    icon: const BrandIcon('close'),
+                  ),
+                ],
               ),
               const SizedBox(height: 12),
               const Text(
@@ -181,6 +194,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
     builder: (context, _) {
       final detail = model.panel == WorkbenchPanel.detail;
       final list = model.panel == WorkbenchPanel.list;
+      final largeText = _largeText(context);
       if (list) _listMounted = true;
       return PopScope(
         canPop: !detail && !list && !_searchOpen,
@@ -201,25 +215,28 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
               ),
             },
             child: Scaffold(
-              resizeToAvoidBottomInset: false,
+              resizeToAvoidBottomInset: list && largeText,
               body: SafeArea(
                 child: LayoutBuilder(
                   builder: (context, constraints) => Column(
                     children: [
-                      ConstrainedBox(
-                        constraints: BoxConstraints(
-                          // Large business text also expands the footer and
-                          // Browse. Keep room for both by scrolling the header
-                          // sooner; its complete content keeps the OS scaler.
-                          maxHeight:
-                              constraints.maxHeight *
-                              (MediaQuery.textScalerOf(context).scale(14) > 22
-                                  ? .32
-                                  : .43),
+                      Offstage(
+                        // Browse owns the same query. At accessibility sizes,
+                        // reserve the viewport for its scaled content instead
+                        // of repeating the map's search and status controls.
+                        offstage: list && largeText,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            // Large business text also expands the footer and
+                            // Browse. Keep room for both by scrolling the header
+                            // sooner; its complete content keeps the OS scaler.
+                            maxHeight:
+                                constraints.maxHeight * (largeText ? .32 : .43),
+                          ),
+                          child: SingleChildScrollView(child: _header(context)),
                         ),
-                        child: SingleChildScrollView(child: _header(context)),
                       ),
-                      const Divider(height: 1),
+                      if (!(list && largeText)) const Divider(height: 1),
                       Expanded(
                         child: model.stops.isEmpty
                             ? _empty(context)
@@ -302,7 +319,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                                             left: 0,
                                             right: 0,
                                             height: math.min(
-                                              530,
+                                              largeText ? area.maxHeight : 530,
                                               math.max(
                                                 0,
                                                 area.maxHeight -
@@ -440,7 +457,10 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
   );
 
   bool _compact(BuildContext context, BoxConstraints area) =>
-      area.maxHeight < 500 || MediaQuery.textScalerOf(context).scale(14) > 22;
+      area.maxHeight < 500 || _largeText(context);
+
+  bool _largeText(BuildContext context) =>
+      MediaQuery.textScalerOf(context).scale(14) > 22;
 
   double _cardHeight(double height, bool compact) {
     // Compact detail occupies the right lane beside the tools/selected marker.
@@ -610,16 +630,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
           style: const TextStyle(fontSize: 11, color: OceanColors.muted),
         ),
         const SizedBox(height: 12),
-        Wrap(
-          spacing: 6,
-          runSpacing: 6,
-          children: [
-            _status('All', null),
-            _status('Pending', DeliveryStatus.pending),
-            _status('Completed', DeliveryStatus.completed),
-            _status('Failed', DeliveryStatus.failed),
-          ],
-        ),
+        _statusFilters(context),
         if (_searchOpen) ...[
           const SizedBox(height: 10),
           TextField(
@@ -654,6 +665,28 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
       ],
     ),
   );
+
+  Widget _statusFilters(BuildContext context) {
+    final filters = [
+      _status('All', null),
+      _status('Pending', DeliveryStatus.pending),
+      _status('Completed', DeliveryStatus.completed),
+      _status('Failed', DeliveryStatus.failed),
+    ];
+    if (_largeText(context)) {
+      return SingleChildScrollView(
+        key: const ValueKey('header-status-scroll'),
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            for (final filter in filters)
+              Padding(padding: const EdgeInsets.only(right: 6), child: filter),
+          ],
+        ),
+      );
+    }
+    return Wrap(spacing: 6, runSpacing: 6, children: filters);
+  }
 
   Widget _status(String label, DeliveryStatus? status) {
     final count = status == null
@@ -732,7 +765,10 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
     final ratio = model.stops.isEmpty ? 0.0 : finished / model.stops.length;
     final browse = TextButton(
       key: const ValueKey('browse-stops'),
-      onPressed: model.openList,
+      onPressed: () {
+        FocusScope.of(context).unfocus();
+        model.openList();
+      },
       style: TextButton.styleFrom(minimumSize: const Size(0, 44)),
       child: const Text('Browse stops', textAlign: TextAlign.center),
     );

@@ -65,7 +65,7 @@ void main() {
   );
 
   testWidgets(
-    'reference heading stays anchored while footer label supports large text',
+    'reference stays anchored while attribution keeps scaled readable text',
     (tester) async {
       mapTestSize(tester);
       final provider = await fixtureProvider(tester);
@@ -81,7 +81,9 @@ void main() {
           of: find.byKey(const ValueKey('map-attribution')),
           matching: find.text(TestReference.label),
         );
-        final normalLabelHeight = tester.getSize(footerLabel).height;
+        expect(footerLabel, findsOneWidget);
+        final attribution = find.text('© OpenStreetMap contributors');
+        final normalLabelHeight = tester.getSize(attribution).height;
         expect(tester.takeException(), isNull);
 
         await tester.pumpWidget(
@@ -113,16 +115,65 @@ void main() {
           reason: 'graphic is centered on point',
         );
         expect(
-          tester.getSize(footerLabel).height,
+          tester.getSize(attribution).height,
           greaterThan(normalLabelHeight),
         );
-        expect(tester.widget<Text>(footerLabel).textScaler, isNull);
+        expect(footerLabel, findsNothing);
+        expect(tester.widget<Text>(attribution).textScaler, isNull);
+        expect(
+          MediaQuery.textScalerOf(tester.element(attribution)).scale(11),
+          33,
+        );
+        expect(
+          tester.getSize(find.byKey(const ValueKey('map-attribution'))).height,
+          lessThanOrEqualTo(104),
+        );
         expect(find.text('© OpenStreetMap contributors'), findsOneWidget);
         expect(controller.tileStatus.value, MapTileStatus.ready);
         expect(tester.takeException(), isNull);
       } finally {
         semantics.dispose();
       }
+    },
+  );
+
+  testWidgets(
+    'extreme text attribution scrolls completely without consuming the map',
+    (tester) async {
+      mapTestSize(tester);
+      final provider = await fixtureProvider(tester);
+      final controller = fixtureController(tester);
+      await tester.pumpWidget(
+        mapHost(
+          result: mapResult([mapStop('A')]),
+          provider: provider,
+          controller: controller,
+          textScale: 5,
+        ),
+      );
+      await tester.pumpAndSettle();
+      final footer = find.byKey(const ValueKey('map-attribution'));
+      final scrollable = find.descendant(
+        of: footer,
+        matching: find.byType(Scrollable),
+      );
+      final position = tester.state<ScrollableState>(scrollable).position;
+      expect(position.maxScrollExtent, greaterThan(0));
+      expect(tester.getSize(footer).height, lessThanOrEqualTo(104));
+      expect(
+        tester.getSize(find.byKey(const ValueKey('delivery-map'))).height,
+        greaterThan(700),
+      );
+      final label = find.text('© OpenStreetMap contributors');
+      expect(MediaQuery.textScalerOf(tester.element(label)).scale(11), 55);
+      await tester.drag(footer, const Offset(0, -400));
+      await tester.pumpAndSettle();
+      expect(position.pixels, position.maxScrollExtent);
+      expect(
+        tester.getRect(label).bottom,
+        lessThanOrEqualTo(tester.getRect(footer).bottom),
+      );
+      expect(tester.takeException(), isNull);
     },
   );
 

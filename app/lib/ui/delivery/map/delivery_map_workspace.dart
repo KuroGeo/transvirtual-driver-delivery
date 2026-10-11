@@ -435,6 +435,7 @@ class _DeliveryMapWorkspaceState extends State<DeliveryMapWorkspace> {
   @override
   Widget build(BuildContext context) {
     final initial = _initialViewport;
+    final largeText = MediaQuery.textScalerOf(context).scale(11) > 16;
     return Column(
       key: const ValueKey('map-workspace'),
       children: [
@@ -575,60 +576,80 @@ class _DeliveryMapWorkspaceState extends State<DeliveryMapWorkspace> {
             key: const ValueKey('map-attribution'),
             onTap: widget.onAttributionTap,
             child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 44),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 13,
-                  vertical: 7,
-                ),
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final largeText =
-                        MediaQuery.textScalerOf(context).scale(11) > 16;
-                    final caption = Theme.of(context).textTheme.labelSmall
-                        ?.copyWith(fontSize: 11, height: 1.2, letterSpacing: 0);
-                    final reference = Text(TestReference.label, style: caption);
-                    final attribution = Text(
-                      '© OpenStreetMap contributors',
-                      textAlign: largeText || constraints.maxWidth < 330
-                          ? TextAlign.left
-                          : TextAlign.right,
-                      style: caption,
-                    );
-                    const icon = Icon(
-                      Icons.near_me_outlined,
-                      size: 13,
-                      color: Color(0xFF376BBA),
-                    );
-                    // Give both captions the complete width at large OS sizes,
-                    // rather than forcing them to wrap in competing columns.
-                    // Neither caption overrides the actual system text scaler.
-                    if (largeText || constraints.maxWidth < 330) {
-                      return Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+              constraints: BoxConstraints(
+                minHeight: 44,
+                maxHeight: largeText
+                    ? math.max(
+                        44,
+                        math.min(104, MediaQuery.sizeOf(context).height * .16),
+                      )
+                    : double.infinity,
+              ),
+              child: SingleChildScrollView(
+                key: const ValueKey('map-attribution-scroll'),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 13,
+                    vertical: 7,
+                  ),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final caption = Theme.of(context).textTheme.labelSmall
+                          ?.copyWith(
+                            fontSize: 11,
+                            height: 1.2,
+                            letterSpacing: 0,
+                          );
+                      final reference = Text(
+                        TestReference.label,
+                        style: caption,
+                      );
+                      final attribution = Text(
+                        '© OpenStreetMap contributors',
+                        textAlign: largeText || constraints.maxWidth < 330
+                            ? TextAlign.left
+                            : TextAlign.right,
+                        style: caption,
+                      );
+                      const icon = Icon(
+                        Icons.near_me_outlined,
+                        size: 13,
+                        color: Color(0xFF376BBA),
+                      );
+                      // The fixed reference remains on its marker and in Map
+                      // information. Keep the required attribution prominent;
+                      // at extreme sizes this lane scrolls without shrinking
+                      // text or taking the results' entire available height.
+                      if (largeText) return attribution;
+                      // On narrow phones, give both captions the complete width.
+                      // Neither caption overrides the system text scaler.
+                      if (constraints.maxWidth < 330) {
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                icon,
+                                const SizedBox(width: 5),
+                                Expanded(child: reference),
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            attribution,
+                          ],
+                        );
+                      }
+                      return Row(
                         children: [
-                          Row(
-                            children: [
-                              icon,
-                              const SizedBox(width: 5),
-                              Expanded(child: reference),
-                            ],
-                          ),
-                          const SizedBox(height: 2),
-                          attribution,
+                          icon,
+                          const SizedBox(width: 5),
+                          Expanded(child: reference),
+                          Flexible(child: attribution),
                         ],
                       );
-                    }
-                    return Row(
-                      children: [
-                        icon,
-                        const SizedBox(width: 5),
-                        Expanded(child: reference),
-                        Flexible(child: attribution),
-                      ],
-                    );
-                  },
+                    },
+                  ),
                 ),
               ),
             ),

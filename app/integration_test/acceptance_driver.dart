@@ -1874,6 +1874,7 @@ Future<void> _n7(NativeAcceptanceRecorder r) async {
       },
     );
     await acceptanceReturn(d);
+    await _largeTextBrowse(d);
   } else {
     r.notApplicable(
       'N7.text-scale',
@@ -1948,4 +1949,84 @@ Future<void> _n7(NativeAcceptanceRecorder r) async {
       await c.same('/outbox');
     },
   );
+}
+
+/// Screenshot repair regression, separate from the existing N7 check verdicts.
+/// Uses actual OS scaling and typed UI; it does not mutate the bridge/model.
+Future<void> _largeTextBrowse(NativeWorkbenchDriver d) async {
+  await acceptanceMap(d);
+  var observed = await d.snapshot();
+  if (!nativeObject(observed['bounds']).containsKey('map-search')) {
+    await d.revealKey('open-search');
+    await d.tapKey('open-search');
+  }
+  await d.enterText('map-search', 'TV-300006');
+  await d.revealKey('header-filter-pending');
+  await d.tapKey('header-filter-pending');
+  await d.waitForSnapshot(
+    'screenshot search and Pending match one stop',
+    (s) =>
+        nativeObject(s['result'])['matchedCount'] == 1 &&
+        nativeObject(acceptanceModel(s)['query'])['status'] == 'pending',
+  );
+  await d.captureNamed('large-text-map-search', await d.snapshot());
+  await d.revealKey('browse-stops');
+  await d.tapKey('browse-stops');
+  await acceptanceListQueryTools(d);
+  await d.enterText('stop-search', 'TV-300006');
+  observed = await d.snapshot();
+  await d.captureNamed('large-text-browse-search', observed);
+  final media = nativeObject(observed['mediaQuery']);
+  nativeRequire(
+    (media['textScaleAt16'] as num) >= 2,
+    'Browse must retain the actual accessibility text size.',
+  );
+  nativeRequire(
+    (_rect(observed, 'stop-list-scroll')['height'] as num) >
+        (media['height'] as num) * .45,
+    'Large-text Browse has insufficient result space.',
+  );
+  nativeRequire(
+    (_rect(observed, 'map-attribution')['height'] as num) <= 104,
+    'Map attribution consumed the large-text result viewport.',
+  );
+  _visible(observed, 'close-list');
+  _visible(observed, 'list-sync');
+  await d.revealKey('filter-failed');
+  await d.tapKey('filter-failed');
+  await d.waitForSnapshot(
+    'large text Failed filters the searched pending stop',
+    (s) => nativeObject(s['result'])['matchedCount'] == 0,
+  );
+  await d.revealKey('filter-pending');
+  await d.tapKey('filter-pending');
+  await d.waitForSnapshot(
+    'large text Pending restores the searched stop',
+    (s) => nativeObject(s['result'])['matchedCount'] == 1,
+  );
+  await d.revealKey('waiting-only');
+  await d.tapKey('waiting-only');
+  await d.waitForSnapshot(
+    'large text Waiting excludes the untouched stop',
+    (s) => nativeObject(s['result'])['matchedCount'] == 0,
+  );
+  await d.tapKey('waiting-only');
+  await d.waitForSnapshot(
+    'large text Waiting off restores the searched stop',
+    (s) => nativeObject(s['result'])['matchedCount'] == 1,
+  );
+  await acceptanceOpenListStop(d, 'TV-300006');
+  await d.tapKey('detail-close');
+  observed = await d.waitForSnapshot(
+    'typed detail return retains screenshot query',
+    (s) =>
+        acceptanceModel(s)['panel'] == 'list' &&
+        nativeObject(acceptanceModel(s)['query'])['search'] == 'TV-300006',
+  );
+  await d.captureNamed('large-text-browse-result', observed);
+  await d.tapKey('close-list');
+  await d.tapKey('map-attribution');
+  await d.captureNamed('large-text-map-information', await d.snapshot());
+  await d.revealKey('close-map-information');
+  await d.tapKey('close-map-information');
 }
