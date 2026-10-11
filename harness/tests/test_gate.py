@@ -656,6 +656,68 @@ class GateTests(unittest.TestCase):
                 self.assert_rejected("successful completion")
                 (self.root / stage["log_path"]).write_bytes(original_log)
 
+    def quality_with_tooling(self, text):
+        """Exercise the full original-log/hash reader, not only a regex helper."""
+        report = copy.deepcopy(self.quality)
+        stage = next(stage for stage in report["stages"] if stage["id"] == "tooling-tests")
+        (self.root / stage["log_path"]).write_text(text)
+        stage["sha256"] = hashlib.sha256(text.encode()).hexdigest()
+        item = self.evidence("tooling-completion-quality.json", "quality-run", json.dumps(report))
+        validator = Validator(self.manifest, self.fingerprint, self.root)
+        return validator.quality(report, validator.raw(item))
+
+    def test_quality_accepts_only_exact_counted_platform_skip_with_complete_verbose_rows(self):
+        text = (
+            "test_every_required_status_rejects_unknown_failed_skipped_and_stale (test_gate.GateTests.test_every_required_status_rejects_unknown_failed_skipped_and_stale) ... ok\n"
+            "test_invalid_cli (test_runner.RunnerTests.test_invalid_cli) ... usage: expected captured stderr\n"
+            "error: intentionally rejected fixture argument\nok\n"
+            "test_zero_wrapper_does_not_claim_unreaped_zombie_group_is_clean (test_state.StateTests.test_zero_wrapper_does_not_claim_unreaped_zombie_group_is_clean) ... skipped 'Linux task subreaper observes an actual unreaped orphan'\n"
+            "\n----------------------------------------------------------------------\nRan 3 tests in 0.02s\n\nOK (skipped=1)\n"
+        )
+        self.assertEqual(self.quality_with_tooling(text)["command"], "quality")
+
+    def test_quality_keeps_linux_no_skip_and_legacy_plain_success(self):
+        text = (
+            "test_every_required_status_rejects_unknown_failed_skipped_and_stale (test_gate.GateTests.test_every_required_status_rejects_unknown_failed_skipped_and_stale) ... ok\n"
+            "test_zero_wrapper_does_not_claim_unreaped_zombie_group_is_clean (test_state.StateTests.test_zero_wrapper_does_not_claim_unreaped_zombie_group_is_clean) ... ok\n"
+            "\n----------------------------------------------------------------------\nRan 2 tests in 0.02s\n\nOK\n"
+        )
+        self.assertEqual(self.quality_with_tooling(text)["command"], "quality")
+        self.assertEqual(self.quality_with_tooling("Ran 9 tests in 0.02s\n\nOK\n")["command"], "quality")
+
+    def test_quality_rejects_hash_valid_skip_identity_count_failure_and_truncation(self):
+        row = "test_zero_wrapper_does_not_claim_unreaped_zombie_group_is_clean (test_state.StateTests.test_zero_wrapper_does_not_claim_unreaped_zombie_group_is_clean) ... skipped 'Linux task subreaper observes an actual unreaped orphan'\n"
+        other = "test_product (test_delivery.DeliveryTests.test_product) ... ok\n"
+        valid = row + other + "\n----------------------------------------------------------------------\nRan 2 tests in 0.02s\n\nOK (skipped=1)\n"
+        variants = {
+            "unknown skipped product": valid.replace(row, "test_product (test_delivery.DeliveryTests.test_product) ... skipped 'not available'\n"),
+            "wrong zombie class": valid.replace("test_state.StateTests", "other.StateTests"),
+            "wrong skip reason": valid.replace("Linux task subreaper observes an actual unreaped orphan", "platform unsupported"),
+            "duplicate singleton": valid.replace(other, row),
+            "two declared skips": valid.replace(other, row).replace("skipped=1", "skipped=2"),
+            "counted missing row": valid.replace("Ran 2", "Ran 3"),
+            "declared zero": valid.replace("skipped=1", "skipped=0"),
+            "undeclared skip": valid.replace("OK (skipped=1)", "OK"),
+            "declared without row": valid.replace(row, row.replace("skipped 'Linux task subreaper observes an actual unreaped orphan'", "ok")),
+            "truncated verbose row": valid.replace(other, other.replace(" ... ok", " ...")),
+            "empty verbose outcome": valid.replace(other, other.replace("ok\n", "\n")),
+            "unknown outcome": valid.replace(other, other.replace("ok\n", "not_run\n")),
+            "multiline product skip with allowed reason": valid.replace(other, "test_product (test_delivery.DeliveryTests.test_product) ... captured stderr\nskipped 'Linux task subreaper observes an actual unreaped orphan'\n"),
+            "known skip continued as successful result": valid.replace(row, row + "ok\n"),
+            "failed row": valid.replace(other, other.replace("ok\n", "FAIL\n")),
+            "error row": valid.replace(other, other.replace("ok\n", "ERROR\n")),
+            "expected failure row": valid.replace(other, other.replace("ok\n", "expected failure\n")),
+            "unexpected success row": valid.replace(other, other.replace("ok\n", "unexpected success\n")),
+            "expected failure footer": valid.replace("skipped=1", "skipped=1, expected failures=1"),
+            "truncated footer": valid.replace("OK (skipped=1)\n", "OK (skipped=1"),
+            "late error": valid + "RuntimeError after completion\n",
+            "background exception": valid.replace("Ran 2", "Exception in thread fixture\nRan 2"),
+        }
+        for label, text in variants.items():
+            with self.subTest(label=label):
+                with self.assertRaisesRegex(EvidenceError, "tooling-tests raw log lacks final successful completion"):
+                    self.quality_with_tooling(text)
+
     def test_local_evaluator_never_returns_a_production_allowed_field(self):
         self.manifest["delivery_scope"] = "local-demo"
         self.manifest["enforcement_deployed"] = False

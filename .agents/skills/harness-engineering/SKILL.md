@@ -24,6 +24,8 @@ description: Prepare, implement or audit the execution environment and feedback 
 
 Ocean Delivery 的 `local-gate` 校验完整当前 G1/G2/本地资源合同并固定 publish_allowed=false；生产 `gate` 仍要求全部 H01–H08/G0–G6。恢复门禁必须重新读取外部原始证据；候选指纹相同不表示日志、数据库备份或产物仍有效。取消/恢复的实际验证交 X04，原生功能交 E08，远端不可绕过的执行路径交 X05；职能间互相消费证据，不互相代签。
 
+本地 G1 的 unittest 原始日志仅允许一个已核实的平台不适用例外：完整 verbose 单行必须精确指向 `test_state.StateTests.test_zero_wrapper_does_not_claim_unreaped_zombie_group_is_clean`，原始理由必须为 `Linux task subreaper observes an actual unreaped orphan`，唯一 skipped 行与末尾 `OK (skipped=1)` 数量一致，完整结果行数与 `Ran N tests` 一致；其余结果仍须成功且日志完整终结。不能容许任意业务用例被跳过、未知状态或预期失败，也不能把 Mac 不适用称为 zombie 测试通过。交付另保留当前候选真实 Linux 零跳过 CI 的该例通过证据。不同机器的原始绝对路径不能通过重写日志/报告、别名或 symlink 冒充当前证据根；路径合同不兼容时明确拒绝并审查读取规则。
+
 原始证据默认必须非空。仅允许当前候选的原生采集器原始清单中完整列出的无输出诊断流为零字节，并校验精确 phase、文件名、kind、路径和 hash；不得删除空日志、重写采集器清单或把业务回执归为诊断绕过。捕获到真实故障后先保留该次输入、日志、截图与退出事实，再派给对应源负责人，独立验收下一候选。将实际修复经验回写对应仓库 skill，避免只留下主控会话里的知识。
 
 每次执行和恢复保存独立attempt目录，最新指针必须引用叶报告及hash，之前的日志和报告不可覆盖。记录实际子进程终态、回收、进程组、租用和任务设备清理；未知清理不得重放。父进程关闭继承锁FD不能显式解开仍由子进程持有的OS锁。实际取消评测先观察有身份的在途请求，再只取消自有协调进程，核实请求未被伪确认、资源已回收、旧证据未改和新attempt完整复验；不能把准备脚本当作评测已通过。

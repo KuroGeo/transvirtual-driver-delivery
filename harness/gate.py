@@ -108,6 +108,40 @@ def _json(raw, label):
         raise EvidenceError(f"{label}: expected a raw JSON report: {error}") from error
 
 
+def _tooling_completed(tooling):
+    """Allow one observed platform-only skip, never a skipped product check."""
+    summary = re.search(r"Ran ([1-9][0-9]*) tests in [^\r\n]*\n\s*\nOK(?: \(skipped=([1-9][0-9]*)\))?\s*\Z", tooling)
+    if (summary is None or "Exception in thread" in tooling
+            or re.search(r"(?m)^[^\r\n]* \.\.\. (?:FAIL|ERROR|expected failure|unexpected success)(?:\s|$)", tooling)):
+        return False
+    skipped = re.findall(r"(?m)^[^\r\n]* \.\.\. skipped(?:[ \t]|$)[^\r\n]*$", tooling)
+    declared = int(summary[2] or 0)
+    if len(skipped) != declared:
+        return False
+    skip_outcome = "skipped 'Linux task subreaper observes an actual unreaped orphan'"
+    allowed = ("test_zero_wrapper_does_not_claim_unreaped_zombie_group_is_clean "
+               "(test_state.StateTests.test_zero_wrapper_does_not_claim_unreaped_zombie_group_is_clean) "
+               "... " + skip_outcome)
+    prefix = tooling[:summary.start()]
+    rows = list(re.finditer(r"(?m)^test\S+ \([^\r\n]+\) \.\.\. ", prefix))
+    for index, row in enumerate(rows):
+        end = rows[index + 1].start() if index + 1 < len(rows) else len(prefix)
+        output = prefix[row.end():end].splitlines()
+        # Verbose unittest can interleave expected captured stderr before its
+        # final result; its final separator is outside the last test result.
+        while output and (not output[-1].strip() or set(output[-1].strip()) == {"-"}):
+            output.pop()
+        first_line = prefix[row.start():end].splitlines()[0]
+        if first_line == allowed:
+            if output != [skip_outcome]:
+                return False
+        elif not output or output[-1].strip() != "ok":
+            return False
+    if declared == 0:
+        return True
+    return declared == 1 and skipped == [allowed] and len(rows) == int(summary[1])
+
+
 class Validator:
     def __init__(self, manifest, fingerprint, base_dir):
         self.manifest = _object(manifest, "manifest")
@@ -319,7 +353,7 @@ class Validator:
                 _expect(Path(stage["command"][0]).name, "dart", "quality executable")
         tooling = logs["tooling-tests"]["raw"].decode("utf-8")
         flutter = logs["flutter-tests"]["raw"].decode("utf-8")
-        if not re.search(r"Ran [1-9][0-9]* tests in .*\n\s*\nOK\s*\Z", tooling) or "Exception in thread" in tooling:
+        if not _tooling_completed(tooling):
             raise EvidenceError("tooling-tests raw log lacks final successful completion")
         if not re.search(r"\+[1-9][0-9]*: All tests passed!\s*\Z", flutter) or re.search(r"\+[0-9]+ -[1-9]|Some tests failed|unhandled exception", flutter, re.I):
             raise EvidenceError("flutter-tests raw log lacks full successful completion")
