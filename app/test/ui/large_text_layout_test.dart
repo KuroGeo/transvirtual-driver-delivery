@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ocean_delivery/models/delivery.dart';
 import 'package:ocean_delivery/ui/delivery/feedback/workbench_notice.dart';
 import 'package:ocean_delivery/ui/delivery/list/stop_status_badge.dart';
+import 'package:ocean_delivery/ui/delivery_screen.dart';
 import 'package:ocean_delivery/ui/delivery_view_model.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -365,6 +367,256 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets(
+    'maximum OS text shows the complete map summary before scrolling and closes its full task without changing context',
+    (tester) async {
+      _maximumPhone(tester);
+      final (_, model) = await _mount(tester);
+      final remaining = '${model.pendingCount} left to deliver';
+      final camera = _actualCamera(tester);
+      final query = model.query;
+
+      // These are first-map-frame assertions: no reveal or drag beforehand.
+      expect(model.panel, WorkbenchPanel.map);
+      _expectReadableSummaryText(
+        tester,
+        'map-summary-remaining',
+        remaining,
+        _byKey('delivery-overview'),
+      );
+      _expectHitTarget(tester, _byKey('browse-stops'));
+      _expectHitTarget(tester, _byKey('map-summary-open'));
+
+      await _tapActual(tester, 'map-summary-open');
+      expect(model.panel, WorkbenchPanel.map);
+      _expectSummaryTask(tester);
+      _expectReadableSummaryText(
+        tester,
+        'summary-remaining',
+        remaining,
+        _byKey('large-summary-scroll'),
+      );
+      await _tapActual(tester, 'summary-close');
+      expect(_byKey('large-summary-workspace'), findsNothing);
+      expect(model.panel, WorkbenchPanel.map);
+      expect(model.query, query);
+      _expectCamera(tester, camera);
+      _expectReadableSummaryText(
+        tester,
+        'map-summary-remaining',
+        remaining,
+        _byKey('delivery-overview'),
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'maximum OS text reads the real summary and notice with bounded drags and keeps nearest and Browse return origins',
+    (tester) async {
+      _maximumPhone(tester);
+      final (_, model) = await _mount(tester);
+      await _tapActual(tester, 'open-search');
+      await tester.enterText(_byKey('map-search'), 'Silverline');
+      await pumpFormalFrames(tester);
+      await revealFormalControl(tester, 'header-filter-pending');
+      await _tapActual(tester, 'header-filter-pending');
+      expect(model.query.search, 'Silverline');
+      expect(model.query.status, DeliveryStatus.pending);
+      await _tapActual(tester, 'fit-stops');
+      final query = model.query;
+      final camera = _actualCamera(tester);
+      final nearest = model.result.nearest!;
+      final remaining = '${model.pendingCount} left to deliver';
+
+      // This controlled persistent notice checks real summary presentation.
+      // The separate offline-save case above proves recording durability.
+      const noticeText =
+          'Delivery summary is ready. Review the nearest matching stop or browse the full list.';
+      model.showNotice(
+        noticeText,
+        kind: NoticeKind.information,
+        persistent: true,
+      );
+      await pumpFormalFrames(tester);
+      await _tapActual(tester, 'map-summary-open');
+      _expectSummaryTask(tester);
+      final viewport = _byKey('large-summary-scroll');
+      for (final (key, value) in [
+        ('summary-remaining', remaining),
+        ('summary-nearest-customer', nearest.customerName),
+        ('summary-nearest-reference', nearest.reference),
+        (
+          'summary-nearest-distance',
+          '${straightLineDistanceLabel(model.result.distanceMeters(nearest)!)} straight-line',
+        ),
+      ]) {
+        await _dragToExpose(tester, key, viewport);
+        _expectReadableSummaryText(tester, key, value, viewport);
+        _expectHitTarget(tester, _byKey('summary-close'));
+      }
+      await _dragToExpose(tester, 'workbench-notice', viewport);
+      _expectFullyWithin(tester, _byKey('workbench-notice'), viewport);
+      _expectReadableSummaryText(
+        tester,
+        'notice-message',
+        noticeText,
+        viewport,
+      );
+      await _dragToExpose(tester, 'summary-browse-stops', viewport);
+      _expectFullyWithin(tester, _byKey('summary-browse-stops'), viewport);
+      _expectHitTarget(tester, _byKey('summary-browse-stops'));
+      final browseText = find.descendant(
+        of: _byKey('summary-browse-stops'),
+        matching: find.text('Browse stops'),
+      );
+      _expectFullyWithin(tester, browseText, viewport);
+      _expectMaximumScale(tester, browseText);
+
+      // Scrolling the summary and typed Close preserve the real map/query.
+      await _tapActual(tester, 'summary-close');
+      expect(_byKey('large-summary-workspace'), findsNothing);
+      expect(model.query, query);
+      _expectCamera(tester, camera);
+
+      await _tapActual(tester, 'map-summary-open');
+      _expectSummaryTask(tester);
+      await _dragToExpose(tester, 'summary-nearest-customer', viewport);
+      await _tapActual(tester, 'summary-nearest-customer');
+      expect(model.panel, WorkbenchPanel.detail);
+      expect(model.detailContext!.origin, DetailOrigin.nearest);
+      expect(model.selectedStop!.reference, nearest.reference);
+      expect(_byKey('large-summary-workspace'), findsNothing);
+      _expectTaskArea(tester);
+      _expectHitTarget(tester, _byKey('detail-close'));
+      await _tapActual(tester, 'detail-close');
+      expect(model.panel, WorkbenchPanel.map);
+      expect(model.query, query);
+      expect(_byKey('large-summary-workspace'), findsNothing);
+
+      await _tapActual(tester, 'map-summary-open');
+      _expectSummaryTask(tester);
+      await _dragToExpose(tester, 'summary-browse-stops', viewport);
+      await _tapActual(tester, 'summary-browse-stops');
+      expect(model.panel, WorkbenchPanel.list);
+      expect(model.query, query);
+      expect(_byKey('large-summary-workspace'), findsNothing);
+      _expectTaskArea(tester);
+      final first = model.result.stops.first;
+      final rowKey = 'stop-${first.reference}';
+      await _dragToExpose(tester, rowKey, _byKey('stop-list-scroll'));
+      _expectReadableStop(tester, model, first, _byKey('stop-list-scroll'));
+      await _tapActual(tester, rowKey);
+      expect(model.panel, WorkbenchPanel.detail);
+      expect(model.detailContext!.origin, DetailOrigin.list);
+      await _tapActual(tester, 'detail-close');
+      expect(model.panel, WorkbenchPanel.list);
+      expect(model.query, query);
+      expect(model.listSession.focusedReference, first.reference);
+      await _tapActual(tester, 'close-list');
+      expect(model.panel, WorkbenchPanel.map);
+      expect(model.query, query);
+      expect(tester.takeException(), isNull);
+    },
+  );
+  testWidgets(
+    'maximum OS text summary traps actual Tab traversal and restores its entry focus on Escape and platform back',
+    (tester) async {
+      _maximumPhone(tester);
+      final (_, model) = await _mount(tester);
+
+      // Mount the list and leave its query tools open before returning to map.
+      // The summary must exclude retained controls, not merely unmount them.
+      await _tapActual(tester, 'browse-stops');
+      await _tapActual(tester, 'list-query-controls');
+      await _dragToExpose(tester, 'stop-search', _byKey('list-query-scroll'));
+      await tester.enterText(_byKey('stop-search'), 'Silverline');
+      await pumpFormalFrames(tester);
+      await _tapActual(tester, 'close-list');
+      await _tapActual(tester, 'open-search');
+      await tester.enterText(_byKey('map-search'), 'Silverline');
+      await pumpFormalFrames(tester);
+      await _tapActual(tester, 'fit-stops');
+      final query = model.query;
+      final camera = _actualCamera(tester);
+      expect(query.search, 'Silverline');
+
+      await _tapActual(tester, 'map-summary-open');
+      _expectSummaryTask(tester);
+      for (final key in ['delivery-map', 'map-search', 'stop-search']) {
+        expect(
+          find.byKey(ValueKey(key), skipOffstage: false),
+          findsOneWidget,
+          reason: '$key must remain mounted for focus isolation to be tested.',
+        );
+        expect(_byKey(key), findsNothing);
+      }
+      for (var step = 0; step < 12; step++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await pumpFormalFrames(tester);
+        final focusedNode = FocusManager.instance.primaryFocus;
+        final focus = focusedNode?.context;
+        expect(focus, isNotNull);
+        final actualFocus = focus!;
+        var insideSummary = false;
+        var hidden = false;
+        final ancestors = <String>[];
+        actualFocus.visitAncestorElements((element) {
+          final widget = element.widget;
+          ancestors.add(
+            '${widget.runtimeType}(key: ${widget.key}'
+            '${widget is Offstage ? ', offstage: ${widget.offstage}' : ''})',
+          );
+          if (widget.key == const ValueKey('large-summary-workspace')) {
+            insideSummary = true;
+          }
+          if (widget is Offstage && widget.offstage) hidden = true;
+          return true;
+        });
+        expect(
+          insideSummary,
+          isTrue,
+          reason:
+              'Actual Tab step $step must remain in the visible summary. '
+              'Focus: ${focusedNode?.debugLabel}; '
+              'widget: ${actualFocus.widget.runtimeType}(key: ${actualFocus.widget.key}); '
+              'ancestors: ${ancestors.join(' > ')}',
+        );
+        expect(
+          hidden,
+          isFalse,
+          reason: 'Tab must not enter retained controls.',
+        );
+      }
+
+      // Exercise the same Shortcuts/Actions callback used by a real keyboard.
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await pumpFormalFrames(tester);
+      expect(_byKey('large-summary-workspace'), findsNothing);
+      expect(model.panel, WorkbenchPanel.map);
+      expect(model.query, query);
+      _expectCamera(tester, camera);
+      final entryFocus = tester
+          .widget<TextButton>(_byKey('map-summary-open'))
+          .focusNode!;
+      expect(FocusManager.instance.primaryFocus, same(entryFocus));
+      expect(entryFocus.hasPrimaryFocus, isTrue);
+
+      // OS back must take the actual PopScope route and restore the same entry.
+      await _tapActual(tester, 'map-summary-open');
+      _expectSummaryTask(tester);
+      await tester.binding.handlePopRoute();
+      await pumpFormalFrames(tester);
+      expect(_byKey('large-summary-workspace'), findsNothing);
+      expect(model.panel, WorkbenchPanel.map);
+      expect(model.query, query);
+      _expectCamera(tester, camera);
+      expect(FocusManager.instance.primaryFocus, same(entryFocus));
+      expect(entryFocus.hasPrimaryFocus, isTrue);
+      expect(tester.takeException(), isNull);
+    },
+  );
 }
 
 Finder _byKey(String key) => find.byKey(ValueKey(key));
@@ -421,6 +673,77 @@ void _expectTaskArea(WidgetTester tester) {
   expect(_safeBounds.inflate(.5).contains(bounds.topLeft), isTrue);
   expect(_safeBounds.inflate(.5).contains(bounds.bottomRight), isTrue);
   _expectMaximumScale(tester, workspace);
+}
+
+void _expectSummaryTask(WidgetTester tester) {
+  final workspace = _byKey('large-summary-workspace');
+  expect(workspace, findsOneWidget);
+  final bounds = tester.getRect(workspace);
+  expect(bounds.left, closeTo(_safeBounds.left, .5));
+  expect(bounds.top, closeTo(_safeBounds.top, .5));
+  expect(bounds.right, closeTo(_safeBounds.right, .5));
+  expect(bounds.bottom, closeTo(_safeBounds.bottom, .5));
+  final viewport = _byKey('large-summary-scroll');
+  _expectFullyWithin(tester, viewport, workspace);
+  expect(
+    tester.getSize(viewport).height,
+    greaterThanOrEqualTo(_safeBounds.height * .65),
+    reason: 'The actual summary scroll must occupy the main SafeArea.',
+  );
+  _expectMaximumScale(tester, workspace);
+  _expectHitTarget(tester, _byKey('summary-close'));
+}
+
+void _expectReadableSummaryText(
+  WidgetTester tester,
+  String key,
+  String value,
+  Finder viewport,
+) {
+  final field = _byKey(key);
+  _expectFullyWithin(tester, field, viewport);
+  // A field can lie within the card while its inner scroll clip hides it.
+  // Check actual ancestor viewport bounds on the unscrolled first map too.
+  for (final element
+      in find
+          .ancestor(of: field, matching: find.byType(SingleChildScrollView))
+          .evaluate()) {
+    _expectFullyWithin(
+      tester,
+      field,
+      find.byElementPredicate((candidate) => identical(candidate, element)),
+    );
+  }
+  final text = tester.widget<Text>(field);
+  expect(text.data, value);
+  expect(text.maxLines, isNull);
+  expect(text.overflow, isNot(TextOverflow.ellipsis));
+  _expectMaximumScale(tester, field);
+  final richText = find.descendant(of: field, matching: find.byType(RichText));
+  expect(richText, findsOneWidget);
+  expect(
+    tester.renderObject<RenderParagraph>(richText).textScaler.scale(16) / 16,
+    closeTo(_maximumScale, 1e-12),
+    reason: 'The painted summary text must keep the complete OS scaler.',
+  );
+}
+
+Map<String, double> _actualCamera(WidgetTester tester) {
+  final screen = tester.widget<DeliveryScreen>(find.byType(DeliveryScreen));
+  final camera = screen.mapController!.mapController.camera;
+  return {
+    'latitude': camera.center.latitude,
+    'longitude': camera.center.longitude,
+    'zoom': camera.zoom,
+    'rotation': camera.rotation,
+  };
+}
+
+void _expectCamera(WidgetTester tester, Map<String, double> expected) {
+  final actual = _actualCamera(tester);
+  for (final entry in expected.entries) {
+    expect(actual[entry.key], closeTo(entry.value, 1e-6), reason: entry.key);
+  }
 }
 
 void _expectMaximumScale(WidgetTester tester, Finder target) {

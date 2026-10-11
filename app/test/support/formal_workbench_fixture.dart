@@ -267,6 +267,11 @@ Future<void> revealFormalQueryTools(WidgetTester tester) async {
 }
 
 Future<void> tapFormalControl(WidgetTester tester, String key) async {
+  if ((key == 'nearest-stop' || key == 'map-waiting-only') &&
+      find.byKey(ValueKey(key)).evaluate().isEmpty &&
+      find.byKey(const ValueKey('map-summary-open')).evaluate().isNotEmpty) {
+    await tapFormalControl(tester, 'map-summary-open');
+  }
   if (key == 'stop-search' ||
       key == 'waiting-only' ||
       key.startsWith('filter-')) {

@@ -178,11 +178,15 @@ void main() {
           reason: 'Returned selected marker hidden by $key',
         );
       }
+      expect(find.byKey(const ValueKey('workbench-notice')), findsNothing);
+      await tapFormalControl(tester, 'map-summary-open');
+      await revealFormalControl(tester, 'workbench-notice');
+      expect(find.textContaining('Service unavailable'), findsOneWidget);
+      await tapFormalControl(tester, 'summary-close');
+      expect(local.panel, WorkbenchPanel.map);
       expect(
-        currentMarker.overlaps(
-          tester.getRect(find.byKey(const ValueKey('workbench-notice'))),
-        ),
-        isFalse,
+        find.byKey(const ValueKey('large-summary-workspace')),
+        findsNothing,
       );
       final localOperation = (await awaitFormalIO(
         tester,

@@ -450,10 +450,111 @@ Future<void> acceptanceMap(NativeWorkbenchDriver client) async {
   if (acceptanceModel(next)['panel'] == 'list') {
     await client.tapKey('close-list');
   }
+  final map = await client.snapshot();
+  if (nativeObject(map['bounds']).containsKey('summary-close')) {
+    await client.tapKey('summary-close');
+  }
   await client.waitForSnapshot(
     'typed UI map return',
-    (value) => acceptanceModel(value)['panel'] == 'map',
+    (value) =>
+        acceptanceModel(value)['panel'] == 'map' &&
+        !nativeObject(value['bounds']).containsKey('large-summary-workspace'),
   );
+}
+
+/// Expose a real summary field with bounded drags in its actual scroll view.
+/// Large text opens a separate task; normal compact text keeps the overview.
+Future<Map<String, dynamic>> acceptanceSummaryKey(
+  NativeWorkbenchDriver client,
+  String key, {
+  bool entireField = false,
+}) async {
+  var value = await client.snapshot();
+  if (nativeObject(value['bounds']).containsKey('map-summary-open')) {
+    await client.tapKey('map-summary-open');
+    value = await client.waitForSnapshot(
+      'actual large-text summary opened',
+      (snapshot) =>
+          acceptanceModel(snapshot)['panel'] == 'map' &&
+          nativeObject(snapshot['bounds']).containsKey('large-summary-scroll'),
+    );
+  }
+  final lookupClock = Stopwatch()..start();
+  for (var scrolls = 0; ; scrolls++) {
+    final bounds = nativeObject(value['bounds']);
+    final rows = bounds[key];
+    final target = rows is List && rows.length == 1 && rows.single is Map
+        ? nativeObject(rows.single)
+        : null;
+    final scrollKey = bounds.containsKey('large-summary-scroll')
+        ? 'large-summary-scroll'
+        : 'overview-summary';
+    final scrollRows = bounds[scrollKey];
+    final viewport =
+        scrollRows is List && scrollRows.length == 1 && scrollRows.single is Map
+        ? nativeObject(scrollRows.single)
+        : null;
+    if (target != null && target['centerHit'] == true) {
+      if (!entireField ||
+          viewport != null &&
+              (target['top'] as num) >= (viewport['top'] as num) - .5 &&
+              (target['bottom'] as num) <= (viewport['bottom'] as num) + .5 &&
+              (target['left'] as num) >= (viewport['left'] as num) - .5 &&
+              (target['right'] as num) <= (viewport['right'] as num) + .5) {
+        return value;
+      }
+    }
+    nativeRequire(
+      scrolls < 12 &&
+          lookupClock.elapsed < NativeWorkbenchDriver.observationDeadline &&
+          viewport != null,
+      'Summary $key was not exposed in its actual viewport '
+      'within 12 drags and 15 seconds.',
+    );
+    final actualViewport = viewport!;
+    var drag = -160.0;
+    if (target != null) {
+      if (entireField) {
+        nativeRequire(
+          (target['height'] as num) <= (actualViewport['height'] as num) + .5 &&
+              (target['width'] as num) <= (actualViewport['width'] as num) + .5,
+          'The full summary $key must fit its actual reading viewport.',
+        );
+      }
+      if ((target['top'] as num) < (actualViewport['top'] as num)) {
+        drag = ((actualViewport['top'] as num) - (target['top'] as num) + 8)
+            .clamp(8, 160)
+            .toDouble();
+      } else if ((target['bottom'] as num) >
+          (actualViewport['bottom'] as num)) {
+        drag =
+            -((target['bottom'] as num) - (actualViewport['bottom'] as num) + 8)
+                .clamp(8, 160)
+                .toDouble();
+      }
+    }
+    await client
+        .scrollKey(scrollKey, drag)
+        .timeout(
+          NativeWorkbenchDriver.observationDeadline - lookupClock.elapsed,
+        );
+    nativeRequire(
+      lookupClock.elapsed < NativeWorkbenchDriver.observationDeadline,
+      'Summary lookup exceeded its unchanged 15-second deadline.',
+    );
+    value = await client.snapshot().timeout(
+      NativeWorkbenchDriver.observationDeadline - lookupClock.elapsed,
+    );
+    nativeRequire(
+      acceptanceModel(value)['panel'] == 'map',
+      'Summary lookup left its actual map task.',
+    );
+  }
+}
+
+Future<void> acceptanceNearest(NativeWorkbenchDriver client) async {
+  await acceptanceSummaryKey(client, 'nearest-stop');
+  await client.tapKey('nearest-stop');
 }
 
 Future<void> acceptanceListQueryTools(NativeWorkbenchDriver client) async {
@@ -562,8 +663,32 @@ Future<void> acceptanceList(NativeWorkbenchDriver client) async {
   if (query['status'] != null || query['waitingOnly'] == true) {
     await acceptanceListQueryTools(client);
   }
-  if (query['status'] != null) await client.tapKey('filter-all');
-  if (query['waitingOnly'] == true) await client.tapKey('waiting-only');
+  for (final key in [
+    if (query['status'] != null) 'filter-all',
+    if (query['waitingOnly'] == true) 'waiting-only',
+  ]) {
+    // Retained query tools can also retain a horizontal chip offset. Let the
+    // real nested scroll views expose the control before the original tap.
+    await client.revealKey(key);
+    final exposed = await client.snapshot();
+    final rows = nativeObject(exposed['bounds'])[key];
+    nativeRequire(
+      rows is List && rows.length == 1 && rows.single is Map,
+      'Query normalization requires one actual onstage $key.',
+    );
+    final rect = nativeObject((rows as List).single);
+    nativeRequire(
+      rect['centerHit'] == true &&
+          rect['width'] is num &&
+          (rect['width'] as num).isFinite &&
+          (rect['width'] as num) >= 44 &&
+          rect['height'] is num &&
+          (rect['height'] as num).isFinite &&
+          (rect['height'] as num) >= 44,
+      'Actual query control $key must be hittable and at least44px before tap.',
+    );
+    await client.tapKey(key);
+  }
 }
 
 Future<void> acceptanceOpenListStop(

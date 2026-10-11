@@ -888,7 +888,16 @@ Future<void> _openMapStop(NativeWorkbenchDriver d, String reference) async {
   final current = await d.snapshot();
   final query = nativeObject(acceptanceModel(current)['query']);
   if (query['status'] != null) await d.tapKey('header-filter-all');
-  if (query['waitingOnly'] == true) await d.tapKey('map-waiting-only');
+  if (query['waitingOnly'] == true) {
+    await acceptanceSummaryKey(d, 'map-waiting-only');
+    await d.tapKey('map-waiting-only');
+    await acceptanceMap(d);
+  }
+  if ((nativeObject(current['mediaQuery'])['textScaleAt16'] as num) >= 2) {
+    await acceptanceSummaryKey(d, 'nearest-stop');
+    // Reading the summary does not change the typed source of a map marker.
+    await acceptanceMap(d);
+  }
   await d.tapKey('fit-stops');
   await d.waitForSnapshot(
     'filtered map marker visible',
@@ -1143,7 +1152,7 @@ Future<void> _n4(NativeAcceptanceRecorder r) async {
       await d.tapKey('header-filter-pending');
       final beforeNearest = await d.snapshot();
       final ref = await c.sample('eligible-nearest', beforeNearest);
-      await d.tapKey('nearest-stop');
+      await acceptanceNearest(d);
       final nearest = await d.waitForSnapshot(
         'nearest action actual pending detail',
         (s) =>
@@ -1175,7 +1184,7 @@ Future<void> _n4(NativeAcceptanceRecorder r) async {
     'N4.typed-returns',
     (c) async {
       await _mapSearch(d, '');
-      await d.tapKey('nearest-stop');
+      await acceptanceNearest(d);
       await d.waitForSnapshot(
         'nearest detail for typed Close',
         (s) =>
@@ -1635,22 +1644,39 @@ Future<String> _n7ReadingCapture(
       artifact: ref,
     );
   }
-  if (scrollKey == 'stop-list-scroll') {
-    // A visible row inside a small inset panel is insufficient. The real
-    // primary list occupies at least 65% of the full SafeArea and reaches its
+  if (scrollKey == 'stop-list-scroll' || scrollKey == 'large-summary-scroll') {
+    // A visible field inside a small inset panel is insufficient. The real
+    // primary scroll occupies at least 65% of the full SafeArea and reaches its
     // actual bottom, leaving only the persistent toolbar above it.
     await c.expect(
-      '/bounds/stop-list-scroll/0/height',
+      '/bounds/$scrollKey/0/height',
       'gte',
       (workspace['height'] as num) * .65,
       artifact: ref,
     );
     await c.expect(
-      '/bounds/stop-list-scroll/0/bottom',
+      '/bounds/$scrollKey/0/bottom',
       'gte',
       (workspace['bottom'] as num) - .5,
       artifact: ref,
     );
+    if (scrollKey == 'large-summary-scroll') {
+      _n7UniqueRect(snapshot, 'large-summary-workspace');
+      for (final edge in ['left', 'top', 'right', 'bottom']) {
+        await c.expect(
+          '/bounds/large-summary-workspace/0/$edge',
+          'gte',
+          (workspace[edge] as num) - .5,
+          artifact: ref,
+        );
+        await c.expect(
+          '/bounds/large-summary-workspace/0/$edge',
+          'lte',
+          (workspace[edge] as num) + .5,
+          artifact: ref,
+        );
+      }
+    }
   } else if (scrollKey == 'detail-scroll') {
     _n7UniqueRect(snapshot, 'delivery-detail-card');
     for (final edge in ['left', 'top', 'right', 'bottom']) {
@@ -1734,6 +1760,206 @@ Future<String> _n7ReadingCapture(
     'journal': c.recorder.relative('$name.journal.jsonl'),
   };
   return ref;
+}
+
+Future<String> _n7MapReadingCapture(AcceptanceCase c, String suffix) async {
+  final d = c.recorder.client;
+  final snapshot = await acceptanceStableCapture(d);
+  nativeRequire(
+    acceptanceModel(snapshot)['panel'] == 'map' &&
+        !nativeObject(
+          snapshot['bounds'],
+        ).containsKey('large-summary-workspace'),
+    'Map reading requires the actual closed summary and onstage map.',
+  );
+  final pending = acceptanceModel(snapshot)['pendingCount'];
+  nativeRequire(
+    pending is int && pending >= 0,
+    'Actual pending total required.',
+  );
+  final ref = await c.sample(suffix, snapshot);
+  await c.expect('/mediaQuery/textScaleAt16', 'gte', 2, artifact: ref);
+  await c.expect('/model/panel', 'eq', 'map', artifact: ref);
+  await c.expect(
+    '/bounds/large-summary-workspace',
+    'absent',
+    null,
+    artifact: ref,
+  );
+  _n7UniqueRect(snapshot, 'map-summary-remaining');
+  _visible(snapshot, 'map-summary-remaining', minimumTarget: false);
+  await c.expect(
+    '/bounds/map-summary-remaining/0/centerHit',
+    'eq',
+    true,
+    artifact: ref,
+  );
+  final textRef = await c.evidence('$suffix-text', {
+    'remaining': await d.textKey('map-summary-remaining'),
+  });
+  await c.expect(
+    '/remaining',
+    'eq',
+    '$pending left to deliver',
+    artifact: textRef,
+  );
+  for (final key in ['browse-stops', 'map-summary-open']) {
+    _n7UniqueRect(snapshot, key);
+    _visible(snapshot, key);
+    await c.expect('/bounds/$key/0/width', 'gte', 44, artifact: ref);
+    await c.expect('/bounds/$key/0/height', 'gte', 44, artifact: ref);
+    await c.expect('/bounds/$key/0/centerHit', 'eq', true, artifact: ref);
+  }
+  final name = '${c.slug}-$suffix';
+  await c.evidence('$suffix-capture', await d.captureNamed(name, snapshot));
+  c.metadata['${suffix}_capture'] = {
+    'snapshot': ref,
+    'text': textRef,
+    'png': c.recorder.relative('$name.png'),
+    'sqlite': c.recorder.relative('$name.sqlite'),
+    'projection': c.recorder.relative('$name.sqlite.json'),
+    'journal': c.recorder.relative('$name.journal.jsonl'),
+  };
+  return ref;
+}
+
+Future<void> _n7SummaryReading(
+  AcceptanceCase c,
+  String prefix, {
+  bool feedback = false,
+}) async {
+  final d = c.recorder.client;
+  final before = await acceptanceStableCapture(d);
+  nativeRequire(
+    acceptanceModel(before)['panel'] == 'map' &&
+        nativeObject(before['bounds']).containsKey('map-summary-open'),
+    'Summary must open through its actual large-text map button.',
+  );
+  final beforeRef = await c.sample('$prefix-map-context', before);
+  final pending = acceptanceModel(before)['pendingCount'];
+  final nearestId = nativeObject(before['result'])['nearestId'];
+  final nearest = nearestId == null
+      ? null
+      : nativeObjects(
+          before['stops'],
+        ).singleWhere((stop) => stop['id'] == nearestId);
+  if (feedback) {
+    final message = nativeObject(acceptanceModel(before)['notice'])['message'];
+    nativeRequire(
+      message is String && message.isNotEmpty,
+      'Summary feedback must bind to the current actual UI notice.',
+    );
+    await acceptanceSummaryKey(d, 'notice-message', entireField: true);
+    await _n7ReadingCapture(
+      c,
+      '$prefix-notice',
+      scrollKey: 'large-summary-scroll',
+      texts: {'notice-message': message as String},
+      actions: ['summary-close'],
+    );
+  }
+  await acceptanceSummaryKey(d, 'summary-remaining', entireField: true);
+  await _n7ReadingCapture(
+    c,
+    '$prefix-remaining',
+    scrollKey: 'large-summary-scroll',
+    texts: {'summary-remaining': '$pending left to deliver'},
+    actions: ['summary-close'],
+  );
+  await acceptanceSummaryKey(d, 'summary-nearest-customer', entireField: true);
+  final customerRef = await _n7ReadingCapture(
+    c,
+    '$prefix-customer',
+    scrollKey: 'large-summary-scroll',
+    texts: {
+      'summary-nearest-customer':
+          nearest?['customerName'] as String? ?? 'No matching stops',
+    },
+    actions: ['summary-close'],
+  );
+  await c.expect('/result/nearestId', 'eq', nearestId, artifact: customerRef);
+  if (nearest != null) {
+    nativeRequire(
+      nearest['status'] == 'pending',
+      'Actual nearest summary must use the current eligible pending stop.',
+    );
+    await acceptanceSummaryKey(
+      d,
+      'summary-nearest-reference',
+      entireField: true,
+    );
+    await _n7ReadingCapture(
+      c,
+      '$prefix-reference',
+      scrollKey: 'large-summary-scroll',
+      texts: {'summary-nearest-reference': nearest['reference'] as String},
+      actions: ['summary-close'],
+    );
+    await acceptanceSummaryKey(
+      d,
+      'summary-nearest-distance',
+      entireField: true,
+    );
+    await _n7ReadingCapture(
+      c,
+      '$prefix-distance',
+      scrollKey: 'large-summary-scroll',
+      readTextKeys: ['summary-nearest-distance'],
+      actions: ['summary-close'],
+    );
+    final distance = await d.textKey('summary-nearest-distance');
+    nativeRequire(
+      RegExp(r'^\d+(?:\.\d)? (?:m|km) straight-line$').hasMatch(distance),
+      'Nearest distance must expose its complete actual straight-line label.',
+    );
+    final exposed = await acceptanceSummaryKey(
+      d,
+      'nearest-stop',
+      entireField: true,
+    );
+    _visible(exposed, 'nearest-stop');
+    final nearestRef = await c.sample('$prefix-nearest-action', exposed);
+    for (final field in ['width', 'height']) {
+      await c.expect(
+        '/bounds/nearest-stop/0/$field',
+        'gte',
+        44,
+        artifact: nearestRef,
+      );
+    }
+    await c.expect(
+      '/bounds/nearest-stop/0/centerHit',
+      'eq',
+      true,
+      artifact: nearestRef,
+    );
+  }
+  await d.tapKey('summary-close');
+  await d.waitForSnapshot(
+    'actual summary Close restores the map',
+    (s) =>
+        acceptanceModel(s)['panel'] == 'map' &&
+        nativeObject(s['bounds']).containsKey('map-summary-open') &&
+        !nativeObject(s['bounds']).containsKey('large-summary-workspace'),
+  );
+  final returned = await _n7MapReadingCapture(c, '$prefix-closed');
+  for (final pointer in [
+    '/model/query',
+    '/model/listSession',
+    '/camera',
+    '/outbox',
+    '/persistedStops',
+    '/persistedSettings',
+  ]) {
+    await c.expect(
+      pointer,
+      'eq',
+      null,
+      artifact: returned,
+      rightArtifact: beforeRef,
+      rightPointer: pointer,
+    );
+  }
 }
 
 Map<String, String> _n7ListTexts(
@@ -2107,6 +2333,12 @@ Future<void> _n7(NativeAcceptanceRecorder r) async {
           'Actual system MediaQuery scale must be at least2x.',
         );
         await _mapSearch(d, '');
+        await _n7MapReadingCapture(c, 'initial-map');
+        nativeRequire(
+          nativeObject((await d.snapshot())['result'])['nearestId'] != null,
+          'Initial unfiltered map requires an actual eligible nearest stop.',
+        );
+        await _n7SummaryReading(c, 'initial-summary');
         await acceptanceList(d);
         c.metadata['first_page_browse_action_end'] = d.actionSequence;
         final list = await d.snapshot();
@@ -2289,7 +2521,7 @@ Future<void> _n7(NativeAcceptanceRecorder r) async {
           actions: ['detail-return', 'detail-close'],
         );
         await d.tapKey('detail-return');
-        await d.waitForSnapshot(
+        final returnedList = await d.waitForSnapshot(
           'terminal Return restores the same actual filtered list',
           (s) =>
               acceptanceModel(s)['panel'] == 'list' &&
@@ -2299,10 +2531,29 @@ Future<void> _n7(NativeAcceptanceRecorder r) async {
                   )['focusedReference'] ==
                   'TV-300005',
         );
+        c.metadata['list_return'] = await c.sample('list-return', returnedList);
+        await acceptanceMap(d);
+        await _n7MapReadingCapture(c, 'returned-map');
+        // A real offline Sync creates fresh feedback after the saved-detail
+        // reading sequence; the earlier transient save notice can expire.
+        await d.tapKey('map-sync');
+        await d.waitForSnapshot(
+          'actual offline map sync feedback',
+          (s) =>
+              acceptanceIdle(s) &&
+              acceptanceModel(s)['panel'] == 'map' &&
+              nativeObject(acceptanceModel(s)['notice'])['message'] ==
+                  'Offline · 2 saved updates waiting.' &&
+              nativeObject(acceptanceModel(s)['notice'])['kind'] ==
+                  'information' &&
+              acceptanceOutbox(s).length == 2,
+        );
+        await _n7SummaryReading(c, 'returned-summary', feedback: true);
       },
       (c) async {
         await c.expect('/mediaQuery/textScaleAt16', 'gte', 2);
         final savedRef = c.metadata['saved_result'] as String;
+        final listReturn = c.metadata['list_return'] as String;
         await c.expect(
           '/model/selected/reason',
           'eq',
@@ -2316,13 +2567,15 @@ Future<void> _n7(NativeAcceptanceRecorder r) async {
           'failed',
           artifact: savedRef,
         );
-        await c.expect('/model/panel', 'eq', 'list');
+        await c.expect('/model/panel', 'eq', 'list', artifact: listReturn);
+        await c.expect('/model/panel', 'eq', 'map');
         await c.expect('/model/selected', 'eq', null);
         await c.expect('/result/matchedCount', 'eq', 0);
         await c.expect(
           '/model/listSession/focusedReference',
           'eq',
           'TV-300005',
+          artifact: listReturn,
         );
         for (final pointer in [
           '/model/query',
@@ -2332,6 +2585,7 @@ Future<void> _n7(NativeAcceptanceRecorder r) async {
             pointer,
             'eq',
             null,
+            artifact: listReturn,
             rightArtifact: c.metadata['list_origin'] as String,
             rightPointer: pointer,
           );
@@ -2448,6 +2702,144 @@ Future<void> _n7(NativeAcceptanceRecorder r) async {
         'typed map detail Close',
         (s) => acceptanceModel(s)['panel'] == 'map',
       );
+      final mapRef = await c.sample(
+        'map-typed-close',
+        await acceptanceStableCapture(d),
+      );
+      await acceptanceNearest(d);
+      final nearest = await d.waitForSnapshot(
+        'actual nearest detail preserves its typed source and query target',
+        (s) =>
+            acceptanceModel(s)['panel'] == 'detail' &&
+            acceptanceModel(s)['selectedOrigin'] == 'nearest' &&
+            nativeObject(acceptanceModel(s)['selected'])['reference'] ==
+                'TV-300006',
+      );
+      final nearestRef = await c.sample('nearest-typed-detail', nearest);
+      await c.expect(
+        '/model/selectedOrigin',
+        'eq',
+        'nearest',
+        artifact: nearestRef,
+      );
+      await c.expect(
+        '/model/selected/reference',
+        'eq',
+        'TV-300006',
+        artifact: nearestRef,
+      );
+      await c.expect(
+        '/model/query',
+        'eq',
+        null,
+        artifact: nearestRef,
+        rightArtifact: mapRef,
+        rightPointer: '/model/query',
+      );
+      await d.tapKey('detail-close');
+      await d.waitForSnapshot(
+        'actual nearest Close restores the map',
+        (s) =>
+            acceptanceModel(s)['panel'] == 'map' &&
+            acceptanceModel(s)['selected'] == null,
+      );
+      final nearestReturn = await c.sample(
+        'nearest-typed-return',
+        await acceptanceStableCapture(d),
+      );
+      await c.expect('/model/panel', 'eq', 'map', artifact: nearestReturn);
+      await c.expect(
+        '/model/query',
+        'eq',
+        null,
+        artifact: nearestReturn,
+        rightArtifact: mapRef,
+        rightPointer: '/model/query',
+      );
+      // Nearest selection intentionally focuses its stop. Summary body Browse
+      // starts a separate task and must preserve the resulting actual camera.
+      final map = await d.snapshot();
+      if ((nativeObject(map['mediaQuery'])['textScaleAt16'] as num) >= 2) {
+        nativeRequire(
+          nativeObject(map['bounds']).containsKey('map-summary-open') &&
+              !nativeObject(
+                map['bounds'],
+              ).containsKey('large-summary-workspace'),
+          'Maximum text must expose its actual closed-summary map entry.',
+        );
+        final browseBefore = await c.sample(
+          'summary-browse-before',
+          await acceptanceStableCapture(d),
+        );
+        final exposed = await acceptanceSummaryKey(
+          d,
+          'summary-browse-stops',
+          entireField: true,
+        );
+        _visible(exposed, 'summary-browse-stops');
+        final exposedRef = await c.sample('summary-browse-exposed', exposed);
+        for (final field in ['width', 'height']) {
+          await c.expect(
+            '/bounds/summary-browse-stops/0/$field',
+            'gte',
+            44,
+            artifact: exposedRef,
+          );
+        }
+        await c.expect(
+          '/bounds/summary-browse-stops/0/centerHit',
+          'eq',
+          true,
+          artifact: exposedRef,
+        );
+        await d.tapKey('summary-browse-stops');
+        final bodyList = await d.waitForSnapshot(
+          'actual summary body Browse opens list',
+          (s) =>
+              acceptanceModel(s)['panel'] == 'list' &&
+              acceptanceModel(s)['selected'] == null,
+        );
+        final listRef = await c.sample('summary-browse-list', bodyList);
+        await c.expect('/model/panel', 'eq', 'list', artifact: listRef);
+        await c.expect(
+          '/model/query',
+          'eq',
+          null,
+          artifact: listRef,
+          rightArtifact: browseBefore,
+          rightPointer: '/model/query',
+        );
+        await d.tapKey('close-list');
+        await d.waitForSnapshot(
+          'summary body Browse list Close returns map',
+          (s) =>
+              acceptanceModel(s)['panel'] == 'map' &&
+              nativeObject(s['bounds']).containsKey('map-summary-open'),
+        );
+        final browseReturn = await c.sample(
+          'summary-browse-return',
+          await acceptanceStableCapture(d),
+        );
+        for (final pointer in [
+          '/model/query',
+          '/camera',
+          '/persistedSettings',
+          '/outbox',
+          '/persistedStops',
+        ]) {
+          await c.expect(
+            pointer,
+            'eq',
+            null,
+            artifact: browseReturn,
+            rightArtifact: browseBefore,
+            rightPointer: pointer,
+          );
+        }
+      } else {
+        c.metadata['summary_body_browse'] =
+            'not_applicable for normal actual OS text scale; normal overview Browse retained';
+      }
       c.metadata['android_hardware_back'] = 'not_applicable on iOS';
     },
     (c) async {

@@ -51,7 +51,7 @@ void main() {
         tester.getSize(find.byKey(const ValueKey('delivery-map'))).height,
         lessThan(400),
       );
-      expect(tester.getSize(browse).height, greaterThan(100));
+      expect(tester.getSize(browse).height, greaterThanOrEqualTo(44));
       _expectEntryExposed(tester);
 
       await tapFormalControl(tester, 'fit-stops');
@@ -83,7 +83,15 @@ void main() {
       );
       await pumpFormalFrames(tester);
       final pinned = tester.getRect(browse);
-      final summary = find.byKey(const ValueKey('overview-summary'));
+      await tapFormalControl(tester, 'map-summary-open');
+      expect(find.byKey(const ValueKey('delivery-map')), findsNothing);
+      expect(
+        tester
+            .getSize(find.byKey(const ValueKey('large-summary-workspace')))
+            .height,
+        greaterThan(700),
+      );
+      final summary = find.byKey(const ValueKey('large-summary-scroll'));
       final scrollable = find.descendant(
         of: summary,
         matching: find.byType(Scrollable),
@@ -94,6 +102,8 @@ void main() {
       await tester.drag(summary, const Offset(0, -180));
       await pumpFormalFrames(tester);
       expect(position.pixels, greaterThan(0));
+      await tapFormalControl(tester, 'summary-close');
+      await waitForFixtureMap(tester, map);
       expect(tester.getRect(browse), pinned);
       _expectEntryExposed(tester);
 
