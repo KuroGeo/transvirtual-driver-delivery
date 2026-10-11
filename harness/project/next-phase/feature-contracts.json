@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "features": [
+    {"id": "F1", "title": "路径规划与导航", "prototype": "prototype/next-phase/routing.html", "technical_design": "docs/next-phase/routing.md", "prototype_basis": "2026-10-12 用户确认的共享原型，按本项流程独立展示", "status": "prepared"},
+    {"id": "F2", "title": "登录与用户系统", "prototype": "prototype/next-phase/identity.html", "technical_design": "docs/next-phase/identity.md", "prototype_basis": "2026-10-12 用户确认的共享原型，按本项流程独立展示", "status": "prepared"},
+    {"id": "F3", "title": "AI 助手与智能派送", "prototype": "prototype/next-phase/assistant.html", "technical_design": "docs/next-phase/assistant.md", "prototype_basis": "2026-10-12 用户确认的共享原型，按本项流程独立展示", "status": "prepared"}
+  ]
+}

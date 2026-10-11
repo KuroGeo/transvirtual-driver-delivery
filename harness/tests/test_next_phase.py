@@ -20,6 +20,12 @@ class PreparationContract(unittest.TestCase):
             path = self.root/source
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text('Fixture source')
+        registry = self.read('feature-contracts.json')
+        for feature in registry['features']:
+            for key in ('prototype','technical_design'):
+                path = self.root/feature[key]
+                path.parent.mkdir(parents=True,exist_ok=True)
+                path.write_text('Fixture per-feature prototype or technical design')
         backlog = self.read('backlog.json')
         for skill in {name for task in backlog['tasks'] for name in task['skills']}:
             path = self.root/f'.agents/skills/{skill}/SKILL.md'
@@ -144,6 +150,18 @@ class PreparationContract(unittest.TestCase):
     def test_sources_must_be_current_candidate_inputs(self):
         self.inputs.remove('prototype/next-phase/next.js')
         self.assertTrue(any('outside fingerprint' in error for error in self.errors()))
+
+    def test_issue_feature_without_technical_design_is_rejected(self):
+        (self.root/'docs/next-phase/routing.md').unlink()
+        self.assertTrue(any('technical_design missing' in error for error in self.errors()))
+
+    def test_issue_feature_without_prototype_is_rejected(self):
+        (self.root/'prototype/next-phase/identity.html').unlink()
+        self.assertTrue(any('prototype missing' in error for error in self.errors()))
+
+    def test_issue_without_feature_mapping_is_rejected(self):
+        self.mutate('backlog.json',lambda value:value['tasks'][5].pop('features'))
+        self.assertTrue(any('feature source mapping' in error for error in self.errors()))
 
     def test_local_issue_changed_after_hash_is_rejected(self):
         path = self.package/'issues/NP03.md'

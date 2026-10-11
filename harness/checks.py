@@ -42,7 +42,7 @@ SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 
 def source_files(root=ROOT):
     root = Path(root).resolve()
-    roots = [root / name for name in ("app", "harness", ".agents/skills", ".github", "prototype/assets", "prototype/vendor", "prototype/next-phase")]
+    roots = [root / name for name in ("app", "harness", ".agents/skills", ".github", "prototype/assets", "prototype/vendor", "prototype/next-phase", "docs/next-phase")]
     # Live prototype code/assets are acceptance inputs; archives and screenshots
     # stay outside these roots. Do not change isolated-copy output exclusions.
     files = [root / name for name in ENTRY_INPUTS if (root / name).is_file() and (root / name).resolve().is_relative_to(root)]

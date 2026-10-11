@@ -11,6 +11,7 @@ def render():
     path = PACKAGE / 'backlog.json'
     backlog = json.loads(path.read_text())
     tasks = {task['id']: task for task in backlog['tasks']}
+    features = {feature['id']:feature for feature in json.loads((PACKAGE/'feature-contracts.json').read_text())['features']}
     base = f"https://github.com/{backlog['repository']}"
     ref = backlog['source_ref']
     sources = f"[批准原型]({base}/blob/{ref}/prototype/next-phase/README.md) · [方案]({base}/blob/{ref}/docs/next-phase-solution-design.md) · [任务包]({base}/tree/{ref}/harness/project/next-phase)"
@@ -26,6 +27,11 @@ def render():
         body = f"<!-- ocean-delivery-next-task:{task['id']}; contract:{backlog['contract_revision']} -->\n"
         body += f"类型：{task['kind']} · 需求：{', '.join(task['requirements'])} · 状态：planned（未实施/未验收）\n\n{parent_text}\n\n"
         body += f"## 目标与来源\n\n{task['title']}。基于 2026-10-12 已确认原型；{sources}。现有产品源码基线 `{backlog['source_baseline']}`；新功能不可借旧 R01–R17 的证据关闭。\n\n"
+        body += '本条对应需求的原型与技术方案：\n\n'
+        for feature_id in task['features']:
+            feature = features[feature_id]
+            body += f"- {feature['title']}：[单项原型]({base}/blob/{ref}/{feature['prototype']}) · [单项技术方案]({base}/blob/{ref}/{feature['technical_design']})。\n"
+        body += '\n每个需求须先具备这两项材料，再发布/更新对应 issue；总方案不能替代单项来源。\n\n'
         body += '## 依赖与所有权\n\n'
         body += f"依赖：{', '.join(dependencies) if dependencies else '无；合同冻结起点'}。内部依赖由主控核对 accepted 的实际证据，不凭 issue 关闭/PR 合并自动解锁。外部 #31/#32/#33 仅复用既有门槛，不代签本轮增量。\n\n"
         body += f"负责职能：`{task['role']}`；尚未派工，不预填人员账号或排期。允许写域：" + ', '.join(f'`{scope}`' for scope in task['write_scope']) + '。\n\n'
@@ -49,6 +55,10 @@ def render():
     body = f"<!-- ocean-delivery-next-epic:NEXT-PHASE; contract:{backlog['contract_revision']} -->\n"
     body += '# 已确认原型后的账号、导航和 AI 助手工程任务\n\n'
     body += '用户于 2026-10-12 确认原型，并授权方案设计与带 Harness 的父子 issue。默认 A 地图首页、企业已有身份系统、外部地图导航、AI 提案人工应用。产品实施尚未开始；创建任务包不代表功能通过或生产发布。\n\n' + sources + '\n\n'
+    body += '每项需求的材料：\n\n'
+    for feature in features.values():
+        body += f"- {feature['title']}：[原型]({base}/blob/{ref}/{feature['prototype']}) · [技术方案]({base}/blob/{ref}/{feature['technical_design']})。\n"
+    body += '\n'
     body += '## 子任务与顺序\n\n| 任务 | 结果 | 依赖 |\n| --- | --- | --- |\n'
     for task in tasks.values():
         github = task['github']

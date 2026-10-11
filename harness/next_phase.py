@@ -78,6 +78,22 @@ def validate(root, candidate_inputs):
     if not required:
         fail('mission requirements missing')
     safe_file('contracts.md')
+    registry = read_json('feature-contracts.json')
+    features = {}
+    if not isinstance(registry,dict) or type(registry.get('schema_version')) is not int or registry.get('schema_version')!=1 or not isinstance(registry.get('features'),list):
+        fail('feature registry schema missing')
+    else:
+        for feature in registry['features']:
+            if not isinstance(feature,dict) or not isinstance(feature.get('id'),str) or feature['id'] in features or feature.get('status')!='prepared':
+                fail('invalid/duplicate/unprepared feature')
+                continue
+            features[feature['id']] = feature
+            for key,suffix in (('prototype','.html'),('technical_design','.md')):
+                value = feature.get(key)
+                if not canonical(value) or not value.endswith(suffix) or value not in candidate_inputs or not (root/value).is_file():
+                    fail(f"{feature['id']}: {key} missing/unsafe or outside fingerprint")
+        if set(features)!={'F1','F2','F3'}:
+            fail('every user requirement must have a prototype and technical design')
     tasks = backlog.get('tasks')
     if not isinstance(tasks,list) or not tasks:
         return errors+['next-phase: tasks missing']
@@ -88,6 +104,8 @@ def validate(root, candidate_inputs):
             continue
         name = task['id']
         by_id[name] = task
+        if not strings(task.get('features')) or set(task['features'])-set(features):
+            fail(f'{name}: feature source mapping missing/unknown')
         if not strings(task.get('requirements')) or set(task['requirements'])-required:
             fail(f'{name}: invalid/unknown requirements')
         if not strings(task.get('depends_on'),False):

@@ -2,6 +2,8 @@
 
 状态：方案与任务准备，2026-10-12；产品实现尚未开始。来源是用户已确认的 [交互原型](../prototype/next-phase/README.md)，现有 [架构](solution-design.md) 与当前源码基线 `e8276b4`。用户授权发布带 Harness 的父子 issue，不构成部署或发布授权。可执行任务包见 [next-phase](../harness/project/next-phase/README.md)。
 
+每项需求的原型与技术方案分别在 [路径规划与导航](next-phase/routing.md)、[登录与用户系统](next-phase/identity.md)、[AI 助手与智能派送](next-phase/assistant.md)。本总方案只记录跨需求合同；单项 issue 必须绑定对应需求材料，不能仅引用本总方案代替。
+
 ## 产品行为与默认选择
 
 沿用推荐的 A 地图首页：地图、当前下一站、时间窗提醒和导航入口共存，助手按需打开。用户确认了原型整体，未单独指定 A/B/C。用户登录解释为司机通过企业已有身份系统登录；首版使用受信公司配置与 OIDC，公司内部非 OIDC 系统通过服务端身份桥接。自助注册、任意身份服务器地址和完整管理员门户不在本轮。

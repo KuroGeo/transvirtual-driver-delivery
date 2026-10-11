@@ -3,6 +3,7 @@
 来源为 2026-10-12 已确认原型；用户要求方案与带 Harness 的父子 issue。当前 `mode=prepare`，没有启动产品实现、原生或真实服务验收。
 
 - [需求](mission.md) 与 [接口/所有权合同](contracts.md)
+- [每项需求的原型和技术方案映射](feature-contracts.json)：F1 导航、F2 登录、F3 助手；任务须绑定对应 feature，缺任一材料时检查拒绝。
 - [方案](../../../docs/next-phase-solution-design.md) 与 [已确认原型](../../../prototype/next-phase/README.md)
 - [任务 DAG](backlog.json)、[需求检查矩阵](requirement-matrix.json)、[执行状态](work.json)
 - [Issue 索引](issue-plan.md) 与 [父 issue 正文](issues/EPIC.md)

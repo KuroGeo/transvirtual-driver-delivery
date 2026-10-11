@@ -2,6 +2,16 @@
 
 2026-10-12，用户已确认「原型可以」，并授权编写方案、发布带 Harness 的父子 issue。本目录保留已确认的交互原型；技术方案与任务合同分别位于 `docs/next-phase-solution-design.md` 和 `harness/project/next-phase/`。
 
+## 按需求分别评审
+
+每个需求有独立原型入口与技术方案，再据此编写 issue。三个入口复用已确认的同一手机交互；本次只拆开评审组织，没有另行宣称用户确认新交互。
+
+| 需求 | 可点击原型 | 技术方案 |
+| --- | --- | --- |
+| 1 路径规划与导航 | [导航](http://127.0.0.1:8764/next-phase/routing.html) | [routing.md](../../docs/next-phase/routing.md) |
+| 2 登录与用户系统 | [登录](http://127.0.0.1:8764/next-phase/identity.html) | [identity.md](../../docs/next-phase/identity.md) |
+| 3 AI 助手与智能派送 | [助手](http://127.0.0.1:8764/next-phase/assistant.html) | [assistant.md](../../docs/next-phase/assistant.md) |
+
 ## 打开原型
 
 在仓库根目录运行 `python3 prototype/serve.py`，打开：

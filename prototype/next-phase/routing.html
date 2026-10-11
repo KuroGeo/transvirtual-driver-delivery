@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ocean Delivery · 路径规划与导航原型</title><link rel="icon" href="../assets/app-icon-32.png"><link rel="stylesheet" href="review.css"><style>.variant-switcher{display:none}</style></head>
+<body data-feature="routing" data-default-scene="stop"><div class="review-shell">
+  <aside class="review-panel"><a class="review-brand" href="index.html"><img src="../assets/app-icon-180.png" alt=""><span>ocean delivery</span><span class="review-stage">路径规划与导航</span></a>
+<p class="review-eyebrow">单项需求原型</p><h1>到下一站，<br>路线清楚。</h1><p class="review-summary">站点详情 → 道路路线预览 → 选择导航应用 → 返回原站点。</p>
+<nav class="review-flow" aria-label="路径规划与导航评审流程"><button data-scene="stop"><span>01</span><div><strong>站点与目的地</strong><small>从当前派送任务开始</small></div><span>↗</span></button><button data-scene="navigation"><span>02</span><div><strong>道路路线预览</strong><small>距离、预计到达与路线来源</small></div><span>↗</span></button><button data-scene="home"><span>03</span><div><strong>返回配送工作台</strong><small>下一站与地图上下文</small></div><span>↗</span></button></nav>
+<div class="review-boundary"><span class="boundary-dot"></span><p>采用 2026-10-12 已确认的同一套交互。账号、道路路线、导航交接和 AI 均为模拟。本入口单独对应本项需求；技术方案与验收映射在对应需求文档。</p></div>
+<p class="canvas-hint"><a href="index.html">返回三项需求总览</a></p></aside>
+  <main class="review-canvas"><div class="canvas-top"><span class="canvas-label">INTERACTIVE PROTOTYPE</span><button id="restart">↻ 从首页重新体验</button></div><div class="phone-wrap"><iframe id="phone" title="Ocean Delivery 手机交互原型" src="phone.html?state=idle&variant=A&scene=home" width="390" height="844"></iframe></div><div class="canvas-caption"><span id="scene-caption">地图工作台 · 方案 A</span><span>390 × 844</span></div><div class="variant-switcher" aria-label="切换布局方案"><button id="previous" aria-label="上一个方案">←</button><span id="variant-caption">A · 地图提醒</span><button id="next" aria-label="下一个方案">→</button></div><p class="canvas-hint">可以直接点手机里的按钮；左侧入口用于快速查看关键状态。</p></main>
+</div><script src="review.js"></script></body></html>
