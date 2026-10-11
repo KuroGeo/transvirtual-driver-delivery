@@ -1,0 +1,116 @@
+{
+  "verified_on": "2026-10-12",
+  "timezone": "Asia/Shanghai",
+  "method": "Selected human instructions were checked against the four original Codex conversation records. AI execution is supported by the merged PRs; the independence boundaries are interpretations of those observed decisions and failures, not universal claims about model capability. Full private chat transcripts are not published.",
+  "stages": [
+    {
+      "chat": "原型设计",
+      "steps": [
+        {
+          "title": "确定视觉与地图工作台",
+          "ai": "用 Oil UI 探索风格、读取 CSV 坐标、生成地图原型与图标候选，并按反馈迭代。",
+          "human": "我指出初稿像学生课设、色彩太冷，决定以地图为主；给出方向箭头、状态站标、最近优先和图标选择。",
+          "boundary": "AI 能提出方案，但不能仅凭生成结果替我确定产品方向和审美标准；这次收敛来自我的具体反馈。",
+          "evidence": [
+            {"timestamp": "2026-10-09T19:01:07.569Z", "quote": "差点意思。感觉像学生课设，没那种高级感"},
+            {"timestamp": "2026-10-09T19:27:49.366Z", "quote": "这个原型要改成以地图为基础的～然后在地图上有站点，站点根据数据有不同的状态。"}
+          ],
+          "pr": [11]
+        },
+        {
+          "title": "校正同步与返回语义",
+          "ai": "实现直接同步 Toast、详情入口与返回状态，并生成交互检查和原型提交。",
+          "human": "我要求同步直接执行；当 AI 把返回一概理解为列表时，我进一步明确：从列表进入才回列表，从地图或最近站点进入则回地图。",
+          "boundary": "AI 不能把未澄清的交互理解当成已确认需求。这里是我纠正语义后，AI 才完成对应实现。",
+          "evidence": [
+            {"timestamp": "2026-10-09T20:43:51.676Z", "quote": "那个更新按钮点击就不要有弹窗页面了，而是点击就是执行更新的操作了。通过Toast提醒他，告知状态结果。"},
+            {"timestamp": "2026-10-09T21:13:40.101Z", "quote": "只有从stop list点进去那个站点详情后退回，才是回到Stop list。"}
+          ],
+          "pr": [11]
+        }
+      ]
+    },
+    {
+      "chat": "架构设计",
+      "steps": [
+        {
+          "title": "比较技术方案与一致性",
+          "ai": "调研 Flutter 分层、SQLite、状态管理和地图方案，解释事务与 outbox，写成技术报告并 review。",
+          "human": "我要求 trade-off，追问低频客户端为什么仍需事务，并要求考虑地图未来商业授权。",
+          "boundary": "AI 可以研究和推导，但不能用低操作频率否定异常恢复，也不能把公共底图可访问当作商业或离线下载授权。决定需依据合同与许可。",
+          "evidence": [
+            {"timestamp": "2026-10-09T22:10:01.257Z", "quote": "你要在方案里面讲述技术选型，并且用trade off去比较为什么这么选、优劣是什么。"},
+            {"timestamp": "2026-10-10T06:50:45.365Z", "quote": "为什么要在客户端做事务和并发处理？难道我们客户端能去操作频率很高吗？"}
+          ],
+          "pr": [12]
+        },
+        {
+          "title": "收敛 MVP 与未来演进",
+          "ai": "设计冷启动缓存、性能风险和模块边界，规划后端、账号、路径规划及受控 Agent 接入。",
+          "human": "我确认先交付客户端、后端另做；要求删掉过度设计，同时留下增长空间，并多次审查基础架构。",
+          "boundary": "AI 不能把未来方案写成现有能力，也不能凭架构描述证明流畅性。真实性能和服务接入需要对应环境与测量。",
+          "evidence": [
+            {"timestamp": "2026-10-10T07:47:49.504Z", "quote": "哪些是过度设计的，可以把它去掉。"},
+            {"timestamp": "2026-10-10T09:07:25.641Z", "quote": "后续规划要去做，比如路径规划、AI Agent接入、后端接入以及用户系统接入。"}
+          ],
+          "pr": [12]
+        }
+      ]
+    },
+    {
+      "chat": "搭建skill&harness project",
+      "steps": [
+        {
+          "title": "把 Agent 拆成工程职能",
+          "ai": "编写需求、Issue、开发、测试、原生验收、性能、交付、主控与 Harness 九个职能 Skill，定义写域和工作协议。",
+          "human": "我纠正最初的团队理解，要求按测试、验收、开发、需求提取等关键职能拆分，能力收敛；保留必要职责，去掉无意义文件扩散。",
+          "boundary": "AI 不能替我任意扩大团队或功能范围；生成很多 Skill 文件，也不能自动证明协作有效。职责划分需要我的范围约束和试运行。",
+          "evidence": [
+            {"timestamp": "2026-10-10T09:36:20.899Z", "quote": "一种工程skill，比如测试skill、验收skill、开发skill，以及提取skill等这样的工程skill。"},
+            {"timestamp": "2026-10-10T09:53:42.390Z", "quote": "要去试一试，要有问题的话去优化一下，不要盲目的自信哦。"}
+          ],
+          "pr": [13]
+        },
+        {
+          "title": "用 Harness 约束完成声明",
+          "ai": "建立候选指纹、资源 lease、真实进程与日志观察、恢复反例及 fail-closed 门禁，执行可靠性基线并整理证据。",
+          "human": "我提出工程不够 Harness 就不准上线，要求实际试用、补齐薄弱点，并强调恰到好处，避免扩散和过度防御。",
+          "boundary": "AI 不能用自己的“已完成”代替门禁。另一 Agent 可以独立审查，但仍必须有可复现反例和原始回执；规则与 Skill 就绪不等于生产达标。",
+          "evidence": [
+            {"timestamp": "2026-10-10T10:10:20.201Z", "quote": "不够的话不准上。我希望在工程是 Harness Engineer的。"},
+            {"timestamp": "2026-10-10T10:45:24.907Z", "quote": "不要太扩散，也不太防御性编程，而是你做到好的，恰到好处的。"}
+          ],
+          "pr": [13]
+        }
+      ]
+    },
+    {
+      "chat": "列issue&开发",
+      "steps": [
+        {
+          "title": "沿依赖图实现与验证",
+          "ai": "把 Epic #14 拆成 19 项，协调历史子 Agent，生成 Flutter 模块、回归测试、构建、安装和独立审查证据。",
+          "human": "我指定只实现已有原型，要求子 Issue、Skill 与 Harness 联动，授权可并行的子 Agent，并明确用虚拟化环境测试。",
+          "boundary": "AI 可以在获得权限的环境执行，但不能把网页通过、host/widget 通过或模拟 ACK 升级为真机、真实服务或生产发布的证明。",
+          "evidence": [
+            {"timestamp": "2026-10-10T12:27:58.112Z", "quote": "我们把任务拆成子Issue，并且每个子Issue都用提Issue的Skill把Issue写好，做好联动"},
+            {"timestamp": "2026-10-10T13:16:52.292Z", "quote": "测试用虚拟机去测啊。"}
+          ],
+          "pr": [34]
+        },
+        {
+          "title": "体验找问题，再返工交付",
+          "ai": "按反馈修工具列、双指缩放、状态筛选镜头、列表和箭头；补大字号布局与定向 N7 验收，截原生实拍并整理 README。",
+          "human": "我实际看模拟器，指出四个原型还原问题和最大字号看不懂的问题；要求 review、返工，再体验最新包和检查失败原因。",
+          "boundary": "AI 的自动检查不能代替我的可读性与操作体验签收；没有真实设备、服务、许可和签名时，也不能补造外部验收或宣称生产 ready。",
+          "evidence": [
+            {"timestamp": "2026-10-11T06:54:49.567Z", "quote": "左边那个工具tool应该是一列的。"},
+            {"timestamp": "2026-10-11T09:46:03.085Z", "quote": "大字模式得适配一下呀。根本就没看看懂呀。"},
+            {"timestamp": "2026-10-11T13:02:14.397Z", "quote": "启动最新包到虚拟机，让我体验一下。"}
+          ],
+          "pr": [34, 37, 38]
+        }
+      ]
+    }
+  ]
+}

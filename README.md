@@ -8,7 +8,7 @@ A map-first Flutter driver workbench built from the assignment's 30 Sydney stops
   <a href="assets/readme/showcase.png"><img src="assets/readme/showcase.png" alt="Ocean Delivery: real Flutter iOS simulator captures of the map workbench and delivery list" width="100%"></a>
 </p>
 
-[Presentation & technical review](docs/report/index.html) · [Flutter implementation](app/README.md) · [Architecture decisions](docs/solution-design.md) · [Evidence & limits](harness/reports/large-text-repair.md)
+[Live presentation](https://kurogeo.github.io/transvirtual-driver-delivery/) · [Offline report](docs/report/index.html) · [Flutter implementation](app/README.md) · [Architecture decisions](docs/solution-design.md) · [Evidence & limits](harness/reports/large-text-repair.md)
 
 The cover uses original **iOS 26.4 simulator screenshots**, captured from the formal Flutter Demo. Demo confirmation is simulated; one local update was waiting to sync during capture. [Capture provenance](assets/readme/capture-manifest.json).
 
