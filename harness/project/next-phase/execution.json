@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "mode": "execute",
+  "contract_revision": 4,
+  "authorized_features": [
+    "F1"
+  ],
+  "authorization": {
+    "date": "2026-10-12",
+    "source": "human delegated request in this chat",
+    "scope": "F1 only; source/tests/reviewable PR; no production release"
+  },
+  "source_main": "53c2089",
+  "planning_sha": "5f32b66a91dbd6b92b692d252188e23e3e64276e",
+  "contract": "harness/project/next-phase/f1-execution.md",
+  "production_eligible": false,
+  "slices": {
+    "NP00": {
+      "status": "accepted",
+      "owner_agent_id": "/root",
+      "candidate": {
+        "source_main": "53c2089",
+        "planning_sha": "5f32b66a91dbd6b92b692d252188e23e3e64276e"
+      },
+      "evidence": [
+        {
+          "kind": "contract",
+          "path": "harness/project/next-phase/f1-execution.md",
+          "sha256": "db8b113784269aad88cb1efdad58d502a0d5721293095f5ca70ce0e3a0be7d5f"
+        },
+        {
+          "kind": "publication",
+          "path": "harness/project/next-phase/f1-publication.json",
+          "sha256": "8b507751a892a9d1065d3c3a6367e021a32dbe35731f86e74dcaa8490e3d9943"
+        }
+      ],
+      "functional_depends_on": [],
+      "interface_dependencies": []
+    },
+    "NP01": {
+      "status": "review",
+      "owner_agent_id": "/root/f1_harness",
+      "candidate": null,
+      "evidence": [],
+      "functional_depends_on": [
+        "NP00"
+      ],
+      "interface_dependencies": []
+    },
+    "NP05": {
+      "status": "running",
+      "owner_agent_id": "/root/f1_routes",
+      "candidate": null,
+      "evidence": [],
+      "functional_depends_on": [
+        "NP00",
+        "NP01"
+      ],
+      "interface_dependencies": [
+        "NP03 AccountScope",
+        "NP04 sessionGeneration"
+      ]
+    },
+    "NP06": {
+      "status": "running",
+      "owner_agent_id": "/root/f1_routes",
+      "candidate": null,
+      "evidence": [],
+      "functional_depends_on": [
+        "NP00",
+        "NP01",
+        "NP05"
+      ],
+      "interface_dependencies": [
+        "NP03 AccountScope",
+        "NP04 sessionGeneration"
+      ]
+    },
+    "NP10": {
+      "status": "running",
+      "owner_agent_id": "/root",
+      "candidate": null,
+      "evidence": [],
+      "functional_depends_on": [
+        "NP06"
+      ],
+      "interface_dependencies": []
+    },
+    "NP11": {
+      "status": "running",
+      "owner_agent_id": "/root/f1_acceptance",
+      "candidate": null,
+      "evidence": [],
+      "functional_depends_on": [
+        "NP10"
+      ],
+      "interface_dependencies": []
+    },
+    "NP12": {
+      "status": "planned",
+      "owner_agent_id": "/root/f1_acceptance",
+      "candidate": null,
+      "evidence": [],
+      "functional_depends_on": [
+        "NP11"
+      ],
+      "interface_dependencies": []
+    },
+    "NP13": {
+      "status": "blocked",
+      "owner_agent_id": "/root/f1_acceptance",
+      "candidate": null,
+      "evidence": [],
+      "functional_depends_on": [
+        "NP12"
+      ],
+      "interface_dependencies": [],
+      "reason": "Real road supplier configuration/assigned physical device absent; basic Maps handoff unaffected."
+    }
+  },
+  "external_boundaries": {
+    "real_road": "blocked: no licensed client supplier configuration",
+    "real_maps": "not_run: requires corresponding installed mobile apps/OS handoff evidence",
+    "real_gps": "not_run: physical device not assigned",
+    "physical_device": "not_run: not assigned",
+    "production": "no-go: existing #31/#32/#33 and no publication authorization"
+  }
+}

@@ -164,3 +164,5 @@ Run `python3 prototype/serve.py` and open [the map prototype](http://127.0.0.1:8
 The public app uses self-created customer names, fictional addresses and generated coordinates in [app/assets/deliveries.csv](app/assets/deliveries.csv). Its seven-column format, demo references and initial status counts are retained. Recruitment mail, original assignment attachments and the engineering archive containing copies are kept locally and ignored by Git. Earlier screenshots and evidence describe their recorded candidates; existing installations retain their saved database.
 
 </details>
+
+The F1 navigation candidate and its verification boundaries are documented in [the navigation handoff](docs/next-phase/f1-client-handoff.md).

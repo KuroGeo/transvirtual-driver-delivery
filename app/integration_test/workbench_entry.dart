@@ -14,6 +14,7 @@ import 'package:path/path.dart' as path;
 import 'package:sqflite/sqflite.dart';
 
 import 'support/native_workbench_bridge.dart';
+import 'support/f1_navigation_fixture.dart';
 import 'support/native_gesture_extension.dart';
 
 /// Private task entry. The host writes one immutable task-container launch
@@ -77,6 +78,9 @@ Future<void> main() async {
       demo: mode.isDemo,
       mapController: controller,
       tileUrlTemplate: launch.tiles,
+      navigationGateway: const ControlledNavigationGateway(),
+      locationGateway: const ControlledLocationGateway(),
+      onNavigationChanged: (navigation) => bridge.navigation = navigation,
       createViewModel: () async {
         final model = await formal.createLocalViewModel(
           configuration: mode,

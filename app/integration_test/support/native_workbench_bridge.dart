@@ -8,6 +8,7 @@ import 'package:ocean_delivery/models/workbench.dart';
 import 'package:ocean_delivery/ui/delivery/map/delivery_map_workspace.dart';
 import 'package:ocean_delivery/ui/delivery_screen.dart';
 import 'package:ocean_delivery/ui/delivery_view_model.dart';
+import 'package:ocean_delivery/ui/navigation/navigation_view_model.dart';
 
 const nativeJournalName = 'native-workbench-journal.jsonl';
 
@@ -123,6 +124,7 @@ class NativeWorkbenchBridge {
   final DeliveryMapController mapController;
   final NativeWorkbenchJournal journal;
   DeliveryViewModel? model;
+  NavigationViewModel? navigation;
 
   Future<String> requestData(String? command) async {
     if (command != 'snapshot') {
@@ -217,6 +219,19 @@ class NativeWorkbenchBridge {
                       'message': notice.message,
                       'persistent': notice.persistent,
                     },
+            },
+      'navigation': navigation == null
+          ? null
+          : {
+              'previewStatus': navigation!.routeStatus.name,
+              'handoffStatus': navigation!.handoffStatus.name,
+              'locationStatus': navigation!.locationStatus.name,
+              'targetStopId': navigation!.target.stopId,
+              'inputRevision': navigation!.inputRevision,
+              'isValid': navigation!.isValid,
+              'gatewaySource': 'controlled-navigation-fixture',
+              'routeProvider': navigation!.route?.provider,
+              'sessionGeneration': navigation!.scope.sessionGeneration,
             },
       'stops': current?.stops.map(nativeStop).toList(),
       'result': current == null

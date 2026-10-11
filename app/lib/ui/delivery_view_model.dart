@@ -6,6 +6,7 @@ import '../data/delivery/delivery_repository.dart';
 import '../data/delivery/delivery_settings_store.dart';
 import '../data/delivery/sync_coordinator.dart';
 import '../models/delivery.dart';
+import '../models/route.dart';
 import '../models/workbench.dart';
 import 'delivery/feedback/workbench_notice.dart';
 import 'delivery/query/workbench_query.dart';
@@ -77,6 +78,31 @@ class DeliveryViewModel extends ChangeNotifier {
   bool isSyncing = false;
   String? loadError;
   String? saveError;
+
+  NavigationScope? _accountNavigationScope;
+
+  /// Local mode is explicitly not authenticated ownership. A future account
+  /// container supplies scope and advances generation on every session reset.
+  NavigationScope get navigationScope =>
+      _accountNavigationScope ??
+      NavigationScope(
+        workspaceId: 'local-ocean-delivery',
+        principalId: mode.name,
+        sessionGeneration: 0,
+        datasetId: _settings?.datasetId ?? 'component-session',
+      );
+
+  bool get isClosed => _closed;
+
+  void updateNavigationScope(NavigationScope scope) {
+    if (_closed || scope == navigationScope) return;
+    _accountNavigationScope = scope;
+    // The future account owner replaces its data container separately. Never
+    // restore a previous session's selected detail through a navigation return.
+    _detailContext = null;
+    _panel = WorkbenchPanel.map;
+    _notify();
+  }
 
   List<Stop> get stops => List.unmodifiable(_stops);
   int get queueCount => _queue.length;
@@ -558,6 +584,17 @@ class DeliveryViewModel extends ChangeNotifier {
         _stops = stops;
         _queue = queue;
         _unrefreshed.clear();
+        if (_detailContext != null && selectedStop == null) {
+          // A refreshed dataset can remove a target while Maps is open. Keep
+          // the original source usable instead of leaving an empty detail.
+          final detail = _detailContext!;
+          _panel = detail.origin == DetailOrigin.list
+              ? WorkbenchPanel.list
+              : WorkbenchPanel.map;
+          if (detail.listSession != null) _listSession = detail.listSession!;
+          _detailContext = null;
+          saveError = null;
+        }
         _deriveResult();
         loadError = null;
         _hasLoaded = true;

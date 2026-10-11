@@ -15,11 +15,13 @@ class DeliveryDetailCard extends StatefulWidget {
     required this.viewModel,
     required this.onClose,
     this.feedback,
+    this.onNavigate,
   });
 
   final DeliveryViewModel viewModel;
   final VoidCallback onClose;
   final Widget? feedback;
+  final VoidCallback? onNavigate;
 
   @override
   State<DeliveryDetailCard> createState() => _DeliveryDetailCardState();
@@ -341,6 +343,17 @@ class _DeliveryDetailCardState extends State<DeliveryDetailCard> {
                           widget.feedback!,
                         ],
                         const SizedBox(height: 22),
+                        if (widget.onNavigate != null) ...[
+                          OutlinedButton.icon(
+                            key: const ValueKey('detail-navigate'),
+                            onPressed: _busy || model.isLoading
+                                ? null
+                                : widget.onNavigate,
+                            icon: const Icon(Icons.near_me_outlined),
+                            label: const Text('Navigate'),
+                          ),
+                          const SizedBox(height: 8),
+                        ],
                         if (status == DeliveryStatus.pending) ...[
                           FilledButton.icon(
                             key: const ValueKey('detail-complete'),
