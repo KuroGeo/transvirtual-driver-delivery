@@ -1801,8 +1801,96 @@ Future<void> _n7(NativeAcceptanceRecorder r) async {
     'N7.platform-back',
     (c) async {
       await acceptanceFailureOpen(d, 'TV-300006');
+      final modalLayoutClock = Stopwatch()..start();
+      Map<String, Object?>? previousModalLayout;
+      Duration? modalLayoutQuietSince;
+      await d.waitForSnapshot(
+        'actual modal Close exposed and sheet stable for 500 milliseconds',
+        (s) {
+          final model = acceptanceModel(s);
+          final media = nativeObject(s['mediaQuery']);
+          final padding = nativeObject(media['viewPadding']);
+          final bounds = nativeObject(s['bounds']);
+          final width = media['width'];
+          final height = media['height'];
+          final rects = <String, Object?>{};
+          var valid =
+              model['panel'] == 'detail' &&
+              model['selectedOrigin'] == 'list' &&
+              nativeObject(model['selected'])['reference'] == 'TV-300006' &&
+              width is num &&
+              width.isFinite &&
+              width > 0 &&
+              height is num &&
+              height.isFinite &&
+              height > 0 &&
+              ['left', 'top', 'right', 'bottom'].every(
+                (field) =>
+                    padding[field] is num &&
+                    (padding[field] as num).isFinite &&
+                    (padding[field] as num) >= 0,
+              );
+          for (final key in ['failure-close', 'failure-sheet']) {
+            final rows = bounds[key];
+            if (rows is! List || rows.length != 1 || rows.single is! Map) {
+              valid = false;
+              break;
+            }
+            final rect = nativeObject(rows.single);
+            if (['left', 'top', 'right', 'bottom', 'width', 'height'].any(
+              (field) => rect[field] is! num || !(rect[field] as num).isFinite,
+            )) {
+              valid = false;
+              break;
+            }
+            if (valid && key == 'failure-close') {
+              valid =
+                  rect['centerHit'] == true &&
+                  (rect['width'] as num) >= 44 &&
+                  (rect['height'] as num) >= 44 &&
+                  (rect['left'] as num) >= (padding['left'] as num) - .5 &&
+                  (rect['right'] as num) <=
+                      (width as num) - (padding['right'] as num) + .5 &&
+                  (rect['top'] as num) >= (padding['top'] as num) - .5 &&
+                  (rect['bottom'] as num) <=
+                      (height as num) - (padding['bottom'] as num) + .5;
+            }
+            rects[key] = rect;
+          }
+          if (!valid) {
+            previousModalLayout = null;
+            modalLayoutQuietSince = null;
+            return false;
+          }
+          final layout = <String, Object?>{
+            'width': width,
+            'height': height,
+            'viewPadding': padding,
+            'bounds': rects,
+          };
+          if (previousModalLayout == null ||
+              !acceptanceEqual(previousModalLayout, layout)) {
+            previousModalLayout = layout;
+            modalLayoutQuietSince = modalLayoutClock.elapsed;
+            return false;
+          }
+          return modalLayoutClock.elapsed - modalLayoutQuietSince! >=
+              const Duration(milliseconds: 500);
+        },
+        timeout: NativeWorkbenchDriver.observationDeadline,
+      );
       await d.tapKey('failure-close');
-      final modal = await d.snapshot();
+      final modal = await d.waitForSnapshot(
+        'typed modal Close restores the same list-origin detail without sheet',
+        (s) =>
+            acceptanceIdle(s) &&
+            acceptanceModel(s)['panel'] == 'detail' &&
+            acceptanceModel(s)['selectedOrigin'] == 'list' &&
+            nativeObject(acceptanceModel(s)['selected'])['reference'] ==
+                'TV-300006' &&
+            !nativeObject(s['bounds']).containsKey('failure-sheet'),
+        timeout: NativeWorkbenchDriver.observationDeadline,
+      );
       await c.sample('modal-close', modal);
       nativeRequire(
         acceptanceModel(modal)['panel'] == 'detail' &&
