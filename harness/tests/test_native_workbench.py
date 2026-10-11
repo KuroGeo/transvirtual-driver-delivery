@@ -862,13 +862,21 @@ class WorkbenchTests(unittest.TestCase):
 
     @staticmethod
     def write_driver_journal_bytes(file, row, size):
-        # Complete JSON with an ASCII payload gives an exact byte boundary;
-        # the validator still parses the entire row and checks its identity.
+        # Full, identity-bound JSON rows stay within the size of actual native
+        # samples. Only their aggregate crosses the collector journal limit.
         empty = json.dumps({**row, "padding": ""}).encode() + b"\n"
-        padding = size - len(empty)
-        if padding < 0:
+        minimum = len(empty)
+        maximum = 32 * 1024
+        if size < minimum or minimum > maximum:
             raise ValueError("journal fixture is smaller than its complete JSON row")
-        file.write_bytes(json.dumps({**row, "padding": "x" * padding}).encode() + b"\n")
+        count = (size + maximum - 1) // maximum
+        length, remainder = divmod(size, count)
+        if length < minimum:
+            raise ValueError("journal fixture cannot fit complete bounded JSON rows")
+        with file.open("wb") as stream:
+            for index in range(count):
+                padding = length + (index < remainder) - minimum
+                stream.write(json.dumps({**row, "padding": "x" * padding}).encode() + b"\n")
 
     def test_full_observation_journal_above_eight_mib_and_at_sixteen_mib_is_accepted(self):
         output, launch_config, _, snapshot = self.driver_journal_fixture()
