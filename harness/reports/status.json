@@ -1,22 +1,42 @@
 {
   "schema_version": 2,
-  "audit_date": "2026-10-10T22:10:20.942968+00:00",
-  "scope": "X03 strict evidence validator implementation independently accepted; E08/X04 actual acceptance ongoing",
+  "audit_date": "2026-10-11",
+  "scope": "Full current local Flutter/Harness handoff accepted;16local Issues closed/3external open;production no-go",
   "production_eligible": false,
-  "production_verdict": "no-go",
+  "production_verdict": "no-go: E09 physical G3, X05 enforced remote checks, E12 real service/resources/signing/approval/delivery",
   "enforcement_deployed": false,
   "current_validation": {
-    "scope": "AcceptedX02 controllednativeworkbench tooling onformalApp; normalmodepair, notfullE08G2",
-    "source_fingerprint": "e888779d6b48c5a3aecd002b20f0a21362134594fbb19680562bd535a7cc769b",
-    "quality_report": "harness/runs/20261010T175151779951Z-quality/report.json",
-    "quality_report_sha256": "f300c10c4d6e31c6e513df2087e1d832846c7d53ff9d3cc7723fa0c6ad7312b3",
-    "demo_native_report": "harness/runs/20261010T175309967471Z-native/report.json",
-    "local_native_report": "harness/runs/20261010T175539527417Z-native/report.json",
-    "tooling_checks": 89,
-    "flutter_checks": 159,
-    "status": "passed",
-    "native_rerun": true,
-    "production_eligible": false
+    "status": "accepted_full_local_handoff",
+    "candidate": {
+      "source_fingerprint": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a"
+    },
+    "source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+    "counted_inputs": 260,
+    "quality_report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+    "harness_tests": 161,
+    "Mac_platform_NA": 1,
+    "Flutter_tests": 177,
+    "Linux_harness_tests": 161,
+    "Linux_skipped": 0,
+    "native_matrix_jobs": 12,
+    "native_contract_checks": 34,
+    "native_unique_pids": 36,
+    "non_author_native_acceptance": "harness/runs/implementation/E08-independent-381730f-full34-reviewer-metadata.json",
+    "non_author_aggregate_acceptance": "harness/runs/implementation/E08-independent-381730f-full-aggregate-verdict.json",
+    "local_gate_010": "harness/runs/implementation/E08-independent-381730f-actual-localgate-010.json",
+    "production_refusal": "harness/runs/implementation/E08-independent-381730f-actual-production-refusal.json",
+    "formal_build_modes": [
+      "demo",
+      "local-client"
+    ],
+    "formal_main_startup_scope": "one OS launch per mode; captured mode label/loading/zero counts, not initialized map/business acceptance",
+    "formal_artifact_review": "harness/runs/implementation/E10-381730-artifact-observation/four-formal-jobs-observation.json",
+    "source_CI_run": 38102904327,
+    "production_eligible": false,
+    "archive_independent_review": "harness/runs/implementation/E10-381730-archive-nonauthor-review/archive-mechanical-observation.json",
+    "archive_index": "harness/reports/iteration-evidence-index.json",
+    "root_scope_acceptance": "harness/runs/implementation/E10-381730-local-handoff-root-decision/report.json",
+    "final_metadata_identity_record": "harness/runs/implementation/final-metadata-381730-independent-actual/review.json"
   },
   "historical_rehearsal": {
     "candidate": {
@@ -51,9 +71,9 @@
     "native_execution": "ios simulator debug three OS processes with test fake"
   },
   "production_gaps": [
-    "Complete native user acceptance remains pending X02/E08; full workbench host/build accepted.",
-    "Physical-device profile/release, applicable resource licensing, signing and authorized delivery require evidence.",
-    "PR quality CI passed on the reviewed source; required-check and release enforcement remain undeployed (archived private protection API: 403)."
+    "E09#31: target physical-device profile/release G3 budgets unverified.",
+    "X05#32: actual required checks and mandatory release enforcement undeployed; actual production gate first check rejects enforcement_deployed=false.",
+    "E12#33: real backend, applicable production resources, signing, channel and specific publication authorization/delivery remain unverified."
   ],
   "previous_reviewed_source_validation": {
     "status": "passed",
@@ -131,21 +151,27 @@
       "E02",
       "E03",
       "E05",
-      "E06",
       "E11",
+      "E06",
       "E04",
       "X01",
       "E07",
-      "X02"
-    ],
-    "running": [
+      "X02",
       "E08",
       "X03",
-      "X04"
+      "X04",
+      "E10"
+    ],
+    "running": [],
+    "review": [],
+    "blocked": [
+      "E09",
+      "X05",
+      "E12"
     ],
     "task_board": "harness/project/work.json",
     "coordinator": "/root",
-    "note": "X03 acceptedhistory retained; reopened fornativeprotocol6 correctiOSflags. ActualN7geometrypassed, full34 andfinalsourcepending."
+    "note": "All local responsibilities accepted; actual16C3O. Final metadata exactHEAD CI/PR/remote identity is read in a separate excluded audit; no new source or SDK work."
   },
   "x00_execution": {
     "candidate": "f9137cb845783c63b0b182be1936c7682d4d3fd5fa061f19e0de79c2da0eadcd",
@@ -161,6 +187,7 @@
     "scope": "isolated tools + formal-entry startup + narrow reliability probe; not full G2"
   },
   "implementation_mode": {
+    "mode": "execute",
     "accepted": [
       "E00",
       "E01",
@@ -168,129 +195,338 @@
       "E02",
       "E03",
       "E05",
-      "E06",
       "E11",
+      "E06",
       "E04",
       "X01",
       "E07",
-      "X02"
-    ],
-    "running": [
+      "X02",
       "E08",
       "X03",
-      "X04"
+      "X04",
+      "E10"
     ],
+    "running": [],
     "review": [],
-    "independent_testing": [],
-    "production_eligible": false,
-    "note": "X03 acceptedhistory retained; reopened fornativeprotocol6 correctiOSflags. ActualN7geometrypassed, full34 andfinalsourcepending."
+    "blocked": [
+      "E09",
+      "X05",
+      "E12"
+    ],
+    "task_board": "harness/project/work.json",
+    "coordinator": "/root",
+    "note": "All local responsibilities accepted; actual16C3O. Final metadata exactHEAD CI/PR/remote identity is read in a separate excluded audit; no new source or SDK work."
   },
   "active_candidate_validation": {
-    "scope": "fresh current G1/max N7/full 34/native cancellation pending",
-    "status": "Frozen expecteddoublecamera; freshG1 pending",
-    "candidate": "0926af0ab41179cc59948826b0739b847f57e5675df96b9e86603bcd41d5d9ee",
+    "scope": "Current 260 inputs, actual complete iOS simulator functional and local gates",
+    "status": "accepted full local functionality/gates/archive; production no-go",
+    "candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
     "production_eligible": false,
-    "quality_report": "harness/runs/20261010T230540434554Z-quality/attempts/000001/report.json"
+    "quality_report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json"
   },
   "latest_quality_observation": {
-    "source_fingerprint": "fba6d99e8e4a780fe92810b73b78c4a455948195cc0bb543ea964eed614ca078",
-    "report": "harness/runs/20261010T230540434554Z-quality/attempts/000001/report.json",
-    "report_sha256": "84a263f4dd65e50e282393f3d2e1015afd93974a94bb226edd508c55865cf48e",
-    "tooling_checks": 158,
-    "tooling_skipped": 1,
-    "flutter_checks": 177,
-    "status": "passed",
-    "current_source_matches": false,
-    "independent_review": "harness/runs/implementation/E08-independent-fba6d9-quality-source.json"
+    "observed_at": "2026-10-11T02:51:43.510921+00:00",
+    "candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+    "status": "passed and independently accepted",
+    "report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+    "report_sha256": "4e96352e9317eb711696db9a29784d892d15252de7d8d98bd16ddd57f4248304",
+    "harness_tests": 161,
+    "harness_mac_skips": 1,
+    "flutter_tests": 177,
+    "independent_review": "harness/runs/implementation/E08-independent-381730f-quality-source.json"
   },
   "e08_latest_observation": {
-    "candidate": "fba6d99e8e4a780fe92810b73b78c4a455948195cc0bb543ea964eed614ca078",
-    "report": "harness/runs/20261010T231426952172Z-native/attempts/000001/report.json",
-    "status": "native_job_passed_strict_collection_rejected",
-    "full_g2": false,
-    "report_sha256": "5e0cdc2e74a75432282f815da5ba0801a40baa43a648cd8a020c021a5de6ae77",
-    "reason": "Producerinteger11 vsactualcameradouble11.0"
+    "candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+    "observed_at": "2026-10-11T02:51:43.510921+00:00",
+    "full_G2_signed": true,
+    "native_checks": 34,
+    "jobs": 12,
+    "review": "harness/runs/implementation/E08-independent-381730f-full34-reviewer-metadata.json",
+    "aggregated_nonauthor_verdict": "harness/runs/implementation/E08-independent-381730f-full-aggregate-verdict.json"
   },
   "latest_ci_observation": {
-    "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38093820321",
-    "head": "dd8e978a5e0d72d5b74e9cfed313a888964c083d",
-    "status": "passed",
-    "source_fingerprint": "fba6d99e8e4a780fe92810b73b78c4a455948195cc0bb543ea964eed614ca078",
-    "current_source_matches": false,
-    "tooling_checks": 158,
-    "tooling_skipped": 0,
-    "flutter_checks": 177,
-    "independent_review": "harness/runs/implementation/ci-38093820321-independent/review.md",
-    "artifact_sha256": "7005a93c52ebc27fa4602998867ac8fb7227ee9b29a00c2089495119d8a06a8c",
-    "scope": "Actual currentLinuxCI G1; fullG2pending"
+    "observed_at": "2026-10-11T02:51:43.510921+00:00",
+    "run_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38102904327",
+    "head": "0693165b8f21c2af956fd04451228dc8b646e960",
+    "candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+    "status": "success and independently accepted; source commit distinct from pending final metadata commit",
+    "harness_tests": 161,
+    "harness_skips": 0,
+    "flutter_tests": 177,
+    "independent_review": "harness/runs/implementation/ci-38102904327-requirements-independent/review.json"
   },
   "x04_active_observation": {
-    "candidate": "58fba2fc4452741b0b6f69b8e4972db50e834ab0d21c6ee10e077eb9b11cd0d7",
-    "report": "harness/runs/implementation/N3-58fba2-cancel-replay-actual/report.json",
-    "status": "passed-independent-actual-N3",
-    "actual_pass_claimed": true,
-    "report_sha256": "d478612bbcd4c6aa2c2a301c7e542055339b85c5d5085fc1b55af9e560082357",
-    "independent_review": "harness/runs/implementation/X04-independent-N3-58fba2-raw-audit.json",
-    "independent_review_sha256": "13e193e52fe62bddc4f95651e0e02cd44af644309683cc12fc32a4047c843cba"
+    "candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+    "actual_private41": "passed mixed14host+7policy,2historicalcompatibility+14policy,4OS tails; not41business scenarios",
+    "actual_native_cancel_replay": "actual cancel000001/fresh replay000002 accepted; failed attempt retained",
+    "actual_positive_gate_tamper": "actual0/1/0 accepted;1663 originals unchanged",
+    "proof": "harness/runs/implementation/X04-current381730-41-and-CI-binding.json",
+    "independent": "harness/runs/implementation/E08-independent-381730f-X04-private41-LinuxCI-originals.json"
   },
   "matrix_latest_observation": {
-    "candidate": "58fba2fc4452741b0b6f69b8e4972db50e834ab0d21c6ee10e077eb9b11cd0d7",
-    "report": "harness/runs/implementation/E08-58fba2-matrix-actual/report.json",
-    "status": "failed",
-    "full_g2": false,
-    "passed_jobs": [
+    "observed_at": "2026-10-11T02:51:43.510921+00:00",
+    "candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+    "controller": "harness/runs/implementation/E08-381730-matrix-actual/report.json",
+    "status": "passed",
+    "completed_jobs": [
       1,
       2,
       3,
-      4
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
     ],
-    "running_jobs": [],
-    "failed_job": 5,
-    "native_failure": "N4 actual seq55 blindly selected first cluster; centerHitfalse occluded by TV-300020; original4 hittable clusters present; preserved immutable failure",
-    "current_source_matches": false
+    "active_jobs": [],
+    "full_G2_signed": true,
+    "nonauthor_review": "harness/runs/implementation/E08-independent-381730f-full34-reviewer-metadata.json"
   },
   "n2_targeted_observation": {
-    "candidate": "145d263543989cb4b02dd7fa7d3f022cf1dc8744cd6a33eaee692ab3877bf2aa",
-    "report": "/Users/yeyufeng/.codex/worktrees/5bde/transvirtual-driver-delivery/harness/runs/20261010T220135657468Z-native/attempts/000001/report.json",
-    "sha256": "2462cde5124e10e51b7b05aaba8bc8f102f8edee56bf9e13fec0db83fe4805d3",
-    "native_sha256": "8e2411f6d9ab6288b948bc5c38bf561ea16242529b9086afda45a7e565213eb9",
-    "status": "passed",
-    "device": {
-      "argv": [
-        "xcrun",
-        "simctl",
-        "list",
-        "devices",
-        "--json"
-      ],
-      "exit_code": 0,
-      "task_udid": "E618FBE8-1A84-49FA-A001-B0EEB1631B2A",
-      "absent": true,
-      "stdout_sha256": "92a9df3df462a8882d9df2f1b3ba289fc3b954ad8f3ebbbb7c94fd54c6754d09"
-    },
-    "terminal_proof": "raw stages/reaped/groups/lease/clones/actual kernel resume passed",
-    "independent_review": "N2 historical145d actual7checks54assertions accepted by /root/e08_acceptance_review"
+    "candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+    "status": "passed within complete matrix",
+    "nonauthor_review": "harness/runs/implementation/E08-independent-381730f-N2-runtime-verdict.json"
   },
-  "current_independent_component_reviews": [
-    {
-      "report": "harness/runs/implementation/E08-independent-58fba2-phase-end-heldouts.json",
-      "sha256": "0e2bacfd8ad157e04f74cc37d37202cb4b6cc11df2963ac7dc0dd0aca01bc367",
-      "scope": "Current source/G1/rights or private heldout predicates; not full G2"
+  "current_independent_component_reviews": {
+    "candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+    "product_and_driver_and_gate_nonauthor": "harness/runs/implementation/E08-independent-381730f-full-aggregate-verdict.json",
+    "actual_gate_nonauthor": "harness/runs/implementation/E08-independent-381730f-actual-localgate-010.json",
+    "CI_and_41_nonauthor": "harness/runs/implementation/ci-38102904327-requirements-independent/review.json",
+    "archive_packager_nonauthor": "harness/runs/implementation/E10-381730-archive-nonauthor-review/archive-mechanical-observation.json",
+    "role_limits": "Query authored bounded parser/tests/Skill and priorUI; Req authored driver/helper/packager/config. Neither self-signs these scopes; independent E08 product/gate acceptance and Query package audit are separate."
+  },
+  "iteration_current_progress": {
+    "updated_at": "2026-10-11T02:59:18.750923+00:00",
+    "candidate": "381730fc1dd0ae3b90d9178bb4da7a7a8266296512025e11059d3446b0f0d87a",
+    "source_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+    "counted_source_inputs": 260,
+    "source_frozen": true,
+    "quality_report": "harness/runs/20261011T014534913887Z-quality/attempts/000001/report.json",
+    "ci_run": 38102904327,
+    "ci_head": "0693165b8f21c2af956fd04451228dc8b646e960",
+    "current_native_matrix_report": "harness/runs/implementation/E08-381730-matrix-actual/report.json",
+    "completed_native_jobs": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "active_native_jobs": [],
+    "full_G2_independently_accepted": true,
+    "local_gate_actual_completed": true,
+    "formal_main_builds_actual_completed": true,
+    "handoff_archive_actual_completed": true,
+    "production_eligible": false,
+    "prior_status_snapshot": "harness/runs/implementation/current381730-board-progress-0213/status.json",
+    "native_matrix_collection_status": "passed",
+    "native_matrix_sha256": "3accae0282a70291206ec6c9a3838b446919ace2473bbe6ef4858422b18d3246",
+    "formal_main_controller_sdk_session": 25671,
+    "formal_main_startup_actual_completed": true,
+    "archive_config": "harness/runs/implementation/E10-381730-config-amendment-actual/config.json",
+    "handoff_archive_independently_accepted": true,
+    "archive_index": "harness/runs/E10/381730-local-handoff/index.json",
+    "remaining": [
+      "separate exactnewmetadataHEAD CI/PR/remote readback",
+      "externalE09/X05/E12"
+    ],
+    "local_handoff_accepted": true,
+    "local_remote_closed": 16,
+    "external_remote_open": 3,
+    "final_metadata_identity_record": "harness/runs/implementation/final-metadata-381730-independent-actual/review.json"
+  },
+  "historical_current_validation_before381730": {
+    "scope": "AcceptedX02 controllednativeworkbench tooling onformalApp; normalmodepair, notfullE08G2",
+    "source_fingerprint": "e888779d6b48c5a3aecd002b20f0a21362134594fbb19680562bd535a7cc769b",
+    "quality_report": "harness/runs/20261010T175151779951Z-quality/report.json",
+    "quality_report_sha256": "f300c10c4d6e31c6e513df2087e1d832846c7d53ff9d3cc7723fa0c6ad7312b3",
+    "demo_native_report": "harness/runs/20261010T175309967471Z-native/report.json",
+    "local_native_report": "harness/runs/20261010T175539527417Z-native/report.json",
+    "tooling_checks": 89,
+    "flutter_checks": 159,
+    "status": "passed",
+    "native_rerun": true,
+    "production_eligible": false
+  },
+  "historical_latest_fields_before_delivery": {
+    "implementation": {
+      "mode": "execute",
+      "accepted": [
+        "E00",
+        "E01",
+        "X00",
+        "E02",
+        "E03",
+        "E05",
+        "E06",
+        "E11",
+        "E04",
+        "X01",
+        "E07",
+        "X02"
+      ],
+      "running": [
+        "E08",
+        "X03",
+        "X04"
+      ],
+      "task_board": "harness/project/work.json",
+      "coordinator": "/root",
+      "note": "X03 acceptedhistory retained; reopened fornativeprotocol6 correctiOSflags. ActualN7geometrypassed, full34 andfinalsourcepending."
     },
-    {
-      "report": "harness/runs/implementation/E08-independent-58fba2-quality-source.json",
-      "sha256": "977c511b75938a02d061f3e7113d92ee41bdcf82eb4f6db07713ba4b47aa388f",
-      "scope": "Current source/G1/rights or private heldout predicates; not full G2"
+    "implementation_mode": {
+      "accepted": [
+        "E00",
+        "E01",
+        "X00",
+        "E02",
+        "E03",
+        "E05",
+        "E06",
+        "E11",
+        "E04",
+        "X01",
+        "E07",
+        "X02"
+      ],
+      "running": [
+        "E08",
+        "X03",
+        "X04"
+      ],
+      "review": [],
+      "independent_testing": [],
+      "production_eligible": false,
+      "note": "X03 acceptedhistory retained; reopened fornativeprotocol6 correctiOSflags. ActualN7geometrypassed, full34 andfinalsourcepending."
     },
-    {
-      "report": "harness/runs/implementation/E08-independent-58fba2-N6-reload-sql-heldouts.json",
-      "sha256": "86e0814e8873b0bed52302f43753ebe6123056d118d03528a46369290478dc4c",
-      "scope": "Current source/G1/rights or private heldout predicates; not full G2"
+    "active_candidate_validation": {
+      "scope": "Fresh complete source cut after bounded N7 modal driver repair",
+      "status": "5873 historicalG1/CI/41/N3/twoN7/passed1-4 preserved; actualN4driverclose race triggered stop, sharedmodalhelperrepair underway",
+      "candidate": "5873fe1d4c7084d72b79c6633fb18f7d05e5bcaaa48a03a21d4783ba149b63e2",
+      "production_eligible": false,
+      "quality_report": "harness/runs/20261011T001235033649Z-quality/attempts/000001/report.json"
     },
-    {
-      "report": "harness/runs/implementation/E08-independent-rights-58fba2.json",
-      "sha256": "2191a40604f8f6b0c0fa5a8a2cf03dc6195107a94bedd1eaa6a297b47018d482",
-      "scope": "Current source/G1/rights or private heldout predicates; not full G2"
+    "latest_quality_observation": {
+      "observed_at": "2026-10-11T00:14:35.157037+00:00",
+      "candidate": "5873fe1d4c7084d72b79c6633fb18f7d05e5bcaaa48a03a21d4783ba149b63e2",
+      "status": "passed",
+      "report": "harness/runs/20261011T001235033649Z-quality/attempts/000001/report.json",
+      "report_sha256": "4137abb56a119828acdd62171db6e2ce86d7a0dd1ece48d0a8ae407e6a2d6566",
+      "harness_tests": 158,
+      "harness_mac_skips": 1,
+      "flutter_tests": 177,
+      "independent_review_pending": true
+    },
+    "e08_latest_observation": {
+      "candidate": "5873fe1d4c7084d72b79c6633fb18f7d05e5bcaaa48a03a21d4783ba149b63e2",
+      "observed_at": "2026-10-11T00:20:57.674399+00:00",
+      "two_N7_actual_strict_passed": true,
+      "normal_leaf": "harness/runs/20261011T001721133805Z-native/attempts/000001/report.json",
+      "huge_leaf": "harness/runs/20261011T001402878424Z-native/attempts/000001/report.json",
+      "independent_pair_review_pending": true,
+      "fullG2signed": false
+    },
+    "latest_ci_observation": {
+      "observed_at": "2026-10-11T00:18:40.053457+00:00",
+      "run_url": "https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38097661274",
+      "head": "ba7d7e84068dce72ef1bc3ff96e465320c29db6d",
+      "candidate": "5873fe1d4c7084d72b79c6633fb18f7d05e5bcaaa48a03a21d4783ba149b63e2",
+      "status": "success and independently accepted G1",
+      "original54files_root_rehashed": true,
+      "review_path": "harness/runs/implementation/ci-38097661274-independent/review.md",
+      "harness_tests": 158,
+      "harness_skips": 0,
+      "flutter_tests": 177
+    },
+    "x04_active_observation": {
+      "candidate": "5873fe1d4c7084d72b79c6633fb18f7d05e5bcaaa48a03a21d4783ba149b63e2",
+      "actual_private41": "passed; root source and proof hashes reread",
+      "actual_native_cancel_replay": "Actualterminal/replay strict6 and separate E08 business plus Query lineage independent accepted",
+      "actual_positive_gate_tamper": "not_run",
+      "proof": "harness/runs/implementation/X04-independent-final-cut-5873fe1.json",
+      "proof_sha256": "e5336ad992ebbb1bd822a9b463825ea639edaadd2c638e7feaed9ae0560cc6ff",
+      "Linux_current": "ActualLinuxCI158zeroSkip incl zombie; independently bound current41",
+      "independent_raw_audit": "harness/runs/implementation/X04-independent-N3-5873fe-raw-audit.json"
+    },
+    "matrix_latest_observation": {
+      "observed_at": "2026-10-11T00:33:18.176730+00:00",
+      "candidate": "5873fe1d4c7084d72b79c6633fb18f7d05e5bcaaa48a03a21d4783ba149b63e2",
+      "controller": "harness/runs/implementation/E08-5873fe-matrix-actual/report.json",
+      "status": "failed",
+      "jobs": [
+        {
+          "job": 1,
+          "status": "passed"
+        },
+        {
+          "job": 2,
+          "status": "passed"
+        },
+        {
+          "job": 3,
+          "status": "passed"
+        },
+        {
+          "job": 4,
+          "status": "passed"
+        },
+        {
+          "job": 5,
+          "status": "running"
+        }
+      ],
+      "fullG2signed": false,
+      "passed_jobs": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "failed_job": 5,
+      "undispatched_jobs": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "failure_leaf": "harness/runs/20261011T003518441114Z-native/attempts/000001/report.json",
+      "cleanup_audit": "harness/runs/implementation/N4-5873fe-failure-root-cleanup/report.json"
+    },
+    "n2_targeted_observation": {
+      "candidate": "145d263543989cb4b02dd7fa7d3f022cf1dc8744cd6a33eaee692ab3877bf2aa",
+      "report": "/Users/yeyufeng/.codex/worktrees/5bde/transvirtual-driver-delivery/harness/runs/20261010T220135657468Z-native/attempts/000001/report.json",
+      "sha256": "2462cde5124e10e51b7b05aaba8bc8f102f8edee56bf9e13fec0db83fe4805d3",
+      "native_sha256": "8e2411f6d9ab6288b948bc5c38bf561ea16242529b9086afda45a7e565213eb9",
+      "status": "passed",
+      "device": {
+        "argv": [
+          "xcrun",
+          "simctl",
+          "list",
+          "devices",
+          "--json"
+        ],
+        "exit_code": 0,
+        "task_udid": "E618FBE8-1A84-49FA-A001-B0EEB1631B2A",
+        "absent": true,
+        "stdout_sha256": "92a9df3df462a8882d9df2f1b3ba289fc3b954ad8f3ebbbb7c94fd54c6754d09"
+      },
+      "terminal_proof": "raw stages/reaped/groups/lease/clones/actual kernel resume passed",
+      "independent_review": "N2 historical145d actual7checks54assertions accepted by /root/e08_acceptance_review"
     }
-  ]
+  }
 }
