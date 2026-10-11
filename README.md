@@ -2,7 +2,9 @@
 
 **Know every stop. Keep delivering offline.**
 
-A map-first Flutter driver workbench built from the assignment's 30 Sydney stops. Find a delivery, record its outcome offline, restart the app, and reconnect to watch the pending queue receive **simulated confirmations**.
+A map-first Flutter driver workbench with 30 synthetic demo stops around Sydney. Find a delivery, record its outcome offline, restart the app, and reconnect to watch the pending queue receive **simulated confirmations**.
+
+The public app uses self-created customer names, fictional addresses and generated coordinates in [app/assets/deliveries.csv](app/assets/deliveries.csv). Its seven-column format, demo references and initial status counts are retained. Recruitment mail, original assignment attachments and the engineering archive containing copies are kept locally and ignored by Git. Earlier screenshots and evidence describe their recorded candidates; existing installations retain their saved database.
 
 <p align="center">
   <a href="assets/readme/showcase.png"><img src="assets/readme/showcase.png" alt="Ocean Delivery: real Flutter iOS simulator captures of the map workbench and delivery list" width="100%"></a>
@@ -123,6 +125,6 @@ Original PNGs and editable promotional material: [assets/readme](assets/readme/R
 
 Run `python3 prototype/serve.py` and open [the map prototype](http://127.0.0.1:8764/index.html) or [design comparison](http://127.0.0.1:8764/style-explorer.html). The browser version uses HTML/CSS/JavaScript, Alpine.js, Leaflet and localStorage; its 78 checks passed three rounds. Browser evidence is separate from Flutter evidence.
 
-[Original assignment](docs/assignment/README.md) · [Current return rules](prototype/origin-return-design.md) · [Direct sync design](prototype/direct-sync-design.md) · [Architecture](docs/solution-design.md) · [Skill/Harness workflow](harness/README.md) · [Issue dependency graph](harness/project/backlog.json) · [Execution board](harness/project/work.json).
+[Demo data](app/assets/deliveries.csv) · [Current return rules](prototype/origin-return-design.md) · [Direct sync design](prototype/direct-sync-design.md) · [Architecture](docs/solution-design.md) · [Skill/Harness workflow](harness/README.md) · [Issue dependency graph](harness/project/backlog.json) · [Execution board](harness/project/work.json).
 
 </details>

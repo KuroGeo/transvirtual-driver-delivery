@@ -404,6 +404,6 @@ Agent 采用后端模型调用与受控工具循环，客户端通过 AgentGatew
 
 ## 参考资料
 
-业务与交互输入：[业务场景](assignment/brief.en.txt)、[测试 CSV](assignment/deliveries.csv)、[地图交互规格](../prototype/map-design.md)、[返回交互规格](../prototype/origin-return-design.md)、[反馈交互规格](../prototype/feedback-design.md)。上述交互资料用于设计参考，移动端验收以本报告规定的客户端测试与真机结果为依据。
+业务与交互输入：[业务合同](../harness/project/mission.md)、[公开合成测试 CSV](../app/assets/deliveries.csv)、[地图交互规格](../prototype/map-design.md)、[返回交互规格](../prototype/origin-return-design.md)、[反馈交互规格](../prototype/feedback-design.md)。原始招聘资料仅在本地保留。上述交互资料用于设计参考，移动端验收以本报告规定的客户端测试与真机结果为依据。
 
 Flutter、地图组件及地图服务的官方资料随相关设计列出。SDK、依赖版本和供应商条款在工程实施及商业接入时再次核验，以锁定版本和实际合同为准。

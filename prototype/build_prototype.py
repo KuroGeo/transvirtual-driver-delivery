@@ -1,11 +1,11 @@
-"""Rebuild the delivery-map prototype from the original assignment CSV."""
+"""Rebuild the delivery-map prototype from the public synthetic demo CSV."""
 from pathlib import Path
 import csv, html, json, os, subprocess, sys
 from refined_layout import refine
 from map_layout import map_html
 
 ROOT=Path(__file__).resolve().parent
-DATA=list(csv.DictReader((ROOT.parent/'docs/assignment/deliveries.csv').open(newline='')))
+DATA=list(csv.DictReader((ROOT.parent/'app/assets/deliveries.csv').open(newline='')))
 for i,s in enumerate(DATA):
     s.update(index=i+1,latitude=float(s['latitude']),longitude=float(s['longitude']))
 (ROOT/'assets').mkdir(exist_ok=True)

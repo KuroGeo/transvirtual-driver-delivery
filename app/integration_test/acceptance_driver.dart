@@ -1106,7 +1106,7 @@ Future<void> _n4(NativeAcceptanceRecorder r) async {
     (c) async {
       await acceptanceList(d);
       await acceptanceListQueryTools(d);
-      await d.enterText('stop-search', 'Coastal Electronics');
+      await d.enterText('stop-search', 'Demo Group A');
       await d.tapKey('filter-pending');
       final pending = await d.waitForSnapshot(
         'search/status shared intersection',
@@ -1130,7 +1130,7 @@ Future<void> _n4(NativeAcceptanceRecorder r) async {
       await d.tapKey('waiting-only');
       await d.tapKey('filter-all');
       await acceptanceListQueryTools(d);
-      await d.enterText('stop-search', 'Sydney NSW');
+      await d.enterText('stop-search', 'Demo District 20 NSW');
       await d.waitForSnapshot(
         'actual address search',
         (s) => nativeObject(s['result'])['matchedCount'] == 1,
@@ -1138,7 +1138,7 @@ Future<void> _n4(NativeAcceptanceRecorder r) async {
     },
     (c) async {
       await c.expect('/result/references/0', 'eq', 'TV-300020');
-      await c.expect('/model/query/search', 'eq', 'Sydney NSW');
+      await c.expect('/model/query/search', 'eq', 'Demo District 20 NSW');
       await c.expect('/model/query/status', 'eq', null);
       await c.expect('/model/query/waitingOnly', 'eq', false);
       await c.expect('/model/queueCount', 'eq', 1);

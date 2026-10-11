@@ -23,7 +23,6 @@ GENERATED = {
 }
 ENTRY_INPUTS = (
     "AGENTS.md", "README.md", "docs/solution-design.md",
-    "docs/assignment/brief.en.txt", "docs/assignment/deliveries.csv",
     "prototype/index.html", "prototype/README.md", "prototype/map-design.md",
     "prototype/direct-sync-design.md", "prototype/origin-return-design.md",
     "prototype/feedback-design.md",
