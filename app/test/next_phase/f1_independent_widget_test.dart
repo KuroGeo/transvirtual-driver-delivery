@@ -24,6 +24,53 @@ void main() {
     addTearDown(() => WidgetController.hitTestWarningShouldBeFatal = previous);
   });
 
+  for (final layout in [
+    (name: 'portrait', size: const Size(390, 844), keyboard: 380.0),
+    (name: 'landscape', size: const Size(844, 390), keyboard: 180.0),
+  ]) {
+    testWidgets(
+      'maximum text manual start stays usable with ${layout.name} keyboard insets',
+      (tester) async {
+        final fixture = await _mount(tester, scale: 53 / 17);
+        await _open(tester, fixture, DetailOrigin.nearest);
+        await _tap(tester, 'detail-navigate');
+        await _tap(tester, 'navigation-manual-start');
+        // Rotate after the actual F1 dialog opens to isolate its layout from
+        // the older map overview's landscape entry affordance.
+        tester.view.physicalSize = layout.size;
+        tester.view.viewInsets = FakeViewPadding(bottom: layout.keyboard);
+        addTearDown(tester.view.resetViewInsets);
+        await _frames(tester);
+        expect(
+          tester.takeException(),
+          isNull,
+          reason: 'The real dialog layout must fit the keyboard-reduced view',
+        );
+        await tester.ensureVisible(_key('navigation-start-latitude'));
+        await tester.enterText(_key('navigation-start-latitude'), '-33.91');
+        await tester.ensureVisible(_key('navigation-start-longitude'));
+        await tester.enterText(_key('navigation-start-longitude'), '151.14');
+        await _frames(tester);
+        final confirm = _key('navigation-confirm-start');
+        await tester.ensureVisible(confirm);
+        await _frames(tester);
+        expect(confirm.hitTestable(), findsOneWidget);
+        expect(
+          tester.getRect(confirm).bottom,
+          lessThanOrEqualTo(layout.size.height - layout.keyboard),
+        );
+        await _tap(tester, 'navigation-confirm-start');
+        expect(fixture.navigation!.origin!.source, OriginSource.manual);
+        tester.view.resetViewInsets();
+        await _frames(tester);
+        await _tap(tester, 'navigation-return-detail');
+        await _tap(tester, 'detail-close');
+        expect(fixture.repository.submitCalls, 0);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
   testWidgets(
     'each detail source returns with query session and map retained',
     (tester) async {

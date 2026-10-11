@@ -429,6 +429,7 @@ Future<Map<String, dynamic>> _navigateAndReturn(
   );
   _sameDurable(before, preview);
   await client.writeJson('$origin-preview.json', preview);
+  await client.captureNamed('$origin-navigation-preview', preview);
   await client.revealKey('navigation-choose-map');
   await client.tapKey('navigation-choose-map');
   await client.revealKey('navigation-app-appleMaps');

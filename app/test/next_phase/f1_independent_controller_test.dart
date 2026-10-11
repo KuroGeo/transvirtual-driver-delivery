@@ -29,6 +29,80 @@ final _time = DateTime.utc(2026, 10, 12, 9);
 
 void main() {
   test(
+    'late device origin cancels an older pending map availability attempt',
+    () async {
+      final fix = Completer<LocationResult>();
+      final availability = Completer<bool>();
+      final availabilityStarted = Completer<void>();
+      var launches = 0;
+      final vm = _vm(
+        location: _Location(() => fix.future),
+        gateway: UrlNavigationGateway(
+          platform: TargetPlatform.iOS,
+          supportsMode: (_) async => true,
+          canLaunch: (_) {
+            availabilityStarted.complete();
+            return availability.future;
+          },
+          launchUrl: (_, _) async {
+            launches++;
+            return true;
+          },
+        ),
+      );
+      final locating = vm.useMyLocation();
+      final launching = vm.launch(NavigationApp.appleMaps);
+      await availabilityStarted.future;
+      fix.complete(LocationResult.ready(_deviceOrigin(_time)));
+      await locating;
+      availability.complete(true);
+      await launching;
+      expect(vm.origin!.coordinate, _startA);
+      expect(
+        launches,
+        0,
+        reason: 'A new device origin must revoke the old origin-less launch',
+      );
+      expect(vm.handoffStatus, HandoffStatus.idle);
+
+      // Permission denial leaves the chosen map-app origin unchanged. That
+      // negative location result must not cancel a valid explicit launch.
+      final deniedFix = Completer<LocationResult>();
+      final deniedAvailability = Completer<bool>();
+      final deniedAvailabilityStarted = Completer<void>();
+      var deniedLaunches = 0;
+      final deniedVm = _vm(
+        location: _Location(() => deniedFix.future),
+        gateway: UrlNavigationGateway(
+          platform: TargetPlatform.iOS,
+          supportsMode: (_) async => true,
+          canLaunch: (_) {
+            deniedAvailabilityStarted.complete();
+            return deniedAvailability.future;
+          },
+          launchUrl: (_, _) async {
+            deniedLaunches++;
+            return true;
+          },
+        ),
+      );
+      final deniedLocating = deniedVm.useMyLocation();
+      final deniedLaunching = deniedVm.launch(NavigationApp.appleMaps);
+      await deniedAvailabilityStarted.future;
+      deniedFix.complete(
+        const LocationResult.failure(LocationStatus.permissionDenied),
+      );
+      await deniedLocating;
+      deniedAvailability.complete(true);
+      await deniedLaunching;
+      expect(deniedVm.origin, isNull);
+      expect(deniedVm.locationStatus, LocationStatus.permissionDenied);
+      expect(deniedLaunches, 1);
+      expect(deniedVm.handoffStatus, HandoffStatus.handoffRequested);
+    },
+  );
+
+  test(
     'scope invalidation rejects delayed location and launch receipts',
     () async {
       final fix = Completer<LocationResult>();
