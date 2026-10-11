@@ -4,12 +4,12 @@ import json
 from pathlib import Path
 import re
 try:
-    from . import next_phase
+    from . import next_phase, f1
 except ImportError:
     try:
-        import next_phase
+        import next_phase, f1
     except ImportError:
-        from harness import next_phase
+        from harness import next_phase, f1
 
 ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_ROOTS = tuple(Path(name) for name in (
@@ -28,6 +28,7 @@ GENERATED = {
     "app/android/gradlew", "app/android/gradlew.bat", "app/android/gradle/wrapper/gradle-wrapper.jar",
     "harness/project/work.json",
     "harness/project/next-phase/work.json",
+    "harness/project/next-phase/execution.json",
 }
 ENTRY_INPUTS = (
     "AGENTS.md", "README.md", "docs/solution-design.md",
@@ -55,6 +56,7 @@ def source_files(root=ROOT):
                     or {".git", "__pycache__"}.intersection(relative.parts)
                     or any(relative.is_relative_to(prefix) for prefix in OUTPUT_ROOTS)
                     or relative.is_relative_to(Path("prototype/next-phase/evidence"))
+                    or relative.is_relative_to(Path("harness/project/next-phase/results"))
                     or relative.as_posix() in GENERATED or path.suffix == ".iml"):
                 continue
             files.append(path)
@@ -507,4 +509,6 @@ def repository(root=ROOT):
             errors.append(f"{path.relative_to(root)}: skill metadata name/description missing or mismatched")
     errors.extend(traceability(root))
     errors.extend(next_phase.validate(root, {path.relative_to(root).as_posix() for path in source_files(root)}))
+    errors.extend(f1.validate_execution(root, {path.relative_to(root).as_posix() for path in source_files(root)}, fingerprint(root)))
+    errors.extend(f1.boundaries(root, directives))
     return errors

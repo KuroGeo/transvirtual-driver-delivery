@@ -23,6 +23,8 @@ jobs:
         run: flutter pub get --enforce-lockfile
       - name: Run repository and Flutter gates
         run: python3 harness/run.py quality
+      - name: Validate F1 navigation feature evidence
+        run: python3 harness/f1.py collect-host
       - name: Preserve candidate and failure logs
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

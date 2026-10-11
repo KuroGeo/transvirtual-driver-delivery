@@ -18,12 +18,13 @@ import tempfile
 import time
 
 try:
-    from . import checks, gate, state, native_workbench
+    from . import checks, gate, state, native_workbench, f1
 except ImportError:  # CLI script entrypoint
     import checks
     import gate
     import state
     import native_workbench
+    import f1
 
 ROOT = checks.ROOT
 RUNS = ROOT / "harness" / "runs"
@@ -216,9 +217,9 @@ def stages(command, run_dir, candidate, manifest=None, targets=None, options=Non
         return [sdk, pub,
                 ({"probe": "probe-build", "startup": "startup-build", "workbench": "workbench-build"}[scope], build_arguments(probe_options), root / "app"),
                 ({"probe": "process-restart", "startup": "startup-smoke", "workbench": "workbench-smoke"}[scope], native_arguments, root)]
-    if command in {"gate", "local-gate"}:
-        private = "_gate" if command == "gate" else "_local_gate"
-        stage_id = "production-gate" if command == "gate" else "local-evidence-gate"
+    if command in {"gate", "local-gate", "f1-gate"}:
+        private = {"gate": "_gate", "local-gate": "_local_gate", "f1-gate": "_f1_gate"}[command]
+        stage_id = {"gate": "production-gate", "local-gate": "local-evidence-gate", "f1-gate": "f1-evidence-gate"}[command]
         return [(stage_id, [python, "harness/run.py", private, "--manifest", str(manifest)], ROOT)]
     raise ValueError(command)
 
@@ -281,7 +282,7 @@ def isolated_workspace(source_root, fingerprint, report=None):
             relative = path.relative_to(source_root)
             if (not path.is_file() or {".git", "__pycache__", "node_modules"}.intersection(relative.parts)
                     or any(relative.is_relative_to(prefix) for prefix in snapshot_outputs)
-                    or relative.as_posix() in checks.GENERATED - {"harness/project/work.json"}):
+                    or relative.as_posix() in checks.GENERATED - {"harness/project/work.json", "harness/project/next-phase/work.json", "harness/project/next-phase/execution.json"}):
                 continue
             if not path.resolve().is_relative_to(source_root):
                 raise ValueError(f"source snapshot refuses external symlink: {relative}")
@@ -451,7 +452,7 @@ def subprocess_stage(argv, cwd, log, timeout, lock_fds, on_spawn, lease_context=
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=["preflight", "check", "pub", "quality", "test", "integration", "build", "native", "gate", "local-gate", "_check", "_sdk", "_gate", "_local_gate", "_stage"])
+    parser.add_argument("command", choices=["preflight", "check", "pub", "quality", "test", "integration", "build", "native", "gate", "local-gate", "f1-gate", "_check", "_sdk", "_gate", "_local_gate", "_f1_gate", "_stage"])
     parser.add_argument("--target", action="append", default=[], help="Existing app/test path (test) or app/integration_test path (integration); repeat")
     parser.add_argument("--configuration", choices=["demo", "local-client"], default="local-client", help="Explicit OCEAN_MODE; demo data is separate from local-client")
     parser.add_argument("--build-mode", choices=["debug", "profile", "release"], default="debug", help="iOS build mode; simulator supports debug only")
@@ -502,19 +503,27 @@ def main():
             print(f"SDK mismatch: expected Flutter {pinned}; select the pinned SDK before continuing")
             return 1
         return 0
-    if args.command in {"_gate", "_local_gate"}:
+    if args.command in {"_gate", "_local_gate", "_f1_gate"}:
         if not args.manifest:
             parser.error("--manifest is required for evidence gate")
         try:
             manifest = read_manifest(args.manifest)
+            if args.command == "_f1_gate":
+                result = f1.evaluate(manifest, checks.fingerprint(), ROOT)
+                result["evidence_manifest"] = {"path": str(args.manifest.resolve()), "sha256": sha(args.manifest), "kind": "f1-manifest"}
+                print(json.dumps(result, ensure_ascii=False, indent=2))
+                return int(not result["feature_allowed"])
             local = args.command == "_local_gate"
             evaluate = gate.evaluate_local if local else gate.evaluate
             result = evaluate(manifest, checks.fingerprint(), args.manifest.resolve().parent)
         except (OSError, ValueError, TypeError, UnicodeError, RecursionError) as error:
+            if args.command == "_f1_gate":
+                print(json.dumps({"feature": "F1", "feature_allowed": False, "publish_allowed": False, "reasons": [str(error)]}, ensure_ascii=False, indent=2))
+                return 1
             result = {"reasons": [str(error)], "local_allowed": False, "publish_allowed": False} if args.command == "_local_gate" else {"allowed": False, "reasons": [str(error)]}
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return int(not result["local_allowed" if args.command == "_local_gate" else "allowed"])
-    if args.command in {"gate", "local-gate"} and not args.manifest:
+    if args.command in {"gate", "local-gate", "f1-gate"} and not args.manifest:
         parser.error("--manifest is required for evidence gate")
     if args.timeout <= 0:
         parser.error("--timeout must be positive")
@@ -565,7 +574,7 @@ def main():
         parser.error("integration requires explicit --device and --target integration_test/<file.dart>")
     if args.device and (args.device.startswith("-") or not args.device.strip() or any(c.isspace() for c in args.device)):
         parser.error("--device must be an explicit device ID without spaces")
-    if args.isolated and args.command in {"gate", "local-gate"}:
+    if args.isolated and args.command in {"gate", "local-gate", "f1-gate"}:
         parser.error("evidence gate evaluates the current workspace; --isolated does not apply")
     test_root = ROOT / ("app/integration_test" if args.command == "integration" else "app/test")
     for target in args.target:
@@ -645,7 +654,7 @@ def main():
                     current_spec = stage_spec([(stage_id, argv, cwd)], execution_root, attempt)
                     old_spec = stage_spec([(stage_id, old["command"], old["cwd"])], previous_root, prior_path.parent) if old else None
                     retained_outputs = {"ios-build", "probe-build", "startup-build", "workbench-build", "process-restart", "startup-smoke", "workbench-smoke", "integration-tests"}
-                    if args.command not in {"gate", "local-gate"} and stage_id not in {"pub", *retained_outputs} and not args.isolated and old and old["status"] == "passed" and type(old.get("exit_code")) is int and old["exit_code"] == 0 and old_spec == current_spec:
+                    if args.command not in {"gate", "local-gate", "f1-gate"} and stage_id not in {"pub", *retained_outputs} and not args.isolated and old and old["status"] == "passed" and type(old.get("exit_code")) is int and old["exit_code"] == 0 and old_spec == current_spec:
                         previous_log = Path(old["log_path"])
                         if not previous_log.is_relative_to(run_dir) or previous_log.resolve() != previous_log or not previous_log.is_file() or sha(previous_log) != old["sha256"]:
                             raise ValueError(f"{stage_id}: saved log missing or changed; completed stage cannot be reused")
