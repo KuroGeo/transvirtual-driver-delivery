@@ -1,0 +1,1132 @@
+{
+  "snapshot": "bebda787284fed5f9d5fb4acc36cd174fad7ab75",
+  "timezone": "Asia/Shanghai",
+  "pull_requests": [
+    {
+      "body": "新增 **ocean delivery** 可交互浏览器原型，以题目附件中的 30 个配送站点为地图作业中心。司机可从位置和状态找到站点、处理配送结果，并在离线时保存更新。界面采用鲜橙与奶油白的工具风，重点改善信息可读性和操作反馈。\n\n## 完成内容\n\n- 30 个 CSV 坐标落点与密集站点聚合；Pending / Completed / Failed 由颜色和符号共同表达，当前位置使用蓝色方向箭头。\n- 地图状态筛选、搜索和 Stop list 联动；列表按固定当前位置的直线距离排序，底部概览显示最近匹配站点及距离。\n- 站点详情支持完成配送和记录失败。失败必须选择原因，Other 必须填写非空说明；完成和失败均为终态。\n- localStorage 保存配送结果、失败原因和未确认队列，刷新后恢复。离线可以操作，重连自动同步；地图左侧更新按钮直接执行，通过 Toast 提示进度、完成、离线或失败，重复点击不会重复确认。\n- 返回逻辑保留入口上下文：Stop list → 详情 → Stop list，并恢复列表位置；最近站点 / 地图站标 → 详情 → 地图。\n- 宽松的两行状态栏、无底部页签、用户选定的第一版 App 图标，以及完整设计比较、截图、录屏和验收记录。\n- 补充仓库首页、运行说明、第三方许可，并让地图页面可在未安装 Oil UI 的独立目录中重建。\n\n## 使用的工具与实现\n\n| 用途 | 工具 / 技术 |\n| --- | --- |\n| 设计探索、比较与视觉检查 | Oil UI 工作流与对比页 / 截图工具 |\n| 原型开发与修改 | Codex；HTML、CSS、JavaScript、Alpine.js |\n| 地图与站点聚合 | Leaflet、Leaflet.markercluster、OpenStreetMap |\n| 字体与界面图标 | 本地 Inter 字体、Carbon 图标 |\n| App 图标 | Codex 内置图像生成工具；导出 1024 / 180 / 32px |\n| 数据生成和本地预览 | Python 3 标准库，从原始 CSV 生成页面 |\n| 交互验收 | Browser Harness；独立浏览器走查、截图与录屏 |\n\n## 验证\n\n- 最终交互检查连续三轮 **78/78、78/78、78/78** 通过，覆盖真实坐标、最近排序、两条详情返回路径、失败原因、离线保存 / 刷新恢复、同步中断 / 重试 / 重复点击、底图错误与多屏宽。\n- [最终检查报告与两条返回流程录屏](https://github.com/KuroGeo/transvirtual-driver-delivery/tree/b226f239af15c4a2cbfbfddccba8dc3e22c40e5b/prototype/evidence/origin-return/)已入库；保留此前设计与验收记录。\n- 独立目录从 Git 索引导出后，不安装 Oil UI 也能重建；重建的地图 HTML 与提交内容一致，本地资源完整，30 条记录及 JavaScript 语法检查通过。\n- Git diff 空白检查通过，原始题目附件没有改动。\n- 仓库目前没有 GitHub Actions workflow，本 PR 没有配置远端 CI 检查。\n\n## 运行与范围\n\n在仓库根目录执行 `python3 prototype/serve.py`，打开 `http://127.0.0.1:8764/index.html`。前后设计比较入口为 `/style-explorer.html`；依赖、字体和图标都已缓存到仓库，底图需要联网。\n\n这是浏览器设计原型：同步使用应用内 fake 目标，没有真实服务端上传；当前位置与朝向暂时固定，距离为直线距离。Flutter / Android / iOS 实现、GPS / 罗盘和路网导航尚未接入。\n\n<img src=\"https://github.com/KuroGeo/transvirtual-driver-delivery/blob/b226f239af15c4a2cbfbfddccba8dc3e22c40e5b/prototype/evidence/direct-sync/home/page.png?raw=true\" width=\"320\" alt=\"ocean delivery 地图工作台\" />\n",
+      "commits": [
+        {
+          "authoredDate": "2026-10-09T21:26:14Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-09T21:26:14Z",
+          "messageBody": "",
+          "messageHeadline": "feat: add ocean delivery map-first prototype",
+          "oid": "b226f239af15c4a2cbfbfddccba8dc3e22c40e5b"
+        }
+      ],
+      "createdAt": "2026-10-09T21:28:58Z",
+      "files": [
+        ".gitignore",
+        "README.md",
+        "prototype/README.md",
+        "prototype/archive/round1/README.md",
+        "prototype/archive/round1/assets/THIRD_PARTY.md",
+        "prototype/archive/round1/assets/app.css",
+        "prototype/archive/round1/assets/app.js",
+        "prototype/archive/round1/assets/icons.json",
+        "prototype/archive/round1/design-notes.md",
+        "prototype/archive/round1/evidence/a/page.png",
+        "prototype/archive/round1/evidence/a/report.json",
+        "prototype/archive/round1/focus.html",
+        "prototype/archive/round1/index.html",
+        "prototype/archive/round1/manifest.json",
+        "prototype/archive/round1/style-explorer.html",
+        "prototype/archive/round1/vendor/alpine.min.js",
+        "prototype/archive/round1/windows.html",
+        "prototype/archive/round2/README.md",
+        "prototype/archive/round2/assets/Inter-OFL.txt",
+        "prototype/archive/round2/assets/InterVariable.ttf",
+        "prototype/archive/round2/assets/THIRD_PARTY.md",
+        "prototype/archive/round2/assets/app.css",
+        "prototype/archive/round2/assets/app.js",
+        "prototype/archive/round2/assets/icons.json",
+        "prototype/archive/round2/assets/refined.css",
+        "prototype/archive/round2/evidence/home.png",
+        "prototype/archive/round2/focus.html",
+        "prototype/archive/round2/index.html",
+        "prototype/archive/round2/manifest.json",
+        "prototype/archive/round2/round2-design.md",
+        "prototype/archive/round2/style-explorer.html",
+        "prototype/archive/round2/vendor/alpine.min.js",
+        "prototype/archive/round2/verify.py",
+        "prototype/archive/round2/windows.html",
+        "prototype/assets/CARBON-LICENSE",
+        "prototype/assets/Inter-OFL.txt",
+        "prototype/assets/InterVariable.ttf",
+        "prototype/assets/THIRD_PARTY.md",
+        "prototype/assets/app-icon-180.png",
+        "prototype/assets/app-icon-32.png",
+        "prototype/assets/app-icon-design.md",
+        "prototype/assets/app-icon-source.png",
+        "prototype/assets/app-icon.png",
+        "prototype/assets/app.css",
+        "prototype/assets/app.js",
+        "prototype/assets/icons.json",
+        "prototype/assets/map-config.json",
+        "prototype/assets/map.css",
+        "prototype/assets/map.js",
+        "prototype/assets/refined.css",
+        "prototype/build_prototype.py",
+        "prototype/design-notes.md",
+        "prototype/direct-sync-design.md",
+        "prototype/evidence/a/page.png",
+        "prototype/evidence/a/report.json",
+        "prototype/evidence/b/page.png",
+        "prototype/evidence/b/report.json",
+        "prototype/evidence/c/page.png",
+        "prototype/evidence/c/report.json",
+        "prototype/evidence/comparison/page.png",
+        "prototype/evidence/comparison/report.json",
+        "prototype/evidence/direct-sync/baseline/page.png",
+        "prototype/evidence/direct-sync/baseline/report.json",
+        "prototype/evidence/direct-sync/detail-toast/page.png",
+        "prototype/evidence/direct-sync/detail-toast/report.json",
+        "prototype/evidence/direct-sync/home/page.png",
+        "prototype/evidence/direct-sync/home/report.json",
+        "prototype/evidence/direct-sync/qa-run-1.json",
+        "prototype/evidence/direct-sync/qa-run-2.json",
+        "prototype/evidence/direct-sync/qa-run-3.json",
+        "prototype/evidence/direct-sync/record-return-list/motion-end.jpg",
+        "prototype/evidence/direct-sync/record-return-list/motion-mid.jpg",
+        "prototype/evidence/direct-sync/record-return-list/motion-start.jpg",
+        "prototype/evidence/direct-sync/record-return-list/record.mp4",
+        "prototype/evidence/direct-sync/record-return-list/report.json",
+        "prototype/evidence/direct-sync/record-sync/motion-end.jpg",
+        "prototype/evidence/direct-sync/record-sync/motion-mid.jpg",
+        "prototype/evidence/direct-sync/record-sync/motion-start.jpg",
+        "prototype/evidence/direct-sync/record-sync/record.mp4",
+        "prototype/evidence/direct-sync/record-sync/report.json",
+        "prototype/evidence/direct-sync/states/idle.png",
+        "prototype/evidence/direct-sync/states/queued.png",
+        "prototype/evidence/direct-sync/states/report.json",
+        "prototype/evidence/direct-sync/states/sheet.png",
+        "prototype/evidence/direct-sync/states/synced.png",
+        "prototype/evidence/direct-sync/states/syncerror.png",
+        "prototype/evidence/direct-sync/zoom/page-@2x.png",
+        "prototype/evidence/direct-sync/zoom/report.json",
+        "prototype/evidence/motion/page.png",
+        "prototype/evidence/motion/report.json",
+        "prototype/evidence/origin-return/from-list/motion-end.jpg",
+        "prototype/evidence/origin-return/from-list/motion-mid.jpg",
+        "prototype/evidence/origin-return/from-list/motion-start.jpg",
+        "prototype/evidence/origin-return/from-list/record.mp4",
+        "prototype/evidence/origin-return/from-list/report.json",
+        "prototype/evidence/origin-return/from-map/motion-end.jpg",
+        "prototype/evidence/origin-return/from-map/motion-mid.jpg",
+        "prototype/evidence/origin-return/from-map/motion-start.jpg",
+        "prototype/evidence/origin-return/from-map/record.mp4",
+        "prototype/evidence/origin-return/from-map/report.json"
+      ],
+      "mergeCommit": {
+        "oid": "1eaa8b519c589a1ecfad0a41a0ced16a22157a96"
+      },
+      "mergedAt": "2026-10-09T21:29:18Z",
+      "number": 11,
+      "state": "MERGED",
+      "title": "feat: add ocean delivery map-first prototype",
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/pull/11",
+      "show": "1eaa8b5 feat: add ocean delivery map-first prototype (#11)\n .gitignore                                         |   3 +\n README.md                                          |  37 ++\n prototype/README.md                                |  66 ++\n prototype/archive/round1/README.md                 |  58 ++\n prototype/archive/round1/assets/THIRD_PARTY.md     |   7 +\n prototype/archive/round1/assets/app.css            |  15 +\n prototype/archive/round1/assets/app.js             |  62 ++\n prototype/archive/round1/assets/icons.json         |   1 +\n prototype/archive/round1/design-notes.md           |  92 +++\n prototype/archive/round1/evidence/a/page.png       | Bin 0 -> 56411 bytes\n prototype/archive/round1/evidence/a/report.json    |  10 +\n prototype/archive/round1/focus.html                |  31 +\n prototype/archive/round1/index.html                |  31 +\n prototype/archive/round1/manifest.json             |  69 +++\n prototype/archive/round1/style-explorer.html       | 432 ++++++++++++++\n prototype/archive/round1/vendor/alpine.min.js      |  22 +\n prototype/archive/round1/windows.html              |  31 +\n prototype/archive/round2/README.md                 |  63 ++\n prototype/archive/round2/assets/Inter-OFL.txt      |  93 +++\n prototype/archive/round2/assets/InterVariable.ttf  | Bin 0 -> 876576 bytes\n prototype/archive/round2/assets/THIRD_PARTY.md     |   9 +\n prototype/archive/round2/assets/app.css            |  15 +\n prototype/archive/round2/assets/app.js             |  63 ++\n prototype/archive/round2/assets/icons.json         |   1 +\n prototype/archive/round2/assets/refined.css        |  19 +\n prototype/archive/round2/evidence/home.png         | Bin 0 -> 63402 bytes\n prototype/archive/round2/focus.html                |   1 +\n prototype/archive/round2/index.html                |   1 +\n prototype/archive/round2/manifest.json             |  47 ++\n prototype/archive/round2/round2-design.md          |  43 ++\n prototype/archive/round2/style-explorer.html       | 432 ++++++++++++++\n prototype/archive/round2/vendor/alpine.min.js      |  22 +\n prototype/archive/round2/verify.py                 | 150 +++++\n prototype/archive/round2/windows.html              |   1 +\n prototype/assets/CARBON-LICENSE                    | 201 +++++++\n prototype/assets/Inter-OFL.txt                     |  93 +++\n prototype/assets/InterVariable.ttf                 | Bin 0 -> 876576 bytes\n prototype/assets/THIRD_PARTY.md                    |  13 +\n prototype/assets/app-icon-180.png                  | Bin 0 -> 29885 bytes\n prototype/assets/app-icon-32.png                   | Bin 0 -> 1564 bytes\n prototype/assets/app-icon-design.md                |  14 +\n prototype/assets/app-icon-source.png               | Bin 0 -> 1201199 bytes\n prototype/assets/app-icon.png                      | Bin 0 -> 834032 bytes\n prototype/assets/app.css                           |  15 +\n prototype/assets/app.js                            | 108 ++++\n prototype/assets/icons.json                        |   1 +\n prototype/assets/map-config.json                   |  15 +\n prototype/assets/map.css                           |  75 +++\n prototype/assets/map.js                            | 122 ++++\n prototype/assets/refined.css                       |  19 +\n prototype/build_prototype.py                       |  96 +++\n prototype/design-notes.md                          |  92 +++\n prototype/direct-sync-design.md                    |  34 ++\n prototype/evidence/a/page.png                      | Bin 0 -> 56411 bytes\n prototype/evidence/a/report.json                   |  10 +\n prototype/evidence/b/page.png                      | Bin 0 -> 49538 bytes\n prototype/evidence/b/report.json                   |  10 +\n prototype/evidence/c/page.png                      | Bin 0 -> 54159 bytes\n prototype/evidence/c/report.json                   |  10 +\n prototype/evidence/comparison/page.png             | Bin 0 -> 196782 bytes\n prototype/evidence/comparison/report.json          |  10 +\n prototype/evidence/direct-sync/baseline/page.png   | Bin 0 -> 71236 bytes\n .../evidence/direct-sync/baseline/report.json      |  10 +\n .../evidence/direct-sync/detail-toast/page.png     | Bin 0 -> 200182 bytes\n .../evidence/direct-sync/detail-toast/report.json  |  10 +\n prototype/evidence/direct-sync/home/page.png       | Bin 0 -> 347726 bytes\n prototype/evidence/direct-sync/home/report.json    |  10 +\n prototype/evidence/direct-sync/qa-run-1.json       |   1 +\n prototype/evidence/direct-sync/qa-run-2.json       |   1 +\n prototype/evidence/direct-sync/qa-run-3.json       |   1 +\n .../direct-sync/record-return-list/motion-end.jpg  | Bin 0 -> 62496 bytes\n .../direct-sync/record-return-list/motion-mid.jpg  | Bin 0 -> 34735 bytes\n .../record-return-list/motion-start.jpg            | Bin 0 -> 47185 bytes\n .../direct-sync/record-return-list/record.mp4      | Bin 0 -> 191740 bytes\n .../direct-sync/record-return-list/report.json     |   9 +\n .../direct-sync/record-sync/motion-end.jpg         | Bin 0 -> 88284 bytes\n .../direct-sync/record-sync/motion-mid.jpg         | Bin 0 -> 88600 bytes\n .../direct-sync/record-sync/motion-start.jpg       | Bin 0 -> 46439 bytes\n .../evidence/direct-sync/record-sync/record.mp4    | Bin 0 -> 158991 bytes\n .../evidence/direct-sync/record-sync/report.json   |   9 +\n prototype/evidence/direct-sync/states/idle.png     | Bin 0 -> 76094 bytes\n prototype/evidence/direct-sync/states/queued.png   | Bin 0 -> 118831 bytes\n prototype/evidence/direct-sync/states/report.json  |  34 ++\n prototype/evidence/direct-sync/states/sheet.png    | Bin 0 -> 487095 bytes\n prototype/evidence/direct-sync/states/synced.png   | Bin 0 -> 265754 bytes\n .../evidence/direct-sync/states/syncerror.png      | Bin 0 -> 333581 bytes\n prototype/evidence/direct-sync/zoom/page-@2x.png   | Bin 0 -> 956719 bytes\n prototype/evidence/direct-sync/zoom/report.json    |  10 +\n prototype/evidence/motion/page.png                 | Bin 0 -> 57251 bytes\n prototype/evidence/motion/report.json              | 213 +++++++\n .../origin-return/from-list/motion-end.jpg         | Bin 0 -> 62496 bytes\n .../origin-return/from-list/motion-mid.jpg         | Bin 0 -> 35748 bytes\n .../origin-return/from-list/motion-start.jpg       | Bin 0 -> 45753 bytes\n .../evidence/origin-return/from-list/record.mp4    | Bin 0 -> 160563 bytes\n .../evidence/origin-return/from-list/report.json   |   9 +\n .../evidence/origin-return/from-map/motion-end.jpg | Bin 0 -> 103610 bytes\n .../evidence/origin-return/from-map/motion-mid.jpg | Bin 0 -> 72610 bytes\n .../origin-return/from-map/motion-start.jpg        | Bin 0 -> 89309 bytes\n .../evidence/origin-return/from-map/record.mp4     | Bin 0 -> 243706 bytes\n .../evidence/origin-return/from-map/report.json    |   9 +\n prototype/evidence/origin-return/qa-run-1.json     |   1 +\n prototype/evidence/origin-return/qa-run-2.json     |   1 +\n prototype/evidence/origin-return/qa-run-3.json     |   1 +\n prototype/evidence/qa-run-1.json                   |   1 +\n prototype/evidence/qa-run-2.json                   |   1 +\n prototype/evidence/qa-run-3.json                   |   1 +\n prototype/evidence/record-complete/motion-end.jpg  | Bin 0 -> 38571 bytes\n prototype/evidence/record-complete/motion-mid.jpg  | Bin 0 -> 36153 bytes\n .../evidence/record-complete/motion-start.jpg      | Bin 0 -> 43235 bytes\n prototype/evidence/record-complete/record.mp4      | Bin 0 -> 107017 bytes\n prototype/evidence/record-complete/report.json     |   9 +\n prototype/evidence/record-entry/motion-end.jpg     | Bin 0 -> 43235 bytes\n prototype/evidence/record-entry/motion-mid.jpg     | Bin 0 -> 34068 bytes\n prototype/evidence/record-entry/motion-start.jpg   | Bin 0 -> 25327 bytes\n prototype/evidence/record-entry/record.mp4         | Bin 0 -> 33696 bytes\n prototype/evidence/record-entry/report.json        |   9 +\n prototype/evidence/record-filter/motion-end.jpg    | Bin 0 -> 43235 bytes\n prototype/evidence/record-filter/motion-mid.jpg    | Bin 0 -> 45071 bytes\n prototype/evidence/record-filter/motion-start.jpg  | Bin 0 -> 43235 bytes\n prototype/evidence/record-filter/record.mp4        | Bin 0 -> 54592 bytes\n prototype/evidence/record-filter/report.json       |   9 +\n prototype/evidence/record-sync/motion-end.jpg      | Bin 0 -> 39178 bytes\n prototype/evidence/record-sync/motion-mid.jpg      | Bin 0 -> 40749 bytes\n prototype/evidence/record-sync/motion-start.jpg    | Bin 0 -> 41386 bytes\n prototype/evidence/record-sync/record.mp4          | Bin 0 -> 65923 bytes\n prototype/evidence/record-sync/report.json         |   9 +\n prototype/evidence/round2/comparison/page.png      | Bin 0 -> 203842 bytes\n prototype/evidence/round2/comparison/report.json   |  10 +\n .../evidence/round2/completed-filter/page.png      | Bin 0 -> 59057 bytes\n .../evidence/round2/completed-filter/report.json   |  10 +\n prototype/evidence/round2/home/page.png            | Bin 0 -> 63402 bytes\n prototype/evidence/round2/home/report.json         |  10 +\n prototype/evidence/round2/motion/page.png          | Bin 0 -> 64781 bytes\n prototype/evidence/round2/motion/report.json       | 118 ++++\n prototype/evidence/round2/qa-run-1.json            |  46 ++\n prototype/evidence/round2/qa-run-2.json            |  46 ++\n prototype/evidence/round2/qa-run-3.json            |  46 ++\n .../evidence/round2/record-complete/motion-end.jpg | Bin 0 -> 29779 bytes\n .../evidence/round2/record-complete/motion-mid.jpg | Bin 0 -> 33547 bytes\n .../round2/record-complete/motion-start.jpg        | Bin 0 -> 50889 bytes\n .../evidence/round2/record-complete/record.mp4     | Bin 0 -> 111335 bytes\n .../evidence/round2/record-complete/report.json    |   9 +\n .../evidence/round2/record-entry/motion-end.jpg    | Bin 0 -> 50916 bytes\n .../evidence/round2/record-entry/motion-mid.jpg    | Bin 0 -> 48879 bytes\n .../evidence/round2/record-entry/motion-start.jpg  | Bin 0 -> 9501 bytes\n prototype/evidence/round2/record-entry/record.mp4  | Bin 0 -> 87171 bytes\n prototype/evidence/round2/record-entry/report.json |   9 +\n .../evidence/round2/record-filter/motion-end.jpg   | Bin 0 -> 45801 bytes\n .../evidence/round2/record-filter/motion-mid.jpg   | Bin 0 -> 45800 bytes\n .../evidence/round2/record-filter/motion-start.jpg | Bin 0 -> 50655 bytes\n prototype/evidence/round2/record-filter/record.mp4 | Bin 0 -> 54679 bytes\n .../evidence/round2/record-filter/report.json      |   9 +\n .../evidence/round2/record-sync/motion-end.jpg     | Bin 0 -> 33534 bytes\n .../evidence/round2/record-sync/motion-mid.jpg     | Bin 0 -> 29653 bytes\n .../evidence/round2/record-sync/motion-start.jpg   | Bin 0 -> 28656 bytes\n prototype/evidence/round2/record-sync/record.mp4   | Bin 0 -> 50445 bytes\n prototype/evidence/round2/record-sync/report.json  |   9 +\n prototype/evidence/round2/states/detail.png        | Bin 0 -> 36364 bytes\n prototype/evidence/round2/states/done.png          | Bin 0 -> 35603 bytes\n prototype/evidence/round2/states/error.png         | Bin 0 -> 47848 bytes\n prototype/evidence/round2/states/failure.png       | Bin 0 -> 45427 bytes\n prototype/evidence/round2/states/queued.png        | Bin 0 -> 40369 bytes\n prototype/evidence/round2/states/report.json       |  42 ++\n prototype/evidence/round2/states/sheet.png         | Bin 0 -> 175901 bytes\n prototype/evidence/round2/visual-review.md         |  18 +\n prototype/evidence/round2/zoom/detail-@2x.png      | Bin 0 -> 83370 bytes\n prototype/evidence/round2/zoom/failure-@2x.png     | Bin 0 -> 103768 bytes\n prototype/evidence/round2/zoom/report.json         |  18 +\n .../evidence/round3-feedback/comparison/page.png   | Bin 0 -> 497619 bytes\n .../round3-feedback/comparison/report.json         |  10 +\n .../round3-feedback/pending-filter/page.png        | Bin 0 -> 350062 bytes\n .../round3-feedback/pending-filter/report.json     |  10 +\n prototype/evidence/round3-feedback/qa-run-1.json   |  62 ++\n prototype/evidence/round3-feedback/qa-run-2.json   |  62 ++\n prototype/evidence/round3-feedback/qa-run-3.json   |  62 ++\n .../round3-feedback/record-entry/motion-end.jpg    | Bin 0 -> 98332 bytes\n .../round3-feedback/record-entry/motion-mid.jpg    | Bin 0 -> 52545 bytes\n .../round3-feedback/record-entry/motion-start.jpg  | Bin 0 -> 22778 bytes\n .../round3-feedback/record-entry/record.mp4        | Bin 0 -> 186966 bytes\n .../round3-feedback/record-entry/report.json       |   9 +\n .../round3-feedback/record-nearest/motion-end.jpg  | Bin 0 -> 76388 bytes\n .../round3-feedback/record-nearest/motion-mid.jpg  | Bin 0 -> 60959 bytes\n .../record-nearest/motion-start.jpg                | Bin 0 -> 41676 bytes\n .../round3-feedback/record-nearest/record.mp4      | Bin 0 -> 295305 bytes\n .../round3-feedback/record-nearest/report.json     |   9 +\n .../record-sync-tool/motion-end.jpg                | Bin 0 -> 49227 bytes\n .../record-sync-tool/motion-mid.jpg                | Bin 0 -> 49087 bytes\n .../record-sync-tool/motion-start.jpg              | Bin 0 -> 39358 bytes\n .../round3-feedback/record-sync-tool/record.mp4    | Bin 0 -> 318960 bytes\n .../round3-feedback/record-sync-tool/report.json   |   9 +\n .../evidence/round3-feedback/states/detail.png     | Bin 0 -> 197355 bytes\n prototype/evidence/round3-feedback/states/idle.png | Bin 0 -> 347654 bytes\n prototype/evidence/round3-feedback/states/list.png | Bin 0 -> 158573 bytes\n .../evidence/round3-feedback/states/report.json    |  26 +\n .../evidence/round3-feedback/states/sheet.png      | Bin 0 -> 637457 bytes\n .../evidence/round3-feedback/visual-review.md      |  22 +\n .../evidence/round3-feedback/workspace/detail.png  | Bin 0 -> 205415 bytes\n .../evidence/round3-feedback/workspace/done.png    | Bin 0 -> 185429 bytes\n .../evidence/round3-feedback/workspace/failure.png | Bin 0 -> 76774 bytes\n .../evidence/round3-feedback/workspace/idle.png    | Bin 0 -> 349592 bytes\n .../evidence/round3-feedback/workspace/list.png    | Bin 0 -> 156431 bytes\n .../round3-feedback/workspace/maperror.png         | Bin 0 -> 72624 bytes\n .../evidence/round3-feedback/workspace/queued.png  | Bin 0 -> 146025 bytes\n .../evidence/round3-feedback/workspace/report.json |  58 ++\n .../evidence/round3-feedback/workspace/sheet.png   | Bin 0 -> 906741 bytes\n .../evidence/round3-feedback/zoom/detail-@2x.png   | Bin 0 -> 609409 bytes\n .../evidence/round3-feedback/zoom/done-@2x.png     | Bin 0 -> 537700 bytes\n .../evidence/round3-feedback/zoom/idle-@2x.png     | Bin 0 -> 1021934 bytes\n .../evidence/round3-feedback/zoom/list-@2x.png     | Bin 0 -> 407560 bytes\n .../evidence/round3-feedback/zoom/report.json      |  34 ++\n .../evidence/round3/attribution-check/done.png     | Bin 0 -> 178488 bytes\n .../evidence/round3/attribution-check/idle.png     | Bin 0 -> 346298 bytes\n .../evidence/round3/attribution-check/list.png     | Bin 0 -> 155595 bytes\n .../evidence/round3/attribution-check/maperror.png | Bin 0 -> 72983 bytes\n .../evidence/round3/attribution-check/queued.png   | Bin 0 -> 153891 bytes\n .../evidence/round3/attribution-check/report.json  |  42 ++\n .../evidence/round3/attribution-check/sheet.png    | Bin 0 -> 715323 bytes\n prototype/evidence/round3/comparison/page.png      | Bin 0 -> 495637 bytes\n prototype/evidence/round3/comparison/report.json   |  10 +\n prototype/evidence/round3/home/page.png            | Bin 0 -> 346298 bytes\n prototype/evidence/round3/home/report.json         |  10 +\n prototype/evidence/round3/motion/page.png          | Bin 0 -> 177502 bytes\n prototype/evidence/round3/motion/report.json       | 220 +++++++\n prototype/evidence/round3/qa-run-1.json            |  50 ++\n prototype/evidence/round3/qa-run-2.json            |  50 ++\n prototype/evidence/round3/qa-run-3.json            |  50 ++\n .../evidence/round3/record-complete/motion-end.jpg | Bin 0 -> 67721 bytes\n .../evidence/round3/record-complete/motion-mid.jpg | Bin 0 -> 36352 bytes\n .../round3/record-complete/motion-start.jpg        | Bin 0 -> 41319 bytes\n .../evidence/round3/record-complete/record.mp4     | Bin 0 -> 233586 bytes\n .../evidence/round3/record-complete/report.json    |   9 +\n .../evidence/round3/record-entry/motion-end.jpg    | Bin 0 -> 87147 bytes\n .../evidence/round3/record-entry/motion-mid.jpg    | Bin 0 -> 47180 bytes\n .../evidence/round3/record-entry/motion-start.jpg  | Bin 0 -> 23121 bytes\n prototype/evidence/round3/record-entry/record.mp4  | Bin 0 -> 166233 bytes\n prototype/evidence/round3/record-entry/report.json |   9 +\n .../evidence/round3/record-select/motion-end.jpg   | Bin 0 -> 73465 bytes\n .../evidence/round3/record-select/motion-mid.jpg   | Bin 0 -> 36690 bytes\n .../evidence/round3/record-select/motion-start.jpg | Bin 0 -> 45276 bytes\n prototype/evidence/round3/record-select/record.mp4 | Bin 0 -> 207138 bytes\n .../evidence/round3/record-select/report.json      |   9 +\n .../round3/record-select/transition-1.2s.png       | Bin 0 -> 117808 bytes\n prototype/evidence/round3/states/detail.png        | Bin 0 -> 196868 bytes\n prototype/evidence/round3/states/done.png          | Bin 0 -> 178488 bytes\n prototype/evidence/round3/states/failure.png       | Bin 0 -> 80059 bytes\n prototype/evidence/round3/states/list.png          | Bin 0 -> 155595 bytes\n prototype/evidence/round3/states/maperror.png      | Bin 0 -> 72983 bytes\n prototype/evidence/round3/states/queued.png        | Bin 0 -> 153891 bytes\n prototype/evidence/round3/states/report.json       |  50 ++\n prototype/evidence/round3/states/sheet.png         | Bin 0 -> 630035 bytes\n prototype/evidence/round3/visual-review.md         |  41 ++\n prototype/evidence/round3/zoom/detail-@2x.png      | Bin 0 -> 568845 bytes\n prototype/evidence/round3/zoom/failure-@2x.png     | Bin 0 -> 186634 bytes\n prototype/evidence/round3/zoom/report.json         |  18 +\n prototype/evidence/states/detail.png               | Bin 0 -> 40824 bytes\n prototype/evidence/states/done.png                 | Bin 0 -> 41038 bytes\n prototype/evidence/states/error.png                | Bin 0 -> 48698 bytes\n prototype/evidence/states/failure.png              | Bin 0 -> 48652 bytes\n prototype/evidence/states/queued.png               | Bin 0 -> 52985 bytes\n prototype/evidence/states/report.json              |  42 ++\n prototype/evidence/states/sheet.png                | Bin 0 -> 190780 bytes\n prototype/evidence/zoom/detail-@2x.png             | Bin 0 -> 89393 bytes\n prototype/evidence/zoom/failure-@2x.png            | Bin 0 -> 110293 bytes\n prototype/evidence/zoom/report.json                |  18 +\n prototype/feedback-design.md                       |  40 ++\n prototype/focus.html                               |   1 +\n prototype/index.html                               |  18 +\n prototype/manifest.json                            |  48 ++\n prototype/map-design.md                            |  54 ++\n prototype/map_layout.py                            |  39 ++\n prototype/origin-return-design.md                  |  12 +\n prototype/refined_layout.py                        |  47 ++\n prototype/round2-design.md                         |  43 ++\n prototype/serve.py                                 |  18 +\n prototype/style-explorer.html                      | 432 ++++++++++++++\n prototype/vendor/ALPINE-LICENSE                    |  21 +\n prototype/vendor/OIL-UI-LICENSE                    |  21 +\n prototype/vendor/alpine.min.js                     |  22 +\n prototype/vendor/leaflet/LICENSE                   |  26 +\n prototype/vendor/leaflet/MARKERCLUSTER-LICENSE     |  20 +\n prototype/vendor/leaflet/MarkerCluster.css         |  14 +\n prototype/vendor/leaflet/images/layers-2x.png      | Bin 0 -> 1259 bytes\n prototype/vendor/leaflet/images/layers.png         | Bin 0 -> 696 bytes\n prototype/vendor/leaflet/images/marker-icon-2x.png | Bin 0 -> 2464 bytes\n prototype/vendor/leaflet/images/marker-icon.png    | Bin 0 -> 1466 bytes\n prototype/vendor/leaflet/images/marker-shadow.png  | Bin 0 -> 618 bytes\n prototype/vendor/leaflet/leaflet.css               | 661 +++++++++++++++++++++\n prototype/vendor/leaflet/leaflet.js                |   6 +\n prototype/vendor/leaflet/markercluster.js          |   2 +\n prototype/verify.py                                | 281 +++++++++\n prototype/windows.html                             |   1 +\n 291 files changed, 6461 insertions(+)\n",
+      "summary": "291 files changed, 6461 insertions(+)"
+    },
+    {
+      "body": "商业客户端 MVP 需要明确业务可靠性、地图商用条件和模块职责，并为独立开发的后端及后续功能提供稳定的接入边界。本 PR 新增客户端架构设计技术报告，并在 README 添加入口。\n\n## 设计内容\n\n- 按 Flutter 的 UI / 数据层组织 View、ViewModel、Repository 与 Service，明确单向数据流、抽象业务契约、构造函数注入、对象生命周期和依赖规则。配送结果与待发记录统一提交；同步协调和单次网络传输分别承担职责。\n- 比较 Flutter、轻量 MVVM、ChangeNotifier、SQLite、outbox、页面导航和地图组件的收益、代价、替代方案与演进条件，记录候选 SDK / 依赖约束。\n- 设计离线保存、终态保护、跨进程恢复、串行发送及持久接受确认；后端未接入时如实保留待同步状态。\n- 明确地图数据来源、OSM 数据许可与公共瓦片服务边界、授权离线包和商业地图迁移方向；规划地图 / 列表刷新、计算、内存及应用冷启动缓存。\n- 给出客户端、后端、用户系统、路径规划和 AI Agent 的阶段、依赖与验收条件；保留稳定 ID 和可迁移数据，领域层、并行同步及独立服务等复杂度按实际需求引入。\n\n## 验证\n\n- 复核 Flutter 官方架构建议、候选依赖发布元数据与直接版本约束，以及 OSM 公共瓦片服务策略。\n- 报告章节、表格、代码围栏与本地引用检查通过；核验 CSV 状态数量及地图区域包含全部测试站点。\n- 暂存内容的空白检查通过；变更仅包含报告与 README。\n\n仓库当前没有 Flutter 工程或 GitHub Actions 工作流。本 PR 交付架构方案；完整依赖解析、移动端构建、真实服务联调和真机性能验收在报告规定的实施阶段完成。\n",
+      "commits": [
+        {
+          "authoredDate": "2026-10-10T09:29:56Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T09:29:56Z",
+          "messageBody": "",
+          "messageHeadline": "docs: define commercial Flutter MVP architecture",
+          "oid": "2da3307ef2239b06a567a30e7b02655fe1280ff6"
+        }
+      ],
+      "createdAt": "2026-10-10T09:30:00Z",
+      "files": [
+        "README.md",
+        "docs/solution-design.md"
+      ],
+      "mergeCommit": {
+        "oid": "8e9a7cca9c4360ca07d86e8aa8d196caf88c8c42"
+      },
+      "mergedAt": "2026-10-10T09:30:21Z",
+      "number": 12,
+      "state": "MERGED",
+      "title": "docs: 商业客户端 MVP 架构设计与技术选型",
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/pull/12",
+      "show": "8e9a7cc docs: define commercial Flutter MVP architecture (#12)\n README.md               |   4 +\n docs/solution-design.md | 409 ++++++++++++++++++++++++++++++++++++++++++++++++\n 2 files changed, 413 insertions(+)\n",
+      "summary": "2 files changed, 413 insertions(+)"
+    },
+    {
+      "body": "原型和架构已有，但工程缺少可复用的职能分工、执行入口和实际失败反馈。本 PR 建立九个职责收敛的工程 skill、可执行 Harness，并用 Flutter/SQLite 本地可靠性切片验证协作、审查、返工和恢复。\n\n- `app/` 保存本地客户端与行为测试；`harness/project/` 保存需求、接口和任务；`reports/` 保存审计与精简结论；旧准备稿、完整日志和原候选源码归档。工具和职能保持独立，避免重复建说明/索引。\n- 统一命令核验 SDK/lock、文档与任务依赖、Dart 边界、格式、分析和测试；OS lease 保护构建/设备操作，运行报告绑定候选与原始日志 hash。\n- 独立审查修复了启动记录失败后的进程泄漏、G1 接受失败/旧报告、生成文件/业务目录指纹错误、模拟器失败清理及交付证据缺失。新增回归在旧实现复现失败，在修复后通过。\n- Flutter 基线保证结果/outbox 同事务、终态拒改、稳定身份、匹配确认后移队列、串行同步和安全关闭。正式入口使用 UnavailableTransport；fake 仅用于独立探针。\n\n验证：33 项 Harness 回归、52 项 Flutter 文件 SQLite/unit/widget 测试通过，格式无变更、分析无问题；干净 Git index 导出检查通过且源码指纹与本机一致。三路独立审查无剩余阻断项；九个 skill 已验证，32 个安装文件逐字节一致。当前 quality 原始报告/日志、源码 hash 清单和修复前后回归记录随 `harness/reports/verification.tar.gz` 交付，旧原生证据保持原候选。\n\n先前原生演练为 iOS 模拟器/debug 的三个真实 OS 进程，本次没有将其改签为新的原生验收。完整地图工作台、真机性能、真实服务与签名发布仍属后续任务。CI 本 PR 实跑后合入；required checks/发布强制路径未部署，生产继续 no-go。本 PR 交付源码与工程基线，不执行生产发布。\n",
+      "commits": [
+        {
+          "authoredDate": "2026-10-10T11:48:31Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T11:48:31Z",
+          "messageBody": "",
+          "messageHeadline": "feat: add agent engineering harness and Flutter reliability baseline",
+          "oid": "c8a63ad6c01e7ca49e0dddb71ade32e5bc5f7688"
+        },
+        {
+          "authoredDate": "2026-10-10T11:52:26Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T11:52:26Z",
+          "messageBody": "",
+          "messageHeadline": "docs: retain verified PR CI evidence",
+          "oid": "03122425c634c5c516d739c010dfa92c288c80e7"
+        }
+      ],
+      "createdAt": "2026-10-10T11:49:08Z",
+      "files": [
+        ".agents/installed-skills.json",
+        ".agents/skills/agent-engineering-team/SKILL.md",
+        ".agents/skills/agent-engineering-team/agents/openai.yaml",
+        ".agents/skills/agent-engineering-team/assets/result-template.md",
+        ".agents/skills/agent-engineering-team/assets/task-board.yaml",
+        ".agents/skills/agent-engineering-team/references/team-protocol.md",
+        ".agents/skills/agent-engineering-team/references/work-orders.md",
+        ".agents/skills/engineering-flutter-testing/SKILL.md",
+        ".agents/skills/engineering-issue-authoring/SKILL.md",
+        ".agents/skills/engineering-issue-authoring/agents/openai.yaml",
+        ".agents/skills/engineering-issue-authoring/assets/issue-template.md",
+        ".agents/skills/engineering-issue-authoring/references/issue-standard.md",
+        ".agents/skills/engineering-release-handoff/SKILL.md",
+        ".agents/skills/engineering-release-handoff/agents/openai.yaml",
+        ".agents/skills/engineering-release-handoff/assets/handoff-template.md",
+        ".agents/skills/engineering-release-handoff/references/gates.md",
+        ".agents/skills/engineering-requirements-extract/SKILL.md",
+        ".agents/skills/engineering-requirements-extract/agents/openai.yaml",
+        ".agents/skills/engineering-requirements-extract/assets/requirements-template.md",
+        ".agents/skills/engineering-requirements-extract/references/extraction.md",
+        ".agents/skills/flutter-development/SKILL.md",
+        ".agents/skills/flutter-native-acceptance/SKILL.md",
+        ".agents/skills/flutter-native-acceptance/agents/openai.yaml",
+        ".agents/skills/flutter-native-acceptance/assets/acceptance-template.md",
+        ".agents/skills/flutter-native-acceptance/references/native-flows.md",
+        ".agents/skills/flutter-performance/SKILL.md",
+        ".agents/skills/flutter-performance/agents/openai.yaml",
+        ".agents/skills/flutter-performance/assets/performance-template.md",
+        ".agents/skills/flutter-performance/references/profiling.md",
+        ".agents/skills/harness-engineering/SKILL.md",
+        ".agents/skills/harness-engineering/agents/openai.yaml",
+        ".agents/skills/harness-engineering/assets/audit-template.md",
+        ".agents/skills/harness-engineering/references/readiness.md",
+        ".github/workflows/quality.yml",
+        ".gitignore",
+        "AGENTS.md",
+        "README.md",
+        "app/.fvmrc",
+        "app/.gitignore",
+        "app/.metadata",
+        "app/README.md",
+        "app/analysis_options.yaml",
+        "app/android/.gitignore",
+        "app/android/app/build.gradle.kts",
+        "app/android/app/src/debug/AndroidManifest.xml",
+        "app/android/app/src/main/AndroidManifest.xml",
+        "app/android/app/src/main/kotlin/dev/oceandelivery/ocean_delivery/MainActivity.kt",
+        "app/android/app/src/main/res/drawable-v21/launch_background.xml",
+        "app/android/app/src/main/res/drawable/launch_background.xml",
+        "app/android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+        "app/android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
+        "app/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+        "app/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
+        "app/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+        "app/android/app/src/main/res/values-night/styles.xml",
+        "app/android/app/src/main/res/values/styles.xml",
+        "app/android/app/src/profile/AndroidManifest.xml",
+        "app/android/build.gradle.kts",
+        "app/android/gradle.properties",
+        "app/android/gradle/wrapper/gradle-wrapper.properties",
+        "app/android/settings.gradle.kts",
+        "app/assets/deliveries.csv",
+        "app/ios/.gitignore",
+        "app/ios/Flutter/AppFrameworkInfo.plist",
+        "app/ios/Flutter/Debug.xcconfig",
+        "app/ios/Flutter/Release.xcconfig",
+        "app/ios/Runner.xcodeproj/project.pbxproj",
+        "app/ios/Runner.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
+        "app/ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
+        "app/ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings",
+        "app/ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme",
+        "app/ios/Runner.xcworkspace/contents.xcworkspacedata",
+        "app/ios/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
+        "app/ios/Runner.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings",
+        "app/ios/Runner/AppDelegate.swift",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@2x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@1x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@2x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@3x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@1x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@2x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@3x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@3x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@1x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-83.5x83.5@2x.png",
+        "app/ios/Runner/Assets.xcassets/LaunchImage.imageset/Contents.json",
+        "app/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage.png",
+        "app/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@2x.png",
+        "app/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@3x.png",
+        "app/ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md",
+        "app/ios/Runner/Base.lproj/LaunchScreen.storyboard",
+        "app/ios/Runner/Base.lproj/Main.storyboard",
+        "app/ios/Runner/Info.plist",
+        "app/ios/Runner/Runner-Bridging-Header.h"
+      ],
+      "mergeCommit": {
+        "oid": "3e0300848fcded055abcc47448c06a165d0472d6"
+      },
+      "mergedAt": "2026-10-10T11:53:54Z",
+      "number": 13,
+      "state": "MERGED",
+      "title": "feat: prepare agent team skills and executable Flutter harness",
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/pull/13",
+      "show": "3e03008 feat: prepare agent team skills and executable Flutter harness (#13)\n .agents/installed-skills.json                      |  93 +++\n .agents/skills/agent-engineering-team/SKILL.md     |  48 ++\n .../agent-engineering-team/agents/openai.yaml      |   3 +\n .../assets/result-template.md                      |  16 +\n .../agent-engineering-team/assets/task-board.yaml  |   7 +\n .../references/team-protocol.md                    |  42 ++\n .../references/work-orders.md                      |  28 +\n .../skills/engineering-flutter-testing/SKILL.md    |  22 +\n .../skills/engineering-issue-authoring/SKILL.md    |  38 ++\n .../engineering-issue-authoring/agents/openai.yaml |   3 +\n .../assets/issue-template.md                       |  17 +\n .../references/issue-standard.md                   |  29 +\n .../skills/engineering-release-handoff/SKILL.md    |  29 +\n .../engineering-release-handoff/agents/openai.yaml |   3 +\n .../assets/handoff-template.md                     |  24 +\n .../references/gates.md                            |  21 +\n .../engineering-requirements-extract/SKILL.md      |  27 +\n .../agents/openai.yaml                             |   3 +\n .../assets/requirements-template.md                |  12 +\n .../references/extraction.md                       |  16 +\n .agents/skills/flutter-development/SKILL.md        |  16 +\n .agents/skills/flutter-native-acceptance/SKILL.md  |  32 +\n .../flutter-native-acceptance/agents/openai.yaml   |   3 +\n .../assets/acceptance-template.md                  |  20 +\n .../references/native-flows.md                     |  26 +\n .agents/skills/flutter-performance/SKILL.md        |  36 ++\n .../skills/flutter-performance/agents/openai.yaml  |   3 +\n .../assets/performance-template.md                 |  18 +\n .../flutter-performance/references/profiling.md    |  23 +\n .agents/skills/harness-engineering/SKILL.md        |  35 ++\n .../skills/harness-engineering/agents/openai.yaml  |   3 +\n .../harness-engineering/assets/audit-template.md   |  15 +\n .../harness-engineering/references/readiness.md    |  22 +\n .github/workflows/quality.yml                      |  32 +\n .gitignore                                         |   2 +\n AGENTS.md                                          |  19 +\n README.md                                          |   6 +-\n app/.fvmrc                                         |   1 +\n app/.gitignore                                     |  45 ++\n app/.metadata                                      |  33 ++\n app/README.md                                      |  37 ++\n app/analysis_options.yaml                          |  28 +\n app/android/.gitignore                             |  14 +\n app/android/app/build.gradle.kts                   |  45 ++\n app/android/app/src/debug/AndroidManifest.xml      |   7 +\n app/android/app/src/main/AndroidManifest.xml       |  45 ++\n .../oceandelivery/ocean_delivery/MainActivity.kt   |   5 +\n .../main/res/drawable-v21/launch_background.xml    |  12 +\n .../src/main/res/drawable/launch_background.xml    |  12 +\n .../app/src/main/res/mipmap-hdpi/ic_launcher.png   | Bin 0 -> 544 bytes\n .../app/src/main/res/mipmap-mdpi/ic_launcher.png   | Bin 0 -> 442 bytes\n .../app/src/main/res/mipmap-xhdpi/ic_launcher.png  | Bin 0 -> 721 bytes\n .../app/src/main/res/mipmap-xxhdpi/ic_launcher.png | Bin 0 -> 1031 bytes\n .../src/main/res/mipmap-xxxhdpi/ic_launcher.png    | Bin 0 -> 1443 bytes\n .../app/src/main/res/values-night/styles.xml       |  18 +\n app/android/app/src/main/res/values/styles.xml     |  18 +\n app/android/app/src/profile/AndroidManifest.xml    |   7 +\n app/android/build.gradle.kts                       |  24 +\n app/android/gradle.properties                      |   6 +\n .../gradle/wrapper/gradle-wrapper.properties       |   5 +\n app/android/settings.gradle.kts                    |  26 +\n app/assets/deliveries.csv                          |  31 +\n app/ios/.gitignore                                 |  34 ++\n app/ios/Flutter/AppFrameworkInfo.plist             |  24 +\n app/ios/Flutter/Debug.xcconfig                     |   1 +\n app/ios/Flutter/Release.xcconfig                   |   1 +\n app/ios/Runner.xcodeproj/project.pbxproj           | 644 +++++++++++++++++++++\n .../project.xcworkspace/contents.xcworkspacedata   |   7 +\n .../xcshareddata/IDEWorkspaceChecks.plist          |   8 +\n .../xcshareddata/WorkspaceSettings.xcsettings      |   8 +\n .../xcshareddata/xcschemes/Runner.xcscheme         | 119 ++++\n .../Runner.xcworkspace/contents.xcworkspacedata    |   7 +\n .../xcshareddata/IDEWorkspaceChecks.plist          |   8 +\n .../xcshareddata/WorkspaceSettings.xcsettings      |   8 +\n app/ios/Runner/AppDelegate.swift                   |  16 +\n .../AppIcon.appiconset/Contents.json               | 122 ++++\n .../AppIcon.appiconset/Icon-App-1024x1024@1x.png   | Bin 0 -> 10932 bytes\n .../AppIcon.appiconset/Icon-App-20x20@1x.png       | Bin 0 -> 295 bytes\n .../AppIcon.appiconset/Icon-App-20x20@2x.png       | Bin 0 -> 406 bytes\n .../AppIcon.appiconset/Icon-App-20x20@3x.png       | Bin 0 -> 450 bytes\n .../AppIcon.appiconset/Icon-App-29x29@1x.png       | Bin 0 -> 282 bytes\n .../AppIcon.appiconset/Icon-App-29x29@2x.png       | Bin 0 -> 462 bytes\n .../AppIcon.appiconset/Icon-App-29x29@3x.png       | Bin 0 -> 704 bytes\n .../AppIcon.appiconset/Icon-App-40x40@1x.png       | Bin 0 -> 406 bytes\n .../AppIcon.appiconset/Icon-App-40x40@2x.png       | Bin 0 -> 586 bytes\n .../AppIcon.appiconset/Icon-App-40x40@3x.png       | Bin 0 -> 862 bytes\n .../AppIcon.appiconset/Icon-App-60x60@2x.png       | Bin 0 -> 862 bytes\n .../AppIcon.appiconset/Icon-App-60x60@3x.png       | Bin 0 -> 1674 bytes\n .../AppIcon.appiconset/Icon-App-76x76@1x.png       | Bin 0 -> 762 bytes\n .../AppIcon.appiconset/Icon-App-76x76@2x.png       | Bin 0 -> 1226 bytes\n .../AppIcon.appiconset/Icon-App-83.5x83.5@2x.png   | Bin 0 -> 1418 bytes\n .../LaunchImage.imageset/Contents.json             |  23 +\n .../LaunchImage.imageset/LaunchImage.png           | Bin 0 -> 68 bytes\n .../LaunchImage.imageset/LaunchImage@2x.png        | Bin 0 -> 68 bytes\n .../LaunchImage.imageset/LaunchImage@3x.png        | Bin 0 -> 68 bytes\n .../Assets.xcassets/LaunchImage.imageset/README.md |   5 +\n app/ios/Runner/Base.lproj/LaunchScreen.storyboard  |  37 ++\n app/ios/Runner/Base.lproj/Main.storyboard          |  26 +\n app/ios/Runner/Info.plist                          |  70 +++\n app/ios/Runner/Runner-Bridging-Header.h            |   1 +\n app/ios/Runner/SceneDelegate.swift                 |   6 +\n app/ios/RunnerTests/RunnerTests.swift              |  12 +\n app/lib/app/ocean_delivery_app.dart                | 105 ++++\n app/lib/data/delivery/delivery_repository.dart     |  15 +\n .../data/delivery/sqlite_delivery_repository.dart  | 391 +++++++++++++\n app/lib/data/delivery/sync_coordinator.dart        | 109 ++++\n app/lib/harness_probe.dart                         | 274 +++++++++\n app/lib/main.dart                                  |  30 +\n app/lib/models/delivery.dart                       |  55 ++\n app/lib/ui/delivery_screen.dart                    | 297 ++++++++++\n app/lib/ui/delivery_view_model.dart                | 187 ++++++\n app/pubspec.lock                                   | 397 +++++++++++++\n app/pubspec.yaml                                   |  21 +\n app/test/data/repository_fixture.dart              |  83 +++\n app/test/data/sqlite_delivery_repository_test.dart | 406 +++++++++++++\n app/test/sync/sync_coordinator_test.dart           | 354 +++++++++++\n .../ui/delivery_view_model_lifecycle_test.dart     | 265 +++++++++\n app/test/ui/fake_delivery_repository.dart          |  90 +++\n app/test/widget_test.dart                          | 213 +++++++\n harness/README.md                                  |  49 ++\n harness/archive/2026-10-10-engineering.tar.gz      | Bin 0 -> 689185 bytes\n harness/checks.py                                  | 167 ++++++\n harness/gate.py                                    | 184 ++++++\n harness/native.py                                  | 118 ++++\n harness/project/backlog.json                       | 362 ++++++++++++\n harness/project/contracts.md                       |  25 +\n harness/project/mission.md                         |  59 ++\n harness/project/work.json                          | 131 +++++\n harness/reports/readiness.md                       |  32 +\n harness/reports/rehearsal.md                       |  20 +\n harness/reports/status.json                        |  88 +++\n harness/reports/verification.tar.gz                | Bin 0 -> 18225 bytes\n harness/run.py                                     | 203 +++++++\n harness/state.py                                   | 179 ++++++\n harness/tests/test_checks.py                       |  70 +++\n harness/tests/test_gate.py                         | 254 ++++++++\n harness/tests/test_native.py                       |  42 ++\n harness/tests/test_state.py                        | 228 ++++++++\n 138 files changed, 7900 insertions(+), 1 deletion(-)\n",
+      "summary": "138 files changed, 7900 insertions(+), 1 deletion(-)"
+    },
+    {
+      "body": "实现现有原型的 Flutter 地图配送工作台：共享搜索/状态/Waiting 查询，地图聚合与最近站点，原型列表抽屉，详情/失败原因及按来源返回，直接同步反馈，以及 SQLite 事务、持久 outbox、确认身份匹配、串行重试和视口恢复。Demo 与 local-client 使用独立数据库和明确传输状态。\n\nHarness 将需求、子 Issue、Skill、单文件负责人、资源租约、真实命令和独立验收串联。完整 PR 的原始 156 个变更文件已分工审查；此次新增 Browse stops 右侧箭头，并修复三个 P2：短横屏工具栏可滚动/取景留出完整 marker，门禁强制读取实际进程清理凭据，零 skip 也拒绝截断或 summary-only 测试日志。原始发现和失败 attempt 保留，修复由另一位 reviewer 复核。\n\n验证：\n\n- 源码提交 `cae7fca40760e67567c3e29d39b9b295ffa002e5`，最终 metadata HEAD `c24f3fa04f45cf6b7d9b231d7a1cda63d0fbc838`；261 个输入逐项核验，source fingerprint `9ca3cc8caf2d0a1eb46570153b38205a3bb1f831266e00551f4c0ea07719f69d`。\n- 全量 G1 七阶段通过：162 Harness（Darwin 1 项 Linux 专属 N/A）、188 Flutter、锁定依赖、格式与静态分析。横屏实际拖动/点击回归先失败后通过；6 个 hash-valid 门禁证据案例（1 正向/5 拒绝）由独立 reader 执行。\n- 当前 N4/N7 定向 10 项、6 次实际 OS 进程通过独立复核：274 工件、27 SQLite、720 动作对及 67 严格断言。iPhone17Pro/402×874，N7 为实际最大 OS 字号/Reduce Motion；受控瓦片和模拟 ACK，文本由 driver 模拟，双触点为框架输入。首次 N4 因 ENOSPC 中断，保留失败/清理原件并在相同条件下完整重跑。\n- 正式 `lib/main.dart` Demo 无签名 simulator debug 构建通过，84 个展开文件与压缩包成员逐字节核验；构建与安装启动分别判定。新 HEAD Linux CI 结果见 PR checks。\n\n[最终审查报告](https://github.com/KuroGeo/transvirtual-driver-delivery/blob/c24f3fa04f45cf6b7d9b231d7a1cda63d0fbc838/harness/reports/pr34-final-review.md) · [机械索引](https://github.com/KuroGeo/transvirtual-driver-delivery/blob/c24f3fa04f45cf6b7d9b231d7a1cda63d0fbc838/harness/reports/pr34-final-review.json)\n\n历史完整 34 项证据保持原候选范围，本次没有将其改作当前证明。父 #14 与 E09/#31、X05/#32、E12/#33 保持跟踪：真机 G3、发布强制路径、真实服务/资源/签名与具体发布交付仍缺，生产 no-go。本次用户授权是通过审查后合入 main。\n\n最终 metadata HEAD `c24f3fa04f45cf6b7d9b231d7a1cda63d0fbc838` 的 [Linux CI38127828572](https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38127828572) 已真实通过。下载 ZIP digest 与 GitHub artifact API 一致；原始报告 fingerprint 为当前9ca3，Linux162 Harness零skip、188 Flutter，七阶段回收凭据及日志SHA有效。\n",
+      "commits": [
+        {
+          "authoredDate": "2026-10-10T12:48:54Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T12:50:00Z",
+          "messageBody": "",
+          "messageHeadline": "docs: link Flutter prototype issues to skills and harness gates",
+          "oid": "551332e302877c08132575bca98f19233079bdad"
+        },
+        {
+          "authoredDate": "2026-10-10T13:25:30Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T13:25:30Z",
+          "messageBody": "",
+          "messageHeadline": "feat: bootstrap branded Flutter workbench with isolated runtime modes",
+          "oid": "96411173231cbaefa6db2a7eb84a7a888cf97afc"
+        },
+        {
+          "authoredDate": "2026-10-10T13:46:22Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T13:46:22Z",
+          "messageBody": "",
+          "messageHeadline": "feat: isolate Harness candidates and enforce native execution leases",
+          "oid": "57ab7c67a8a34072139e2e1716c5ebd875bf4846"
+        },
+        {
+          "authoredDate": "2026-10-10T14:04:32Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T14:04:32Z",
+          "messageBody": "",
+          "messageHeadline": "feat: migrate delivery snapshots and share workbench query context",
+          "oid": "d94e9e064fe562d0344e335575c1b95cc7366d69"
+        },
+        {
+          "authoredDate": "2026-10-10T14:35:38Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T14:35:38Z",
+          "messageBody": "",
+          "messageHeadline": "feat: implement reviewed map detail and reliable sync components",
+          "oid": "70e026ea06174e61c604f9dc50d9b384370d7f74"
+        },
+        {
+          "authoredDate": "2026-10-10T14:54:17Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T14:54:17Z",
+          "messageBody": "",
+          "messageHeadline": "test: add independent delivery fault combination regressions",
+          "oid": "b83ae4ba561ee5fe3a07693ce3ff5043b4caf4a8"
+        },
+        {
+          "authoredDate": "2026-10-10T15:12:44Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T15:12:44Z",
+          "messageBody": "",
+          "messageHeadline": "feat: enforce requirement issue skill and test traceability",
+          "oid": "b358e4a78a8d952b2767704e8c15fa2aac8e1e9a"
+        },
+        {
+          "authoredDate": "2026-10-10T16:44:28Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T16:44:28Z",
+          "messageBody": "",
+          "messageHeadline": "feat: assemble formal map workbench with durable direct sync",
+          "oid": "deb89793dc203ad4da29cc3679121aa7bce5d0bb"
+        },
+        {
+          "authoredDate": "2026-10-10T18:01:49Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T18:01:49Z",
+          "messageBody": "",
+          "messageHeadline": "Add controlled native workbench recovery tooling",
+          "oid": "6a70a94eab758731bfd1468a384247bbfae48a83"
+        },
+        {
+          "authoredDate": "2026-10-10T19:06:27Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T19:06:27Z",
+          "messageBody": "",
+          "messageHeadline": "feat: add independent native acceptance and strict evidence gates",
+          "oid": "02608127fd2cd42286d7eb4e6d4b357b8a3ac394"
+        },
+        {
+          "authoredDate": "2026-10-10T20:23:58Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T20:23:58Z",
+          "messageBody": "",
+          "messageHeadline": "fix: harden native motion geometry and run recovery",
+          "oid": "02bf4bcc1da0506559bfdcde7bd66e7e68032cc9"
+        },
+        {
+          "authoredDate": "2026-10-10T20:35:41Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T20:35:41Z",
+          "messageBody": "",
+          "messageHeadline": "fix: preserve map hit targets and reap exited stage groups",
+          "oid": "0b224100420a3e604517c7acfc9f79be4cec2c7a"
+        },
+        {
+          "authoredDate": "2026-10-10T20:53:32Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T20:53:32Z",
+          "messageBody": "",
+          "messageHeadline": "fix: keep accessible stop lists scrollable and locate lazy rows",
+          "oid": "872071d0fc193523b14f15a3ec132cf402a3d4f1"
+        },
+        {
+          "authoredDate": "2026-10-10T21:01:49Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T21:01:49Z",
+          "messageBody": "",
+          "messageHeadline": "fix: scroll lazy native rows until their centers are hittable",
+          "oid": "82c7df2e5e4f727c9b421b9c3614e14017350abc"
+        },
+        {
+          "authoredDate": "2026-10-10T21:12:49Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T21:12:49Z",
+          "messageBody": "",
+          "messageHeadline": "fix: restore native list access and document delivery commands",
+          "oid": "11cb9261eb1e2eb652548ca35aee446f9a0bfbd6"
+        },
+        {
+          "authoredDate": "2026-10-10T21:30:00Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T21:30:00Z",
+          "messageBody": "",
+          "messageHeadline": "fix: wait for stable native keyboard geometry before Save reveal",
+          "oid": "f0f836f1fd642476a9b510950aca9aaecaecf298"
+        },
+        {
+          "authoredDate": "2026-10-10T21:43:37Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T21:43:37Z",
+          "messageBody": "…aults",
+          "messageHeadline": "fix: validate missing delivery settings against persisted dataset def…",
+          "oid": "f7675d4e90453df8a0d116d527894111bc19b5a7"
+        },
+        {
+          "authoredDate": "2026-10-10T22:01:35Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T22:01:35Z",
+          "messageBody": "",
+          "messageHeadline": "fix: reveal actual imported source details during native acceptance",
+          "oid": "3fffe84fe5b30abeac8982e2dac295d9aae64811"
+        },
+        {
+          "authoredDate": "2026-10-10T22:16:43Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T22:16:43Z",
+          "messageBody": "",
+          "messageHeadline": "fix: bind cold recovery to saved phase and align native retry locators",
+          "oid": "6d63a5fee2982e6d59f409b9361b7595ad18643b"
+        },
+        {
+          "authoredDate": "2026-10-10T22:46:50Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T22:46:50Z",
+          "messageBody": "",
+          "messageHeadline": "test: select stable hittable native map clusters",
+          "oid": "416c7ba3f7ca51cfc63b3efb3b0d038e3ea85b48"
+        },
+        {
+          "authoredDate": "2026-10-10T22:54:40Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T22:54:40Z",
+          "messageBody": "",
+          "messageHeadline": "test: prepare pending nearest with actual filters",
+          "oid": "7238b3bba85cf8dcd18096856915ff9f0512e514"
+        },
+        {
+          "authoredDate": "2026-10-10T22:59:51Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T22:59:51Z",
+          "messageBody": "",
+          "messageHeadline": "test: exercise actual distant stop in deep list",
+          "oid": "bdf7845d76bbcb44ddf6aae9a5b0d31cd0dc8019"
+        },
+        {
+          "authoredDate": "2026-10-10T23:05:39Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T23:05:39Z",
+          "messageBody": "",
+          "messageHeadline": "test: use observed reachable deep list fixture",
+          "oid": "dd8e978a5e0d72d5b74e9cfed313a888964c083d"
+        },
+        {
+          "authoredDate": "2026-10-10T23:21:58Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-10T23:21:58Z",
+          "messageBody": "",
+          "messageHeadline": "test: bind fallback zoom assertion to actual double",
+          "oid": "5fe27218b7ce1fda56bc4a1385a28cd015da8d1d"
+        },
+        {
+          "authoredDate": "2026-10-11T00:12:43Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-11T00:12:43Z",
+          "messageBody": "",
+          "messageHeadline": "test: wait for actual modal Close transitions in native acceptance",
+          "oid": "ba7d7e84068dce72ef1bc3ff96e465320c29db6d"
+        },
+        {
+          "authoredDate": "2026-10-11T00:45:03Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-11T00:45:03Z",
+          "messageBody": "",
+          "messageHeadline": "test: await shared failure modal readiness and dismissal",
+          "oid": "590a454db10b9927a8189eac7ef59518b4aa09eb"
+        },
+        {
+          "authoredDate": "2026-10-11T01:45:25Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-11T01:45:25Z",
+          "messageBody": "",
+          "messageHeadline": "fix(harness): validate platform-specific unittest completion",
+          "oid": "0693165b8f21c2af956fd04451228dc8b646e960"
+        },
+        {
+          "authoredDate": "2026-10-11T03:00:09Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-11T03:00:09Z",
+          "messageBody": "",
+          "messageHeadline": "docs: close verified local Flutter and Harness handoff",
+          "oid": "68dcbabec7460e0ce2724b176b24213641158b8b"
+        },
+        {
+          "authoredDate": "2026-10-11T07:52:29Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-11T07:52:29Z",
+          "messageBody": "",
+          "messageHeadline": "fix: align map controls and Browse with the prototype",
+          "oid": "a6d473d2b9b91126d4d689dddfc4b9b8ee19e48f"
+        },
+        {
+          "authoredDate": "2026-10-11T08:11:13Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-11T08:11:13Z",
+          "messageBody": "",
+          "messageHeadline": "docs: record targeted prototype repair and preserved-data preview",
+          "oid": "3233a2e0f99bde286fe1faa710e9f3955d1da628"
+        },
+        {
+          "authoredDate": "2026-10-11T09:09:10Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-11T09:09:10Z",
+          "messageBody": "",
+          "messageHeadline": "fix: add Browse arrow and close PR review findings",
+          "oid": "cae7fca40760e67567c3e29d39b9b295ffa002e5"
+        },
+        {
+          "authoredDate": "2026-10-11T09:15:33Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-11T09:15:33Z",
+          "messageBody": "",
+          "messageHeadline": "docs: record independent PR review and current validation",
+          "oid": "c24f3fa04f45cf6b7d9b231d7a1cda63d0fbc838"
+        }
+      ],
+      "createdAt": "2026-10-10T20:24:37Z",
+      "files": [
+        ".agents/skills/engineering-flutter-testing/SKILL.md",
+        ".agents/skills/flutter-native-acceptance/SKILL.md",
+        ".agents/skills/harness-engineering/SKILL.md",
+        "README.md",
+        "app/README.md",
+        "app/android/app/src/main/AndroidManifest.xml",
+        "app/android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+        "app/android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
+        "app/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+        "app/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
+        "app/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+        "app/assets/InterVariable.ttf",
+        "app/assets/app-icon.png",
+        "app/assets/icons.json",
+        "app/assets/licenses/CARBON-LICENSE",
+        "app/assets/licenses/Inter-OFL.txt",
+        "app/assets/licenses/flutter_map-LICENSE",
+        "app/assets/licenses/flutter_map_marker_cluster-LICENSE",
+        "app/assets/licenses/flutter_svg-LICENSE",
+        "app/assets/licenses/latlong2-LICENSE",
+        "app/assets/licenses/url_launcher-LICENSE",
+        "app/integration_test/acceptance_driver.dart",
+        "app/integration_test/support/delivery_fault_fixtures.dart",
+        "app/integration_test/support/native_acceptance_support.dart",
+        "app/integration_test/support/native_driver_support.dart",
+        "app/integration_test/support/native_gesture_command.dart",
+        "app/integration_test/support/native_gesture_extension.dart",
+        "app/integration_test/support/native_workbench_bridge.dart",
+        "app/integration_test/workbench_driver.dart",
+        "app/integration_test/workbench_entry.dart",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@2x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@1x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@2x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@3x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@1x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@2x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@3x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@3x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@1x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png",
+        "app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-83.5x83.5@2x.png",
+        "app/lib/app/ocean_delivery_app.dart",
+        "app/lib/app/runtime_configuration.dart",
+        "app/lib/data/delivery/delivery_repository.dart",
+        "app/lib/data/delivery/delivery_settings_store.dart",
+        "app/lib/data/delivery/sqlite_delivery_repository.dart",
+        "app/lib/data/delivery/sync_coordinator.dart",
+        "app/lib/data/services/demo_transport.dart",
+        "app/lib/main.dart",
+        "app/lib/models/delivery.dart",
+        "app/lib/models/workbench.dart",
+        "app/lib/ui/core/brand_icon.dart",
+        "app/lib/ui/core/brand_theme.dart",
+        "app/lib/ui/core/motion_settings.dart",
+        "app/lib/ui/delivery/detail/delivery_detail_card.dart",
+        "app/lib/ui/delivery/failure/delivery_failure_sheet.dart",
+        "app/lib/ui/delivery/feedback/workbench_notice.dart",
+        "app/lib/ui/delivery/list/stop_list_workspace.dart",
+        "app/lib/ui/delivery/list/stop_status_badge.dart",
+        "app/lib/ui/delivery/map/delivery_map_workspace.dart",
+        "app/lib/ui/delivery/map/map_viewport.dart",
+        "app/lib/ui/delivery/query/workbench_query.dart",
+        "app/lib/ui/delivery/query/workbench_session.dart",
+        "app/lib/ui/delivery_screen.dart",
+        "app/lib/ui/delivery_view_model.dart",
+        "app/pubspec.lock",
+        "app/pubspec.yaml",
+        "app/test/bootstrap/runtime_configuration_test.dart",
+        "app/test/data/delivery_migration_test.dart",
+        "app/test/data/delivery_result_snapshot_test.dart",
+        "app/test/data/delivery_settings_test.dart",
+        "app/test/data/legacy_repository_fixture.dart",
+        "app/test/data/repository_fixture.dart",
+        "app/test/data/sqlite_delivery_repository_test.dart",
+        "app/test/detail/delivery_detail_card_test.dart",
+        "app/test/detail/delivery_failure_sheet_test.dart",
+        "app/test/detail/detail_test_fixture.dart",
+        "app/test/list/stop_list_workspace_test.dart",
+        "app/test/map/delivery_map_workspace_test.dart",
+        "app/test/map/map_fixture.dart",
+        "app/test/map/map_viewport_test.dart",
+        "app/test/native_acceptance_stability_test.dart",
+        "app/test/native_observation_geometry_test.dart",
+        "app/test/query/query_repository_fixture.dart",
+        "app/test/query/workbench_query_test.dart",
+        "app/test/query/workbench_view_model_test.dart",
+        "app/test/reliability/confirmation_mode_combinations_test.dart",
+        "app/test/reliability/formal_workbench_test.dart",
+        "app/test/reliability/workbench_fault_combinations_test.dart",
+        "app/test/review/e03_list_focus_test.dart",
+        "app/test/review/prototype_map_interactions_test.dart",
+        "app/test/support/delivery_risk_fixture.dart",
+        "app/test/support/formal_workbench_fixture.dart",
+        "app/test/support/risk_workbench_host.dart",
+        "app/test/sync/demo_transport_test.dart",
+        "app/test/sync/sync_wakeup_timeout_test.dart"
+      ],
+      "mergeCommit": {
+        "oid": "31b144b4fb20126e86ff75460a9b11414030a419"
+      },
+      "mergedAt": "2026-10-11T09:28:15Z",
+      "number": 34,
+      "state": "MERGED",
+      "title": "feat: deliver verified Ocean Delivery Flutter workbench and Harness",
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/pull/34",
+      "show": "31b144b Merge pull request #34 from KuroGeo/codex/flutter-prototype-issues\n\n .../skills/engineering-flutter-testing/SKILL.md    |    2 +\n .agents/skills/flutter-native-acceptance/SKILL.md  |   10 +\n .agents/skills/harness-engineering/SKILL.md        |   10 +\n README.md                                          |   19 +-\n app/README.md                                      |   82 +-\n app/android/app/src/main/AndroidManifest.xml       |    3 +-\n .../app/src/main/res/mipmap-hdpi/ic_launcher.png   |  Bin 544 -> 6244 bytes\n .../app/src/main/res/mipmap-mdpi/ic_launcher.png   |  Bin 442 -> 3447 bytes\n .../app/src/main/res/mipmap-xhdpi/ic_launcher.png  |  Bin 721 -> 9873 bytes\n .../app/src/main/res/mipmap-xxhdpi/ic_launcher.png |  Bin 1031 -> 20189 bytes\n .../src/main/res/mipmap-xxxhdpi/ic_launcher.png    |  Bin 1443 -> 34888 bytes\n app/assets/InterVariable.ttf                       |  Bin 0 -> 876576 bytes\n app/assets/app-icon.png                            |  Bin 0 -> 834032 bytes\n app/assets/icons.json                              |    1 +\n app/assets/licenses/CARBON-LICENSE                 |  201 +\n app/assets/licenses/Inter-OFL.txt                  |   93 +\n app/assets/licenses/flutter_map-LICENSE            |   30 +\n .../licenses/flutter_map_marker_cluster-LICENSE    |   27 +\n app/assets/licenses/flutter_svg-LICENSE            |   19 +\n app/assets/licenses/latlong2-LICENSE               |   14 +\n app/assets/licenses/url_launcher-LICENSE           |   25 +\n app/integration_test/acceptance_driver.dart        | 1951 ++++++++\n .../support/delivery_fault_fixtures.dart           |   42 +\n .../support/native_acceptance_support.dart         |  759 +++\n .../support/native_driver_support.dart             |  519 ++\n .../support/native_gesture_command.dart            |   26 +\n .../support/native_gesture_extension.dart          |  258 +\n .../support/native_workbench_bridge.dart           |  319 ++\n app/integration_test/workbench_driver.dart         |  405 ++\n app/integration_test/workbench_entry.dart          |  251 +\n .../AppIcon.appiconset/Icon-App-1024x1024@1x.png   |  Bin 10932 -> 834032 bytes\n .../AppIcon.appiconset/Icon-App-20x20@1x.png       |  Bin 295 -> 1336 bytes\n .../AppIcon.appiconset/Icon-App-20x20@2x.png       |  Bin 406 -> 2688 bytes\n .../AppIcon.appiconset/Icon-App-20x20@3x.png       |  Bin 450 -> 4704 bytes\n .../AppIcon.appiconset/Icon-App-29x29@1x.png       |  Bin 282 -> 1879 bytes\n .../AppIcon.appiconset/Icon-App-29x29@2x.png       |  Bin 462 -> 4501 bytes\n .../AppIcon.appiconset/Icon-App-29x29@3x.png       |  Bin 704 -> 8421 bytes\n .../AppIcon.appiconset/Icon-App-40x40@1x.png       |  Bin 406 -> 2688 bytes\n .../AppIcon.appiconset/Icon-App-40x40@2x.png       |  Bin 586 -> 7377 bytes\n .../AppIcon.appiconset/Icon-App-40x40@3x.png       |  Bin 862 -> 14562 bytes\n .../AppIcon.appiconset/Icon-App-60x60@2x.png       |  Bin 862 -> 14562 bytes\n .../AppIcon.appiconset/Icon-App-60x60@3x.png       |  Bin 1674 -> 30585 bytes\n .../AppIcon.appiconset/Icon-App-76x76@1x.png       |  Bin 762 -> 6785 bytes\n .../AppIcon.appiconset/Icon-App-76x76@2x.png       |  Bin 1226 -> 22322 bytes\n .../AppIcon.appiconset/Icon-App-83.5x83.5@2x.png   |  Bin 1418 -> 26693 bytes\n app/lib/app/ocean_delivery_app.dart                |   55 +-\n app/lib/app/runtime_configuration.dart             |   21 +\n app/lib/data/delivery/delivery_repository.dart     |    7 +-\n app/lib/data/delivery/delivery_settings_store.dart |    9 +\n .../data/delivery/sqlite_delivery_repository.dart  |  216 +-\n app/lib/data/delivery/sync_coordinator.dart        |  208 +-\n app/lib/data/services/demo_transport.dart          |   24 +\n app/lib/main.dart                                  |   42 +-\n app/lib/models/delivery.dart                       |   12 +\n app/lib/models/workbench.dart                      |   27 +\n app/lib/ui/core/brand_icon.dart                    |  103 +\n app/lib/ui/core/brand_theme.dart                   |   40 +\n app/lib/ui/core/motion_settings.dart               |   11 +\n .../ui/delivery/detail/delivery_detail_card.dart   |  505 ++\n .../delivery/failure/delivery_failure_sheet.dart   |  366 ++\n app/lib/ui/delivery/feedback/workbench_notice.dart |   15 +\n app/lib/ui/delivery/list/stop_list_workspace.dart  |  657 +++\n app/lib/ui/delivery/list/stop_status_badge.dart    |   67 +\n .../ui/delivery/map/delivery_map_workspace.dart    |  981 ++++\n app/lib/ui/delivery/map/map_viewport.dart          |   18 +\n app/lib/ui/delivery/query/workbench_query.dart     |  109 +\n app/lib/ui/delivery/query/workbench_session.dart   |   24 +\n app/lib/ui/delivery_screen.dart                    | 1199 ++++-\n app/lib/ui/delivery_view_model.dart                |  519 +-\n app/pubspec.lock                                   |  436 ++\n app/pubspec.yaml                                   |   18 +-\n app/test/bootstrap/runtime_configuration_test.dart |   18 +\n app/test/data/delivery_migration_test.dart         |  233 +\n app/test/data/delivery_result_snapshot_test.dart   |  136 +\n app/test/data/delivery_settings_test.dart          |  292 ++\n app/test/data/legacy_repository_fixture.dart       |  103 +\n app/test/data/repository_fixture.dart              |    2 +\n app/test/data/sqlite_delivery_repository_test.dart |   15 +\n app/test/detail/delivery_detail_card_test.dart     |  346 ++\n app/test/detail/delivery_failure_sheet_test.dart   |  396 ++\n app/test/detail/detail_test_fixture.dart           |  193 +\n app/test/list/stop_list_workspace_test.dart        |  610 +++\n app/test/map/delivery_map_workspace_test.dart      |  952 ++++\n app/test/map/map_fixture.dart                      |  305 ++\n app/test/map/map_viewport_test.dart                |   93 +\n app/test/native_acceptance_stability_test.dart     |   77 +\n app/test/native_observation_geometry_test.dart     |   93 +\n app/test/query/query_repository_fixture.dart       |  110 +\n app/test/query/workbench_query_test.dart           |  159 +\n app/test/query/workbench_view_model_test.dart      |  162 +\n .../confirmation_mode_combinations_test.dart       |  145 +\n app/test/reliability/formal_workbench_test.dart    |  881 ++++\n .../workbench_fault_combinations_test.dart         |  245 +\n app/test/review/e03_list_focus_test.dart           |  247 +\n .../review/prototype_map_interactions_test.dart    |  524 ++\n app/test/support/delivery_risk_fixture.dart        |  123 +\n app/test/support/formal_workbench_fixture.dart     |  370 ++\n app/test/support/risk_workbench_host.dart          |  146 +\n app/test/sync/demo_transport_test.dart             |   37 +\n app/test/sync/sync_wakeup_timeout_test.dart        |  572 +++\n .../ui/delivery_view_model_lifecycle_test.dart     |    3 +-\n app/test/ui/fake_delivery_repository.dart          |    7 +\n app/test/ui/overview_geometry_test.dart            |  451 ++\n app/test/ui/platform_motion_test.dart              |  267 ++\n app/test/widget_test.dart                          |  673 ++-\n harness/README.md                                  |   42 +-\n harness/checks.py                                  |  403 +-\n harness/gate.py                                    | 1746 ++++++-\n harness/native.py                                  |  137 +-\n harness/native_workbench.py                        | 1231 +++++\n harness/project/backlog.json                       | 1170 ++++-\n harness/project/contracts.md                       |  101 +-\n harness/project/issue-plan.md                      |  102 +\n harness/project/issues/E00.md                      |   50 +\n harness/project/issues/E01.md                      |   51 +\n harness/project/issues/E02.md                      |   52 +\n harness/project/issues/E03.md                      |   51 +\n harness/project/issues/E04.md                      |   51 +\n harness/project/issues/E05.md                      |   51 +\n harness/project/issues/E06.md                      |   52 +\n harness/project/issues/E07.md                      |   53 +\n harness/project/issues/E08.md                      |   53 +\n harness/project/issues/E09.md                      |   54 +\n harness/project/issues/E10.md                      |   51 +\n harness/project/issues/E11.md                      |   51 +\n harness/project/issues/E12.md                      |   54 +\n harness/project/issues/EPIC.md                     |   94 +\n harness/project/issues/X00.md                      |   52 +\n harness/project/issues/X01.md                      |   50 +\n harness/project/issues/X02.md                      |   51 +\n harness/project/issues/X03.md                      |   51 +\n harness/project/issues/X04.md                      |   50 +\n harness/project/issues/X05.md                      |   54 +\n harness/project/mission.md                         |   21 +-\n harness/project/native-acceptance-contract.json    |  181 +\n harness/project/requirement-matrix.json            | 1171 +++++\n harness/project/work.json                          | 2391 +++++++++-\n harness/reports/issue-planning-2026-10-10.tar.gz   |  Bin 0 -> 42369 bytes\n harness/reports/iteration-2026-10-11.md            |   51 +\n harness/reports/iteration-evidence-index.json      |   78 +\n harness/reports/iteration-requirement-trace.json   | 5033 ++++++++++++++++++++\n harness/reports/pr34-final-evidence.tar.gz         |  Bin 0 -> 15204111 bytes\n harness/reports/pr34-final-review.json             |  144 +\n harness/reports/pr34-final-review.md               |   19 +\n harness/reports/prototype-feedback-2026-10-11.json |  119 +\n harness/reports/prototype-feedback-2026-10-11.md   |   18 +\n .../reports/prototype-feedback-2026-10-11.tar.gz   |  Bin 0 -> 15901201 bytes\n harness/reports/readiness.md                       |   22 +-\n harness/reports/status.json                        |  782 ++-\n harness/run.py                                     |  694 ++-\n harness/state.py                                   |   43 +-\n harness/tests/test_checks.py                       |  348 ++\n harness/tests/test_gate.py                         |  568 ++-\n harness/tests/test_gate_native.py                  |  449 ++\n harness/tests/test_native.py                       |   77 +-\n harness/tests/test_native_workbench.py             | 1115 +++++\n harness/tests/test_runner.py                       |  351 ++\n harness/tests/test_runner_options.py               |  129 +\n harness/tests/test_state.py                        |  240 +-\n 159 files changed, 38695 insertions(+), 1098 deletions(-)\n",
+      "summary": "159 files changed, 38695 insertions(+), 1098 deletions(-)"
+    },
+    {
+      "body": "最大系统字号时，固定抽屉被筛选、提示与地图署名挤占，配送站点和保存结果难以阅读。现在大字模式使用完整安全区的摘要、列表和详情，业务文字保留真实系统字号；地图显示完整余量及带箭头的 Browse stops。搜索筛选可单独展开，返回保留查询、滚动、焦点和地图视口；普通字号保留原型布局。\n\n补充实际滚动、Tab/Escape/平台返回、SQLite 冷进程保存及真实受控 ACK 验收。Harness 观察日志固定上限16MiB，动作日志仍为8MiB；逐行身份检查、精确容量边界及长合法前缀后的无效身份回归均保留。\n\n验证及交付：\n- 同候选源码 `256de9fd360040a52ed3e7ec5948dbbaf4529e90`，262输入指纹 `7b077f55197263c571fb33fce1b561f7ccd5cdc0d2a7252aab34c15a9eb184bf`。本地7阶段G1通过：Flutter196；Darwin Harness165通过、1平台不适用。Linux CI Harness166、零skip/NA，Flutter196。\n- iPhone17Pro 402×874和iPhone16 393×852真实最大OS字号、以及17Pro普通OS字号的三配置已完成。独立数据、画面及Harness审查接受指定N7：5唯一条目、13通过实例、普通配置2真实不适用、1382必需断言、9独立进程、62原始OS截图。两尺寸门禁使用真实同候选样本；原单视口拒绝及旧失败日志保留。\n- 两个最大字号配置outbox/HTTP为2→0→0/0→2→2，普通字号为1→0→0/0→1→1；持久ACK及第三进程不重发通过。\n- 正式 `lib/main.dart` Demo模拟器包已安装到Ocean Delivery Preview，84文件与构建归档一致，原有30条配送/0 outbox的全部业务行保留。模拟器ad hoc签名，未生产签名。\n\n[完整交付与画面](https://github.com/KuroGeo/transvirtual-driver-delivery/blob/main/harness/reports/large-text-repair.md)附可回读的逐项索引与原始证据包；1084份payload独立核验。两次磁盘失败以及早期元数据CI的失效文档链接保留原件；空间恢复后fresh复验通过，未删除用户其他模拟器，链接已修正。最终提交 `eb83889fe203107fd34cdca36f3dbf8b2fad226e` 的 [CI 38140895396](https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38140895396) 已通过，官方ZIP、7阶段原日志和262项同源绑定已由非作者独立签署；满足已授权合入条件。\n\nCloses #36. Refs #14. 本PR接受指定大字模式验收及Demo安装；完整34项/G2、真机、真实服务/生产资源和签名发布仍由#31/#32/#33跟踪，生产no-go保持。\n\n实际合入回执：2026-10-11T12:57:13Z 已 squash 合入 main `76a46307850b59113e64708a2bc272c401987120`；其完整tree与已通过CI的候选eb83889一致，262计数源码同源。Issue #36 于12:57:14Z已关闭。\n",
+      "commits": [
+        {
+          "authoredDate": "2026-10-11T10:28:01Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-11T10:28:01Z",
+          "messageBody": "",
+          "messageHeadline": "fix: make delivery tasks readable at maximum system text size",
+          "oid": "ae947e485bba38eebfefa6e194853e213fd65a7c"
+        },
+        {
+          "authoredDate": "2026-10-11T11:10:07Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-11T11:10:07Z",
+          "messageBody": "",
+          "messageHeadline": "fix: make large-text map summaries readable and preserve task focus",
+          "oid": "b870023e6b1abbb24a2411b8fb82f09375efb48f"
+        },
+        {
+          "authoredDate": "2026-10-11T11:19:21Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-11T11:19:21Z",
+          "messageBody": "",
+          "messageHeadline": "test: expose summary actions with observable native drags",
+          "oid": "0a0fe06488628ff09b37e653f47118ceac4595e8"
+        },
+        {
+          "authoredDate": "2026-10-11T11:30:30Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-11T11:30:30Z",
+          "messageBody": "",
+          "messageHeadline": "fix: bound complete native observation journals separately",
+          "oid": "f958b81903ef6acc81df837abaf71877d02865eb"
+        },
+        {
+          "authoredDate": "2026-10-11T11:32:03Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-11T11:32:03Z",
+          "messageBody": "",
+          "messageHeadline": "test: exercise native journal limits with bounded JSON rows",
+          "oid": "256de9fd360040a52ed3e7ec5948dbbaf4529e90"
+        },
+        {
+          "authoredDate": "2026-10-11T12:11:43Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-11T12:11:43Z",
+          "messageBody": "",
+          "messageHeadline": "docs: record partial large-text acceptance and preserved preview install",
+          "oid": "317d418a5101b80a3c68285da429d22bcf670875"
+        },
+        {
+          "authoredDate": "2026-10-11T12:18:40Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-11T12:18:40Z",
+          "messageBody": "",
+          "messageHeadline": "docs: make font handoff links portable and retain partial gate status",
+          "oid": "1f80c87a2dce840d235ab788f03f99164ae637fb"
+        },
+        {
+          "authoredDate": "2026-10-11T12:50:12Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-11T12:50:12Z",
+          "messageBody": "",
+          "messageHeadline": "docs: accept large-text repair with current simulator evidence",
+          "oid": "eb83889fe203107fd34cdca36f3dbf8b2fad226e"
+        }
+      ],
+      "createdAt": "2026-10-11T10:29:50Z",
+      "files": [
+        "app/integration_test/acceptance_driver.dart",
+        "app/integration_test/support/native_acceptance_support.dart",
+        "app/lib/ui/delivery/detail/delivery_detail_card.dart",
+        "app/lib/ui/delivery/list/stop_list_workspace.dart",
+        "app/lib/ui/delivery_screen.dart",
+        "app/test/list/stop_list_workspace_test.dart",
+        "app/test/reliability/formal_workbench_test.dart",
+        "app/test/review/prototype_map_interactions_test.dart",
+        "app/test/support/formal_workbench_fixture.dart",
+        "app/test/ui/large_text_layout_test.dart",
+        "app/test/ui/overview_geometry_test.dart",
+        "app/test/widget_test.dart",
+        "harness/native_workbench.py",
+        "harness/project/mission.md",
+        "harness/project/work.json",
+        "harness/reports/large-text-evidence-index.json",
+        "harness/reports/large-text-final-evidence-index.json",
+        "harness/reports/large-text-final-evidence.tar.gz",
+        "harness/reports/large-text-map-preview.png",
+        "harness/reports/large-text-metadata-ci-failed.log",
+        "harness/reports/large-text-native-list-iphone16.png",
+        "harness/reports/large-text-native-list.png",
+        "harness/reports/large-text-partial-evidence.tar.gz",
+        "harness/reports/large-text-repair.json",
+        "harness/reports/large-text-repair.md",
+        "harness/reports/readiness.md",
+        "harness/reports/status.json",
+        "harness/tests/test_native_workbench.py"
+      ],
+      "mergeCommit": {
+        "oid": "76a46307850b59113e64708a2bc272c401987120"
+      },
+      "mergedAt": "2026-10-11T12:57:13Z",
+      "number": 37,
+      "state": "MERGED",
+      "title": "fix: make maximum-text map, stops and delivery results readable",
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/pull/37",
+      "show": "76a4630 fix: make maximum-text map, stops and delivery results readable (#37)\n app/integration_test/acceptance_driver.dart        |  918 +++-\n .../support/native_acceptance_support.dart         |  149 +-\n .../ui/delivery/detail/delivery_detail_card.dart   |   31 +-\n app/lib/ui/delivery/list/stop_list_workspace.dart  |  304 +-\n app/lib/ui/delivery_screen.dart                    |  813 ++-\n app/test/list/stop_list_workspace_test.dart        |   35 +-\n app/test/reliability/formal_workbench_test.dart    |   82 +-\n .../review/prototype_map_interactions_test.dart    |   18 +-\n app/test/support/formal_workbench_fixture.dart     |    5 +\n app/test/ui/large_text_layout_test.dart            |  876 ++++\n app/test/ui/overview_geometry_test.dart            |  212 +-\n app/test/widget_test.dart                          |    4 +\n harness/native_workbench.py                        |    9 +-\n harness/project/mission.md                         |    1 +\n harness/project/work.json                          |  337 +-\n harness/reports/large-text-evidence-index.json     | 2814 ++++++++++\n .../reports/large-text-final-evidence-index.json   | 5434 ++++++++++++++++++++\n harness/reports/large-text-final-evidence.tar.gz   |  Bin 0 -> 40464589 bytes\n harness/reports/large-text-map-preview.png         |  Bin 0 -> 1458948 bytes\n harness/reports/large-text-metadata-ci-failed.log  |   18 +\n .../reports/large-text-native-list-iphone16.png    |  Bin 0 -> 233310 bytes\n harness/reports/large-text-native-list.png         |  Bin 0 -> 243530 bytes\n harness/reports/large-text-partial-evidence.tar.gz |  Bin 0 -> 21865994 bytes\n harness/reports/large-text-repair.json             |  574 +++\n harness/reports/large-text-repair.md               |   39 +\n harness/reports/readiness.md                       |    6 +\n harness/reports/status.json                        |   54 +-\n harness/tests/test_native_workbench.py             |   69 +\n 28 files changed, 12266 insertions(+), 536 deletions(-)\n",
+      "summary": "28 files changed, 12266 insertions(+), 536 deletions(-)"
+    },
+    {
+      "body": "README 首页此前展示浏览器原型，无法直接看到已实现的 Flutter 客户端。本次加入真实 iOS 模拟器实拍封面、功能介绍和可展开详情图，展示地图、站点列表、配送结果及离线待确认状态。\n\n提供六张完整系统截图、中英文宣传文案、轻量 SVG 标题、可编辑 HTML/CSS 排版和后台重现脚本；截图清单记录来源版本、配置和图片校验值。保留 Demo 模拟确认说明及地图署名，原有运行、架构和 Harness 文档继续可读。\n\n验证：\n- 两份 README 的本地图片与 SVG 审计通过。\n- 仓库链接、需求 DAG 和 Dart 分层检查通过。\n- 封面重现及 900/360px README/SVG 预览通过，图片加载正常，无页面宽度溢出。\n- 六张原始系统截图与组合素材 SHA256 一致；截图采集前后配送记录、待同步队列保持一致。\n- [GitHub Engineering quality CI](https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38147984013) 通过（固定提交 `7eaa27e`）；独立素材审查通过，无阻塞问题。\n\n变更仅涉及 README 与展示素材；截图属于正式 Flutter Demo 的模拟器实拍。\n",
+      "commits": [
+        {
+          "authoredDate": "2026-10-11T14:36:43Z",
+          "authors": [
+            {
+              "email": "32381088+George199809@users.noreply.github.com",
+              "id": "MDQ6VXNlcjMyMzgxMDg4",
+              "login": "KuroGeo",
+              "name": "George"
+            }
+          ],
+          "committedDate": "2026-10-11T14:36:43Z",
+          "messageBody": "",
+          "messageHeadline": "docs: showcase Flutter delivery workbench with simulator captures",
+          "oid": "7eaa27e10d453b14cefdc91de3bcb8af0282c510"
+        }
+      ],
+      "createdAt": "2026-10-11T14:38:06Z",
+      "files": [
+        "README.md",
+        "assets/readme/README.md",
+        "assets/readme/capture-manifest.json",
+        "assets/readme/hero.svg",
+        "assets/readme/screenshots/completed-record.png",
+        "assets/readme/screenshots/delivery-detail.png",
+        "assets/readme/screenshots/failure-form.png",
+        "assets/readme/screenshots/failure-record.png",
+        "assets/readme/screenshots/map-overview.png",
+        "assets/readme/screenshots/stop-list.png",
+        "assets/readme/showcase.png",
+        "assets/readme/source/render-showcase.cjs",
+        "assets/readme/source/showcase.html"
+      ],
+      "mergeCommit": {
+        "oid": "bebda787284fed5f9d5fb4acc36cd174fad7ab75"
+      },
+      "mergedAt": "2026-10-11T14:42:35Z",
+      "number": 38,
+      "state": "MERGED",
+      "title": "docs: showcase Flutter delivery workbench with simulator captures",
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/pull/38",
+      "show": "bebda78 docs: showcase Flutter delivery workbench with simulator captures (#38)\n README.md                                      |  33 +++++++-\n assets/readme/README.md                        |  59 +++++++++++++\n assets/readme/capture-manifest.json            | 110 +++++++++++++++++++++++++\n assets/readme/hero.svg                         |  13 +++\n assets/readme/screenshots/completed-record.png | Bin 0 -> 1364935 bytes\n assets/readme/screenshots/delivery-detail.png  | Bin 0 -> 1265006 bytes\n assets/readme/screenshots/failure-form.png     | Bin 0 -> 255293 bytes\n assets/readme/screenshots/failure-record.png   | Bin 0 -> 1366466 bytes\n assets/readme/screenshots/map-overview.png     | Bin 0 -> 1862581 bytes\n assets/readme/screenshots/stop-list.png        | Bin 0 -> 551483 bytes\n assets/readme/showcase.png                     | Bin 0 -> 730128 bytes\n assets/readme/source/render-showcase.cjs       |  70 ++++++++++++++++\n assets/readme/source/showcase.html             |  46 +++++++++++\n 13 files changed, 329 insertions(+), 2 deletions(-)\n",
+      "summary": "13 files changed, 329 insertions(+), 2 deletions(-)"
+    }
+  ]
+}

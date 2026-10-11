@@ -1,87 +1,128 @@
 # ocean delivery
 
-**看清每一站，离线也能继续工作。**
+**Know every stop. Keep delivering offline.**
 
-地图优先的 Flutter 司机配送工作台。使用题目附件中的 30 个悉尼站点，从位置与状态找到任务，查看地址和时间窗，记录完成或失败原因，并在离线时保留更新。
+A map-first Flutter driver workbench built from the assignment's 30 Sydney stops. Find a delivery, record its outcome offline, restart the app, and reconnect to watch the pending queue receive **simulated confirmations**.
 
 <p align="center">
-  <a href="assets/readme/showcase.png"><img src="assets/readme/showcase.png" alt="Ocean Delivery：真实 Flutter iOS 模拟器中的地图工作台、状态聚合与配送列表" width="100%"></a>
+  <a href="assets/readme/showcase.png"><img src="assets/readme/showcase.png" alt="Ocean Delivery: real Flutter iOS simulator captures of the map workbench and delivery list" width="100%"></a>
 </p>
 
-上图为 **iOS 26.4 模拟器中的正式 Flutter Demo 实拍**。画面中的一条待同步更新保留在本机；Demo 使用模拟确认。完整截图与可编辑宣传素材见 [README 素材包](assets/readme/README.md)。
+[Presentation & technical review](docs/report/index.html) · [Flutter implementation](app/README.md) · [Architecture decisions](docs/solution-design.md) · [Evidence & limits](harness/reports/large-text-repair.md)
 
-- **从地图找到任务**：状态点位与聚合、搜索筛选、最近站点和列表联动。
-- **清楚记录配送结果**：地址与时间窗、完成记录、必填失败原因，以及按原入口返回。
-- **离线保留更新**：SQLite 和 outbox 持久保存，显示待确认更新，重连后自动尝试同步。
-- **跟随系统字号**：普通字号保留地图工作台，大字模式展开摘要、列表和详情以完整阅读。
+The cover uses original **iOS 26.4 simulator screenshots**, captured from the formal Flutter Demo. Demo confirmation is simulated; one local update was waiting to sync during capture. [Capture provenance](assets/readme/capture-manifest.json).
 
-<details>
-<summary>查看更多实拍：配送详情、失败原因和离线记录</summary>
+## Run the interview demo
 
-<table>
-  <tr>
-    <td align="center"><b>配送详情</b><br><a href="assets/readme/screenshots/delivery-detail.png"><img src="assets/readme/screenshots/delivery-detail.png" width="300" alt="客户地址、时间窗及完成或失败操作入口"></a></td>
-    <td align="center"><b>失败原因</b><br><a href="assets/readme/screenshots/failure-form.png"><img src="assets/readme/screenshots/failure-form.png" width="300" alt="失败原因必选、备注可选的真实表单，截图时未提交"></a></td>
-  </tr>
-  <tr>
-    <td align="center"><b>离线保存的失败记录</b><br><a href="assets/readme/screenshots/failure-record.png"><img src="assets/readme/screenshots/failure-record.png" width="300" alt="已保存的 Address not found 原因、记录时间和 Waiting to sync 状态"></a></td>
-    <td align="center"><b>完成记录与 Demo 确认</b><br><a href="assets/readme/screenshots/completed-record.png"><img src="assets/readme/screenshots/completed-record.png" width="300" alt="已完成配送的记录时间和模拟确认时间"></a></td>
-  </tr>
-</table>
+**Verified target:** Apple Silicon macOS, Xcode with the **iOS 26.4** simulator runtime, **iPhone 17 Pro**. The current iOS project uses Swift Package Manager. Install Flutter **3.44.2 / Dart 3.12.2** and make `flutter`, `python3`, and Xcode's `xcrun` available in your terminal. Android is scaffolded but is not the verified submission target.
 
-点击图片可查看完整分辨率。地图、列表的独立原图也在 [截图目录](assets/readme/screenshots/) 中。
+Run these commands from the repository root. They create a dedicated simulator and leave its data intact for the restart demonstration:
 
-</details>
+```sh
+flutter --version
+xcrun simctl list runtimes
+OCEAN_DEMO_DEVICE=$(xcrun simctl create 'Ocean Delivery Interview' \
+  com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro \
+  com.apple.CoreSimulator.SimRuntime.iOS-26-4)
+xcrun simctl boot "$OCEAN_DEMO_DEVICE"
+xcrun simctl bootstatus "$OCEAN_DEMO_DEVICE" -b
+python3 harness/run.py pub
+cd app
+flutter run --target lib/main.dart --device-id "$OCEAN_DEMO_DEVICE" \
+  --dart-define=OCEAN_MODE=demo
+```
 
-## Flutter 客户端
+To view your dedicated device, open Simulator yourself and select **Ocean Delivery Interview** from its device menu. The commands do not select an existing device or erase a database. If iOS 26.4 is missing, install that runtime in Xcode before running them. Public OpenStreetMap tiles require internet access; tile failure still permits list browsing and local delivery updates.
 
-正式客户端位于 [app/](app/README.md)，已实现地图、列表、最近站点、按来源返回、完成/失败、直接同步反馈，以及 SQLite/outbox 和地图视口的持久保存。`local-client` 保留本机待发结果并明确提示服务不可用；`demo` 使用独立数据库和模拟确认。
+The Release includes an already built **arm64 iOS simulator debug Demo** and installation instructions. It is a convenience artifact, not an iPhone IPA or a production-signed build. The source above is the canonical development entry point.
 
-从仓库根目录执行质量验证和本地模拟器构建：
+## Five-minute walkthrough
+
+| Time | Action | Expected result |
+| --- | --- | --- |
+| 0:00–1:00 | Browse the map/list, filter by status, switch **Offline**. | 30 stops; initial status counts are 24 pending, 3 completed, 3 failed. |
+| 1:00–2:00 | Complete a pending stop. Fail another, selecting a reason or entering nonblank **Other** text. | Two locally saved terminal results; visible pending-sync count increases by two. |
+| 2:00–3:00 | Quit and relaunch the installed app on the same simulator. | Status, failure reason, Offline setting and queued operations survive. |
+| 3:00–4:00 | Switch **Online**. | Demo sends serially; matching confirmations are committed before queue entries disappear. |
+| 4:00–5:00 | Restart again; explain the consistency rules. | Confirmed entries stay confirmed and are not sent again. |
+
+For a real OS restart, copy the device ID printed by `simctl create` into a second terminal, then run:
+
+```sh
+OCEAN_DEMO_DEVICE='paste-the-created-device-UDID-here'
+xcrun simctl terminate "$OCEAN_DEMO_DEVICE" dev.oceandelivery.oceanDelivery
+xcrun simctl launch "$OCEAN_DEMO_DEVICE" dev.oceandelivery.oceanDelivery
+```
+
+Hot reload or hot restart is not the persistence demonstration. Keep the same installation and database. The full repeatable N1 driver and its controlled HTTP fixture are documented in [app/README.md](app/README.md).
+
+## Decisions and trade-offs
+
+| Choice | Why it fits this slice | Cost / when I would change it |
+| --- | --- | --- |
+| **sqflite / SQLite** | A delivery result and its outbox snapshot commit in one transaction; constraints and versioned migrations are explicit. | SQL and mapping are hand-maintained. Consider Drift when typed queries and reactive reads justify code generation. |
+| **Transactional outbox + serial sync** | Stable operation/dataset/stop identities survive process death. A result is confirmed only after a matching ACK is durably recorded. | Extra table and confirmation transaction; serial throughput. Add batching only with a defined backend contract. |
+| **ChangeNotifier / Listenable + constructor injection** | SDK-native observable ViewModels and easily replaced dependencies suit one workbench. | Subscription, disposal and async ownership require discipline. Reassess Riverpod/Cubit when shared dependencies and async composition grow. These were alternatives, not an implemented migration. |
+| **UI / data layers, MVVM + Repository** | Views render; ViewModels own short-lived interaction; Repository owns lifecycle rules and persistence; Transport owns transmission. | More boundaries than a single widget. Introduce use cases when cross-feature orchestration becomes complex. |
+| **flutter_map + marker clustering** | Custom Flutter markers align with the selected prototype, search, status and accessibility semantics. | Dense-marker performance and provider licensing need their own acceptance. Cached tiles do not guarantee a complete offline region. |
+| **Typed panels and return origin** | List → detail returns to the list with context; map/nearest → detail returns to the map. | More explicit return tests. Add declarative routing when login, deep links and independent screens exist. |
+
+A pending stop may transition only to **completed** or **failed**. Both outcomes are terminal. The Repository checks this in logic and the database update is conditional on `pending`; hiding buttons alone is insufficient. Failed results require a reason; original CSV failures have unknown historical reasons and are not assigned invented values.
+
+**Configuration matters:** `OCEAN_MODE=demo` uses `ocean_delivery-demo.sqlite` and simulated confirmations. The default `local-client` uses a separate database and `UnavailableTransport`; it preserves the queue and reports service unavailability. No real backend is connected.
+
+## Tests and evidence
+
+From the repository root:
 
 ```sh
 python3 harness/run.py quality --isolated
-python3 harness/run.py build --configuration demo --isolated
+python3 harness/run.py test --target test/data/sqlite_delivery_repository_test.dart --isolated
+python3 harness/run.py test --target test/sync/sync_coordinator_test.dart --isolated
 ```
 
-完整原生验收和实际中断恢复通过 [Harness 入口](harness/README.md) 执行，当前结果见 [迭代报告](harness/reports/iteration-2026-10-11.md)。虚拟机、本地构建、真实服务和生产发布分别判定。
+The first targeted suite covers terminal-state rejection, mandatory failure reasons, transactional rollback and real SQLite reopen. The second covers serial sync, identity matching, failed confirmation persistence and duplicate triggers. The quality command additionally enforces locked dependencies, formatting, static analysis, architecture/requirement checks and all host/widget tests.
 
-## 浏览器原型
+Current application-code baseline: **196 Flutter tests; 166 Harness tests** (Darwin: 165 pass + one Linux-only N/A; Linux CI: 166 pass). The PR37 N7 repair was accepted on iPhone 17 Pro and iPhone 16 at the maximum system text size, plus a normal-size configuration. These are **targeted simulator checks**; historical full 34-item acceptance belongs to its earlier candidate. [Detailed limits](harness/reports/large-text-repair.md) · [Original evidence index](harness/reports/large-text-final-evidence-index.json).
 
-仓库根目录执行：
+The main snapshot `bebda78` passed [CI](https://github.com/KuroGeo/transvirtual-driver-delivery/actions/runs/38148283089). Report/README packaging changes receive their own validation and do not retroactively expand native acceptance.
 
-```sh
-python3 prototype/serve.py
-```
+## How I used AI
 
-打开 [地图原型](http://127.0.0.1:8764/index.html) 或 [设计前后对比](http://127.0.0.1:8764/style-explorer.html)。Python 3 标准库即可启动；页面运行依赖、字体和图标均在仓库内。OpenStreetMap 底图需要联网，加载失败时仍可浏览站点和保存配送结果。
+**Tools:** Codex coordinated implementation and independent engineering roles; Oil UI guided the browser prototype; the built-in image generator created the icon. AI generated Flutter, prototype, test and Harness code, and assisted documentation. I supplied product direction, selected the map-first design and icon, corrected interaction details, reviewed the simulator experience and decided the delivery boundaries. I do not claim the generated code as hand-written. More detail: [AI usage & concrete mistakes](docs/report/ai-usage.md).
 
-## 已实现的原型流程
+One concrete failure: generated layouts clipped information at maximum OS text size. Actual simulator screenshots and native reading/return checks exposed it. The repair used expandable summaries and full safe-area workspaces while retaining ordinary-size layout, focus and return origin; PR37 records the fix and regression evidence. Another review found that the Harness could accept incomplete test logs or unreaped child-process cleanup; strict completion checks and counterexample tests repaired it in PR34.
 
-- 30 个站点按附件坐标落点，密集位置聚合；Pending / Completed / Failed 同时由颜色和符号区分。
-- 地图筛选、搜索、站点列表联动。列表按固定当前位置的直线距离排序；底部显示最近匹配站点及距离。
-- 当前位置使用蓝色方向箭头。位置和朝向保存在 `prototype/assets/map-config.json`，原型暂时固定。
-- 完成或失败即时更新站点；失败必须提供原因，Other 必须有非空说明；终态不可再次改动。
-- 配送结果和未确认更新保存到 localStorage。离线可操作，重连自动同步；左侧更新按钮直接执行，并用 Toast 提示进度和结果。
-- Stop list → 详情 → Stop list，恢复原列表位置；底部最近站点 / 地图站标 → 详情 → 地图。
-- 鲜橙与奶油白的工具风界面、390 × 844 手机画布、用户选定的第一版 App 图标。
+**Time accounting:** the repository history spans October 10–11, 2026 and includes prototype, architecture, Harness and later accessibility work beyond the small assignment slice. No reliable human active-effort log was maintained, so this submission does not claim that all of that work fit the requested 4–6 hours. Commit and chat timestamps show chronology, not focused work hours.
 
-## 制作方式
+## What I would do next
 
-设计使用 **Oil UI** 工作流，保留设计比较、修改说明、截图与动效证据；**Codex** 完成交互原型与验证，内置图像生成工具制作 App 图标。界面采用 HTML / CSS / JavaScript 与 Alpine.js；地图使用 Leaflet、Leaflet.markercluster 和 OpenStreetMap；Inter 字体和 Carbon 图标缓存到本地。Python 标准库负责从原始 CSV 生成页面和启动预览服务。
+- Keep interview extensions small: add a focused rule or test, then verify the persistence/sync path.
+- Scale to thousands of stops with measured query/index, visible-marker and list costs; use isolates only for demonstrated CPU-heavy parsing/work.
+- Define a real backend contract for idempotency, conflicts and account ownership before connecting delivery results.
+- Store photo/signature files separately and queue their metadata; define resumable upload, limits and orphan cleanup.
+- Measure startup, frame timing, memory and battery on physical devices in profile/release builds.
+- Evaluate authorized offline map data, real GPS and road routing; fixed straight-line distance currently serves the demo.
 
-[原型运行与验收说明](prototype/README.md) · [当前返回规则](prototype/origin-return-design.md) · [同步及最近站点设计](prototype/direct-sync-design.md) · [第三方资源和许可](prototype/assets/THIRD_PARTY.md)
+Authentication, real backend integration, push and route optimization remain outside the assignment. **Production remains no-go:** physical-device performance (#31), enforced remote release checks (#32), and real service/resources/signing/delivery (#33) remain separate requirements. Publishing this interview prerelease does not clear them.
 
-最新交互验收为 78 项连续三轮通过，报告与录屏位于 `prototype/evidence/origin-return/`。前几轮设计及证据留在 `prototype/archive/` 和 `prototype/evidence/`，用于追溯比较。
+<details>
+<summary><b>More real Flutter screenshots</b></summary>
 
-## 范围
+<table>
+<tr><td align="center"><b>Delivery detail</b><br><img src="assets/readme/screenshots/delivery-detail.png" width="280" alt="Address, time window and result controls"></td><td align="center"><b>Required failure reason</b><br><img src="assets/readme/screenshots/failure-form.png" width="280" alt="Failure reason form before submission"></td></tr>
+<tr><td align="center"><b>Offline failure record</b><br><img src="assets/readme/screenshots/failure-record.png" width="280" alt="Persisted reason and waiting-to-sync state"></td><td align="center"><b>Completed record</b><br><img src="assets/readme/screenshots/completed-record.png" width="280" alt="Local result and simulated confirmation times"></td></tr>
+</table>
 
-原型和 Flutter demo 都使用模拟确认，没有真实服务端上传；距离为固定参考位置的直线距离，未接入 GPS / 罗盘、路网导航或 ETA。Flutter 实现与分层验收按 [任务图](harness/project/backlog.json) 记录，真机性能、真实服务、商业资源许可和签名发布仍需对应证据。原始题目和数据保存在 `docs/assignment/`。
+Original PNGs and editable promotional material: [assets/readme](assets/readme/README.md).
 
-## Agent 工程团队
+</details>
 
-[工程执行入口](harness/README.md) 提供需求提取、提 Issue、开发、测试、原生验收、Flutter 性能与交付的职能分工，以及总控/Harness skill、任务依赖和关闭标准。[Harness 审计](harness/reports/readiness.md) 记录实际可执行能力及尚缺的生产门槛；本地试跑与生产发布分别判定。
+<details>
+<summary><b>Prototype, architecture and engineering workflow</b></summary>
 
-## 客户端架构方案
+Run `python3 prototype/serve.py` and open [the map prototype](http://127.0.0.1:8764/index.html) or [design comparison](http://127.0.0.1:8764/style-explorer.html). The browser version uses HTML/CSS/JavaScript, Alpine.js, Leaflet and localStorage; its 78 checks passed three rounds. Browser evidence is separate from Flutter evidence.
 
-[Ocean Delivery 客户端 MVP 架构设计技术报告](docs/solution-design.md) 定义商业产品初始客户端的范围、Flutter 分层与选型取舍、本地可靠性、地图授权、性能和冷启动缓存，以及后端、用户系统、路径规划与 AI Agent 的分阶段接入。报告用于指导后续开发；移动端构建、联调和真机验收在对应实施阶段完成。
+[Original assignment](docs/assignment/README.md) · [Current return rules](prototype/origin-return-design.md) · [Direct sync design](prototype/direct-sync-design.md) · [Architecture](docs/solution-design.md) · [Skill/Harness workflow](harness/README.md) · [Issue dependency graph](harness/project/backlog.json) · [Execution board](harness/project/work.json).
+
+</details>
