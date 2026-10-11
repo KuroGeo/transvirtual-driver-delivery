@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "feature": "F1",
+  "checks": [
+    {"id": "F1.scope-late-result", "source": "app/test/next_phase/f1_independent_controller_test.dart", "test": "scope invalidation rejects delayed location and launch receipts"},
+    {"id": "F1.input-revision", "source": "app/test/next_phase/f1_independent_controller_test.dart", "test": "manual start revision wins over older road reply and availability"},
+    {"id": "F1.location-freshness", "source": "app/test/next_phase/f1_independent_controller_test.dart", "test": "origin aging during road request and before launch degrades safely"},
+    {"id": "F1.road-unavailable-failure", "source": "app/test/next_phase/f1_independent_controller_test.dart", "test": "unconfigured roads and provider failure retain explicit Maps handoff"},
+    {"id": "F1.provider-provenance", "source": "app/test/next_phase/f1_independent_controller_test.dart", "test": "supplier configuration changes and impossible arrival reject road results"},
+    {"id": "F1.third-party-privacy", "source": "app/test/next_phase/f1_independent_controller_test.dart", "test": "third party and map boundary contain only route coordinates and mode"},
+    {"id": "F1.launch-failure", "source": "app/test/next_phase/f1_independent_controller_test.dart", "test": "platform availability and launch failure remain distinct"},
+    {"id": "F1.resume-ordering", "source": "app/test/next_phase/f1_independent_controller_test.dart", "test": "return requires successful handoff and observed background resume"},
+    {"id": "F1.source-return", "source": "app/test/next_phase/f1_independent_widget_test.dart", "test": "each detail source returns with query session and map retained"},
+    {"id": "F1.no-delivery-write", "source": "app/test/next_phase/f1_independent_widget_test.dart", "test": "navigation failures and return preserve an existing immutable outbox"},
+    {"id": "F1.large-text", "source": "app/test/next_phase/f1_independent_widget_test.dart", "test": "maximum text preserves readable navigation and reachable map actions"}
+  ]
+}
