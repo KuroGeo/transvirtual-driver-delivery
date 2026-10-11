@@ -266,11 +266,13 @@ def require_lease_context(context, root=None, required=("app-workspace",)):
 
 
 @contextmanager
-def isolated_workspace(source_root, fingerprint, report=None):
+def isolated_workspace(source_root, fingerprint, report=None, evidence_dir=None):
     """Copy only source, verify it, and delete only this task's temporary root."""
     source_root = Path(source_root).resolve()
     with tempfile.TemporaryDirectory(prefix="ocean-harness-") as directory:
         destination = Path(directory).resolve()
+        if report is not None:
+            report.update(source_root=str(source_root), execution_root=str(destination), isolation={"requested": True, "verified_fingerprint": fingerprint, "task_owned": True, "cleaned": False})
         try:
             names = subprocess.check_output(["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"], cwd=source_root, stderr=subprocess.DEVNULL).decode().split("\0")
             files = {source_root / name for name in names if name}
@@ -291,7 +293,22 @@ def isolated_workspace(source_root, fingerprint, report=None):
             shutil.copy2(path, target)
         if checks.fingerprint(destination) != fingerprint or checks.fingerprint(source_root) != fingerprint:
             raise ValueError("source changed while creating isolated snapshot")
-        save(destination / ".harness-isolation.json", {"source_root": str(source_root), "source_fingerprint": fingerprint})
+        marker = {"source_root": str(source_root), "source_fingerprint": fingerprint}
+        source_proof = checks.next_phase.snapshot_source_archive(source_root, fingerprint)
+        if source_proof is not None:
+            archive = destination / checks.next_phase.SOURCE_ARCHIVE
+            archive.write_bytes(source_proof)
+            marker["source_objects"] = {"path": archive.name, "sha256": sha(archive)}
+            if report is not None:
+                if evidence_dir is None:
+                    raise ValueError("isolated source proof requires an original attempt directory")
+                retained = Path(evidence_dir) / "source-objects.json"
+                with retained.open("xb") as output:
+                    output.write(source_proof)
+                report["source_objects"] = {"path": str(retained), "sha256": sha(retained), "kind": "next-phase-git-source-objects"}
+        if checks.fingerprint(source_root) != fingerprint:
+            raise ValueError("source changed while preserving approved Git objects")
+        save(destination / ".harness-isolation.json", marker)
         try:
             yield destination
         finally:
@@ -642,7 +659,7 @@ def main():
             report["lease"] = {key: value for key, value in metadata.items() if key != "lock_fds"}
             save_attempt(run_dir, attempt, report, mirror)
             from contextlib import nullcontext
-            workspace = isolated_workspace(ROOT, candidate["source_fingerprint"], report) if args.isolated else nullcontext(ROOT)
+            workspace = isolated_workspace(ROOT, candidate["source_fingerprint"], report, attempt) if args.isolated else nullcontext(ROOT)
             with workspace as execution_root:
                 plan = stages(args.command, attempt, candidate["source_fingerprint"], args.manifest.resolve() if args.manifest else None, args.target, options, execution_root, metadata)
                 spec = stage_spec(plan, execution_root, attempt)
@@ -710,7 +727,7 @@ def main():
     except (KeyboardInterrupt, InterruptedError):
         status = "interrupted"
         print("Interrupted; inspect recorded process cleanup and actual OS leases before resume.")
-    except (OSError, ValueError, RuntimeError, state.BusyError, subprocess.TimeoutExpired) as error:
+    except (OSError, ValueError, RuntimeError, state.BusyError, subprocess.SubprocessError) as error:
         report["error"] = str(error)
         print(f"Cannot complete run: {error}")
     finally:

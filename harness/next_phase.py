@@ -1,5 +1,6 @@
 """Validate preparation structure; never attest next-phase product execution."""
 import hashlib
+import base64
 import json
 from pathlib import Path, PurePosixPath
 import re
@@ -16,6 +17,151 @@ SHARED = {'app/pubspec.yaml':'NP10','app/pubspec.lock':'NP10','app/lib/main.dart
 ARCHITECTURE = {'routing':'client-direct-third-party-no-own-routing-backend',
                 'identity':'go-user-auth-no-b-end',
                 'assistant':'client-executor-now-server-executor-later'}
+SOURCE_ARCHIVE = '.harness-source-objects.json'
+
+
+def _strict_json(raw):
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise ValueError(f'duplicate source proof key {key}')
+            result[key] = value
+        return result
+    return json.loads(raw, object_pairs_hook=pairs, parse_constant=lambda value: (_ for _ in ()).throw(ValueError(f'nonfinite {value}')))
+
+
+def _source_path(source):
+    if not isinstance(source, str) or not source or '\\' in source or '\0' in source:
+        raise ValueError('invalid committed source path')
+    path = PurePosixPath(source)
+    if not path.parts or path.is_absolute() or any(part in ('.', '..') for part in path.parts) or path.as_posix() != source:
+        raise ValueError('noncanonical committed source path')
+    return path.parts
+
+
+def _tree_entries(raw):
+    entries, offset = {}, 0
+    while offset < len(raw):
+        end = raw.find(b'\0', offset)
+        if end < 0 or end + 21 > len(raw):
+            raise ValueError('truncated Git tree object')
+        try:
+            mode, name = raw[offset:end].split(b' ', 1)
+            name = name.decode('utf-8')
+        except (ValueError, UnicodeError) as error:
+            raise ValueError('malformed Git tree entry') from error
+        if name in entries or name in ('.', '..') or '/' in name or not name or mode not in (b'40000', b'100644', b'100755', b'120000', b'160000'):
+            raise ValueError('invalid Git tree entry')
+        entries[name] = (mode, raw[end + 1:end + 21].hex())
+        offset = end + 21
+    return entries
+
+
+def _source_objects(ref, sources, read_object):
+    if not isinstance(ref, str) or not re.fullmatch(r'[a-f0-9]{40}', ref):
+        raise ValueError('approved Git commit ref missing')
+    used = set()
+    def read(kind, oid):
+        raw = read_object(kind, oid)
+        if not isinstance(raw, bytes) or hashlib.sha1(f'{kind} {len(raw)}\0'.encode() + raw).hexdigest() != oid:
+            raise ValueError('Git source object ID/type/bytes mismatch')
+        used.add(oid)
+        return raw
+    commit = read('commit', ref)
+    first = commit.split(b'\n', 1)[0]
+    if not re.fullmatch(b'tree [a-f0-9]{40}', first):
+        raise ValueError('approved commit tree missing')
+    tree = first[5:].decode()
+    result = {}
+    for source in sorted(sources):
+        parts = _source_path(source)
+        oid = tree
+        for index, part in enumerate(parts):
+            entries = _tree_entries(read('tree', oid))
+            if part not in entries:
+                raise ValueError(f'approved source missing from Git tree: {source}')
+            mode, oid = entries[part]
+            expected = (b'100644', b'100755') if index == len(parts) - 1 else (b'40000',)
+            if mode not in expected:
+                raise ValueError(f'approved source is not a regular blob/tree: {source}')
+        result[source] = read('blob', oid)
+    return result, used
+
+
+def validate_source_archive(raw, ref, sources, fingerprint):
+    """Verify immutable commit -> trees -> blobs without another checkout's Git."""
+    if not 0 < len(raw) <= 16 * 1024 * 1024:
+        raise ValueError('source archive byte bound exceeded')
+    proof = _strict_json(raw)
+    if not isinstance(proof, dict) or type(proof.get('schema_version')) is not int or proof['schema_version'] != 1 or proof.get('source_ref') != ref or proof.get('source_fingerprint') != fingerprint:
+        raise ValueError('source archive approved ref/candidate mismatch')
+    if not isinstance(proof.get('sources'), list) or not all(isinstance(source, str) for source in proof['sources']) or sorted(proof['sources']) != sorted(sources) or len(proof['sources']) != len(set(proof['sources'])) or not isinstance(proof.get('objects'), dict):
+        raise ValueError('source archive material inventory mismatch')
+    objects = proof['objects']
+    def read(kind, oid):
+        item = objects.get(oid)
+        if not isinstance(item, dict) or item.get('type') != kind or not isinstance(item.get('data'), str):
+            raise ValueError('source archive incomplete/wrong object type')
+        try:
+            return base64.b64decode(item['data'], validate=True)
+        except ValueError as error:
+            raise ValueError('source archive invalid object encoding') from error
+    result, used = _source_objects(ref, sources, read)
+    if used != set(objects):
+        raise ValueError('source archive contains unrelated objects')
+    return result
+
+
+def snapshot_source_archive(root, fingerprint):
+    """Read original Git objects only; no index, refs, shared metadata or fallback."""
+    root = Path(root).resolve()
+    package = root / PACKAGE / 'backlog.json'
+    if not package.exists():
+        return None
+    if package.resolve() != package:
+        raise ValueError('source backlog must be canonical')
+    backlog = _strict_json(package.read_bytes())
+    if backlog.get('source_ref_pending') is True:
+        return None
+    if backlog.get('source_ref_pending') is not False or not isinstance(backlog.get('source_manifest'), dict):
+        raise ValueError('committed source ref/manifest missing')
+    ref, manifest = backlog.get('source_ref'), backlog['source_manifest']
+    objects = {}
+    def read(kind, oid):
+        try:
+            raw = subprocess.run(['git', '-C', str(root), 'cat-file', kind, oid], capture_output=True, timeout=5, check=True).stdout
+        except subprocess.SubprocessError as error:
+            raise ValueError(f'approved Git {kind} object {oid} unavailable ({type(error).__name__})') from error
+        objects[oid] = {'type': kind, 'data': base64.b64encode(raw).decode('ascii')}
+        return raw
+    bound, unused = _source_objects(ref, manifest, read)
+    for source, raw in bound.items():
+        current = root / source
+        if current.resolve() != current or not current.is_file() or current.read_bytes() != raw or manifest[source] != hashlib.sha256(raw).hexdigest():
+            raise ValueError(f'{source}: issue source ref contains stale/mismatched bytes')
+    raw = json.dumps({'schema_version': 1, 'source_ref': ref, 'source_fingerprint': fingerprint, 'sources': sorted(manifest), 'objects': objects}, sort_keys=True).encode()
+    validate_source_archive(raw, ref, manifest, fingerprint)
+    return raw
+
+
+def committed_sources(root, ref, sources):
+    for source in sources:
+        _source_path(source)
+    marker = root / '.harness-isolation.json'
+    if not marker.exists():
+        return {source: subprocess.run(['git', '-C', str(root), 'show', f'{ref}:{source}'], capture_output=True, timeout=5, check=True).stdout for source in sources}
+    if marker.resolve() != marker:
+        raise ValueError('isolated source marker must be canonical')
+    isolation = _strict_json(marker.read_bytes())
+    archive = root / SOURCE_ARCHIVE
+    proof = isolation.get('source_objects')
+    if not isinstance(proof, dict) or proof.get('path') != SOURCE_ARCHIVE or archive.resolve() != archive or not archive.is_file():
+        raise ValueError('isolated committed source proof missing/unsafe')
+    raw = archive.read_bytes()
+    if proof.get('sha256') != hashlib.sha256(raw).hexdigest():
+        raise ValueError('isolated committed source proof hash mismatch')
+    return validate_source_archive(raw, ref, sources, isolation.get('source_fingerprint'))
 
 
 def validate(root, candidate_inputs):
@@ -127,13 +273,18 @@ def validate(root, candidate_inputs):
         if not isinstance(ref,str) or not re.fullmatch(r'[a-f0-9]{40}',ref) or not isinstance(manifest,dict) or set(manifest)!=materials:
             fail('committed source ref/manifest missing')
         else:
+            try:
+                bound_sources = committed_sources(root, ref, materials)
+            except (OSError, ValueError, TypeError, subprocess.SubprocessError) as error:
+                fail(f'committed issue source unavailable ({type(error).__name__}: {error})')
+                bound_sources = {}
             for source in sorted(materials):
                 try:
                     if not canonical(source) or source not in candidate_inputs:
                         fail(f'{source}: source binding unsafe/outside fingerprint')
                         continue
                     current = (root/source).read_bytes()
-                    bound = subprocess.run(['git','-C',str(root),'show',f'{ref}:{source}'],capture_output=True,timeout=5,check=True).stdout
+                    bound = bound_sources.get(source)
                     if bound!=current or manifest[source]!=hashlib.sha256(current).hexdigest():
                         fail(f'{source}: issue source ref contains stale/mismatched bytes')
                 except (OSError,subprocess.SubprocessError) as error:

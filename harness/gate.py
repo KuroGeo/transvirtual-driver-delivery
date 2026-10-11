@@ -13,6 +13,10 @@ import re
 import sqlite3
 import struct
 import zlib
+try:
+    from . import next_phase
+except ImportError:
+    import next_phase
 
 CAPABILITIES = tuple(f"H{i:02d}" for i in range(1, 9))
 GATES = tuple(f"G{i}" for i in range(7))
@@ -371,6 +375,8 @@ class Validator:
                 _expect(Path(stage["command"][0]).name, "flutter", "quality executable")
             if stage["id"] == "format":
                 _expect(Path(stage["command"][0]).name, "dart", "quality executable")
+        if report["isolation"].get("requested") is True and any("machine_report" in stage for stage in stages):
+            self.quality_source_objects(report, item)
         tooling = logs["tooling-tests"]["raw"].decode("utf-8")
         flutter = logs["flutter-tests"]["raw"].decode("utf-8")
         if not _tooling_completed(tooling):
@@ -378,6 +384,26 @@ class Validator:
         if not re.search(r"\+[1-9][0-9]*: All tests passed!\s*\Z", flutter) or re.search(r"\+[0-9]+ -[1-9]|Some tests failed|unhandled exception", flutter, re.I):
             raise EvidenceError("flutter-tests raw log lacks full successful completion")
         return report
+
+    def quality_source_objects(self, report, item):
+        backlog_path = SOURCE_ROOT / next_phase.PACKAGE / 'backlog.json'
+        if not backlog_path.exists():
+            return
+        backlog = _json(backlog_path.read_bytes(), 'source backlog')
+        if backlog.get('source_ref_pending') is True:
+            return
+        proof = self.nested(report.get('source_objects'), item)
+        _expect(proof['kind'], 'next-phase-git-source-objects', 'quality source objects kind')
+        _expect(proof['path_object'], item['path_object'].parent / 'source-objects.json', 'quality original source objects path')
+        try:
+            manifest = backlog['source_manifest']
+            bound = next_phase.validate_source_archive(proof['raw'], backlog['source_ref'], manifest, self.fingerprint)
+            for source, raw in bound.items():
+                path = SOURCE_ROOT / source
+                if path.resolve() != path or path.read_bytes() != raw or manifest[source] != hashlib.sha256(raw).hexdigest():
+                    raise ValueError('approved source object differs from current material/manifest')
+        except (OSError, KeyError, TypeError, ValueError) as error:
+            raise EvidenceError(f'quality approved source object proof: {error}') from error
 
     def flutter_events(self, item):
         """Original Dart JSON reporter events, independent of parallel console UI."""

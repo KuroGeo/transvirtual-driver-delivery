@@ -136,6 +136,25 @@ class RunnerTests(unittest.TestCase):
         self.assertFalse(isolated.exists())
         self.assertTrue((self.root / "app/build/private-output").exists())
 
+    def test_missing_approved_git_object_fails_cli_before_stages_and_preserves_cleanup_report(self):
+        package = self.root / "harness/project/next-phase/backlog.json"
+        package.parent.mkdir(parents=True)
+        package.write_text(json.dumps({"source_ref_pending": False, "source_ref": "0" * 40,
+                                       "source_manifest": {"app/lib/main.dart": hashlib.sha256((self.root / "app/lib/main.dart").read_bytes()).hexdigest()}}))
+        executed = []
+        code, message = self.cli(["quality", "--isolated"], lambda *args, **kwargs: executed.append(args))
+        self.assertEqual(code, 1)
+        self.assertFalse(executed)
+        self.assertIn("approved Git commit object", message)
+        directory = next((self.root / "harness/runs").glob("*-quality"))
+        report, leaf, unused = run.resume_report(directory)
+        self.assertEqual(report["job"]["status"], "failed")
+        self.assertIn("unavailable", report["error"])
+        self.assertEqual(report["stages"], [])
+        self.assertTrue(report["isolation"]["cleaned"])
+        self.assertFalse(Path(report["execution_root"]).exists())
+        self.assertEqual(report["lease"]["status"], "released")
+
     def test_isolated_clone_source_mutation_is_stale_even_when_origin_is_unchanged(self):
         fingerprint = run.checks.fingerprint(self.root)
         def mutation(argv, cwd, log, timeout, lock_fds, on_spawn, context=None, **kwargs):

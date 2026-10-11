@@ -6,8 +6,10 @@ import runpy
 import tempfile
 import unittest
 import subprocess
+import base64
+from unittest.mock import patch
 
-from harness import checks, next_phase
+from harness import checks, next_phase, run, gate
 
 
 class PreparationContract(unittest.TestCase):
@@ -107,6 +109,147 @@ class PreparationContract(unittest.TestCase):
         self.publish_fixture()
         (self.root/'docs/next-phase/backend-go.md').write_text('New architecture absent from committed source')
         self.assertTrue(any('stale/mismatched bytes' in error for error in self.errors()))
+
+    def test_isolated_publication_uses_approved_git_objects_without_shared_metadata(self):
+        self.publish_fixture()
+        fingerprint = checks.fingerprint(self.root)
+        original_index = (self.root / '.git/index').read_bytes()
+        attempt = self.root / 'harness/runs/proof/attempts/000001'
+        attempt.mkdir(parents=True)
+        report = {}
+        with run.isolated_workspace(self.root, fingerprint, report, attempt) as isolated:
+            self.assertFalse((isolated / '.git').exists())
+            self.assertEqual((self.root / '.git/index').read_bytes(), original_index)
+            self.assertEqual(next_phase.validate(isolated, self.inputs), [])
+            archive = isolated / next_phase.SOURCE_ARCHIVE
+            original = archive.read_bytes()
+            proof = json.loads(original)
+            self.assertEqual(proof['source_ref'], self.read('backlog.json')['source_ref'])
+            self.assertLess(len(original), 128 * 1024)
+            retained = Path(report['source_objects']['path'])
+            self.assertEqual(retained, attempt / 'source-objects.json')
+            self.assertEqual(report['source_objects']['sha256'], hashlib.sha256(original).hexdigest())
+            self.assertEqual(retained.read_bytes(), original)
+            # The immutable archive, rather than the origin, supplies the proof.
+            shutil.rmtree(self.root / '.git')
+            self.assertEqual(next_phase.validate(isolated, self.inputs), [])
+        self.assertFalse(isolated.exists())
+        self.assertEqual(retained.read_bytes(), original)
+        self.assertTrue(original_index)
+
+    def test_quality_rereads_original_source_archive_and_rejects_rebound_or_changed_proof(self):
+        self.publish_fixture()
+        fingerprint = checks.fingerprint(self.root)
+        attempt = self.root / 'harness/runs/proof/attempts/000001'
+        attempt.mkdir(parents=True)
+        archive = attempt / 'source-objects.json'
+        original = next_phase.snapshot_source_archive(self.root, fingerprint)
+        def check(raw=original, path=archive):
+            path.write_bytes(raw)
+            report = {'source_objects': {'path': str(path), 'sha256': hashlib.sha256(raw).hexdigest(), 'kind': 'next-phase-git-source-objects'}}
+            report_path = attempt / 'report.json'
+            report_path.write_text(json.dumps(report))
+            validator = gate.Validator({'candidate': {'source_fingerprint': fingerprint}, 'service_mode': 'local-client'}, fingerprint, self.root)
+            item = validator.raw({'path': str(report_path), 'sha256': hashlib.sha256(report_path.read_bytes()).hexdigest(), 'kind': 'quality-run'})
+            with patch.object(gate, 'SOURCE_ROOT', self.root):
+                validator.quality_source_objects(report, item)
+        check()
+        proof = json.loads(original)
+        proof['source_ref'] = '0' * 40
+        with self.assertRaisesRegex(gate.EvidenceError, 'approved ref/candidate'):
+            check(json.dumps(proof).encode())
+        with self.assertRaisesRegex(gate.EvidenceError, 'original source objects path'):
+            check(path=self.root / 'copied-source-proof.json')
+        archive.unlink()
+        outside = self.root / 'outside-proof.json'
+        outside.write_bytes(original)
+        archive.symlink_to(outside)
+        with self.assertRaises(gate.EvidenceError):
+            check()
+        archive.unlink()
+        (self.root / 'docs/next-phase/backend-go.md').write_text('Current bytes changed after approved commit')
+        with self.assertRaisesRegex(gate.EvidenceError, 'differs from current'):
+            check()
+
+    def test_original_source_archive_is_retained_without_overwrite_on_resume(self):
+        self.publish_fixture()
+        fingerprint = checks.fingerprint(self.root)
+        attempts = self.root / 'harness/runs/proof/attempts'
+        first, second = attempts / '000001', attempts / '000002'
+        first.mkdir(parents=True)
+        second.mkdir()
+        report = {}
+        with run.isolated_workspace(self.root, fingerprint, report, first):
+            original = (first / 'source-objects.json').read_bytes()
+        with run.isolated_workspace(self.root, fingerprint, {}, second):
+            self.assertEqual((second / 'source-objects.json').read_bytes(), original)
+        self.assertEqual((first / 'source-objects.json').read_bytes(), original)
+        with self.assertRaises(FileExistsError):
+            with run.isolated_workspace(self.root, fingerprint, {}, first):
+                self.fail('Original proof was overwritten')
+
+    def test_source_object_proof_rejects_tamper_ref_candidate_and_incomplete_graph(self):
+        self.publish_fixture()
+        fingerprint = checks.fingerprint(self.root)
+        backlog = self.read('backlog.json')
+        original = json.loads(next_phase.snapshot_source_archive(self.root, fingerprint))
+        cases = [
+            lambda p: p.update(source_ref='0' * 40),
+            lambda p: p.update(source_fingerprint='0' * 64),
+            lambda p: p.update(objects={}),
+            lambda p: next(item for item in p['objects'].values() if item['type'] == 'blob').update(data=base64.b64encode(b'fabricated current bytes').decode()),
+            lambda p: p['objects'][backlog['source_ref']].update(type='blob'),
+            lambda p: p['sources'].append('../outside'),
+            lambda p: p['objects'].update({'0' * 40: {'type': 'blob', 'data': ''}}),
+        ]
+        for mutate in cases:
+            with self.subTest(case=cases.index(mutate)):
+                proof = json.loads(json.dumps(original))
+                mutate(proof)
+                with self.assertRaises(ValueError):
+                    next_phase.validate_source_archive(json.dumps(proof).encode(), backlog['source_ref'], backlog['source_manifest'], fingerprint)
+
+    def test_isolated_source_archive_missing_tampered_or_symlink_fails_without_fallback(self):
+        self.publish_fixture()
+        fingerprint = checks.fingerprint(self.root)
+        with run.isolated_workspace(self.root, fingerprint) as isolated:
+            archive = isolated / next_phase.SOURCE_ARCHIVE
+            raw = archive.read_bytes()
+            archive.unlink()
+            self.assertTrue(any('proof missing/unsafe' in error for error in next_phase.validate(isolated, self.inputs)))
+            archive.write_bytes(raw + b' ')
+            self.assertTrue(any('proof hash mismatch' in error for error in next_phase.validate(isolated, self.inputs)))
+            archive.unlink()
+            outside = self.root / 'outside-proof.json'
+            outside.write_bytes(raw)
+            archive.symlink_to(outside)
+            self.assertTrue(any('proof missing/unsafe' in error for error in next_phase.validate(isolated, self.inputs)))
+
+    def test_source_producer_rejects_missing_historical_commit_and_material_symlink(self):
+        self.publish_fixture()
+        original = self.read('backlog.json')
+        value = json.loads(json.dumps(original))
+        value['source_ref'] = '0' * 40
+        self.write('backlog.json', value)
+        with self.assertRaisesRegex(ValueError, 'approved Git commit object .* unavailable'):
+            next_phase.snapshot_source_archive(self.root, checks.fingerprint(self.root))
+        self.write('backlog.json', original)
+        source = self.root / 'docs/next-phase/backend-go.md'
+        outside = self.root / 'outside.md'
+        outside.write_bytes(source.read_bytes())
+        source.unlink()
+        source.symlink_to(outside)
+        with self.assertRaisesRegex(ValueError, 'stale/mismatched'):
+            next_phase.snapshot_source_archive(self.root, checks.fingerprint(self.root))
+
+    def test_git_source_tree_cannot_attest_unsafe_or_unrelated_material_path(self):
+        self.publish_fixture()
+        value = self.read('backlog.json')
+        for source in ('../outside', 'docs/next-phase/../backend-go.md', 'docs/next-phase/absent.md'):
+            manifest = {source: '0' * 64}
+            self.write('backlog.json', {**value, 'source_manifest': manifest})
+            with self.assertRaises(ValueError):
+                next_phase.snapshot_source_archive(self.root, checks.fingerprint(self.root))
 
     def test_published_does_not_require_cancelled_management_review(self):
         self.publish_fixture()
