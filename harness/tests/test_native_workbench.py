@@ -845,6 +845,67 @@ class WorkbenchTests(unittest.TestCase):
             with self.assertRaises(TimeoutError):
                 workbench.sqlite_snapshot(self.container, "demo", self.root / "timeout.sqlite")
 
+    def driver_journal_fixture(self):
+        output = self.root / "bounded-driver"
+        output.mkdir()
+        launch_config = workbench.write_launch_config(self.container, UDID, "demo", CANDIDATE, SESSION, self.launch_fixture())
+        expected = {"schema": 1, "processId": 321, "candidate": CANDIDATE, "configuration": "demo", "session": SESSION,
+                    "launchConfigPath": launch_config["path"], "launchConfigByteLength": launch_config["byte_length"], "launchConfigSchema": 1}
+        action = {**expected, "action": "actual-ui", "vmProcessId": 321}
+        snapshot = {**expected, "mode": "demo", "transport": "controlled-http-simulated", "databasePath": str(self.database), "outbox": []}
+        workbench.write_json(output / "result.json", {**expected, "status": "passed", "phase": "saved", "vmProcessId": 321})
+        for name in ("snapshot.json", "initial-snapshot.json"):
+            workbench.write_json(output / name, snapshot)
+        for name, row in (("actions.jsonl", action), ("observations.jsonl", snapshot)):
+            (output / name).write_text(json.dumps(row) + "\n")
+        return output, launch_config, action, snapshot
+
+    @staticmethod
+    def write_driver_journal_bytes(file, row, size):
+        # Complete JSON with an ASCII payload gives an exact byte boundary;
+        # the validator still parses the entire row and checks its identity.
+        empty = json.dumps({**row, "padding": ""}).encode() + b"\n"
+        padding = size - len(empty)
+        if padding < 0:
+            raise ValueError("journal fixture is smaller than its complete JSON row")
+        file.write_bytes(json.dumps({**row, "padding": "x" * padding}).encode() + b"\n")
+
+    def test_full_observation_journal_above_eight_mib_and_at_sixteen_mib_is_accepted(self):
+        output, launch_config, _, snapshot = self.driver_journal_fixture()
+        for size in (9 * 1024 * 1024, 16 * 1024 * 1024):
+            with self.subTest(bytes=size):
+                self.write_driver_journal_bytes(output / "observations.jsonl", snapshot, size)
+                result, observed = workbench.validate_driver_result(output, "saved", 321, CANDIDATE, "demo", SESSION, self.container, launch_config)
+                self.assertEqual(result["status"], "passed")
+                self.assertEqual(observed, snapshot)
+
+    def test_observation_journal_over_sixteen_mib_is_rejected(self):
+        output, launch_config, _, snapshot = self.driver_journal_fixture()
+        self.write_driver_journal_bytes(output / "observations.jsonl", snapshot, 16 * 1024 * 1024 + 1)
+        with self.assertRaisesRegex(ValueError, "journal missing, empty or outside bounds"):
+            workbench.validate_driver_result(output, "saved", 321, CANDIDATE, "demo", SESSION, self.container, launch_config)
+
+    def test_action_journal_keeps_its_eight_mib_boundary(self):
+        output, launch_config, action, _ = self.driver_journal_fixture()
+        self.write_driver_journal_bytes(output / "actions.jsonl", action, 8 * 1024 * 1024)
+        self.assertEqual(workbench.validate_driver_result(output, "saved", 321, CANDIDATE, "demo", SESSION, self.container, launch_config)[0]["status"], "passed")
+        self.write_driver_journal_bytes(output / "actions.jsonl", action, 8 * 1024 * 1024 + 1)
+        with self.assertRaisesRegex(ValueError, "journal missing, empty or outside bounds"):
+            workbench.validate_driver_result(output, "saved", 321, CANDIDATE, "demo", SESSION, self.container, launch_config)
+
+    def test_larger_observation_journal_still_parses_and_checks_every_row(self):
+        output, launch_config, _, snapshot = self.driver_journal_fixture()
+        for row, error in (({**snapshot, "processId": 320}, ValueError),
+                           ({**snapshot, "processId": True}, ValueError),
+                           ({**snapshot, "launchConfigByteLength": 1}, ValueError),
+                           ("truncated-json", json.JSONDecodeError)):
+            with self.subTest(row=row):
+                self.write_driver_journal_bytes(output / "observations.jsonl", snapshot, 9 * 1024 * 1024)
+                with (output / "observations.jsonl").open("a") as stream:
+                    stream.write(json.dumps(row) + "\n" if isinstance(row, dict) else '{"processId":\n')
+                with self.assertRaises(error):
+                    workbench.validate_driver_result(output, "saved", 321, CANDIDATE, "demo", SESSION, self.container, launch_config)
+
     def test_stale_candidate_pid_vm_session_and_database_receipts_reject(self):
         output = self.root / "driver"
         output.mkdir()
