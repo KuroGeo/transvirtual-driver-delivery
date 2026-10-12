@@ -1,0 +1,93 @@
+<!-- Disposable interaction study. All new services and route values are scripted. -->
+<button class="agent-alert" x-cloak x-show="signedIn && nextPanel==='' && !detailOpen && !listOpen && !alertDismissed && urgentPending && variant==='A'" @click="openAssistant('risk')">
+  <span class="agent-star" aria-hidden="true">✦</span><span><strong>One stop needs your attention</strong><span>Wattle Corner Store closes its window at 10:00.</span></span><span aria-hidden="true">↗</span>
+</button>
+<div class="mission-card" x-cloak x-show="signedIn && nextPanel==='' && !detailOpen && !listOpen && variant==='B'">
+  <div class="mission-heading"><span class="tiny-label">NEXT ON YOUR RUN</span><span class="risk-badge" x-show="urgentPending">18 min left</span></div>
+  <h2 x-text="nextRecommendedStop?.customer_name"></h2><p x-text="urgentPending?'21 Wattle Street · delivery by 10:00':nextRecommendedStop?.address"></p>
+  <div class="mission-time"><strong><span x-text="urgentPending?12:6"></span> <small>min</small></strong><span x-text="urgentPending?'6.3 km · arrive 09:54':'1.8 km · arrive 09:48'"></span></div>
+  <button class="primary" @click="previewNavigation(nextRecommendedStop.reference)">Navigate to next stop <span aria-hidden="true">↗</span></button>
+  <button class="mission-secondary" @click="openAssistant('plan')">✦ Review a smarter stop order</button>
+</div>
+<button class="agent-launch" x-cloak x-show="signedIn && nextPanel==='' && !detailOpen && !listOpen && variant!=='B'" @click="openAssistant('home')"><span aria-hidden="true">✦</span> Ask Ocean <span class="agent-launch-dot"></span></button>
+
+<!-- Identity: organization discovery -> existing provider -> assigned run. -->
+<section class="next-full login-screen" x-cloak x-show="nextPanel==='login'" aria-label="Sign in">
+  <div class="next-system">9:42 <span>▰</span></div>
+  <div class="login-content" x-show="loginStep==='org'">
+    <img class="login-logo" src="../assets/app-icon-180.png?v=first" alt="Ocean Delivery">
+    <div class="login-brand">ocean delivery</div>
+    <div class="login-visual" aria-hidden="true"><svg viewBox="0 0 320 160" fill="none"><path d="M20 128C75 132 65 45 120 47S158 128 209 113S240 42 302 31" stroke="#E5D4B8" stroke-width="22" stroke-linecap="round"/><path d="M20 128C75 132 65 45 120 47S158 128 209 113S240 42 302 31" stroke="#F8F0DF" stroke-width="15" stroke-linecap="round"/><path d="M47 122C75 111 79 47 120 47S158 128 209 113" stroke="#FF6B38" stroke-width="4" stroke-linecap="round" stroke-dasharray="5 7"/><circle cx="120" cy="47" r="14" fill="#FF6B38" stroke="#FFFAF2" stroke-width="5"/><circle cx="209" cy="113" r="14" fill="#FF6B38" stroke="#FFFAF2" stroke-width="5"/><path d="M28 134l11-32 18 22z" fill="#386CB9" stroke="#FFFAF2" stroke-width="4"/></svg></div>
+    <h1>Your day, in motion.</h1><p class="login-subtitle">Sign in with your company account.<br>Your deliveries will be ready for you.</p>
+    <form @submit.prevent="discoverOrganization()">
+      <label class="field-label" for="organization">Company workspace</label>
+      <div class="workspace-input"><input id="organization" x-model="organization" placeholder="e.g. harbour-logistics" autocomplete="organization" required><span>.ocean</span></div>
+      <p class="field-error" x-show="loginError" x-text="loginError" role="alert"></p>
+      <button class="primary" type="submit">Continue <span aria-hidden="true">→</span></button>
+    </form>
+    <p class="login-help">Need access? Contact your dispatcher.</p>
+  </div>
+  <div class="login-content provider-content" x-show="loginStep==='provider'">
+    <button class="plain-back" @click="loginStep='org'">← Back</button>
+    <div class="organization-mark">H</div><span class="tiny-label">YOUR WORKSPACE</span>
+    <h1 x-text="organizationLabel"></h1><p class="login-subtitle">Continue with your existing company account.</p>
+    <div class="provider-account"><span class="avatar">JD</span><span><strong>Jamie Davis</strong><small>Driver · Sydney</small></span></div>
+    <button class="primary" @click="signIn()" :disabled="loginBusy"><span x-text="loginBusy?'Signing you in…':'Sign in with company account'"></span><span aria-hidden="true">→</span></button>
+    <p class="login-help">You’ll return here after your company sign-in.</p>
+  </div>
+  <div class="login-footer">One account. Your own delivery run.</div>
+</section>
+
+<!-- Account, notification preferences, expired session, and pending work at sign-out. -->
+<section class="next-full account-screen" x-cloak x-show="nextPanel==='profile'" aria-label="Your account">
+  <div class="next-system">9:42 <span>▰</span></div><header class="next-head"><button class="round-control" @click="nextPanel=''" aria-label="Back to map">←</button><h2>Your account</h2><span></span></header>
+  <div class="account-content"><div class="account-identity"><span class="avatar large">JD</span><h1>Jamie Davis</h1><p>Driver · Sydney</p><span class="account-company" x-text="organizationLabel"></span></div>
+    <div class="settings-section"><h3>Delivery assistant</h3>
+      <button class="settings-row" role="switch" :aria-checked="remindersOn" @click="remindersOn=!remindersOn"><span><strong>Time-window reminders</strong><small>Get a heads-up before a delivery is late.</small></span><span class="setting-switch" :class="{on:remindersOn}"></span></button>
+      <button class="settings-row" role="switch" :aria-checked="voiceOn" @click="voiceOn=!voiceOn"><span><strong>Read alerts aloud</strong><small>Hear the next stop and urgent reminders.</small></span><span class="setting-switch" :class="{on:voiceOn}"></span></button>
+    </div>
+    <div class="settings-section"><h3>Today's run</h3><div class="settings-row"><span><strong>Sydney · 30 stops</strong><small>Assigned to your company account.</small></span><span class="account-role">Driver</span></div><div class="account-sync"><span class="connection-dot"></span><span x-text="queue.length ? queue.length+' updates waiting to sync' : 'All delivery updates synced'"></span></div></div>
+    <button class="signout-button" @click="requestSignOut()">Sign out</button>
+  </div>
+</section>
+<section class="next-full expired-screen" x-cloak x-show="nextPanel==='expired'" aria-label="Session expired"><div class="next-system">9:42 <span>▰</span></div><div class="expired-content"><span class="expired-symbol">↻</span><h1>Let’s get you<br>signed in again.</h1><p>Your company session has expired.<br>Your saved delivery updates are still here.</p><div class="saved-work"><strong x-text="queue.length+' updates saved'"></strong><span>Sync will resume with Jamie’s account.</span></div><button class="primary" @click="resumeSession()">Sign in again <span>→</span></button><button class="secondary" @click="nextPanel='';sessionExpired=true">Continue with saved deliveries</button></div></section>
+<div class="signout-backdrop" x-cloak x-show="nextPanel==='signout'"><section class="confirm-card"><h2>You have saved work.</h2><p><span x-text="queue.length"></span> delivery updates are waiting to sync. They’ll stay with Jamie’s account until you sign in again.</p><button class="primary" @click="nextPanel='profile'">Stay signed in</button><button class="secondary" @click="signOut()">Sign out and keep updates</button></section></div>
+
+<!-- Navigation: preview -> choose external navigator -> return/arrival. -->
+<section class="route-preview" x-cloak x-show="nextPanel==='navigation'" aria-label="Route to stop">
+  <div class="sheet-grip"></div><div class="route-title"><div><span class="tiny-label">DIRECTIONS TO</span><h2 x-text="navigationStop.customer_name"></h2></div><button class="round-control" @click="closeNextPanel()" aria-label="Close navigation">×</button></div>
+  <p class="route-address" x-text="navigationStop.address"></p><div class="route-metrics"><strong><span x-text="navigationEstimate.minutes"></span> <small>min</small></strong><span><span x-text="navigationEstimate.distance"></span> km <small>driving</small></span><span><span x-text="navigationEstimate.arrival"></span> <small>arrival</small></span></div>
+  <div class="arrival-window"><span class="window-dot"></span><span x-text="navigationStop.reference===urgentId?'Delivery by 10:00 · 6 min to spare':'Delivery window '+navigationStop.time_window"></span></div>
+  <button class="primary" @click="nextPanel='navigator'">Start navigation <span aria-hidden="true">↗</span></button><button class="secondary" @click="openNavigationStop()">View delivery details</button>
+</section>
+<div class="navigator-backdrop" x-cloak x-show="nextPanel==='navigator'"><section class="navigator-sheet" aria-label="Choose navigation app"><div class="sheet-grip"></div><div class="route-title"><h2>Open navigation in</h2><button class="round-control" @click="nextPanel='navigation'" aria-label="Back to route">×</button></div><p x-text="navigationStop.customer_name"></p><button class="navigator-option" @click="launchNavigator('Apple Maps')"><span class="map-app apple" aria-hidden="true">↗</span><span><strong>Apple Maps</strong><small>Turn-by-turn directions</small></span><span>↗</span></button><button class="navigator-option" @click="launchNavigator('Google Maps')"><span class="map-app google" aria-hidden="true">⌁</span><span><strong>Google Maps</strong><small>Turn-by-turn directions</small></span><span>↗</span></button><p class="navigator-hint">Your delivery stays open in Ocean.</p></section></div>
+<section class="next-full handoff-screen" x-cloak x-show="nextPanel==='handoff'" aria-label="Navigation handoff"><div class="next-system">9:42 <span>▰</span></div><header class="next-head"><button class="round-control" @click="nextPanel='navigation'" aria-label="Back to route">←</button><span x-text="navigationProvider"></span><span></span></header><div class="handoff-content"><span class="handoff-arrow">↗</span><span class="tiny-label">NAVIGATION READY</span><h1 x-text="navigationStop.customer_name"></h1><p x-text="navigationStop.address"></p><div class="handoff-estimate">12 <small>min</small><span>6.3 km · arrive 09:54</span></div><div class="handoff-map" aria-hidden="true"><svg viewBox="0 0 330 160"><path d="M0 40h330M0 115h330M75 0v160M190 0v160M285 0v160" stroke="#DCCBAF" stroke-width="16"/><path d="M75 150v-35h115V40h95" stroke="#386CB9" stroke-width="7" fill="none" stroke-linecap="round"/><circle cx="285" cy="40" r="13" fill="#FF6B38" stroke="#FFFAF2" stroke-width="4"/></svg></div><button class="primary" @click="arriveAtStop()">I’ve arrived · open delivery <span>→</span></button><button class="secondary" @click="nextPanel='navigation'">Return to Ocean</button></div></section>
+
+<!-- Agent: grounded answers, proactive prompt, and a reviewable route proposal. -->
+<section class="next-full assistant-screen" x-cloak x-show="nextPanel==='assistant'" aria-label="Ocean assistant">
+  <div class="next-system">9:42 <span>▰</span></div><header class="next-head"><button class="round-control" @click="closeNextPanel()" aria-label="Close assistant">←</button><div class="assistant-heading"><h2><span>✦</span> Ocean</h2><small>Your delivery assistant</small></div><button class="round-control" @click="nextPanel='profile'" aria-label="Assistant settings">⚙</button></header>
+  <div class="assistant-scroll" x-ref="assistantScroll">
+    <div class="assistant-intro"><span class="assistant-orb">✦</span><h1>A little help.<br>A smoother run.</h1><p>I’m keeping an eye on your delivery windows.<br>You’re always in control of the route.</p></div>
+    <div class="assistant-risk" x-show="remindersOn && urgentPending"><div class="risk-heading"><span class="risk-badge">TIME WINDOW</span><span>09:42</span></div><h3>Make Wattle Corner Store your next stop.</h3><p>The window closes at 10:00. It’s a 12-minute drive, leaving 6 minutes for delivery.</p><div class="assistant-source">Based on today’s run · route estimate at 09:42</div><button class="text-action" @click="previewNavigation(urgentId)">See route to this stop <span>↗</span></button><button class="dismiss-reminder" @click="dismissReminder()">Remind me in 5 min</button></div>
+    <div class="assistant-offline" x-show="!online"><strong>You’re offline.</strong><p>You can still view your saved stops. Connect to get fresh route suggestions.</p><button class="text-action" @click="toggleOnline()">Reconnect</button></div>
+    <div class="assistant-question" x-show="agentQuestion" x-text="agentQuestion"></div>
+    <div class="assistant-answer" x-show="agentBusy"><span class="thinking-dots">● ● ●</span><p>Checking your stops and delivery windows…</p></div>
+    <div class="assistant-answer" x-show="agentAnswer && !agentBusy"><span class="answer-author">✦ OCEAN</span><p x-text="agentAnswer"></p><div class="assistant-source" x-text="agentSource"></div><button class="text-action" x-show="answerKind==='next'" @click="previewNavigation(nextRecommendedStop.reference)"><span x-text="'Navigate to '+nextRecommendedStop?.customer_name"></span><span>↗</span></button><button class="primary" x-show="answerKind==='plan' && online" @click="showPlan()">Review suggested order <span>→</span></button><button class="text-action" x-show="answerKind==='unavailable'" @click="askAgent(agentQuestion)">Try again</button></div>
+    <div class="agent-quick-actions"><button @click="askAgent('Where is my next stop?')">Where’s my next stop? <span>↗</span></button><button @click="askAgent('Which stops could be late?')">What needs my attention? <span>↗</span></button><button @click="askAgent('Plan my remaining deliveries')">Plan the rest of my run <span>↗</span></button></div>
+  </div>
+  <form class="assistant-compose" @submit.prevent="askAgent(agentInput);agentInput=''"><label class="sr-only" for="agent-message">Ask Ocean</label><input id="agent-message" x-model="agentInput" placeholder="Ask about your deliveries…" autocomplete="off"><button :disabled="!agentInput.trim() || agentBusy" aria-label="Send to Ocean">↑</button></form>
+</section>
+
+<!-- Plan: order comparison, rationale, constraints, confirm, and undo. -->
+<section class="next-full plan-screen" x-cloak x-show="nextPanel==='plan'" aria-label="Suggested delivery plan">
+  <div class="next-system">9:42 <span>▰</span></div><header class="next-head"><button class="round-control" @click="nextPanel='assistant'" aria-label="Back to assistant">←</button><h2>Suggested order</h2><span class="plan-star">✦</span></header>
+  <div class="plan-scroll"><span class="tiny-label" x-text="count('pending')+' REMAINING STOPS'"></span><h1>Protect the tight<br>delivery windows.</h1><p class="plan-intro">A small change now makes room for the rest of your run.</p>
+    <div class="plan-comparison" x-show="urgentPending"><div><span>Current order</span><strong>1 <small>at risk</small></strong><span>Wattle arrival · 10:06</span></div><span class="comparison-arrow">→</span><div class="recommended"><span>Suggested order</span><strong>0 <small>at risk</small></strong><span>Wattle arrival · 09:54</span></div></div>
+    <div class="plan-switch"><button :class="{active:planView==='suggested'}" @click="planView='suggested'">Suggested</button><button :class="{active:planView==='current'}" @click="planView='current'">Current</button></div>
+    <div class="plan-stop-list"><template x-for="(id,index) in displayedPlan" :key="id"><div class="plan-stop"><div class="plan-order" :class="{urgent:id===urgentId}" x-text="index+1"></div><div class="plan-stop-info"><strong x-text="stopById(id).customer_name"></strong><span x-text="stopById(id).address"></span><div><span class="plan-arrival" x-text="planArrival(index)"></span><span class="plan-window" x-text="id===urgentId?'By 10:00':stopById(id).time_window"></span></div></div><span class="risk-badge" x-show="id===urgentId" x-text="planView==='suggested'?'First':'At risk'"></span></div></template></div>
+    <div class="remaining-stops" x-text="'+ '+(count('pending')-displayedPlan.length)+' more stops keep their current order'">+ 20 more stops keep their current order</div>
+    <div class="why-plan"><h3>Why this order?</h3><p>Wattle’s window closes first. Visit it before Banksia Medical, whose window runs until 12:00.</p><p>Allows 5 minutes at each stop and keeps the remaining stops together.</p></div><div class="plan-source">Today’s assigned run · 24 pending stops<br>Route estimates updated at 09:42</div>
+  </div><footer class="plan-footer"><p>Only your stop order changes. Delivery results stay as they are.</p><button class="primary" @click="applyPlan()" :disabled="!online || planStale"><span x-text="!online?'Connect to apply this order':planStale?'Refresh suggestion first':'Use this stop order'"></span><span>→</span></button><button class="text-action" x-show="planStale && online" @click="refreshPlan()">Refresh suggestion</button><button class="secondary" @click="nextPanel='';clearRoute()">Keep current order</button></footer>
+</section>
+<div class="applied-notice" x-cloak x-show="planApplied && nextPanel==='' && !detailOpen && !listOpen"><span>✓ New order ready</span><button @click="undoPlan()">Undo</button></div>
+<div class="session-banner" x-cloak x-show="sessionExpired && nextPanel==='' && !detailOpen && !listOpen"><span>Session expired · updates saved</span><button @click="nextPanel='expired'">Sign in</button></div>

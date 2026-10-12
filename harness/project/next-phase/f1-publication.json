@@ -1,0 +1,38 @@
+{
+  "contract_revision": 4,
+  "date": "2026-10-12",
+  "historical_publication": "publication.json remains prepare receipt",
+  "receipts": [
+    {
+      "number": 42,
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/42",
+      "state": "OPEN",
+      "body_sha256": "eaf411b8b103631dd00bb005804c3332ddeb1ab3c728f8f0db8d4bab08b2c2d4",
+      "readback_verified": true
+    },
+    {
+      "number": 48,
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/48",
+      "state": "OPEN",
+      "body_sha256": "54fe266e77532433f767e58e15d44d9e678a9fc128283f81ce711bdb62fc61f6",
+      "readback_verified": true
+    },
+    {
+      "number": 49,
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/49",
+      "state": "OPEN",
+      "body_sha256": "87f536528b1445cd2bbc4cc8403194c02d00102ad63412bf8b13517e2b0d93ea",
+      "readback_verified": true
+    },
+    {
+      "number": 48,
+      "blocked_by_numbers": [],
+      "readback_verified": true
+    },
+    {
+      "number": 49,
+      "blocked_by_numbers": [],
+      "readback_verified": true
+    }
+  ]
+}

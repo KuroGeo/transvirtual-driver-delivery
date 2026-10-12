@@ -1,0 +1,1296 @@
+{
+  "schema_version": 1,
+  "package": "NEXT-PHASE",
+  "mode": "prepare",
+  "contract_revision": 3,
+  "source_baseline": "e8276b4cc641b57fb70ee61401ccf3dd7e84871e",
+  "repository": "KuroGeo/transvirtual-driver-delivery",
+  "prototype_approval": {
+    "date": "2026-10-12",
+    "statement": "原型可以。你提issue的时候，像之前一样把任务做好harness，如果大的话，要拆解子issue。",
+    "default_home": "A",
+    "identity_assumption": "Go 用户表/认证/会话+前端登录；沿用受信身份原型，不做B端/用户管理"
+  },
+  "publication_status": "published",
+  "github_parent": {
+    "number": 42,
+    "issue_id": 5803761182,
+    "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/42",
+    "state": "open",
+    "body_sha256": "a26bb7c349a81fab462c269fe1b16409834b7d580cb862e00b2db00be7c013e2"
+  },
+  "source_ref": "c67a0dd29b8b8e10c3beabbb4e1a70a1861951e3",
+  "concurrency_limit": 4,
+  "production_eligible": false,
+  "enforcement_deployed": false,
+  "shared_file_owners": {
+    "app/pubspec.yaml": "NP10",
+    "app/pubspec.lock": "NP10",
+    "app/lib/main.dart": "NP10",
+    "app/lib/app": "NP10",
+    "app/lib/ui/core": "NP10",
+    "app/android": "NP10",
+    "app/ios": "NP10",
+    "app/lib/data/delivery": "NP03",
+    "app/lib/models/delivery.dart": "NP03",
+    ".github/workflows": "NP01",
+    "service/go.mod": "NP15",
+    "service/go.sum": "NP15",
+    "service/cmd/api": "NP15",
+    "service/internal/platform": "NP15",
+    "service/api": "NP15",
+    "service/migrations": "NP15"
+  },
+  "tasks": [
+    {
+      "id": "NP00",
+      "title": "冻结账号、导航和助手合同及真实接入配置",
+      "kind": "engineering",
+      "role": "requirements-and-coordinator",
+      "requirements": [
+        "NP-R01",
+        "NP-R02",
+        "NP-R04",
+        "NP-R08",
+        "NP-R09",
+        "NP-R13",
+        "NP-R14",
+        "NP-R16",
+        "NP-R19",
+        "NP-R17"
+      ],
+      "depends_on": [],
+      "external_dependencies": [],
+      "write_scope": [
+        "docs/next-phase-solution-design.md",
+        "harness/project/next-phase",
+        "docs/next-phase"
+      ],
+      "skills": [
+        "engineering-requirements-extract",
+        "harness-engineering"
+      ],
+      "acceptance": [
+        "确认受信 issuer/native client/redirect、scope 映射、离线授权期限/撤权策略、派单/ACK 与服务实现仓库和负责人；缺配置明确 blocked。 去重保留期覆盖最大离线/重试，明确永久拒绝、离线撤权与授权期限。",
+        "冻结道路/地图许可与缓存、服务日期/IANA 时区/时窗/停留、车型约束、目标 OS、模型数据地区/保留及 30 站性能/成本预算。 冻结算法来源/预算、起点年龄精度与 ETA 重算阈值，按 OS 选择 Apple URL/兼容方式。",
+        "固定接口所有者、运行模式 demo/local-client/connected、迁移策略、验收 ID 和最低证据；connected 缺配置失败，不回退 fake。",
+        "冻结 Go 用户表/认证/会话、REST/时间TTL和单写所有权；不做B端/用户管理，不再等待管理原型；本期路线直连第三方、AI客户端分层与后续Go迁移。"
+      ],
+      "recovery": "合同改动、缺来源或共享写域冲突阻止派工；保留旧合同及已接受基线。",
+      "outputs": [
+        "冻结合同、配置缺口清单、预算/设备矩阵和可派工接口交接。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "contract",
+        "evidence_kind": "contract",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py quality",
+          "availability": "now",
+          "purpose": "当前候选本地基线，不证明真实服务/真机/新功能"
+        }
+      ],
+      "status": "planned",
+      "github": {
+        "number": 43,
+        "issue_id": 5803761849,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/43",
+        "state": "open",
+        "body_sha256": "fbf58ad639df059410e3b6f04c129af01f7fb4616d405542478cd038fb4328fd",
+        "parent_number": 42,
+        "blocked_by_numbers": []
+      },
+      "body_sha256": "fbf58ad639df059410e3b6f04c129af01f7fb4616d405542478cd038fb4328fd",
+      "features": [
+        "F1",
+        "F2",
+        "F3"
+      ]
+    },
+    {
+      "id": "NP01",
+      "title": "扩展 Harness 的账号、路线与 Agent 观察和门禁",
+      "kind": "engineering",
+      "role": "harness-engineer",
+      "requirements": [
+        "NP-R14",
+        "NP-R15",
+        "NP-R16"
+      ],
+      "depends_on": [
+        "NP00"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "harness/checks.py",
+        "harness/next_phase.py",
+        "harness/run.py",
+        "harness/gate.py",
+        "harness/state.py",
+        "harness/native_workbench.py",
+        "harness/tests",
+        "harness/fixtures/next_phase",
+        "harness/project/next-phase/native-contract.json",
+        ".github/workflows"
+      ],
+      "skills": [
+        "harness-engineering"
+      ],
+      "acceptance": [
+        "实现 NP 新原生/服务验收合同和受控 fixture；旧 N1–N7/revision6 继续有效，新能力未覆盖时门禁拒绝。",
+        "观察真实 scope/generation、请求/ACK、计划 revision、提醒/工具、进程 PID 与独立重启；记录服务/模型配置版本和 fixture/live 类型。",
+        "新增故障注入、超时/取消/恢复与 fresh attempt 候选绑定；网页冒充原生、旧配置/旧候选、缺日志/hash/案例必须拒绝。",
+        "提供 Go/API/PostgreSQL fixture 与日志观察、新全站权限/并发/会话评测；观察 local/remote-fixture executorKind，路线 trace 不经过自建后端。"
+      ],
+      "recovery": "中断仅清理任务自有进程/设备/租用；原报告字节保留，恢复另建 attempt。",
+      "outputs": [
+        "已实现检查/工具、反例日志、Runner 帮助与原生/服务合同 revision；不能只交文档。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "harness",
+        "evidence_kind": "harness",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py quality",
+          "availability": "now",
+          "purpose": "当前候选本地基线，不证明真实服务/真机/新功能"
+        }
+      ],
+      "status": "planned",
+      "github": {
+        "number": 44,
+        "issue_id": 5803762325,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/44",
+        "state": "open",
+        "body_sha256": "7988d2fa065556251a86645beb846007d61b55320f52dd2b97ee0ab652a9b6fe",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          43
+        ]
+      },
+      "body_sha256": "7988d2fa065556251a86645beb846007d61b55320f52dd2b97ee0ab652a9b6fe",
+      "features": [
+        "F1",
+        "F2",
+        "F3"
+      ]
+    },
+    {
+      "id": "NP02",
+      "title": "用 Go 实现用户表、登录会话和派单持久 ACK",
+      "kind": "engineering",
+      "role": "service-engineer",
+      "requirements": [
+        "NP-R01",
+        "NP-R02",
+        "NP-R03",
+        "NP-R13",
+        "NP-R17"
+      ],
+      "depends_on": [
+        "NP15"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "service/internal/identity",
+        "service/internal/session",
+        "service/internal/delivery",
+        "service/tests/identity",
+        "service/tests/delivery",
+        "app/lib/data/services/authenticated_transport.dart",
+        "app/test/data/services/authenticated_transport_test.dart",
+        "service/internal/users"
+      ],
+      "skills": [
+        "harness-engineering",
+        "flutter-development"
+      ],
+      "acceptance": [
+        "Go验证受信issuer/subject/nonce/一次性登录事务，事务创建/取得users/external_identities；用户主键不是email，并发可信首次登录唯一。本站短期访问会话/轮换refresh，/me只返回本人，派单/模型读取校验会话、user状态与资源归属；没有用户管理/B端。",
+        "稳定服务端 dataset/stop/snapshotVersion；原子持久接受 operationId+payload 并幂等 ACK；同 ID 不同 payload 拒绝，ACK 绑定完整账号/批次/站点。 去重保留期覆盖离线/重试；401 暂停，403/撤权/业务冲突/永久拒绝保留 outbox 与依据并停止自动重发，拒绝不得 ACK。",
+        "受控服务协议测试覆盖响应丢失后重试、token 过期/撤权、错 scope 与持久接受失败；NP13 另签真实企业服务。",
+        "按NP15的Go用户/认证协议实现，不另造启动或schema；会话失效/退出、refresh重放、IdP再验证期限及在途提交前授权检查有Go/DB测试。workspace仅受信业务namespace，不是组织成员/角色系统。",
+        "refresh family/token 在数据库事务锁/CAS 中单次消费，多副本最多一个请求成功，重放原子撤销 family；刷新响应丢失不得盲重试旧 token，安全幂等恢复或重新认证。",
+        "用户/会话表时间使用timestamptz与服务端UTC/RFC3339；注入Clock验证TTL、过期边界和时钟变化，不信客户端时钟。无 /users 管理列表/CRUD、邀请、成员或角色API。"
+      ],
+      "recovery": "服务未持久接受不得 ACK；身份/配置未知失败闭合。现有后端若承载本协议，NP00 先登记实际仓库与写域再派工。",
+      "outputs": [
+        "Go users/identity/session/delivery模块、用户/会话schema需求、登录/刷新/退出/me协议、受控SQL/HTTP回归及ACK原始记录。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "host",
+        "evidence_kind": "host",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py test --target test/data/services/authenticated_transport_test.dart",
+          "availability": "planned",
+          "purpose": "实现目标文件及 NP01 协议后执行；当前不得运行或写 passed"
+        }
+      ],
+      "status": "planned",
+      "github": {
+        "number": 45,
+        "issue_id": 5803762780,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/45",
+        "state": "open",
+        "body_sha256": "ea0d8f074549eb3edf83edbb986f8b28cd735b9661ffda6c176713c9189dced3",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          59
+        ]
+      },
+      "body_sha256": "ea0d8f074549eb3edf83edbb986f8b28cd735b9661ffda6c176713c9189dced3",
+      "features": [
+        "F2"
+      ]
+    },
+    {
+      "id": "NP03",
+      "title": "按账号隔离 SQLite、计划与在途同步",
+      "kind": "feature",
+      "role": "data-engineer",
+      "requirements": [
+        "NP-R02",
+        "NP-R03",
+        "NP-R07",
+        "NP-R12"
+      ],
+      "depends_on": [
+        "NP02"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "app/lib/models/account.dart",
+        "app/lib/models/delivery.dart",
+        "app/lib/data/account",
+        "app/lib/data/delivery",
+        "app/test/data/account",
+        "app/test/data/account_scope_test.dart"
+      ],
+      "skills": [
+        "flutter-development",
+        "harness-engineering"
+      ],
+      "acceptance": [
+        "A 离线保存后退出/进入 B，B 不能读取或发送 A 数据；A 重登保留原 operationId 并继续匹配确认。",
+        "换账号、退出、授权失效、重登重置均递增 generation；旧 ACK 仅按原 scope 收尾原库，旧查询/refresh/路线/AI 不能改新 UI、凭据或恢复旧会话。 只有尚未超时且匹配原请求 ACK 可在开放旧容器收尾；超时迟到拒绝。",
+        "legacy/demo 库不自动绑定首个账号；有受信归属证据才事务迁移，失败回滚；账号、计划/提醒配置冷启按原作用域恢复。"
+      ],
+      "recovery": "数据库/ACK 落盘失败不移除 outbox；停用旧容器时隔离/等待在途收尾，禁止提前关库。",
+      "outputs": [
+        "migration/schema 增量、scope 容器及同步回归、进程边界交给 NP12。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "host",
+        "evidence_kind": "host",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py test --target test/data/account_scope_test.dart",
+          "availability": "planned",
+          "purpose": "实现目标文件及 NP01 协议后执行；当前不得运行或写 passed"
+        }
+      ],
+      "status": "planned",
+      "github": {
+        "number": 46,
+        "issue_id": 5803763335,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/46",
+        "state": "open",
+        "body_sha256": "b97dc51e585538e133ec8c9e05e13667dc1597aa27e3e8e66f74bf94ea9a7af2",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          45
+        ]
+      },
+      "body_sha256": "b97dc51e585538e133ec8c9e05e13667dc1597aa27e3e8e66f74bf94ea9a7af2",
+      "features": [
+        "F2"
+      ]
+    },
+    {
+      "id": "NP04",
+      "title": "完成企业登录、刷新、过期和退出的客户端生命周期",
+      "kind": "feature",
+      "role": "identity-client-engineer",
+      "requirements": [
+        "NP-R01",
+        "NP-R02",
+        "NP-R03",
+        "NP-R12"
+      ],
+      "depends_on": [
+        "NP03"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "app/lib/data/session",
+        "app/lib/platform/identity",
+        "app/lib/ui/session",
+        "app/test/session_lifecycle_test.dart"
+      ],
+      "skills": [
+        "flutter-development"
+      ],
+      "acceptance": [
+        "系统浏览器授权码+PKCE，受信公司配置、一次消费 state/nonce/issuer/audience/回调，取消/失败可重试；不收企业密码。",
+        "系统安全存储凭据；单一 refresh 支持 IdP 旋转/重放防护；并发刷新、重复回调与退出后的迟到成功不恢复会话。",
+        "过期暂停远端访问并保留原 scope 队列；同账号重登恢复；退出清凭据、锁业务视图且显示保留数量。"
+      ],
+      "recovery": "安全存储失败不宣告已登录；离线读写期限按 NP00 合同，撤权/未知归属不可继续联网。",
+      "outputs": [
+        "登录状态机/platform 适配/页面及回归；装配和平台工程配置需求交 NP10，真实 SSO 交 NP13。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "host",
+        "evidence_kind": "host",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py test --target test/session_lifecycle_test.dart",
+          "availability": "planned",
+          "purpose": "实现目标文件及 NP01 协议后执行；当前不得运行或写 passed"
+        }
+      ],
+      "status": "planned",
+      "github": {
+        "number": 47,
+        "issue_id": 5803764088,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/47",
+        "state": "open",
+        "body_sha256": "c80d1c8b48a98864aa07a3439f480f6e90bf9b5aee0a993fb4f3fb54abc78fde",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          46
+        ]
+      },
+      "body_sha256": "c80d1c8b48a98864aa07a3439f480f6e90bf9b5aee0a993fb4f3fb54abc78fde",
+      "features": [
+        "F2"
+      ]
+    },
+    {
+      "id": "NP05",
+      "title": "在客户端直连第三方道路路线与 ETA",
+      "kind": "feature",
+      "role": "routing-engineer",
+      "requirements": [
+        "NP-R04",
+        "NP-R08",
+        "NP-R12",
+        "NP-R13"
+      ],
+      "depends_on": [
+        "NP03"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "app/lib/models/route.dart",
+        "app/lib/data/routes",
+        "app/test/route_repository_test.dart"
+      ],
+      "skills": [
+        "flutter-development"
+      ],
+      "acceptance": [
+        "受信起点/定位时间精度、stop/inputRevision 请求道路路线；响应带 provider/configRevision/computedAt/expiresAt/几何/距离/时长。 响应包含 departureAt/durationBasis，静态路网耗时注明不含实时交通，不能冒称交通感知 ETA。 包含 arrivalAt、可取得的 roadDataVersion，多站 ETA 含窗口等待/服务时长。",
+        "迟到 A 路线不能覆盖新 B；权限拒绝/过旧定位支持显式手选起点，缺服务不以直线或固定测试点伪造 ETA。",
+        "覆盖 timeout、不可达、部分失败、限额及合法缓存；地图/归属/缓存契约合规，真实供应商测试另在 NP13。",
+        "RouteRepository 直连第三方 SDK/API，不新增自己的 routes/matrix/代理服务；第三方请求不携本站 token/司机身份/备注。仅用允许分发的客户端凭据，需私密服务密钥的供应商不用于本期直连；基础 Maps 交接不依赖道路配置。"
+      ],
+      "recovery": "取消与有界重试；过期缓存标旧，不称实时，服务配置变更拒绝恢复旧结果。",
+      "outputs": [
+        "纯 Dart 路线合同与客户端第三方 adapter、许可/凭据约束、直连 trace 和受控道路/矩阵回归；没有自建 routes 服务。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "host",
+        "evidence_kind": "host",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py test --target test/route_repository_test.dart",
+          "availability": "planned",
+          "purpose": "实现目标文件及 NP01 协议后执行；当前不得运行或写 passed"
+        }
+      ],
+      "status": "planned",
+      "github": {
+        "number": 48,
+        "issue_id": 5803764884,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/48",
+        "state": "open",
+        "body_sha256": "b2cfb3b7495b3a44c98a8d2bb13c2da17cce7868fb1615d2d072945618d1dbd3",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          46
+        ]
+      },
+      "body_sha256": "b2cfb3b7495b3a44c98a8d2bb13c2da17cce7868fb1615d2d072945618d1dbd3",
+      "features": [
+        "F1"
+      ]
+    },
+    {
+      "id": "NP06",
+      "title": "交接外部地图并返回正确站点",
+      "kind": "feature",
+      "role": "navigation-engineer",
+      "requirements": [
+        "NP-R04",
+        "NP-R05",
+        "NP-R06"
+      ],
+      "depends_on": [
+        "NP04"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "app/lib/platform/navigation",
+        "app/lib/platform/location",
+        "app/lib/ui/navigation",
+        "app/test/navigation_handoff_test.dart"
+      ],
+      "skills": [
+        "flutter-development"
+      ],
+      "acceptance": [
+        "详情→道路预览→用户选择地图→编码白名单目的地交接；handoff 不等同真正导航或到站。",
+        "未安装/打开失败/定位拒绝提供另一应用或复制地址；不同 OS/App 的实际行为在 NP12/NP13 验证。",
+        "返回恢复 scope/dataset/stopId/origin/query/viewport；换账号/站点失效不能恢复旧视图，到站和配送终态继续手动。",
+        "缺应用内路线/矩阵配置或道路请求失败仍可外部 Maps URL/Intent 交接，不依赖本站 routes API；外部结果不冒充应用内 ETA。"
+      ],
+      "recovery": "导航退回/取消不修改配送/outbox；外部路线与 Ocean 预览可能不同，界面表达交接边界。",
+      "outputs": [
+        "NavigationGateway/location 适配、预览/选择器及返回回归；平台配置交 NP10。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "host",
+        "evidence_kind": "host",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py test --target test/navigation_handoff_test.dart",
+          "availability": "planned",
+          "purpose": "实现目标文件及 NP01 协议后执行；当前不得运行或写 passed"
+        }
+      ],
+      "status": "planned",
+      "github": {
+        "number": 49,
+        "issue_id": 5803765741,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/49",
+        "state": "open",
+        "body_sha256": "7ea1ac486ba643df31e1d0ce22cd6ccf07bc97e03f5f09dd9e8f9d852797a829",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          47
+        ]
+      },
+      "body_sha256": "7ea1ac486ba643df31e1d0ce22cd6ccf07bc97e03f5f09dd9e8f9d852797a829",
+      "features": [
+        "F1"
+      ]
+    },
+    {
+      "id": "NP07",
+      "title": "原子应用时间窗派送计划并支持有条件撤销",
+      "kind": "feature",
+      "role": "planning-engineer",
+      "requirements": [
+        "NP-R07",
+        "NP-R08",
+        "NP-R11",
+        "NP-R12"
+      ],
+      "depends_on": [
+        "NP05"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "app/lib/models/plan.dart",
+        "app/lib/data/plans",
+        "app/test/plan_repository_test.dart"
+      ],
+      "skills": [
+        "flutter-development"
+      ],
+      "acceptance": [
+        "30 站完整 pending 集与道路矩阵/时区/窗口/停留/固定顺序约束产生逐站验证的可行提案；不可达、搜索预算耗尽和已证明冲突分开，启发式未找到方案不能宣称无解/全局最优或静默漏站。",
+        "应用核验 scope/dataset/baseRevision/inputFingerprint/expiry/完整唯一站点集并事务落盘；双击幂等，失败不改 UI。",
+        "activeStopOrder/下一站/列表同版，重启恢复；Undo 仅同版本且输入仍有效，配送完成/派单/位置约束变化拒绝旧提案与旧撤销。",
+        "本期客户端 PlanningEngine 通过注入的第三方矩阵生成提案，隔离 PlanningPort 供后续 Go Agent 使用，不新增自建 planning/routes 服务。"
+      ],
+      "recovery": "计划存储独立，应用/Undo 不更改终态、失败原因、统计或配送 outbox；优化器不把 OSRM Trip 当时间窗解。",
+      "outputs": [
+        "确定性规划/PlanRepository、原子 Apply/Undo 与 stale 回归；计划共享不复用结果 outbox。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "host",
+        "evidence_kind": "host",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py test --target test/plan_repository_test.dart",
+          "availability": "planned",
+          "purpose": "实现目标文件及 NP01 协议后执行；当前不得运行或写 passed"
+        }
+      ],
+      "status": "planned",
+      "github": {
+        "number": 50,
+        "issue_id": 5803766380,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/50",
+        "state": "open",
+        "body_sha256": "a52430632bacef020d38e212fbeec9c3cfb0f8a5e9446dd54c58733891fd8367",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          48
+        ]
+      },
+      "body_sha256": "a52430632bacef020d38e212fbeec9c3cfb0f8a5e9446dd54c58733891fd8367",
+      "features": [
+        "F3"
+      ]
+    },
+    {
+      "id": "NP08",
+      "title": "以确定性规则提供时效提醒与下一站提示",
+      "kind": "feature",
+      "role": "reminder-engineer",
+      "requirements": [
+        "NP-R09",
+        "NP-R12"
+      ],
+      "depends_on": [
+        "NP04",
+        "NP07"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "app/lib/models/reminder.dart",
+        "app/lib/data/reminders",
+        "app/lib/platform/notifications",
+        "app/lib/ui/reminders",
+        "app/test/reminder_policy_test.dart"
+      ],
+      "skills": [
+        "flutter-development"
+      ],
+      "acceptance": [
+        "注入时钟与 IANA 时区/服务日期，跨午夜/DST/时钟变化重算；有道路 ETA 才称迟到风险，无 ETA 只提示窗口临近。",
+        "scope+serviceDate+stop+windowId+rule 稳定键去重/暂缓，planRevision 仅核验新鲜度；重算不重置 snooze，终态/换号清对应提醒，冷启/恢复前台不重复轰炸。 稳定键包含 dataset；换号仅取消可见/系统通知，保留旧账号设置、去重和暂缓。",
+        "前台提醒正常工作，本地通知按实际权限降级并最小化锁屏信息；不声明后台持续定位或语音能力已交付。"
+      ],
+      "recovery": "权限拒绝不反复申请；计划/路线过期刷新依据，未解析 timeWindow 明示 unknown。",
+      "outputs": [
+        "ReminderPolicy/notification 适配与回归；原生通知/恢复交 NP12。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "host",
+        "evidence_kind": "host",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py test --target test/reminder_policy_test.dart",
+          "availability": "planned",
+          "purpose": "实现目标文件及 NP01 协议后执行；当前不得运行或写 passed"
+        }
+      ],
+      "status": "planned",
+      "github": {
+        "number": 51,
+        "issue_id": 5803767043,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/51",
+        "state": "open",
+        "body_sha256": "6af2e4184b420a47fa69cc247ecbea1df44ab996615cf1269a2c0fe12dada7a8",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          47,
+          50
+        ]
+      },
+      "body_sha256": "6af2e4184b420a47fa69cc247ecbea1df44ab996615cf1269a2c0fe12dada7a8",
+      "features": [
+        "F3"
+      ]
+    },
+    {
+      "id": "NP09",
+      "title": "提供可迁移的客户端 AI 执行器与受限工具",
+      "kind": "feature",
+      "role": "assistant-runtime-engineer",
+      "requirements": [
+        "NP-R08",
+        "NP-R10",
+        "NP-R11",
+        "NP-R12",
+        "NP-R13",
+        "NP-R19"
+      ],
+      "depends_on": [
+        "NP02",
+        "NP07",
+        "NP08"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "app/lib/models/assistant.dart",
+        "app/lib/data/assistant",
+        "app/test/assistant_gateway_test.dart",
+        "service/internal/modelproxy",
+        "service/tests/modelproxy"
+      ],
+      "skills": [
+        "flutter-development",
+        "harness-engineering"
+      ],
+      "acceptance": [
+        "本期 LocalAssistantExecutor/纯 Dart AgentCore/ModelPort/ToolPort 分层，UI 只依赖 AssistantUseCase 与 v1 Request/Response。核心不依赖 Flutter/SQLite/平台；工具仅 getNextStop/getDeliveryRisks/previewPlan，受信会话注入 scope，schema/ID/状态/版本检查。Go modelproxy 仅模型访问/鉴权/配额，不运行 Agent 循环，secret 不进 App。",
+        "下一站/风险回答附版本、数据时间和来源；本地未同步终态优先，不伪造 ETA/同步成功；提案经 NP07 人工应用。 EffectiveSnapshot 带 serverSnapshotVersion/localRevision/operationId overlay/planRevision/inputFingerprint，执行器校验 scope 与合法状态，远端读取由服务端独立鉴权并标未确认来源；工具/优化器用同一有效 pending 集，客户端拒绝已变化指纹。 local overlay 明标 clientReported；远端刷新不能覆盖本地结果/原因/note/operationId/outbox，冲突显式呈现。",
+        "限制轮数/总时限/公司用户配额/成本，支持取消/请求去重/脱敏；越权 stop、注入、未知工具/额外参数拒绝，普通配送仍可继续。",
+        "同一 UseCase 切换到受控 RemoteAssistantExecutor 不改 UI/PlanRepository/ReminderDispatcher；共用可序列化协议、错误码和合同 fixture，事实/提案/拒绝等价。真实 Go Agent 属后续任务，本期不得用 fixture 宣称服务端化。",
+        "换号/取消/超时/旧 fingerprint 拒绝迟到输出，报告 executorKind/core/policy/model 版本。remote 失败不静默回退 local 重复执行；显式恢复用新 requestId，人工 Apply 保持客户端事务。",
+        "Go modelproxy 拒绝任意供应商 URL/原始请求；模型/schema/token 与 user/workspace 配额由服务端 policy 固定，原子预留/结算保证并发预算，取消已发生费用仍计入；未知接受状态不自动重放。"
+      ],
+      "recovery": "模型超时/拒绝/工具失败明确降级，离线只显示可访问缓存事实；无 completeDelivery/clearOutbox 工具。",
+      "outputs": [
+        "AssistantExecutor v1 schema/合同案例、可移植 AgentCore 与本地工具适配器、受控 Remote 替换评测、Go 模型代理与预算审计；后续 Go Agent 迁移清单。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "host",
+        "evidence_kind": "host",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py test --target test/assistant_gateway_test.dart",
+          "availability": "planned",
+          "purpose": "实现目标文件及 NP01 协议后执行；当前不得运行或写 passed"
+        }
+      ],
+      "status": "planned",
+      "github": {
+        "number": 52,
+        "issue_id": 5803767578,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/52",
+        "state": "open",
+        "body_sha256": "4548b653c1af4b4c00dc6d267e5b892f9596d2a65a980955c68d1fb7525d8ce5",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          45,
+          50,
+          51
+        ]
+      },
+      "body_sha256": "4548b653c1af4b4c00dc6d267e5b892f9596d2a65a980955c68d1fb7525d8ce5",
+      "features": [
+        "F3"
+      ]
+    },
+    {
+      "id": "NP10",
+      "title": "将登录、导航、提醒和助手接入已确认配送首页",
+      "kind": "feature",
+      "role": "flutter-integration-owner",
+      "requirements": [
+        "NP-R01",
+        "NP-R04",
+        "NP-R05",
+        "NP-R06",
+        "NP-R07",
+        "NP-R08",
+        "NP-R09",
+        "NP-R10",
+        "NP-R11",
+        "NP-R12",
+        "NP-R19"
+      ],
+      "depends_on": [
+        "NP06",
+        "NP08",
+        "NP09"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "app/lib/main.dart",
+        "app/lib/app",
+        "app/lib/ui/delivery_screen.dart",
+        "app/lib/ui/delivery_view_model.dart",
+        "app/lib/ui/delivery/query",
+        "app/lib/ui/delivery/list",
+        "app/lib/ui/delivery/map",
+        "app/lib/ui/delivery/detail",
+        "app/lib/ui/core",
+        "app/lib/ui/assistant",
+        "app/pubspec.yaml",
+        "app/pubspec.lock",
+        "app/android",
+        "app/ios",
+        "app/test/ui/next_phase_workbench_test.dart"
+      ],
+      "skills": [
+        "flutter-development"
+      ],
+      "acceptance": [
+        "按批准 A 地图首页装配账号容器、详情路线、下一站/提醒和按需助手；首页/列表/地图/详情/计划读取一致版本。",
+        "显式 demo/local-client/connected，connected 缺配置失败闭合；退出/重登/导航返回、离线/过期/AI 失败可操作。",
+        "提案先比较后人工 Apply/Undo，按钮状态和 stale 原因明确；沿用直接同步、来源返回与可读性/触控/动态字体要求。",
+        "启动装配分别选择运行模式与 assistantExecutorKind；本期 live local 与 remote-fixture 明标，页面不嵌 Agent 循环，远程失败不静默变执行位置。"
+      ],
+      "recovery": "单一 owner 写 pubspec/lock、系统配置、main/runtime、导航/主题；消费者不并写共享装配。",
+      "outputs": [
+        "Flutter 集成源码与独立 host/widget 回归；浏览器原型不能代签，送 NP11/NP12。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "host",
+        "evidence_kind": "host",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py test --target test/ui/next_phase_workbench_test.dart",
+          "availability": "planned",
+          "purpose": "实现目标文件及 NP01 协议后执行；当前不得运行或写 passed"
+        }
+      ],
+      "status": "planned",
+      "github": {
+        "number": 53,
+        "issue_id": 5803768606,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/53",
+        "state": "open",
+        "body_sha256": "d206762ec2a1f3fb333ae6900f018b2ea33946fd3770123bca83feb6f9d4fb40",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          49,
+          51,
+          52
+        ]
+      },
+      "body_sha256": "d206762ec2a1f3fb333ae6900f018b2ea33946fd3770123bca83feb6f9d4fb40",
+      "features": [
+        "F1",
+        "F2",
+        "F3"
+      ]
+    },
+    {
+      "id": "NP11",
+      "title": "独立评测账号恢复、规划不变量和 AI 越权拒绝",
+      "kind": "verification",
+      "role": "independent-test-and-harness-reviewer",
+      "requirements": [
+        "NP-R02",
+        "NP-R03",
+        "NP-R04",
+        "NP-R06",
+        "NP-R07",
+        "NP-R08",
+        "NP-R09",
+        "NP-R10",
+        "NP-R11",
+        "NP-R12",
+        "NP-R13",
+        "NP-R14",
+        "NP-R15",
+        "NP-R19",
+        "NP-R17"
+      ],
+      "depends_on": [
+        "NP10"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "app/test/next_phase",
+        "harness/evals/next_phase",
+        "harness/tests/test_next_phase_gate.py",
+        "harness/project/next-phase/requirement-matrix.json",
+        "service/tests/integration/next_phase"
+      ],
+      "skills": [
+        "engineering-flutter-testing",
+        "harness-engineering"
+      ],
+      "acceptance": [
+        "held-out 覆盖 A/B/同 email 不同 issuer、在途 ACK、持久接受响应丢失、刷新迟到/退出、安全存储与迁移失败。",
+        "覆盖路线 A/B 乱序、不可达/缺站、stale Apply/Undo/双击/落盘失败、时区/提醒重复；逐项核对 outbox/终态不变量。",
+        "独立注入/越权 stop/未知工具/错数字/超限/超时/取消/预算用例，记录每案事实/拒绝/恢复与原始参数；旧候选/配置/假原生门禁拒绝。 本地完成但服务端仍 pending 时，在线助手/优化排除该站且原 outbox 不变；普通重算不重复提醒或重置 snooze。",
+        "独立Go/PostgreSQL/HTTP评测首次登录并发/同email不同issuer/本人me与A/B数据归属/会话撤销/时钟/重启；执行器协议round-trip、local→remote-fixture替换与等价事实、核心依赖边界、第三方直连不漏本站token。",
+        "held-out验证首次可信用户落盘失败/会话轮换多副本并发及丢响应、模型代理预算预留/取消费用/未知接受状态；不新增管理端验收。"
+      ],
+      "recovery": "失败进入 rework，保留复现和原日志；评测者与实现者不能同一签字。",
+      "outputs": [
+        "独立逐需求结果、held-out 清单与精确 attempt/hash；缺数据或未跑不得 passed。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "host",
+        "evidence_kind": "host",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py test --target test/next_phase",
+          "availability": "planned",
+          "purpose": "实现目标文件及 NP01 协议后执行；当前不得运行或写 passed"
+        }
+      ],
+      "status": "planned",
+      "github": {
+        "number": 54,
+        "issue_id": 5803769348,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/54",
+        "state": "open",
+        "body_sha256": "9c2e41703516e33034af845b1afb22e5c3a67f0e6a71eaee8a418620ee1bad62",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          53
+        ]
+      },
+      "body_sha256": "9c2e41703516e33034af845b1afb22e5c3a67f0e6a71eaee8a418620ee1bad62",
+      "features": [
+        "F1",
+        "F2",
+        "F3"
+      ]
+    },
+    {
+      "id": "NP12",
+      "title": "独立原生验收登录、导航返回与杀进程恢复",
+      "kind": "verification",
+      "role": "native-acceptance-reviewer",
+      "requirements": [
+        "NP-R01",
+        "NP-R02",
+        "NP-R03",
+        "NP-R04",
+        "NP-R05",
+        "NP-R06",
+        "NP-R07",
+        "NP-R09",
+        "NP-R11",
+        "NP-R12",
+        "NP-R14",
+        "NP-R15"
+      ],
+      "depends_on": [
+        "NP11"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "app/integration_test/next_phase_acceptance_test.dart",
+        "harness/project/next-phase/native-contract.json",
+        "harness/native_workbench.py",
+        "harness/gate.py",
+        "harness/tests/test_next_phase_native.py"
+      ],
+      "skills": [
+        "flutter-native-acceptance",
+        "harness-engineering"
+      ],
+      "acceptance": [
+        "专用模拟器/设备执行系统登录回调、过期/退出换号、导航 App 交接/返回与定位/通知权限；写明可模拟与需物理设备部分。",
+        "真正结束原生 PID 后重开，核对原 scope/outbox operationId、计划 revision 与提醒设置；热重载/网页刷新不接受。",
+        "新合同 mandatory checks/事件/数据库证据全齐、精确候选和配置一致；原生门禁失败/缺项拒绝，不借用旧 N1–N7。"
+      ],
+      "recovery": "默认后台、专用资源租用；需要前台时逐步授权，后台失败不能抢占用户窗口。真实 SSO/导航 App 现场限制记录 NP13。",
+      "outputs": [
+        "原生逐场景判定、PID/截图/trace/DB 证据及平台矩阵；未测平台明确 pending。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "native",
+        "evidence_kind": "native",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py integration --device <专用设备ID> --target integration_test/next_phase_acceptance_test.dart",
+          "availability": "planned",
+          "purpose": "实现目标文件及 NP01 协议后执行；当前不得运行或写 passed"
+        }
+      ],
+      "status": "planned",
+      "github": {
+        "number": 55,
+        "issue_id": 5803770149,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/55",
+        "state": "open",
+        "body_sha256": "1209ca8f8e3fd69abb80effaf3cc3c95c3236eb04d7f976d4cc865ba2fbef21f",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          54
+        ]
+      },
+      "body_sha256": "1209ca8f8e3fd69abb80effaf3cc3c95c3236eb04d7f976d4cc865ba2fbef21f",
+      "features": [
+        "F1",
+        "F2",
+        "F3"
+      ]
+    },
+    {
+      "id": "NP13",
+      "title": "验收真实企业身份、派单 ACK、道路和模型服务",
+      "kind": "verification",
+      "role": "live-service-acceptance-reviewer",
+      "requirements": [
+        "NP-R01",
+        "NP-R02",
+        "NP-R03",
+        "NP-R04",
+        "NP-R05",
+        "NP-R08",
+        "NP-R10",
+        "NP-R13",
+        "NP-R14",
+        "NP-R15",
+        "NP-R16",
+        "NP-R19",
+        "NP-R17"
+      ],
+      "depends_on": [
+        "NP12"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "harness/evals/next_phase/live",
+        "harness/project/next-phase/live-contract.md"
+      ],
+      "skills": [
+        "harness-engineering",
+        "flutter-native-acceptance"
+      ],
+      "acceptance": [
+        "真实受信企业 A/B 账号鉴权、派单源与服务端持久接受/去重记录；撤权/过期/同账号恢复与跨账号拒绝实际有效。",
+        "真实道路供应商路线/矩阵/不可达/30 站约束与地图许可；真实导航 App 交接行为，ETA 新鲜度和缓存依据可追溯。",
+        "真实 Go 用户身份/会话与模型代理配置验证鉴权、来源、预算/限流/取消；客户端 LocalAssistantExecutor 使用真实代理，记录 executorKind 和部署版本。真实 Go Agent 尚属后续，remote-fixture 不代签服务端执行。"
+      ],
+      "recovery": "缺 IdP/后端/地图合同/模型/测试账号/设备则 blocked，不以模拟服务关闭；无部署/采购授权不擅自发布或创建凭据。",
+      "outputs": [
+        "脱敏真实服务回执、服务/模型版本、权限与接受证据、依赖缺口和逐需求结论。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "live",
+        "evidence_kind": "live",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py quality",
+          "availability": "now",
+          "purpose": "当前候选本地基线，不证明真实服务/真机/新功能"
+        },
+        {
+          "command": "NP01/NP00 冻结并实现的真实服务或物理设备评测入口",
+          "availability": "blocked",
+          "purpose": "取得外部资源并由 Runner 记录后才能执行，不是现有 CLI 命令"
+        }
+      ],
+      "status": "planned",
+      "github": {
+        "number": 56,
+        "issue_id": 5803770679,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/56",
+        "state": "open",
+        "body_sha256": "aae72cf94cc76c12a611500c610c5f07ec69c9c842025229a147dc060e67b6b3",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          55
+        ]
+      },
+      "body_sha256": "aae72cf94cc76c12a611500c610c5f07ec69c9c842025229a147dc060e67b6b3",
+      "features": [
+        "F1",
+        "F2",
+        "F3"
+      ]
+    },
+    {
+      "id": "NP14",
+      "title": "验证增量真机性能并交接现有发布门槛",
+      "kind": "verification",
+      "role": "performance-and-release-handoff-reviewer",
+      "requirements": [
+        "NP-R14",
+        "NP-R15",
+        "NP-R16"
+      ],
+      "depends_on": [
+        "NP13"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "harness/project/next-phase/performance-contract.md",
+        "harness/project/next-phase/handoff.md"
+      ],
+      "skills": [
+        "flutter-performance",
+        "engineering-release-handoff"
+      ],
+      "acceptance": [
+        "按 NP00 冻结预算在物理设备 profile/release 测 30 站启动、账号切换、地图/计划/Agent、耗时/内存/电量与服务成本。",
+        "保存机型/OS/配置/样本/p50/p95/trace/产物 hash；debug/模拟器不代签真机，预算缺失或失败不能写性能通过。",
+        "将本轮增量证据交 #31；强制执行交 #32；服务/资源/签名/渠道/授权交 #33。关闭本条仅代表交接，不意味着这些任务完成或生产发布。 #31/#32/#33 是证据接收方，非本条前置关闭条件；生产 no-go 时可完成本条交接。"
+      ],
+      "recovery": "禁止改历史通过结论或扩签旧证据；production_eligible/enforcement_deployed 无实际事实不得改变。",
+      "outputs": [
+        "真机性能报告、可复现候选与交付依赖表；所有未满足发布条件仍 no-go。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "device-performance",
+        "evidence_kind": "device-performance",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "合同/任务包结构，不证明功能"
+        },
+        {
+          "command": "python3 harness/run.py quality",
+          "availability": "now",
+          "purpose": "当前候选本地基线，不证明真实服务/真机/新功能"
+        },
+        {
+          "command": "NP01/NP00 冻结并实现的真实服务或物理设备评测入口",
+          "availability": "blocked",
+          "purpose": "取得外部资源并由 Runner 记录后才能执行，不是现有 CLI 命令"
+        }
+      ],
+      "status": "planned",
+      "github": {
+        "number": 57,
+        "issue_id": 5803771416,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/57",
+        "state": "open",
+        "body_sha256": "09b0d0a35f830cf90ec5e78fc5a5a30c7f8238e158a29967f268312782704f4c",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          56
+        ]
+      },
+      "body_sha256": "09b0d0a35f830cf90ec5e78fc5a5a30c7f8238e158a29967f268312782704f4c",
+      "handoff_issue_numbers": [
+        31,
+        32,
+        33
+      ],
+      "features": [
+        "F1",
+        "F2",
+        "F3"
+      ]
+    },
+    {
+      "id": "NP15",
+      "title": "建立 Go 用户认证后端的模块、OpenAPI 与迁移基线",
+      "kind": "engineering",
+      "role": "go-platform-owner",
+      "requirements": [
+        "NP-R01",
+        "NP-R13",
+        "NP-R14",
+        "NP-R17"
+      ],
+      "depends_on": [
+        "NP00",
+        "NP01"
+      ],
+      "external_dependencies": [],
+      "write_scope": [
+        "service/go.mod",
+        "service/go.sum",
+        "service/cmd/api",
+        "service/internal/platform",
+        "service/api",
+        "service/migrations",
+        "service/tests/contract"
+      ],
+      "skills": [
+        "harness-engineering",
+        "engineering-requirements-extract"
+      ],
+      "acceptance": [
+        "按Go模块化单体/PostgreSQL冻结handler→application→domain/ports→adapter，统一Actor/用户资源归属、REST/OpenAPI/错误和UTC/TTL；users/identity/session只支撑前端登录，不做B端/组织/RBAC管理。",
+        "单写 Go 依赖/启动/OpenAPI/schema/migration 集成，领域任务提交需求而不越界；数据库 fixture、迁移版本锁/expand-contract/回滚恢复与 Go race/vet/测试入口纳入 Harness，未有工具前 planned。",
+        "HTTP/context timeout、DB pool、graceful shutdown、health/readiness、secret/config 缺失失败、requestId/权限/ACK 日志脱敏；不加入自建 routes/matrix 服务，Go Agent 后续。"
+      ],
+      "recovery": "认证/数据库/迁移失败明确拒绝且不提交变更；重试保持幂等，保留原始attempt，不删除配送/outbox。",
+      "outputs": [
+        "Go 工程与共享接口/OpenAPI、数据库 migration/受控环境、配置/启动/关停/备份恢复合同及原始工具证据。"
+      ],
+      "handoff": "NP14 交现有 #31/#32/#33；其余按 depends_on 反向消费者交接，主控接受后解锁。",
+      "verification": {
+        "level": "host",
+        "evidence_kind": "host",
+        "status": "planned",
+        "evidence": []
+      },
+      "commands": [
+        {
+          "command": "python3 harness/run.py check",
+          "availability": "now",
+          "purpose": "任务包结构，不证明 Go 后端已实现"
+        },
+        {
+          "command": "cd service && go test -race ./...",
+          "availability": "planned",
+          "purpose": "NP15 Go 工程和 NP01/NP15 数据库 fixture/日志入口实现后执行；当前不可报告 passed"
+        },
+        {
+          "command": "cd service && go vet ./...",
+          "availability": "planned",
+          "purpose": "Go 工程与依赖锁定后执行"
+        }
+      ],
+      "status": "planned",
+      "github": {
+        "number": 59,
+        "issue_id": 5804231215,
+        "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/59",
+        "state": "open",
+        "body_sha256": "98b4cc3c41ae11264b2dc5656c64191650e1d2a3e229994d35a94b0bd26ca341",
+        "parent_number": 42,
+        "blocked_by_numbers": [
+          43,
+          44
+        ]
+      },
+      "features": [
+        "F2"
+      ],
+      "body_sha256": "98b4cc3c41ae11264b2dc5656c64191650e1d2a3e229994d35a94b0bd26ca341"
+    }
+  ],
+  "epic_body_sha256": "a26bb7c349a81fab462c269fe1b16409834b7d580cb862e00b2db00be7c013e2",
+  "architecture_decisions": {
+    "routing": "client-direct-third-party-no-own-routing-backend",
+    "identity": "go-user-auth-no-b-end",
+    "assistant": "client-executor-now-server-executor-later"
+  },
+  "source_ref_pending": false,
+  "source_manifest": {
+    "docs/next-phase-solution-design.md": "4f4fb30966a1cff433b19cf05b7dea25fce36e9cbf813698b40e811aee9352c1",
+    "docs/next-phase/assistant.md": "eed19b45ab5a56e261e1bfc635f8b73c27dbf1c64ed2f564025a54f12e52d9e7",
+    "docs/next-phase/backend-go.md": "c878e0017465562d92a9f95c6f8d4e164c01fb93e478b687591d1581a8633020",
+    "docs/next-phase/identity.md": "5b67811b94640a61048be76317460c4c8c6e6ce9088521e508cec7a476cd0c3d",
+    "docs/next-phase/routing.md": "111891a1c915af46140f2369690924d6fd44ec2771e52fad87e12a3cc1c3a635",
+    "prototype/next-phase/README.md": "846fa9871ccc61b720570580d4aa783de134c78f46df9c89aee35dc02056fdf3",
+    "prototype/next-phase/assistant.html": "eaf4f2204c670032837a4eec1e1293e6052353600e37ee8a1ab9c024eb7311dd",
+    "prototype/next-phase/identity.html": "7a3c6781e2ea7db12dee9b5493d61c524e5ee81b1e5773d851c27281d35e965a",
+    "prototype/next-phase/next.js": "93d6c2701f141841f7ed3941191042efcb58be3351d1943e3efee75d40f1ef8b",
+    "prototype/next-phase/routing.html": "b391288640f6c1afd43ad18294a58123ea6da1b42b4a43141b506edc1e58cd15"
+  }
+}

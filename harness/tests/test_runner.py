@@ -1,4 +1,5 @@
 import io
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -64,6 +65,29 @@ class RunnerTests(unittest.TestCase):
         format_stage = next(x for x in run.stages("quality", self.root / "run", "candidate", options=options, root=self.root) if x[0] == "format")
         self.assertIn("integration_test", format_stage[1])
 
+    def test_quality_records_original_machine_stream_and_regenerates_it_on_resume(self):
+        captured = []
+        def execute(argv, cwd, log, timeout, lock_fds, on_spawn, context=None, **kwargs):
+            code = self.stage(argv, cwd, log, timeout, lock_fds, on_spawn, context, **kwargs)
+            if "--file-reporter" in argv:
+                path = Path(argv[argv.index("--file-reporter") + 1].removeprefix("json:"))
+                path.write_text('{"type":"start","protocolVersion":"0.1.1"}\n{"type":"done","success":true}\n')
+                captured.append(path)
+            return code
+        self.assertEqual(self.cli(["quality"], execute)[0], 0)
+        directory = next((self.root / "harness/runs").glob("*-quality"))
+        report, leaf, mirror = run.resume_report(directory)
+        machine = report["stages"][-1]["machine_report"]
+        self.assertEqual(Path(machine["path"]), leaf.parent / "flutter-tests.events.jsonl")
+        original = captured[0].read_bytes()
+        self.assertEqual(machine["sha256"], hashlib.sha256(original).hexdigest())
+        report["job"]["pid"] = None
+        run.save_attempt(directory, leaf.parent, report, mirror)
+        self.assertEqual(self.cli(["quality", "--resume", str(directory)], execute)[0], 0)
+        self.assertEqual(len(captured), 2)
+        self.assertNotEqual(captured[0], captured[1])
+        self.assertEqual(captured[0].read_bytes(), original)
+
     def test_invalid_paths_missing_device_and_simulator_modes_reject_before_execution(self):
         cases = [
             ["build", "--build-mode", "profile"],
@@ -112,6 +136,25 @@ class RunnerTests(unittest.TestCase):
         self.assertFalse(isolated.exists())
         self.assertTrue((self.root / "app/build/private-output").exists())
 
+    def test_missing_approved_git_object_fails_cli_before_stages_and_preserves_cleanup_report(self):
+        package = self.root / "harness/project/next-phase/backlog.json"
+        package.parent.mkdir(parents=True)
+        package.write_text(json.dumps({"source_ref_pending": False, "source_ref": "0" * 40,
+                                       "source_manifest": {"app/lib/main.dart": hashlib.sha256((self.root / "app/lib/main.dart").read_bytes()).hexdigest()}}))
+        executed = []
+        code, message = self.cli(["quality", "--isolated"], lambda *args, **kwargs: executed.append(args))
+        self.assertEqual(code, 1)
+        self.assertFalse(executed)
+        self.assertIn("approved Git commit object", message)
+        directory = next((self.root / "harness/runs").glob("*-quality"))
+        report, leaf, unused = run.resume_report(directory)
+        self.assertEqual(report["job"]["status"], "failed")
+        self.assertIn("unavailable", report["error"])
+        self.assertEqual(report["stages"], [])
+        self.assertTrue(report["isolation"]["cleaned"])
+        self.assertFalse(Path(report["execution_root"]).exists())
+        self.assertEqual(report["lease"]["status"], "released")
+
     def test_isolated_clone_source_mutation_is_stale_even_when_origin_is_unchanged(self):
         fingerprint = run.checks.fingerprint(self.root)
         def mutation(argv, cwd, log, timeout, lock_fds, on_spawn, context=None, **kwargs):
@@ -157,6 +200,85 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(value["entrypoint"], "lib/main.dart")
         self.assertEqual(manifest["entrypoint"], "lib/main.dart")
         self.assertFalse(value["signed_for_production"])
+        self.assertFalse((output / "artifact-ios-build/Runner.app").exists())
+        self.assertEqual((application / "Runner").read_bytes(), b"test executable")
+        run.gate.Validator.compiled_archive({"raw": Path(value["path"]).read_bytes()}, manifest)
+
+    def native_build_fixture(self):
+        application = self.root / "app/build/ios/iphonesimulator/Runner.app"
+        application.mkdir(parents=True)
+        (application / "Runner").write_bytes(b"original native executable")
+        (application / "RunnerAlias").symlink_to("Runner")
+        disposable = self.root / "app/build/ios/Debug-iphonesimulator"
+        disposable.mkdir()
+        (disposable / "duplicate-intermediates").write_bytes(b"disposable duplicate")
+        untouched = self.root / "app/.dart_tool/current"
+        untouched.parent.mkdir()
+        untouched.write_bytes(b"keep compiler state")
+        options = {"configuration": "local-client", "build_mode": "debug", "ios_target": "simulator", "entrypoint": "integration_test/workbench_entry.dart"}
+        output = self.root / "harness/runs/artifacts"
+        output.mkdir(parents=True)
+        artifact = run.preserve_artifact(self.root, output, "workbench-build", options)
+        return application, disposable, untouched, options, output, artifact
+
+    def test_native_prune_keeps_install_archive_manifest_source_and_other_caches(self):
+        application, disposable, untouched, options, output, artifact = self.native_build_fixture()
+        archive, manifest = Path(artifact["path"]), output / "artifact-workbench-build/manifest.json"
+        original = {path: path.read_bytes() for path in (archive, manifest, application / "Runner", untouched)}
+        fingerprint = run.checks.fingerprint(self.root)
+        with lease(["app-workspace", "device:ios-task-simulator"], self.root / "held", self.locks) as context:
+            receipt = run.prune_native_build("native", self.root, output, "workbench-build", options, artifact, context)
+        self.assertTrue(receipt["removed"])
+        self.assertFalse(disposable.exists())
+        self.assertEqual(fingerprint, run.checks.fingerprint(self.root))
+        for path, raw in original.items():
+            self.assertEqual(path.read_bytes(), raw)
+        run.gate.Validator.compiled_archive({"raw": archive.read_bytes()}, json.loads(manifest.read_bytes()))
+
+    def test_native_prune_requires_exact_command_target_stage_and_actual_held_leases(self):
+        application, disposable, unused, options, output, artifact = self.native_build_fixture()
+        for command, stage, changes in (("build", "workbench-build", {}), ("quality", "workbench-build", {}),
+                                        ("native", "ios-build", {}), ("native", "workbench-build", {"ios_target": "device"}),
+                                        ("native", "workbench-build", {"build_mode": "release"})):
+            self.assertIsNone(run.prune_native_build(command, self.root, output, stage, {**options, **changes}, artifact, {}))
+            self.assertTrue(disposable.exists())
+        with self.assertRaisesRegex(ValueError, "lease context"):
+            run.prune_native_build("native", self.root, output, "workbench-build", options, artifact, {})
+        self.assertTrue(disposable.exists())
+        self.assertTrue(application.is_dir())
+
+    def test_native_prune_refuses_external_symlink_and_tampered_original_archive(self):
+        application, disposable, unused, options, output, artifact = self.native_build_fixture()
+        external = self.root / "outside-build"
+        external.mkdir()
+        (external / "keep").write_bytes(b"external data")
+        run.shutil.rmtree(disposable)
+        disposable.symlink_to(external, target_is_directory=True)
+        with lease(["app-workspace", "device:ios-task-simulator"], self.root / "held", self.locks) as context:
+            with self.assertRaisesRegex(ValueError, "canonical install/archive proof"):
+                run.prune_native_build("native", self.root, output, "workbench-build", options, artifact, context)
+            self.assertEqual((external / "keep").read_bytes(), b"external data")
+            disposable.unlink()
+            disposable.mkdir()
+            Path(artifact["path"]).write_bytes(b"tampered compressed archive")
+            with self.assertRaisesRegex(ValueError, "canonical install/archive proof"):
+                run.prune_native_build("native", self.root, output, "workbench-build", options, artifact, context)
+            self.assertTrue(disposable.is_dir())
+        self.assertTrue(application.is_dir())
+
+    def test_failed_archive_verification_preserves_expanded_diagnostics_and_install(self):
+        application = self.root / "app/build/ios/iphonesimulator/Runner.app"
+        application.mkdir(parents=True)
+        (application / "Runner").write_bytes(b"original install executable")
+        output = self.root / "harness/runs/artifacts"
+        output.mkdir(parents=True)
+        options = {"configuration": "local-client", "build_mode": "debug", "ios_target": "simulator", "entrypoint": "lib/main.dart"}
+        with patch.object(run.gate.Validator, "compiled_archive", side_effect=run.gate.EvidenceError("corrupt archive")):
+            with self.assertRaisesRegex(ValueError, "corrupt archive"):
+                run.preserve_artifact(self.root, output, "workbench-build", options)
+        self.assertEqual((output / "artifact-workbench-build/Runner.app/Runner").read_bytes(), b"original install executable")
+        self.assertEqual((application / "Runner").read_bytes(), b"original install executable")
+        self.assertTrue((output / "artifact-workbench-build/manifest.json").is_file())
 
     def test_resume_cleanup_requires_task_path_and_matching_ownership(self):
         directory = Path(tempfile.mkdtemp(prefix="ocean-harness-")).resolve()
@@ -176,7 +298,7 @@ class RunnerTests(unittest.TestCase):
             self.assertEqual(code, 1)
             self.assertIn("busy", output)
         with lease(["app-workspace"], self.root / "held", self.locks) as context:
-            for name in ("run.py", "checks.py", "gate.py", "state.py", "native_workbench.py"):
+            for name in ("run.py", "checks.py", "next_phase.py", "f1.py", "gate.py", "state.py", "native_workbench.py"):
                 run.shutil.copy2(Path(run.__file__).parent / name, self.root / "harness" / name)
             code = "import json,sys; from harness.run import require_lease_context; require_lease_context(json.loads(sys.argv[1]), __import__('pathlib').Path(sys.argv[2]))"
             log = self.root / "wrapper.log"

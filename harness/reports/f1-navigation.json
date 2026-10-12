@@ -1,0 +1,630 @@
+{
+  "schema_version": 1,
+  "feature": "F1",
+  "contract_revision": 4,
+  "date": "2026-10-12",
+  "candidate": {
+    "source_fingerprint": "5a70bdf52827f3b2b4b134af5455c26a99cc3ec56def3ef478e3a5d8f0fb6efd",
+    "source_code_sha": "449cd3efb49fcab40488748c1899a5be73574fa5",
+    "source_main": "53c2089349aacf90a330a9245dbd14789eb16d2e",
+    "planning_sha": "5f32b66a91dbd6b92b692d252188e23e3e64276e",
+    "integration_main": "080bae7f34c43ded48b003404238405fa07d6cde",
+    "app_source_sha": "48252a39e0ed7c6cdd504f3153740003e2636c19",
+    "integration_note": "Current main only changes README among counted inputs; all App/Harness/contracts/assets/locks are byte-identical to the prior2da candidate. Approval source_main remains the frozen original baseline."
+  },
+  "scope": "F1 client source/tests/reviewable PR only; F2/F3 preparation retained",
+  "local_verdict": {
+    "quality": "passed",
+    "host": "passed",
+    "native_fixture": "passed",
+    "independent_native_review": "passed: current integrated host/native-fixture",
+    "production_eligible": false,
+    "real_apple_pin": "prior2da simulator pin/return passed; current App source identical, no new actual Maps run claimed"
+  },
+  "quality": {
+    "python_cases": 252,
+    "python_skipped": 1,
+    "flutter_tests": 265,
+    "stages": [
+      {
+        "id": "repository",
+        "status": "passed",
+        "sha256": "2efb406818f6d03fa9ca71d321a1b81783a4a4f1442882719fe0cdecdeb3b31e"
+      },
+      {
+        "id": "tooling-tests",
+        "status": "passed",
+        "sha256": "98a66822ef4b9754277f1095f8ba3b880f651cd6924bf2d65d4e07c270ec47b3"
+      },
+      {
+        "id": "sdk",
+        "status": "passed",
+        "sha256": "4740a5343ebcdbb5c4144e44fed29a779af91c89f536845ccf86d9c6a4852c89"
+      },
+      {
+        "id": "pub",
+        "status": "passed",
+        "sha256": "b8c5c5665e76c2aa18ce821ef005855e0c84ed283e39ca7c69b66c125557151b"
+      },
+      {
+        "id": "format",
+        "status": "passed",
+        "sha256": "d94c8ab96b32ec19b651ca747ac66eac26550b3d236a1d315dedb2bc20219fb9"
+      },
+      {
+        "id": "analyze",
+        "status": "passed",
+        "sha256": "c3e3e0d8632f9efa69d19f12fd43f4296a13a424124ac54cb3f583bfc7b80908"
+      },
+      {
+        "id": "flutter-tests",
+        "status": "passed",
+        "sha256": "c1f059459e864cdb929b763aac07ecd3a66c4267b163612a454b33b10fe1a8ab"
+      }
+    ]
+  },
+  "host": {
+    "level": "host",
+    "feature_allowed": true,
+    "publish_allowed": false,
+    "checks": [
+      {
+        "id": "F1.input-revision",
+        "source": "app/test/next_phase/f1_independent_controller_test.dart",
+        "test": "manual start revision wins over older road reply and availability",
+        "status": "passed"
+      },
+      {
+        "id": "F1.large-text",
+        "source": "app/test/next_phase/f1_independent_widget_test.dart",
+        "test": "maximum text preserves readable navigation and reachable map actions",
+        "status": "passed"
+      },
+      {
+        "id": "F1.launch-failure",
+        "source": "app/test/next_phase/f1_independent_controller_test.dart",
+        "test": "platform availability and launch failure remain distinct",
+        "status": "passed"
+      },
+      {
+        "id": "F1.location-freshness",
+        "source": "app/test/next_phase/f1_independent_controller_test.dart",
+        "test": "origin aging during road request and before launch degrades safely",
+        "status": "passed"
+      },
+      {
+        "id": "F1.no-delivery-write",
+        "source": "app/test/next_phase/f1_independent_widget_test.dart",
+        "test": "navigation failures and return preserve an existing immutable outbox",
+        "status": "passed"
+      },
+      {
+        "id": "F1.provider-provenance",
+        "source": "app/test/next_phase/f1_independent_controller_test.dart",
+        "test": "supplier configuration changes and impossible arrival reject road results",
+        "status": "passed"
+      },
+      {
+        "id": "F1.resume-ordering",
+        "source": "app/test/next_phase/f1_independent_controller_test.dart",
+        "test": "return requires successful handoff and observed background resume",
+        "status": "passed"
+      },
+      {
+        "id": "F1.road-unavailable-failure",
+        "source": "app/test/next_phase/f1_independent_controller_test.dart",
+        "test": "unconfigured roads and provider failure retain explicit Maps handoff",
+        "status": "passed"
+      },
+      {
+        "id": "F1.scope-late-result",
+        "source": "app/test/next_phase/f1_independent_controller_test.dart",
+        "test": "scope invalidation rejects delayed location and launch receipts",
+        "status": "passed"
+      },
+      {
+        "id": "F1.source-return",
+        "source": "app/test/next_phase/f1_independent_widget_test.dart",
+        "test": "each detail source returns with query session and map retained",
+        "status": "passed"
+      },
+      {
+        "id": "F1.third-party-privacy",
+        "source": "app/test/next_phase/f1_independent_controller_test.dart",
+        "test": "third party and map boundary contain only route coordinates and mode",
+        "status": "passed"
+      }
+    ]
+  },
+  "native": {
+    "level": "native-fixture",
+    "feature_allowed": true,
+    "publish_allowed": false,
+    "platform": "ios",
+    "device": {
+      "udid": "F3C0DEA9-9737-4599-A82B-B3227122087A",
+      "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-26-4",
+      "type": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
+      "task_owned": true
+    },
+    "configuration": "local-client",
+    "gateway": "controlled-navigation-fixture",
+    "location": "denied fixture",
+    "phases": [
+      {
+        "phase": "saved",
+        "pid": 12870,
+        "session": "f416887896af00a1eec862dfd083f4d0768f82873fe0d40f",
+        "status": "passed",
+        "checks": [
+          "F1.route-preview",
+          "F1.return-list",
+          "F1.return-query"
+        ]
+      },
+      {
+        "phase": "recovered",
+        "pid": 13022,
+        "session": "9c8d5f11d8faf120e4976411e82e96b60a2b1d1ca69e4e36",
+        "status": "passed",
+        "checks": [
+          "F1.cold-recovery",
+          "F1.return-map",
+          "F1.return-nearest"
+        ]
+      },
+      {
+        "phase": "confirmed",
+        "pid": 13112,
+        "session": "ad51b70642404be922366dfc1f7d67c956bb4203c9ce0543",
+        "status": "passed",
+        "checks": [
+          "F1.outbox-invariance"
+        ]
+      }
+    ],
+    "checks": [
+      "F1.cold-recovery",
+      "F1.outbox-invariance",
+      "F1.return-list",
+      "F1.return-map",
+      "F1.return-nearest",
+      "F1.return-query",
+      "F1.route-preview"
+    ],
+    "raw_artifact_count": 116,
+    "device_cleaned": true,
+    "protected_outbox_count": 2,
+    "confirmed_all_tables_unchanged": true
+  },
+  "external_boundaries": {
+    "real_external_maps": "partial_pass: Apple destination-pin and return on iOS26.4 simulator; other Apps/driving with real origin not_run",
+    "real_gps": "not_run: denied location fixture",
+    "real_road": "blocked: no licensed client supplier configured",
+    "physical_device": "not_run: not assigned",
+    "android_native": "not_run",
+    "signed_release": "not_run",
+    "os_keyboard": "not_run: host insets only",
+    "production": "no-go: existing #31/#32/#33 and no release authorization"
+  },
+  "limits": [
+    "Context retention is in-process; cold OS reopen restores workbench/durable delivery/outbox, not old navigation state.",
+    "Direct maximum-font landscape workbench overview entry remains a separately recorded prior limitation; repaired navigation dialog rotates from portrait.",
+    "Supplier port/controller road results are controlled host fixtures; default formal adapter unavailable."
+  ],
+  "evidence": {
+    "quality": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054823574352Z-quality/attempts/000001/report.json",
+      "repository_path": "harness/runs/20261012T054823574352Z-quality/attempts/000001/report.json",
+      "sha256": "a4e551b4af6c9530ac5ea4b6fefc898a8713c7be90bc8d2a57295050f5ae1ba6",
+      "bytes": 13313,
+      "kind": "quality-run"
+    },
+    "flutter_machine": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054823574352Z-quality/attempts/000001/flutter-tests.events.jsonl",
+      "repository_path": "harness/runs/20261012T054823574352Z-quality/attempts/000001/flutter-tests.events.jsonl",
+      "sha256": "394095340fb77b26cfaf3796aad793ef07ed42499b112664200aa0f8d0e9da5b",
+      "bytes": 207550,
+      "kind": "original-machine-events"
+    },
+    "source_objects": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054823574352Z-quality/attempts/000001/source-objects.json",
+      "repository_path": "harness/runs/20261012T054823574352Z-quality/attempts/000001/source-objects.json",
+      "sha256": "8f1bf7b9ccbd78bede8ee75ffd55790f6b92028e38b1e8a98989516398b02228",
+      "bytes": 105777,
+      "kind": "original-git-object-proof"
+    },
+    "host_manifest": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054823574352Z-quality/attempts/000001/f1-host/manifest.json",
+      "repository_path": "harness/runs/20261012T054823574352Z-quality/attempts/000001/f1-host/manifest.json",
+      "sha256": "1355d3d1b1019c92148466bc336f5d8fddef58080f659bb96b8c1104d37b8653",
+      "bytes": 936,
+      "kind": "f1-manifest"
+    },
+    "host_gate": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054823574352Z-quality/attempts/000001/f1-host/gate.json",
+      "repository_path": "harness/runs/20261012T054823574352Z-quality/attempts/000001/f1-host/gate.json",
+      "sha256": "d082306fa21cf755d44ce7062ca126f9fe3cb4f5753af56b796673b15086f396",
+      "bytes": 676,
+      "kind": "f1-gate"
+    },
+    "native_runner": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/report.json",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/report.json",
+      "sha256": "fd5eab864ddc915d91185b38c273bb1c81c5f15fa1bcfd84549489ba6614d938",
+      "bytes": 12137,
+      "kind": "native-run"
+    },
+    "native_collector": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/result.json",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/result.json",
+      "sha256": "a4174fa83270db928039dbcfb1d383ce3b89874656b04f04c7822caefd8e9659",
+      "bytes": 2066478,
+      "kind": "raw-native-collector"
+    },
+    "compiled_manifest": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/artifact-workbench-build/manifest.json",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/artifact-workbench-build/manifest.json",
+      "sha256": "4d24038974933f4f556f97ee4473d657d7899b664ee87c7a6ea001c5d14fe34c",
+      "bytes": 19237,
+      "kind": "compiled-artifact-manifest"
+    },
+    "compiled_archive": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/artifact-workbench-build/Runner.tar.gz",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/artifact-workbench-build/Runner.tar.gz",
+      "sha256": "0db8949c2f73aad00211d4e9a254ea0449d4924448ca8e90e5dce873e04b787c",
+      "bytes": 60301284,
+      "kind": "original-compiled-archive"
+    },
+    "native_manifest": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/f1-evidence/manifest.json",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/f1-evidence/manifest.json",
+      "sha256": "2eb8d8adbb5b7f3111d610c339e04fbefa8b0b29bde1c9f3d202a2127c1fa476",
+      "bytes": 1996,
+      "kind": "f1-manifest"
+    },
+    "native_gate_attempt": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T055203424460Z-f1-gate/attempts/000001/report.json",
+      "repository_path": "harness/runs/20261012T055203424460Z-f1-gate/attempts/000001/report.json",
+      "sha256": "c8e1f1f52b784815635f2ec8752c4588073a37f717113f1a98d7e2941a23725e",
+      "bytes": 4588,
+      "kind": "f1-gate-run"
+    },
+    "native_gate_leaf": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T055203424460Z-f1-gate/attempts/000001/f1-evidence-gate.log",
+      "repository_path": "harness/runs/20261012T055203424460Z-f1-gate/attempts/000001/f1-evidence-gate.log",
+      "sha256": "06fe68fc9feab289105e8eb1ad7405ad7b8985ff3231e3b6979558f4fb2bafaa",
+      "bytes": 689,
+      "kind": "f1-gate"
+    },
+    "original_preview": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/list-navigation-preview.png",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/list-navigation-preview.png",
+      "sha256": "6045444df88ee174d5c0bf61661df8a3bd6baae15ee2fad97868b3d5c46ebb58",
+      "bytes": 307739,
+      "kind": "original-os-screenshot"
+    },
+    "live_apple_pin": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T052303209406Z-build/attempts/000001/preview/live-apple-pin-receipt.json",
+      "repository_path": "harness/runs/20261012T052303209406Z-build/attempts/000001/preview/live-apple-pin-receipt.json",
+      "sha256": "1fbf10a2950384f13fc5d46ca4a287a23a9722ac21ea9aa68a56776c3c4032cf",
+      "bytes": 4150,
+      "kind": "live-native-ui-summary"
+    },
+    "live_apple_pin_png": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T052303209406Z-build/attempts/000001/preview/actual-apple-pin.png",
+      "repository_path": "harness/runs/20261012T052303209406Z-build/attempts/000001/preview/actual-apple-pin.png",
+      "sha256": "ef8a5cf3b3ca6debcf3627a7210e1c3cfc7b07ce40c588769aff1f27ed966ba0",
+      "bytes": 1877108,
+      "kind": "original-os-screenshot"
+    },
+    "original30_public_verification": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/f1-original-stop-verification-20261012/all30.public-verification.v2.json",
+      "repository_path": "harness/runs/f1-original-stop-verification-20261012/all30.public-verification.v2.json",
+      "sha256": "a95e72fad7acd72edbe2968a32b14b3a7e6b947116c5cc03fc32350359cbd252",
+      "bytes": 108674,
+      "kind": "bounded-public-research-summary"
+    },
+    "independent_review": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/f1-independent-integrated-review-20261012T055540940790Z/review-receipt.json",
+      "repository_path": "harness/runs/f1-independent-integrated-review-20261012T055540940790Z/review-receipt.json",
+      "sha256": "d1dbe18c7e5021b297a88d41a27785dbfc5942829ab050d7ede6af01030a4e77",
+      "bytes": 3420,
+      "kind": "independent-review-receipt"
+    },
+    "saved_result.json": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/result.json",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/result.json",
+      "sha256": "0b1a92e1aade45b5b783a0bc2813443916c5cac7196a82bbfc76bd6d66397bc0",
+      "bytes": 2080,
+      "kind": "original-native-evidence"
+    },
+    "saved_phase-final.sqlite": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/phase-final.sqlite",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/phase-final.sqlite",
+      "sha256": "d8c5fc04006b175e34a237b88fe6dbe908f7db30df8b5d1ed9ce414f19df7977",
+      "bytes": 61440,
+      "kind": "original-native-evidence"
+    },
+    "saved_phase-final.sqlite.json": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/phase-final.sqlite.json",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/phase-final.sqlite.json",
+      "sha256": "1bc8184f9b79822d792267167f113aa51caa2e2b36787264757a2dad9d92bca7",
+      "bytes": 22418,
+      "kind": "original-native-evidence"
+    },
+    "saved_actions.jsonl": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/actions.jsonl",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/actions.jsonl",
+      "sha256": "79dd79b8a77c6101b92ad122317cc08235d060c7e26dec6433136c6e071bc415",
+      "bytes": 67000,
+      "kind": "original-native-evidence"
+    },
+    "saved_observations.jsonl": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/observations.jsonl",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/observations.jsonl",
+      "sha256": "1f6a18d4be43f7265fd34e79e69ae1239831410386e7c276b3266fc89a1367a5",
+      "bytes": 1258653,
+      "kind": "original-native-evidence"
+    },
+    "saved_phase-final.png": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/phase-final.png",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/phase-final.png",
+      "sha256": "777debb829484522b868d9ef611d0e3d95a6e595ef842bad10bbc5e55b02be22",
+      "bytes": 254079,
+      "kind": "original-native-evidence"
+    },
+    "recovered_result.json": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/recovered/result.json",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/recovered/result.json",
+      "sha256": "acab54551425e2029c30b27b36c4811582e8453b38d71d4f98333a92ca53af3f",
+      "bytes": 2104,
+      "kind": "original-native-evidence"
+    },
+    "recovered_phase-final.sqlite": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/recovered/phase-final.sqlite",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/recovered/phase-final.sqlite",
+      "sha256": "f9abb3d548423ed4d15da1b20be5a10319fef7556afa7fb5611a72a803f78720",
+      "bytes": 61440,
+      "kind": "original-native-evidence"
+    },
+    "recovered_phase-final.sqlite.json": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/recovered/phase-final.sqlite.json",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/recovered/phase-final.sqlite.json",
+      "sha256": "0fad1b93c32c041c50132023ec805e1337d2f395a559a284d39d903c62cb6c6c",
+      "bytes": 22418,
+      "kind": "original-native-evidence"
+    },
+    "recovered_actions.jsonl": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/recovered/actions.jsonl",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/recovered/actions.jsonl",
+      "sha256": "6dec29e1fbd19cac23832cad3a517927c0b0011224fb1bcee024a573f8007a13",
+      "bytes": 40595,
+      "kind": "original-native-evidence"
+    },
+    "recovered_observations.jsonl": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/recovered/observations.jsonl",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/recovered/observations.jsonl",
+      "sha256": "fcd1f38fbd55cb8047519af771356fa9ee0f5d1bc78e6b30a60e5d56b3b8d916",
+      "bytes": 785715,
+      "kind": "original-native-evidence"
+    },
+    "recovered_phase-final.png": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/recovered/phase-final.png",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/recovered/phase-final.png",
+      "sha256": "e015af9d7444158affe33b324295d95a4f059592ba5cd0595cc22fc89e117e31",
+      "bytes": 234124,
+      "kind": "original-native-evidence"
+    },
+    "confirmed_result.json": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/confirmed/result.json",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/confirmed/result.json",
+      "sha256": "3f9b1f3845ce525cec9ee9ce452de2e4aeeaeed0f6e17ba1f32a3a46240f013f",
+      "bytes": 1242,
+      "kind": "original-native-evidence"
+    },
+    "confirmed_phase-final.sqlite": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/confirmed/phase-final.sqlite",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/confirmed/phase-final.sqlite",
+      "sha256": "f9abb3d548423ed4d15da1b20be5a10319fef7556afa7fb5611a72a803f78720",
+      "bytes": 61440,
+      "kind": "original-native-evidence"
+    },
+    "confirmed_phase-final.sqlite.json": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/confirmed/phase-final.sqlite.json",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/confirmed/phase-final.sqlite.json",
+      "sha256": "0fad1b93c32c041c50132023ec805e1337d2f395a559a284d39d903c62cb6c6c",
+      "bytes": 22418,
+      "kind": "original-native-evidence"
+    },
+    "confirmed_actions.jsonl": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/confirmed/actions.jsonl",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/confirmed/actions.jsonl",
+      "sha256": "59f0e7aec0777e2ff50d80377ce0375aff14d1c40685615d7add4f1a376d8600",
+      "bytes": 3808,
+      "kind": "original-native-evidence"
+    },
+    "confirmed_observations.jsonl": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/confirmed/observations.jsonl",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/confirmed/observations.jsonl",
+      "sha256": "c6570d3417f375d02759bfd01eaac149a6398d3a966c8f079a4bf0c8ae78ff03",
+      "bytes": 94131,
+      "kind": "original-native-evidence"
+    },
+    "confirmed_phase-final.png": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/confirmed/phase-final.png",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/confirmed/phase-final.png",
+      "sha256": "e015af9d7444158affe33b324295d95a4f059592ba5cd0595cc22fc89e117e31",
+      "bytes": 234124,
+      "kind": "original-native-evidence"
+    },
+    "review_preview_copy": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/reports/f1-navigation-preview.png",
+      "repository_path": "harness/reports/f1-navigation-preview.png",
+      "sha256": "6045444df88ee174d5c0bf61661df8a3bd6baae15ee2fad97868b3d5c46ebb58",
+      "bytes": 307739,
+      "kind": "unmodified-review-copy"
+    },
+    "independent_live_review": {
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/f1-independent-live-pin-review-20261012T054208750006Z/review-receipt.json",
+      "repository_path": "harness/runs/f1-independent-live-pin-review-20261012T054208750006Z/review-receipt.json",
+      "sha256": "8e2f28f5c9c93fa40167827128f74afb18ac9f9743407c58098daeda30a04c6b",
+      "bytes": 3500,
+      "kind": "independent-review-receipt"
+    }
+  },
+  "original_failure_history": [
+    {
+      "run": "20261011T193503269376Z-test",
+      "finding": "missing selected target left detail without close card; repaired"
+    },
+    {
+      "run": "20261011T194139299600Z-test",
+      "finding": "late accepted GPS did not revoke map availability attempt; maximum-font keyboard dialog overflow; repaired"
+    },
+    {
+      "run": "20261011T195125282870Z-quality",
+      "finding": "isolated copy lacked approved Git objects; failed before Flutter; immutable object proof repair"
+    },
+    {
+      "run": "20261011T200243274758Z-native",
+      "finding": "ENOSPC after saved phase; no native pass; task capacity repair and fresh rerun"
+    },
+    {
+      "run": "20261011T201358961156Z-native",
+      "finding": "nearest entry persisted viewport in strictly readonly confirmed phase; all delivery/outbox unchanged; driver allocation repair; collector unchanged"
+    }
+  ],
+  "evidence_note": "Original local harness/runs files are retained and ignored by Git. Review report/display copy does not replace gate inputs. CI regenerates host evidence; local native fixture is separately witnessed.",
+  "independent_review": {
+    "reviewer": "/root/f1_acceptance",
+    "status": "passed: current integrated host/native-fixture; actual Apple evidence retains prior2da scope",
+    "live_apple_pin": "passed on prior2da formal-demo build; current App source byte-identical; simulator-only"
+  },
+  "historical_candidates": [
+    {
+      "candidate": {
+        "source_fingerprint": "d651e5c96ec8410cdebd97368c10bc2caabb43a91016919a9d23874a8df985cb",
+        "source_code_sha": "453582ac7b196ad5ddbf05a70143111060d23b78",
+        "source_main": "53c2089349aacf90a330a9245dbd14789eb16d2e",
+        "planning_sha": "5f32b66a91dbd6b92b692d252188e23e3e64276e"
+      },
+      "local_verdict": {
+        "quality": "passed",
+        "host": "passed",
+        "native_fixture": "passed",
+        "independent_native_review": "passed",
+        "production_eligible": false
+      },
+      "original_quality": {
+        "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261011T201840828764Z-quality/attempts/000001/report.json",
+        "repository_path": "harness/runs/20261011T201840828764Z-quality/attempts/000001/report.json",
+        "sha256": "4e5c2d42996093d10c39158b7dc174099eb9b8b8fdd547cf0ba3b5d944a6dcbc",
+        "bytes": 13313,
+        "kind": "quality-run"
+      },
+      "original_native_collector": {
+        "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261011T201944866727Z-native/attempts/000001/native/result.json",
+        "repository_path": "harness/runs/20261011T201944866727Z-native/attempts/000001/native/result.json",
+        "sha256": "edbfb34b685a65a0fbad200b752ee6ba419dece48fb9b6e67997af9b3b12f386",
+        "bytes": 2075702,
+        "kind": "raw-native-collector"
+      },
+      "original_native_gate": {
+        "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261011T202147031748Z-f1-gate/attempts/000001/f1-evidence-gate.log",
+        "repository_path": "harness/runs/20261011T202147031748Z-f1-gate/attempts/000001/f1-evidence-gate.log",
+        "sha256": "72d21cdafb0bef46aa81a2530769565a05bc1a5eb81ecfc8e57419b03b284a10",
+        "bytes": 689,
+        "kind": "f1-gate"
+      },
+      "independent_review": {
+        "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/f1-independent-review-20261011T202402299085Z/review-receipt.json",
+        "repository_path": "harness/runs/f1-independent-review-20261011T202402299085Z/review-receipt.json",
+        "sha256": "2a48c217ddab8f77a03a41a6165470c801b2b8a24aca6b0ae8b7b84bb39e8c67",
+        "bytes": 33154,
+        "kind": "independent-review-receipt"
+      }
+    },
+    {
+      "candidate": {
+        "source_fingerprint": "2da2eac55f40d8b65e8a167b6db433d547d519f6250acf0210412f031904cff1",
+        "source_code_sha": "48252a39e0ed7c6cdd504f3153740003e2636c19",
+        "source_main": "53c2089349aacf90a330a9245dbd14789eb16d2e",
+        "planning_sha": "5f32b66a91dbd6b92b692d252188e23e3e64276e"
+      },
+      "local_verdict": {
+        "quality": "passed",
+        "host": "passed",
+        "native_fixture": "passed",
+        "independent_native_review": "passed",
+        "production_eligible": false,
+        "real_apple_pin": "passed: simulator destination pin and return only"
+      },
+      "evidence": {
+        "quality": {
+          "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051701983109Z-quality/attempts/000001/report.json",
+          "repository_path": "harness/runs/20261012T051701983109Z-quality/attempts/000001/report.json",
+          "sha256": "6ccc4759c3a5e0119a2565a88a91a86052de82eaec4def479d30e087b7503a0b",
+          "bytes": 13291,
+          "kind": "quality-run"
+        },
+        "native_collector": {
+          "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/native/result.json",
+          "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/native/result.json",
+          "sha256": "5911a792bde662fcfd92509421f4c0d3b783f9129f2b3c1345f4dee19a71048d",
+          "bytes": 2065341,
+          "kind": "raw-native-collector"
+        },
+        "native_gate_leaf": {
+          "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T052248642223Z-f1-gate/attempts/000001/f1-evidence-gate.log",
+          "repository_path": "harness/runs/20261012T052248642223Z-f1-gate/attempts/000001/f1-evidence-gate.log",
+          "sha256": "e486d0b42ed78b0f8b5fb3807a3f5163de02e121daab5771598ef5500e946003",
+          "bytes": 689,
+          "kind": "f1-gate"
+        },
+        "independent_review": {
+          "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/f1-independent-pin-review-20261012T052637436914Z/review-receipt.json",
+          "repository_path": "harness/runs/f1-independent-pin-review-20261012T052637436914Z/review-receipt.json",
+          "sha256": "2e8ac3c9bce3bce54ddb5c9fa43b023441f9ac469518bf755446e28dda9db574",
+          "bytes": 2746,
+          "kind": "independent-review-receipt"
+        },
+        "live_apple_pin": {
+          "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T052303209406Z-build/attempts/000001/preview/live-apple-pin-receipt.json",
+          "repository_path": "harness/runs/20261012T052303209406Z-build/attempts/000001/preview/live-apple-pin-receipt.json",
+          "sha256": "1fbf10a2950384f13fc5d46ca4a287a23a9722ac21ea9aa68a56776c3c4032cf",
+          "bytes": 4150,
+          "kind": "live-native-ui-summary"
+        },
+        "independent_live_review": {
+          "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/f1-independent-live-pin-review-20261012T054208750006Z/review-receipt.json",
+          "repository_path": "harness/runs/f1-independent-live-pin-review-20261012T054208750006Z/review-receipt.json",
+          "sha256": "8e2f28f5c9c93fa40167827128f74afb18ac9f9743407c58098daeda30a04c6b",
+          "bytes": 3500,
+          "kind": "independent-review-receipt"
+        },
+        "original_preview": {
+          "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/native/saved/list-navigation-preview.png",
+          "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/native/saved/list-navigation-preview.png",
+          "sha256": "a9030042a8f6b8bebf39043b4028cfe377d55916ba6473ab9f3a050d0bf102c9",
+          "bytes": 306592,
+          "kind": "original-os-screenshot"
+        },
+        "original30_public_verification": {
+          "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/f1-original-stop-verification-20261012/all30.public-verification.json",
+          "repository_path": "harness/runs/f1-original-stop-verification-20261012/all30.public-verification.json",
+          "sha256": "9ce2c41b551a79e740217d1faafa838c184abb0d15d49876fc8a892a187639eb",
+          "bytes": 104773,
+          "kind": "bounded-public-research-summary"
+        }
+      }
+    }
+  ],
+  "map_destination_repair": {
+    "reason": "Unknown-origin Apple directions prompted for an origin over stale San Francisco when location services were off.",
+    "behavior": "Unknown Apple start opens exact numeric coordinate pin; reliable start retains driving directions. Destination coordinates visible; generic map-opening request receipt.",
+    "source_data_changed": false,
+    "name_verification": "0 of original30 qualify as verified name+location matches;16 ambiguous/other-location and14 unverified after sharing duplicate-name evidence; all retain stored coordinate destinations.",
+    "live_native_scope": "Actual formal demo app button, Apple pin, OS return and original detail; original30stop/delivery/outbox rows unchanged."
+  }
+}

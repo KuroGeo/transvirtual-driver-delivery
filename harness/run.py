@@ -18,12 +18,13 @@ import tempfile
 import time
 
 try:
-    from . import checks, gate, state, native_workbench
+    from . import checks, gate, state, native_workbench, f1
 except ImportError:  # CLI script entrypoint
     import checks
     import gate
     import state
     import native_workbench
+    import f1
 
 ROOT = checks.ROOT
 RUNS = ROOT / "harness" / "runs"
@@ -180,7 +181,7 @@ def stages(command, run_dir, candidate, manifest=None, targets=None, options=Non
     quality = [check, tooling, sdk, pub,
                ("format", ["dart", "format", "--output=none", "--set-exit-if-changed", *format_paths], root / "app"),
                ("analyze", ["flutter", "analyze", "--no-pub"], root / "app"),
-               ("flutter-tests", ["flutter", "test", "--no-pub", "--reporter", "expanded", define], root / "app")]
+               ("flutter-tests", ["flutter", "test", "--no-pub", "--reporter", "expanded", define, "--file-reporter", f"json:{run_dir / 'flutter-tests.events.jsonl'}"], root / "app")]
     if command == "test":
         return [sdk, pub, ("flutter-tests", ["flutter", "test", "--no-pub", "--reporter", "expanded", define, *(targets or [])], root / "app")]
     if command == "integration":
@@ -216,9 +217,9 @@ def stages(command, run_dir, candidate, manifest=None, targets=None, options=Non
         return [sdk, pub,
                 ({"probe": "probe-build", "startup": "startup-build", "workbench": "workbench-build"}[scope], build_arguments(probe_options), root / "app"),
                 ({"probe": "process-restart", "startup": "startup-smoke", "workbench": "workbench-smoke"}[scope], native_arguments, root)]
-    if command in {"gate", "local-gate"}:
-        private = "_gate" if command == "gate" else "_local_gate"
-        stage_id = "production-gate" if command == "gate" else "local-evidence-gate"
+    if command in {"gate", "local-gate", "f1-gate"}:
+        private = {"gate": "_gate", "local-gate": "_local_gate", "f1-gate": "_f1_gate"}[command]
+        stage_id = {"gate": "production-gate", "local-gate": "local-evidence-gate", "f1-gate": "f1-evidence-gate"}[command]
         return [(stage_id, [python, "harness/run.py", private, "--manifest", str(manifest)], ROOT)]
     raise ValueError(command)
 
@@ -265,11 +266,13 @@ def require_lease_context(context, root=None, required=("app-workspace",)):
 
 
 @contextmanager
-def isolated_workspace(source_root, fingerprint, report=None):
+def isolated_workspace(source_root, fingerprint, report=None, evidence_dir=None):
     """Copy only source, verify it, and delete only this task's temporary root."""
     source_root = Path(source_root).resolve()
     with tempfile.TemporaryDirectory(prefix="ocean-harness-") as directory:
         destination = Path(directory).resolve()
+        if report is not None:
+            report.update(source_root=str(source_root), execution_root=str(destination), isolation={"requested": True, "verified_fingerprint": fingerprint, "task_owned": True, "cleaned": False})
         try:
             names = subprocess.check_output(["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"], cwd=source_root, stderr=subprocess.DEVNULL).decode().split("\0")
             files = {source_root / name for name in names if name}
@@ -281,7 +284,7 @@ def isolated_workspace(source_root, fingerprint, report=None):
             relative = path.relative_to(source_root)
             if (not path.is_file() or {".git", "__pycache__", "node_modules"}.intersection(relative.parts)
                     or any(relative.is_relative_to(prefix) for prefix in snapshot_outputs)
-                    or relative.as_posix() in checks.GENERATED - {"harness/project/work.json"}):
+                    or relative.as_posix() in checks.GENERATED - {"harness/project/work.json", "harness/project/next-phase/work.json", "harness/project/next-phase/execution.json"}):
                 continue
             if not path.resolve().is_relative_to(source_root):
                 raise ValueError(f"source snapshot refuses external symlink: {relative}")
@@ -290,7 +293,22 @@ def isolated_workspace(source_root, fingerprint, report=None):
             shutil.copy2(path, target)
         if checks.fingerprint(destination) != fingerprint or checks.fingerprint(source_root) != fingerprint:
             raise ValueError("source changed while creating isolated snapshot")
-        save(destination / ".harness-isolation.json", {"source_root": str(source_root), "source_fingerprint": fingerprint})
+        marker = {"source_root": str(source_root), "source_fingerprint": fingerprint}
+        source_proof = checks.next_phase.snapshot_source_archive(source_root, fingerprint)
+        if source_proof is not None:
+            archive = destination / checks.next_phase.SOURCE_ARCHIVE
+            archive.write_bytes(source_proof)
+            marker["source_objects"] = {"path": archive.name, "sha256": sha(archive)}
+            if report is not None:
+                if evidence_dir is None:
+                    raise ValueError("isolated source proof requires an original attempt directory")
+                retained = Path(evidence_dir) / "source-objects.json"
+                with retained.open("xb") as output:
+                    output.write(source_proof)
+                report["source_objects"] = {"path": str(retained), "sha256": sha(retained), "kind": "next-phase-git-source-objects"}
+        if checks.fingerprint(source_root) != fingerprint:
+            raise ValueError("source changed while preserving approved Git objects")
+        save(destination / ".harness-isolation.json", marker)
         try:
             yield destination
         finally:
@@ -300,6 +318,8 @@ def isolated_workspace(source_root, fingerprint, report=None):
 
 def stage_spec(stages_list, root, run_dir):
     def normalized(value):
+        if str(value).startswith("json:"):
+            return str(value).replace(str(run_dir), "@run").replace(str(root), "@workspace")
         return str(value).replace(str(root), "@workspace").replace(str(run_dir), "@run")
     result = []
     for name, argv, cwd in stages_list:
@@ -318,10 +338,10 @@ def preserve_artifact(execution_root, run_dir, stage_id, options, expected_finge
     target = "iphoneos" if options["ios_target"] == "device" else "iphonesimulator"
     application = execution_root / f"app/build/ios/{target}/Runner.app"
     directory = run_dir / f"artifact-{stage_id}"
-    directory.mkdir(exist_ok=True)
+    if application.resolve() != application or run_dir.resolve() != run_dir:
+        raise ValueError("compiled artifact source/attempt must be canonical")
+    directory.mkdir()
     retained = directory / "Runner.app"
-    if retained.exists():
-        shutil.rmtree(retained)
     shutil.copytree(application, retained, symlinks=True)
     files = []
     for path in sorted(retained.rglob("*")):
@@ -332,7 +352,39 @@ def preserve_artifact(execution_root, run_dir, stage_id, options, expected_finge
     archive = Path(shutil.make_archive(str(directory / "Runner"), "gztar", directory, "Runner.app"))
     value = {"path": str(archive), "sha256": sha(archive), "candidate": {"source_fingerprint": execution_fingerprint}, "files": files, "configuration": options["configuration"], "build_mode": options["build_mode"], "ios_target": options["ios_target"], "entrypoint": options["entrypoint"], "driver_target": options.get("driver_target"), "fixture": options.get("fixture"), "tile_url": options.get("tile_url"), "native_options": {key: options.get(key) for key in NATIVE_OPTION_KEYS}, "signed_for_production": False}
     save(directory / "manifest.json", value)
+    # Re-read the original tar/manifest through the same complete inventory
+    # verifier used by native acceptance before removing only our extra copy.
+    recorded = read_manifest(directory / "manifest.json")
+    if recorded != value or sha(archive) != recorded["sha256"]:
+        raise ValueError("compiled artifact changed before archive verification")
+    gate.Validator.compiled_archive({"raw": archive.read_bytes()}, recorded)
+    shutil.rmtree(retained)
     return {key: value[key] for key in ("path", "sha256", "candidate", "configuration", "build_mode", "ios_target", "entrypoint", "driver_target", "fixture", "tile_url", "native_options", "signed_for_production")}
+
+
+def prune_native_build(command, execution_root, run_dir, stage_id, options, artifact, lease_context):
+    """Discard one generated simulator intermediate directory under our lease."""
+    if command != "native" or stage_id not in {"probe-build", "startup-build", "workbench-build"} or options.get("ios_target") != "simulator" or options.get("build_mode") != "debug":
+        return None
+    require_lease_context(lease_context, execution_root, required=("app-workspace", "device:ios-task-simulator"))
+    application = execution_root / "app/build/ios/iphonesimulator/Runner.app"
+    disposable = execution_root / "app/build/ios/Debug-iphonesimulator"
+    archive = run_dir / f"artifact-{stage_id}/Runner.tar.gz"
+    manifest_path = archive.parent / "manifest.json"
+    if (application.resolve() != application or not application.is_dir() or disposable.resolve() != disposable
+            or archive.resolve() != archive or manifest_path.resolve() != manifest_path
+            or artifact.get("path") != str(archive) or artifact.get("sha256") != sha(archive)):
+        raise ValueError("native disposable build cleanup lacks canonical install/archive proof")
+    manifest = read_manifest(manifest_path)
+    if any(manifest.get(key) != value for key, value in artifact.items()) or checks.fingerprint(execution_root) != artifact["candidate"]["source_fingerprint"]:
+        raise ValueError("native disposable build cleanup candidate/manifest mismatch")
+    gate.Validator.compiled_archive({"raw": archive.read_bytes()}, manifest)
+    removed = disposable.exists()
+    if removed:
+        if not disposable.is_dir():
+            raise ValueError("native disposable build output must be a regular directory")
+        shutil.rmtree(disposable)
+    return {"path": str(disposable), "removed": removed, "install_application": str(application), "archive_verified": True}
 
 
 def cleanup_previous_isolation(report, source_root):
@@ -451,7 +503,7 @@ def subprocess_stage(argv, cwd, log, timeout, lock_fds, on_spawn, lease_context=
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=["preflight", "check", "pub", "quality", "test", "integration", "build", "native", "gate", "local-gate", "_check", "_sdk", "_gate", "_local_gate", "_stage"])
+    parser.add_argument("command", choices=["preflight", "check", "pub", "quality", "test", "integration", "build", "native", "gate", "local-gate", "f1-gate", "_check", "_sdk", "_gate", "_local_gate", "_f1_gate", "_stage"])
     parser.add_argument("--target", action="append", default=[], help="Existing app/test path (test) or app/integration_test path (integration); repeat")
     parser.add_argument("--configuration", choices=["demo", "local-client"], default="local-client", help="Explicit OCEAN_MODE; demo data is separate from local-client")
     parser.add_argument("--build-mode", choices=["debug", "profile", "release"], default="debug", help="iOS build mode; simulator supports debug only")
@@ -502,19 +554,27 @@ def main():
             print(f"SDK mismatch: expected Flutter {pinned}; select the pinned SDK before continuing")
             return 1
         return 0
-    if args.command in {"_gate", "_local_gate"}:
+    if args.command in {"_gate", "_local_gate", "_f1_gate"}:
         if not args.manifest:
             parser.error("--manifest is required for evidence gate")
         try:
             manifest = read_manifest(args.manifest)
+            if args.command == "_f1_gate":
+                result = f1.evaluate(manifest, checks.fingerprint(), ROOT)
+                result["evidence_manifest"] = {"path": str(args.manifest.resolve()), "sha256": sha(args.manifest), "kind": "f1-manifest"}
+                print(json.dumps(result, ensure_ascii=False, indent=2))
+                return int(not result["feature_allowed"])
             local = args.command == "_local_gate"
             evaluate = gate.evaluate_local if local else gate.evaluate
             result = evaluate(manifest, checks.fingerprint(), args.manifest.resolve().parent)
         except (OSError, ValueError, TypeError, UnicodeError, RecursionError) as error:
+            if args.command == "_f1_gate":
+                print(json.dumps({"feature": "F1", "feature_allowed": False, "publish_allowed": False, "reasons": [str(error)]}, ensure_ascii=False, indent=2))
+                return 1
             result = {"reasons": [str(error)], "local_allowed": False, "publish_allowed": False} if args.command == "_local_gate" else {"allowed": False, "reasons": [str(error)]}
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return int(not result["local_allowed" if args.command == "_local_gate" else "allowed"])
-    if args.command in {"gate", "local-gate"} and not args.manifest:
+    if args.command in {"gate", "local-gate", "f1-gate"} and not args.manifest:
         parser.error("--manifest is required for evidence gate")
     if args.timeout <= 0:
         parser.error("--timeout must be positive")
@@ -565,7 +625,7 @@ def main():
         parser.error("integration requires explicit --device and --target integration_test/<file.dart>")
     if args.device and (args.device.startswith("-") or not args.device.strip() or any(c.isspace() for c in args.device)):
         parser.error("--device must be an explicit device ID without spaces")
-    if args.isolated and args.command in {"gate", "local-gate"}:
+    if args.isolated and args.command in {"gate", "local-gate", "f1-gate"}:
         parser.error("evidence gate evaluates the current workspace; --isolated does not apply")
     test_root = ROOT / ("app/integration_test" if args.command == "integration" else "app/test")
     for target in args.target:
@@ -631,7 +691,7 @@ def main():
             report["lease"] = {key: value for key, value in metadata.items() if key != "lock_fds"}
             save_attempt(run_dir, attempt, report, mirror)
             from contextlib import nullcontext
-            workspace = isolated_workspace(ROOT, candidate["source_fingerprint"], report) if args.isolated else nullcontext(ROOT)
+            workspace = isolated_workspace(ROOT, candidate["source_fingerprint"], report, attempt) if args.isolated else nullcontext(ROOT)
             with workspace as execution_root:
                 plan = stages(args.command, attempt, candidate["source_fingerprint"], args.manifest.resolve() if args.manifest else None, args.target, options, execution_root, metadata)
                 spec = stage_spec(plan, execution_root, attempt)
@@ -645,7 +705,9 @@ def main():
                     current_spec = stage_spec([(stage_id, argv, cwd)], execution_root, attempt)
                     old_spec = stage_spec([(stage_id, old["command"], old["cwd"])], previous_root, prior_path.parent) if old else None
                     retained_outputs = {"ios-build", "probe-build", "startup-build", "workbench-build", "process-restart", "startup-smoke", "workbench-smoke", "integration-tests"}
-                    if args.command not in {"gate", "local-gate"} and stage_id not in {"pub", *retained_outputs} and not args.isolated and old and old["status"] == "passed" and type(old.get("exit_code")) is int and old["exit_code"] == 0 and old_spec == current_spec:
+                    if args.command == "quality":
+                        retained_outputs.add("flutter-tests")  # retain each attempt's original machine stream
+                    if args.command not in {"gate", "local-gate", "f1-gate"} and stage_id not in {"pub", *retained_outputs} and not args.isolated and old and old["status"] == "passed" and type(old.get("exit_code")) is int and old["exit_code"] == 0 and old_spec == current_spec:
                         previous_log = Path(old["log_path"])
                         if not previous_log.is_relative_to(run_dir) or previous_log.resolve() != previous_log or not previous_log.is_file() or sha(previous_log) != old["sha256"]:
                             raise ValueError(f"{stage_id}: saved log missing or changed; completed stage cannot be reused")
@@ -680,9 +742,14 @@ def main():
                         log = Path(record["log_path"])
                         if log.is_file():
                             record.update(sha256=sha(log), log_bytes=log.stat().st_size)
+                        if stage_id == "flutter-tests" and args.command == "quality":
+                            machine = attempt / "flutter-tests.events.jsonl"
+                            if machine.is_file() and machine.resolve() == machine:
+                                record["machine_report"] = {"path": str(machine), "sha256": sha(machine), "kind": "flutter-machine-events"}
                         save_attempt(run_dir, attempt, report, mirror)
                     if record["status"] == "passed" and stage_id in {"ios-build", "probe-build", "startup-build", "workbench-build"}:
                         record["artifact"] = preserve_artifact(execution_root, attempt, stage_id, options, candidate["source_fingerprint"])
+                        record["disposable_build_cleanup"] = prune_native_build(args.command, execution_root, attempt, stage_id, options, record["artifact"], metadata)
                     save_attempt(run_dir, attempt, report, mirror)
                     print(f"{stage_id}: {record['status']} ({record['elapsed_seconds']}s); {record['log_path']}", flush=True)
                     if record["status"] != "passed":
@@ -693,7 +760,7 @@ def main():
     except (KeyboardInterrupt, InterruptedError):
         status = "interrupted"
         print("Interrupted; inspect recorded process cleanup and actual OS leases before resume.")
-    except (OSError, ValueError, RuntimeError, state.BusyError, subprocess.TimeoutExpired) as error:
+    except (OSError, ValueError, RuntimeError, state.BusyError, subprocess.SubprocessError) as error:
         report["error"] = str(error)
         print(f"Cannot complete run: {error}")
     finally:

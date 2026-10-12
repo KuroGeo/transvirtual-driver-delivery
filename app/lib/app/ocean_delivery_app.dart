@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 
 import '../ui/delivery/map/delivery_map_workspace.dart';
+import '../data/routes/route_repository.dart';
+import '../platform/location/location_gateway.dart';
+import '../platform/navigation/navigation_gateway.dart';
+import '../ui/navigation/navigation_view_model.dart';
 
 import '../ui/delivery_screen.dart';
 import '../ui/delivery_view_model.dart';
@@ -16,6 +20,10 @@ class OceanDeliveryApp extends StatefulWidget {
     this.demo = false,
     this.tileProvider,
     this.mapController,
+    this.routeRepository,
+    this.locationGateway,
+    this.navigationGateway,
+    this.onNavigationChanged,
     this.tileUrlTemplate = const String.fromEnvironment(
       'OCEAN_TILE_URL',
       defaultValue: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -26,6 +34,10 @@ class OceanDeliveryApp extends StatefulWidget {
   final bool demo;
   final TileProvider? tileProvider;
   final DeliveryMapController? mapController;
+  final RouteRepository? routeRepository;
+  final LocationGateway? locationGateway;
+  final NavigationGateway? navigationGateway;
+  final ValueChanged<NavigationViewModel?>? onNavigationChanged;
   final String tileUrlTemplate;
 
   @override
@@ -130,6 +142,10 @@ class _OceanDeliveryAppState extends State<OceanDeliveryApp> {
               tileProvider: widget.tileProvider,
               tileUrlTemplate: widget.tileUrlTemplate,
               mapController: widget.mapController,
+              routeRepository: widget.routeRepository,
+              locationGateway: widget.locationGateway,
+              navigationGateway: widget.navigationGateway,
+              onNavigationChanged: widget.onNavigationChanged,
             ),
     );
   }

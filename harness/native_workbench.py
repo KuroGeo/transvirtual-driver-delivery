@@ -746,8 +746,11 @@ class Workbench:
             "app/" + self.driver, "app/integration_test/support/native_workbench_bridge.dart",
             "app/integration_test/support/native_driver_support.dart", "app/integration_test/support/native_gesture_command.dart",
             "app/integration_test/support/native_gesture_extension.dart", "app/pubspec.lock", "app/assets/deliveries.csv")}
-        if self.options["scenario"]:
+        if self.options["scenario"] or self.driver == "integration_test/f1_navigation_driver.dart":
             name = "app/integration_test/support/native_acceptance_support.dart"
+            self.report["inputs"][name] = digest(self.root / name)
+        if self.driver == "integration_test/f1_navigation_driver.dart":
+            name = "app/integration_test/support/f1_navigation_fixture.dart"
             self.report["inputs"][name] = digest(self.root / name)
 
     def save(self):

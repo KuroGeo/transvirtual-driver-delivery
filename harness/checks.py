@@ -3,6 +3,13 @@ import hashlib
 import json
 from pathlib import Path
 import re
+try:
+    from . import next_phase, f1
+except ImportError:
+    try:
+        import next_phase, f1
+    except ImportError:
+        from harness import next_phase, f1
 
 ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_ROOTS = tuple(Path(name) for name in (
@@ -20,9 +27,12 @@ GENERATED = {
     "app/android/local.properties", "app/.flutter-plugins-dependencies",
     "app/android/gradlew", "app/android/gradlew.bat", "app/android/gradle/wrapper/gradle-wrapper.jar",
     "harness/project/work.json",
+    "harness/project/next-phase/work.json",
+    "harness/project/next-phase/execution.json",
 }
 ENTRY_INPUTS = (
     "AGENTS.md", "README.md", "docs/solution-design.md",
+    "docs/next-phase-solution-design.md",
     "prototype/index.html", "prototype/README.md", "prototype/map-design.md",
     "prototype/direct-sync-design.md", "prototype/origin-return-design.md",
     "prototype/feedback-design.md",
@@ -33,7 +43,7 @@ SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 
 def source_files(root=ROOT):
     root = Path(root).resolve()
-    roots = [root / name for name in ("app", "harness", ".agents/skills", ".github", "prototype/assets", "prototype/vendor")]
+    roots = [root / name for name in ("app", "harness", ".agents/skills", ".github", "prototype/assets", "prototype/vendor", "prototype/next-phase", "docs/next-phase")]
     # Live prototype code/assets are acceptance inputs; archives and screenshots
     # stay outside these roots. Do not change isolated-copy output exclusions.
     files = [root / name for name in ENTRY_INPUTS if (root / name).is_file() and (root / name).resolve().is_relative_to(root)]
@@ -45,6 +55,8 @@ def source_files(root=ROOT):
             if (not path.is_file() or not path.resolve().is_relative_to(root)
                     or {".git", "__pycache__"}.intersection(relative.parts)
                     or any(relative.is_relative_to(prefix) for prefix in OUTPUT_ROOTS)
+                    or relative.is_relative_to(Path("prototype/next-phase/evidence"))
+                    or relative.is_relative_to(Path("harness/project/next-phase/results"))
                     or relative.as_posix() in GENERATED or path.suffix == ".iml"):
                 continue
             files.append(path)
@@ -496,4 +508,7 @@ def repository(root=ROOT):
         if not content.startswith("---\n") or not name or name[1] != path.parent.name or not description:
             errors.append(f"{path.relative_to(root)}: skill metadata name/description missing or mismatched")
     errors.extend(traceability(root))
+    errors.extend(next_phase.validate(root, {path.relative_to(root).as_posix() for path in source_files(root)}))
+    errors.extend(f1.validate_execution(root, {path.relative_to(root).as_posix() for path in source_files(root)}, fingerprint(root)))
+    errors.extend(f1.boundaries(root, directives))
     return errors

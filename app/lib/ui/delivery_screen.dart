@@ -7,6 +7,14 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../models/delivery.dart';
+import '../models/route.dart';
+import '../data/routes/route_repository.dart';
+import '../platform/location/location_gateway.dart';
+import '../platform/location/geolocator_location_gateway.dart';
+import '../platform/navigation/navigation_gateway.dart';
+import '../platform/navigation/url_navigation_gateway.dart';
+import 'navigation/navigation_view_model.dart';
+import 'navigation/navigation_preview.dart';
 import 'core/brand_icon.dart';
 import 'core/brand_theme.dart';
 import 'delivery/detail/delivery_detail_card.dart';
@@ -26,12 +34,20 @@ class DeliveryScreen extends StatefulWidget {
     this.demo = false,
     this.tileProvider,
     this.mapController,
+    this.routeRepository,
+    this.locationGateway,
+    this.navigationGateway,
+    this.onNavigationChanged,
     this.tileUrlTemplate = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
   });
   final DeliveryViewModel viewModel;
   final bool demo;
   final TileProvider? tileProvider;
   final DeliveryMapController? mapController;
+  final RouteRepository? routeRepository;
+  final LocationGateway? locationGateway;
+  final NavigationGateway? navigationGateway;
+  final ValueChanged<NavigationViewModel?>? onNavigationChanged;
   final String tileUrlTemplate;
 
   @override
@@ -43,11 +59,12 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
   final _search = TextEditingController();
   final _searchFocus = FocusNode(debugLabel: 'Map search');
   bool _searchOpen = false;
+  NavigationViewModel? _navigation;
   bool _listMounted = false;
   bool _summaryOpen = false;
   final _summaryEntryFocus = FocusNode(debugLabel: 'Delivery summary');
   final _summaryCloseFocus = FocusNode(debugLabel: 'Summary close');
-  late final Listenable _workbenchChanges;
+  late Listenable _workbenchChanges;
   DeliveryViewModel get model => widget.viewModel;
 
   @override
@@ -58,7 +75,21 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
     _workbenchChanges = Listenable.merge([model, model.notice]);
   }
 
+  @override
+  void didUpdateWidget(covariant DeliveryScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.viewModel, model)) {
+      oldWidget.viewModel.removeListener(_modelChanged);
+      _navigation?.invalidate();
+      model.addListener(_modelChanged);
+      _workbenchChanges = Listenable.merge([model, model.notice]);
+      _modelChanged();
+    }
+  }
+
   void _modelChanged() {
+    final navigation = _navigation;
+    if (navigation != null && !navigation.isValid) navigation.invalidate();
     if (model.panel != WorkbenchPanel.map) _summaryOpen = false;
     if (_search.text != model.query.search) {
       _search.value = TextEditingValue(
@@ -71,6 +102,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
   @override
   void dispose() {
     model.removeListener(_modelChanged);
+    _navigation?.invalidate();
     _search.dispose();
     _searchFocus.dispose();
     _summaryEntryFocus.dispose();
@@ -86,6 +118,56 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && model.selectedStop?.id == stop.id) _map.focusStop(stop);
     });
+  }
+
+  Future<void> _navigate() async {
+    if (_navigation != null) return;
+    final owner = model;
+    final stop = owner.selectedStop;
+    final entry = owner.detailContext;
+    if (stop == null || entry == null || owner.isLoading) return;
+    FocusScope.of(context).unfocus();
+    final scope = owner.navigationScope;
+    final navigation = NavigationViewModel(
+      scope: scope,
+      target: NavigationTarget(
+        stopId: stop.id,
+        coordinate: RouteCoordinate(stop.latitude, stop.longitude),
+        label: stop.customerName,
+        address: stop.address,
+      ),
+      isCurrent: () =>
+          mounted &&
+          identical(owner, model) &&
+          !owner.isClosed &&
+          scope == owner.navigationScope &&
+          identical(entry, owner.detailContext) &&
+          owner.selectedStop?.id == stop.id &&
+          owner.selectedStop?.latitude == stop.latitude &&
+          owner.selectedStop?.longitude == stop.longitude,
+      routes: widget.routeRepository ?? RouteRepository(),
+      location: widget.locationGateway ?? const GeolocatorLocationGateway(),
+      gateway: widget.navigationGateway ?? UrlNavigationGateway(),
+    );
+    _navigation = navigation;
+    widget.onNavigationChanged?.call(navigation);
+    try {
+      await showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        useSafeArea: true,
+        backgroundColor: OceanColors.cream,
+        builder: (sheetContext) => NavigationPreview(
+          viewModel: navigation,
+          tileUrlTemplate: widget.tileUrlTemplate,
+          onReturn: () => Navigator.of(sheetContext).pop(),
+        ),
+      );
+    } finally {
+      _navigation = null;
+      widget.onNavigationChanged?.call(null);
+      navigation.dispose();
+    }
   }
 
   void _selectStatus(DeliveryStatus? status) {
@@ -468,6 +550,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                                                           'detail-${model.selectedStop?.id}',
                                                         ),
                                                         viewModel: model,
+                                                        onNavigate: _navigate,
                                                         onClose:
                                                             model.closeDetail,
                                                       ),
@@ -544,6 +627,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                                         'detail-${model.selectedStop?.id}',
                                       ),
                                       viewModel: model,
+                                      onNavigate: _navigate,
                                       onClose: model.closeDetail,
                                       feedback: WorkbenchNoticeView(
                                         viewModel: model,

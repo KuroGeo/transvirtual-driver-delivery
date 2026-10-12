@@ -1,0 +1,220 @@
+{
+  "verified_at": "2026-10-11T19:10:51.498887+00:00",
+  "repository": "KuroGeo/transvirtual-driver-delivery",
+  "status": "verified",
+  "source_ref": "c67a0dd29b8b8e10c3beabbb4e1a70a1861951e3",
+  "contract_revision": 3,
+  "native_subissues": 16,
+  "records": [
+    {
+      "task": "EPIC",
+      "number": 42,
+      "issue_id": 5803761182,
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/42",
+      "state": "open",
+      "body_sha256": "a26bb7c349a81fab462c269fe1b16409834b7d580cb862e00b2db00be7c013e2"
+    },
+    {
+      "task": "NP00",
+      "number": 43,
+      "issue_id": 5803761849,
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/43",
+      "state": "open",
+      "body_sha256": "fbf58ad639df059410e3b6f04c129af01f7fb4616d405542478cd038fb4328fd",
+      "parent_number": 42,
+      "blocked_by_numbers": []
+    },
+    {
+      "task": "NP01",
+      "number": 44,
+      "issue_id": 5803762325,
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/44",
+      "state": "open",
+      "body_sha256": "7988d2fa065556251a86645beb846007d61b55320f52dd2b97ee0ab652a9b6fe",
+      "parent_number": 42,
+      "blocked_by_numbers": [
+        43
+      ]
+    },
+    {
+      "task": "NP02",
+      "number": 45,
+      "issue_id": 5803762780,
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/45",
+      "state": "open",
+      "body_sha256": "ea0d8f074549eb3edf83edbb986f8b28cd735b9661ffda6c176713c9189dced3",
+      "parent_number": 42,
+      "blocked_by_numbers": [
+        59
+      ]
+    },
+    {
+      "task": "NP03",
+      "number": 46,
+      "issue_id": 5803763335,
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/46",
+      "state": "open",
+      "body_sha256": "b97dc51e585538e133ec8c9e05e13667dc1597aa27e3e8e66f74bf94ea9a7af2",
+      "parent_number": 42,
+      "blocked_by_numbers": [
+        45
+      ]
+    },
+    {
+      "task": "NP04",
+      "number": 47,
+      "issue_id": 5803764088,
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/47",
+      "state": "open",
+      "body_sha256": "c80d1c8b48a98864aa07a3439f480f6e90bf9b5aee0a993fb4f3fb54abc78fde",
+      "parent_number": 42,
+      "blocked_by_numbers": [
+        46
+      ]
+    },
+    {
+      "task": "NP05",
+      "number": 48,
+      "issue_id": 5803764884,
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/48",
+      "state": "open",
+      "body_sha256": "b2cfb3b7495b3a44c98a8d2bb13c2da17cce7868fb1615d2d072945618d1dbd3",
+      "parent_number": 42,
+      "blocked_by_numbers": [
+        46
+      ]
+    },
+    {
+      "task": "NP06",
+      "number": 49,
+      "issue_id": 5803765741,
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/49",
+      "state": "open",
+      "body_sha256": "7ea1ac486ba643df31e1d0ce22cd6ccf07bc97e03f5f09dd9e8f9d852797a829",
+      "parent_number": 42,
+      "blocked_by_numbers": [
+        47
+      ]
+    },
+    {
+      "task": "NP07",
+      "number": 50,
+      "issue_id": 5803766380,
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/50",
+      "state": "open",
+      "body_sha256": "a52430632bacef020d38e212fbeec9c3cfb0f8a5e9446dd54c58733891fd8367",
+      "parent_number": 42,
+      "blocked_by_numbers": [
+        48
+      ]
+    },
+    {
+      "task": "NP08",
+      "number": 51,
+      "issue_id": 5803767043,
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/51",
+      "state": "open",
+      "body_sha256": "6af2e4184b420a47fa69cc247ecbea1df44ab996615cf1269a2c0fe12dada7a8",
+      "parent_number": 42,
+      "blocked_by_numbers": [
+        47,
+        50
+      ]
+    },
+    {
+      "task": "NP09",
+      "number": 52,
+      "issue_id": 5803767578,
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/52",
+      "state": "open",
+      "body_sha256": "4548b653c1af4b4c00dc6d267e5b892f9596d2a65a980955c68d1fb7525d8ce5",
+      "parent_number": 42,
+      "blocked_by_numbers": [
+        45,
+        50,
+        51
+      ]
+    },
+    {
+      "task": "NP10",
+      "number": 53,
+      "issue_id": 5803768606,
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/53",
+      "state": "open",
+      "body_sha256": "d206762ec2a1f3fb333ae6900f018b2ea33946fd3770123bca83feb6f9d4fb40",
+      "parent_number": 42,
+      "blocked_by_numbers": [
+        49,
+        51,
+        52
+      ]
+    },
+    {
+      "task": "NP11",
+      "number": 54,
+      "issue_id": 5803769348,
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/54",
+      "state": "open",
+      "body_sha256": "9c2e41703516e33034af845b1afb22e5c3a67f0e6a71eaee8a418620ee1bad62",
+      "parent_number": 42,
+      "blocked_by_numbers": [
+        53
+      ]
+    },
+    {
+      "task": "NP12",
+      "number": 55,
+      "issue_id": 5803770149,
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/55",
+      "state": "open",
+      "body_sha256": "1209ca8f8e3fd69abb80effaf3cc3c95c3236eb04d7f976d4cc865ba2fbef21f",
+      "parent_number": 42,
+      "blocked_by_numbers": [
+        54
+      ]
+    },
+    {
+      "task": "NP13",
+      "number": 56,
+      "issue_id": 5803770679,
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/56",
+      "state": "open",
+      "body_sha256": "aae72cf94cc76c12a611500c610c5f07ec69c9c842025229a147dc060e67b6b3",
+      "parent_number": 42,
+      "blocked_by_numbers": [
+        55
+      ]
+    },
+    {
+      "task": "NP14",
+      "number": 57,
+      "issue_id": 5803771416,
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/57",
+      "state": "open",
+      "body_sha256": "09b0d0a35f830cf90ec5e78fc5a5a30c7f8238e158a29967f268312782704f4c",
+      "parent_number": 42,
+      "blocked_by_numbers": [
+        56
+      ]
+    },
+    {
+      "task": "NP15",
+      "number": 59,
+      "issue_id": 5804231215,
+      "url": "https://github.com/KuroGeo/transvirtual-driver-delivery/issues/59",
+      "state": "open",
+      "body_sha256": "98b4cc3c41ae11264b2dc5656c64191650e1d2a3e229994d35a94b0bd26ca341",
+      "parent_number": 42,
+      "blocked_by_numbers": [
+        43,
+        44
+      ]
+    }
+  ],
+  "amended_readback": {
+    "task": "NP13",
+    "verified_at": "2026-10-11T19:11:13.840570+00:00",
+    "body_sha256": "aae72cf94cc76c12a611500c610c5f07ec69c9c842025229a147dc060e67b6b3",
+    "reason": "login-only terminology: accounts instead of roles"
+  }
+}
