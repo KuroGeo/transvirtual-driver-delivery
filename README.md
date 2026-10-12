@@ -9,7 +9,7 @@ A map-first Flutter driver workbench with 30 synthetic demo stops around Sydney.
 <p align="center">
   <a href="https://kurogeo.github.io/transvirtual-driver-delivery/index.en.html#demo"><b>▶ Watch the 82-second demo</b></a> &nbsp; · &nbsp;
   <a href="https://kurogeo.github.io/transvirtual-driver-delivery/index.en.html">English presentation</a> &nbsp; · &nbsp;
-  <a href="https://github.com/KuroGeo/transvirtual-driver-delivery/releases/tag/v0.1.0-report.3">Download report & video</a> &nbsp; · &nbsp;
+  <a href="https://github.com/KuroGeo/transvirtual-driver-delivery/releases/tag/v0.1.0-report.4">Download report & video</a> &nbsp; · &nbsp;
   <a href="#run-the-interview-demo">Run it yourself</a>
 </p>
 
@@ -27,7 +27,7 @@ The cover uses original **iOS 26.4 simulator screenshots**, captured from the fo
 
 [Watch the compressed native video in the report](https://kurogeo.github.io/transvirtual-driver-delivery/index.en.html#demo). It shows two Offline saves, actual OS process restarts, durable recovery and simulated matching confirmations. The recording reuses a historical workbench build and its original dataset snapshot, rather than the replacement synthetic public CSV. It uses the instrumented native workbench entrypoint with controlled HTTP; the formal app entrypoint remains the run command below. No voiceover, so it can be narrated during the interview. [Recording proof](docs/report/media/demo-proof.json).
 
-**Compressed downloads:** [MP4 · 2.80 MB](https://github.com/KuroGeo/transvirtual-driver-delivery/releases/download/v0.1.0-report.3/ocean-delivery-demo-82s.mp4) · [Bilingual offline report + video ZIP](https://github.com/KuroGeo/transvirtual-driver-delivery/releases/download/v0.1.0-report.3/ocean-delivery-bilingual-report-20261012.zip).
+**Compressed downloads:** [MP4 · 2.80 MB](https://github.com/KuroGeo/transvirtual-driver-delivery/releases/download/v0.1.0-report.4/ocean-delivery-demo-82s.mp4) · [Bilingual offline report + video ZIP](https://github.com/KuroGeo/transvirtual-driver-delivery/releases/download/v0.1.0-report.4/ocean-delivery-bilingual-report-20261012.zip).
 
 ## Why offline work survives
 

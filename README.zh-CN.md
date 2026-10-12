@@ -9,7 +9,7 @@
 <p align="center">
   <a href="https://kurogeo.github.io/transvirtual-driver-delivery/#demo"><b>▶ 看 82 秒演示</b></a> &nbsp; · &nbsp;
   <a href="https://kurogeo.github.io/transvirtual-driver-delivery/">中文汇报</a> &nbsp; · &nbsp;
-  <a href="https://github.com/KuroGeo/transvirtual-driver-delivery/releases/tag/v0.1.0-report.3">下载报告与视频</a> &nbsp; · &nbsp;
+  <a href="https://github.com/KuroGeo/transvirtual-driver-delivery/releases/tag/v0.1.0-report.4">下载报告与视频</a> &nbsp; · &nbsp;
   <a href="#运行-demo">自己运行</a>
 </p>
 
@@ -25,7 +25,7 @@
 
 视频使用历史原生工作台测试入口、当时的数据快照及受控 HTTP 模拟确认。界面操作通过 Flutter Driver，文字输入为 driver 模拟；当前公开 App 已改用自造的合成 CSV。视频是追加演示，不代表新的完整原生验收。配中文步骤字幕，无配音，方便现场讲解。[录制证据](docs/report/media/demo-proof.json) · [讲解文字](docs/report/media/demo-transcript.md)。
 
-**已压缩：**[MP4 · 2.80 MB](https://github.com/KuroGeo/transvirtual-driver-delivery/releases/download/v0.1.0-report.3/ocean-delivery-demo-82s.mp4) · [双语离线报告 + 视频 ZIP](https://github.com/KuroGeo/transvirtual-driver-delivery/releases/download/v0.1.0-report.3/ocean-delivery-bilingual-report-20261012.zip)。
+**已压缩：**[MP4 · 2.80 MB](https://github.com/KuroGeo/transvirtual-driver-delivery/releases/download/v0.1.0-report.4/ocean-delivery-demo-82s.mp4) · [双语离线报告 + 视频 ZIP](https://github.com/KuroGeo/transvirtual-driver-delivery/releases/download/v0.1.0-report.4/ocean-delivery-bilingual-report-20261012.zip)。
 
 ## 离线工作为什么不会丢
 
