@@ -131,6 +131,14 @@ class _NavigationPreviewState extends State<NavigationPreview>
                             ),
                             const SizedBox(height: 8),
                             Text(model.target.address),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Coordinates: ${model.target.coordinate.uriValue}',
+                              key: const ValueKey(
+                                'navigation-destination-coordinate',
+                              ),
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
                             const SizedBox(height: 20),
                             if (_choosingMap)
                               ..._mapChoices()
@@ -205,6 +213,13 @@ class _NavigationPreviewState extends State<NavigationPreview>
 
   List<Widget> _mapChoices() => [
     const Text('Choose a map app, or open directions in a browser.'),
+    if (model.origin == null) ...[
+      const SizedBox(height: 8),
+      const Text(
+        'Apple Maps opens the destination pin. Choose Directions there to set your start.',
+        style: TextStyle(color: OceanColors.muted),
+      ),
+    ],
     const SizedBox(height: 12),
     for (final app in NavigationApp.values) ...[
       OutlinedButton.icon(
@@ -385,7 +400,7 @@ class _NavigationPreviewState extends State<NavigationPreview>
     HandoffStatus.launchFailed =>
       'The map could not open. Try another option or copy the address.',
     HandoffStatus.handoffRequested =>
-      'Directions handed to your map. Return here to record the delivery.',
+      'Map opening requested. Return here to record the delivery.',
     HandoffStatus.returned =>
       'Welcome back. Review the delivery and confirm the result yourself.',
     HandoffStatus.invalidated =>
