@@ -41,8 +41,8 @@
       "status": "review",
       "owner_agent_id": "/root/f1_harness",
       "candidate": {
-        "source_fingerprint": "d651e5c96ec8410cdebd97368c10bc2caabb43a91016919a9d23874a8df985cb",
-        "source_code_sha": "453582ac7b196ad5ddbf05a70143111060d23b78"
+        "source_fingerprint": "2da2eac55f40d8b65e8a167b6db433d547d519f6250acf0210412f031904cff1",
+        "source_code_sha": "48252a39e0ed7c6cdd504f3153740003e2636c19"
       },
       "evidence": [],
       "functional_depends_on": [
@@ -55,8 +55,8 @@
       "status": "review",
       "owner_agent_id": "/root/f1_routes",
       "candidate": {
-        "source_fingerprint": "d651e5c96ec8410cdebd97368c10bc2caabb43a91016919a9d23874a8df985cb",
-        "source_code_sha": "453582ac7b196ad5ddbf05a70143111060d23b78"
+        "source_fingerprint": "2da2eac55f40d8b65e8a167b6db433d547d519f6250acf0210412f031904cff1",
+        "source_code_sha": "48252a39e0ed7c6cdd504f3153740003e2636c19"
       },
       "evidence": [],
       "functional_depends_on": [
@@ -73,8 +73,8 @@
       "status": "review",
       "owner_agent_id": "/root/f1_routes",
       "candidate": {
-        "source_fingerprint": "d651e5c96ec8410cdebd97368c10bc2caabb43a91016919a9d23874a8df985cb",
-        "source_code_sha": "453582ac7b196ad5ddbf05a70143111060d23b78"
+        "source_fingerprint": "2da2eac55f40d8b65e8a167b6db433d547d519f6250acf0210412f031904cff1",
+        "source_code_sha": "48252a39e0ed7c6cdd504f3153740003e2636c19"
       },
       "evidence": [],
       "functional_depends_on": [
@@ -92,8 +92,8 @@
       "status": "review",
       "owner_agent_id": "/root",
       "candidate": {
-        "source_fingerprint": "d651e5c96ec8410cdebd97368c10bc2caabb43a91016919a9d23874a8df985cb",
-        "source_code_sha": "453582ac7b196ad5ddbf05a70143111060d23b78"
+        "source_fingerprint": "2da2eac55f40d8b65e8a167b6db433d547d519f6250acf0210412f031904cff1",
+        "source_code_sha": "48252a39e0ed7c6cdd504f3153740003e2636c19"
       },
       "evidence": [],
       "functional_depends_on": [
@@ -106,8 +106,8 @@
       "status": "review",
       "owner_agent_id": "/root/f1_acceptance",
       "candidate": {
-        "source_fingerprint": "d651e5c96ec8410cdebd97368c10bc2caabb43a91016919a9d23874a8df985cb",
-        "source_code_sha": "453582ac7b196ad5ddbf05a70143111060d23b78"
+        "source_fingerprint": "2da2eac55f40d8b65e8a167b6db433d547d519f6250acf0210412f031904cff1",
+        "source_code_sha": "48252a39e0ed7c6cdd504f3153740003e2636c19"
       },
       "evidence": [],
       "functional_depends_on": [
@@ -120,8 +120,8 @@
       "status": "review",
       "owner_agent_id": "/root/f1_acceptance",
       "candidate": {
-        "source_fingerprint": "d651e5c96ec8410cdebd97368c10bc2caabb43a91016919a9d23874a8df985cb",
-        "source_code_sha": "453582ac7b196ad5ddbf05a70143111060d23b78"
+        "source_fingerprint": "2da2eac55f40d8b65e8a167b6db433d547d519f6250acf0210412f031904cff1",
+        "source_code_sha": "48252a39e0ed7c6cdd504f3153740003e2636c19"
       },
       "evidence": [],
       "functional_depends_on": [
@@ -144,7 +144,7 @@
   },
   "external_boundaries": {
     "real_road": "blocked: no licensed client supplier configuration",
-    "real_maps": "not_run: requires corresponding installed mobile apps/OS handoff evidence",
+    "real_maps": "partial_pass: real Apple pin/return on iOS simulator; real-origin driving, other apps and physical devices not_run",
     "real_gps": "not_run: physical device not assigned",
     "physical_device": "not_run: not assigned",
     "production": "no-go: existing #31/#32/#33 and no publication authorization"

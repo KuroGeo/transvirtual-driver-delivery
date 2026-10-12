@@ -1,4 +1,26 @@
-# F1 navigation candidate and evidence — 2026-10-12
+# F1 coordinate navigation repair — 2026-10-12
+
+The current candidate `2da2eac55f40d8b65e8a167b6db433d547d519f6250acf0210412f031904cff1` (source commit `48252a39e0ed7c6cdd504f3153740003e2636c19`) passes isolated quality: **252 Python cases (one existing platform skip),265 Flutter successes**, format/analysis/locked dependencies and all11 F1 host checks. Fresh native-fixture `20261012T051942704734Z-native` passed7checks/3OSprocesses **4205/4371/4449**, original SQLite/outbox invariance and task cleanup. CLI `20261012T052248642223Z-f1-gate` reread all originals and allowed `native-fixture`, with `publish_allowed=false`. Independent original host/native review also passed; the separate actual Apple pin/OS-return review also passed. [Exact current hashes and receipts](f1-navigation.json).
+
+## Repaired behavior
+
+With an unknown start and disabled location services, Apple directions previously opened its start picker over an unrelated old map. Apple Maps now opens the **stored destination coordinate pin** first; the driver chooses Directions and a start there. With a reliable start it retains driving directions with both coordinates. The preview shows the destination coordinates and acknowledges only a map-opening request. No stop/CSV/SQLite/schema data was changed.
+
+Actual formal `lib/main.dart`/demo installation on the existing Ocean Delivery Preview preserved the original30stops and one queued update. Native UI taps on the reported original stop opened its exact stored coordinate pin in the correct Sydney area, even with location services off; actual OS return retained the same pending delivery detail. Installed Runner/kernel bytes match the current compiled artifact; before/after original dataset/stop/outbox/sequence rows agree. Raw UI PNGs and SQLite snapshots are retained under `harness/runs/20261012T052303209406Z-build/attempts/000001/preview/`. This is **Apple coordinate-pin and return evidence on an iOS simulator**, not real GPS or driving from the user's location. The supplied fictional address text differs from Maps' reverse-geocoded street; we preserve the station data.
+
+## Original30name audit
+
+The current finite original dataset was checked row by row using name plus supplied address/suburb. **0verified name-and-target-location matches;15ambiguous/other-location or similar-name cases;15unverified cases. All30retain their coordinates.** Missing public matches do not prove nonexistence. Same-name businesses elsewhere are rejected. The private full30query/source/date audit is retained at `harness/runs/f1-original-stop-verification-20261012/all30.public-verification.md`; its JSON hash is in the current receipt. No original assignment/customer data was added to this public PR.
+
+The screenshot below is an unmodified **private fixture** capture from the current candidate, independent of the original customer-data preview. It does not attest licensed road data.
+
+<img src="f1-navigation-preview.png" width="360" alt="Current F1 coordinate preview from the private simulator fixture" />
+
+The previous candidate's original evidence and red/repair history remain below. Current exact original files are listed in the JSON receipt. F2/F3 remain preparation; licensed supplier, real GPS/driving origin, Google/Android/physical-device and release gates remain unverified. Production is **no-go**; PR review and current-head CI are separate.
+
+---
+
+# Historical F1 navigation candidate and evidence — 2026-10-12
 
 F1 client navigation is implemented and the current local **quality, host and native-fixture gates passed**. Independent review of the exact originals also passed. Production remains **no-go**. F2/F3 retain their approved preparation records; no login, account storage, own route backend or AI executor is implemented by this candidate.
 
@@ -46,11 +68,9 @@ Raw files below are original local files under ignored `harness/runs/`. They rem
 
 The JSON receipt also records each phase's result, SQLite projection/database, action/observation journal and OS screenshot hashes. [Harness result](../project/next-phase/results/NP01-F1.md) · [Routes result](../project/next-phase/results/NP05-NP06-F1.md).
 
-## Review screenshot
+## Historical review screenshot
 
-Unmodified OS PNG from the passed candidate's saved/list preview, with an explicitly controlled gateway and fictional delivery data. SHA-256 `bf4902715254d752fdcb41532c45cc7b2c0e574a541bc1820c066aeeb1457b61`; display-copy bytes match the original. This image does not attest GPS or real road results.
-
-<img src="f1-navigation-preview.png" width="360" alt="F1 navigation preview on the task-owned iOS simulator; roads unavailable" />
+The previous candidate's unmodified OS PNG remains at `harness/runs/20261011T201944866727Z-native/attempts/000001/native/saved/list-navigation-preview.png`, SHA-256 `bf4902715254d752fdcb41532c45cc7b2c0e574a541bc1820c066aeeb1457b61`. The public display copy above now shows the current candidate. Both use controlled gateways and fictional fixture data; neither attests GPS or licensed roads.
 
 ## Retained failures and repairs
 
