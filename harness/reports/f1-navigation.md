@@ -1,4 +1,20 @@
-# F1 coordinate navigation repair — 2026-10-12
+# Current integrated F1 repair — 2026-10-12
+
+Candidate `5a70bdf52827f3b2b4b134af5455c26a99cc3ec56def3ef478e3a5d8f0fb6efd` (source `449cd3efb49fcab40488748c1899a5be73574fa5`) includes current main `080bae7`. Of332 counted inputs, only README differs from the previously signed2da candidate; all App/Harness/contracts/assets/locks remain identical. Fresh isolated quality `20261012T054823574352Z-quality` passed **252Python cases (one existing platform skip),265Flutter tests** and all7stages. The fresh host gate and three-process native fixture `20261012T054941116495Z-native` passed; CLI `20261012T055203424460Z-f1-gate` reread originals and allowed `native-fixture` with `publish_allowed=false`. Independent review reread all116 originals and exact current host/native bindings and passed. [Exact current receipts](f1-navigation.json).
+
+The earlier actual formal-demo Apple coordinate-pin/OS-return and byte-identical original30-stop/outbox proof remains signed for its2da compiled App. Current App source is byte-identical; no new actual Maps run is claimed for this documentation integration. Destination repair and source-data preservation are unchanged.
+
+The reconciled finite audit shares same-name source evidence between duplicate-name rows: **0qualifying name-and-target-location matches;16ambiguous/other-location;14unverified; all30coordinate destinations**. Missing public matches do not prove nonexistence. The private readable audit is `harness/runs/f1-original-stop-verification-20261012/all30.public-verification.v2.md`, with exact JSON hash in this receipt. Original first-pass records remain retained. Original customer data is not published in this PR.
+
+The current unmodified **fictional private-fixture** OS screenshot is below. It is simulator fixture evidence; actual Apple pin proof remains separately scoped above.
+
+<img src="f1-navigation-preview.png" width="360" alt="Current integrated F1 coordinate preview from the private simulator fixture" />
+
+Production remains no-go. Real user GPS/driving, licensed roads, physical-device, Android and release evidence remain separate.
+
+---
+
+# Pre-integration coordinate repair evidence — 2026-10-12
 
 The current candidate `2da2eac55f40d8b65e8a167b6db433d547d519f6250acf0210412f031904cff1` (source commit `48252a39e0ed7c6cdd504f3153740003e2636c19`) passes isolated quality: **252 Python cases (one existing platform skip),265 Flutter successes**, format/analysis/locked dependencies and all11 F1 host checks. Fresh native-fixture `20261012T051942704734Z-native` passed7checks/3OSprocesses **4205/4371/4449**, original SQLite/outbox invariance and task cleanup. CLI `20261012T052248642223Z-f1-gate` reread all originals and allowed `native-fixture`, with `publish_allowed=false`. Independent original host/native review also passed; the separate actual Apple pin/OS-return review also passed. [Exact current hashes and receipts](f1-navigation.json).
 
@@ -12,9 +28,7 @@ Actual formal `lib/main.dart`/demo installation on the existing Ocean Delivery P
 
 The current finite original dataset was checked row by row using name plus supplied address/suburb. **0verified name-and-target-location matches;15ambiguous/other-location or similar-name cases;15unverified cases. All30retain their coordinates.** Missing public matches do not prove nonexistence. Same-name businesses elsewhere are rejected. The private full30query/source/date audit is retained at `harness/runs/f1-original-stop-verification-20261012/all30.public-verification.md`; its JSON hash is in the current receipt. No original assignment/customer data was added to this public PR.
 
-The screenshot below is an unmodified **private fixture** capture from the current candidate, independent of the original customer-data preview. It does not attest licensed road data.
-
-<img src="f1-navigation-preview.png" width="360" alt="Current F1 coordinate preview from the private simulator fixture" />
+The original pre-integration fixture screenshot is retained at the hashed run path in the historical JSON receipt. The public display copy above shows the integrated candidate.
 
 The previous candidate's original evidence and red/repair history remain below. Current exact original files are listed in the JSON receipt. F2/F3 remain preparation; licensed supplier, real GPS/driving origin, Google/Android/physical-device and release gates remain unverified. Production is **no-go**; PR review and current-head CI are separate.
 

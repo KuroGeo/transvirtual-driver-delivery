@@ -41,8 +41,8 @@
       "status": "review",
       "owner_agent_id": "/root/f1_harness",
       "candidate": {
-        "source_fingerprint": "2da2eac55f40d8b65e8a167b6db433d547d519f6250acf0210412f031904cff1",
-        "source_code_sha": "48252a39e0ed7c6cdd504f3153740003e2636c19"
+        "source_fingerprint": "5a70bdf52827f3b2b4b134af5455c26a99cc3ec56def3ef478e3a5d8f0fb6efd",
+        "source_code_sha": "449cd3efb49fcab40488748c1899a5be73574fa5"
       },
       "evidence": [],
       "functional_depends_on": [
@@ -55,8 +55,8 @@
       "status": "review",
       "owner_agent_id": "/root/f1_routes",
       "candidate": {
-        "source_fingerprint": "2da2eac55f40d8b65e8a167b6db433d547d519f6250acf0210412f031904cff1",
-        "source_code_sha": "48252a39e0ed7c6cdd504f3153740003e2636c19"
+        "source_fingerprint": "5a70bdf52827f3b2b4b134af5455c26a99cc3ec56def3ef478e3a5d8f0fb6efd",
+        "source_code_sha": "449cd3efb49fcab40488748c1899a5be73574fa5"
       },
       "evidence": [],
       "functional_depends_on": [
@@ -73,8 +73,8 @@
       "status": "review",
       "owner_agent_id": "/root/f1_routes",
       "candidate": {
-        "source_fingerprint": "2da2eac55f40d8b65e8a167b6db433d547d519f6250acf0210412f031904cff1",
-        "source_code_sha": "48252a39e0ed7c6cdd504f3153740003e2636c19"
+        "source_fingerprint": "5a70bdf52827f3b2b4b134af5455c26a99cc3ec56def3ef478e3a5d8f0fb6efd",
+        "source_code_sha": "449cd3efb49fcab40488748c1899a5be73574fa5"
       },
       "evidence": [],
       "functional_depends_on": [
@@ -92,8 +92,8 @@
       "status": "review",
       "owner_agent_id": "/root",
       "candidate": {
-        "source_fingerprint": "2da2eac55f40d8b65e8a167b6db433d547d519f6250acf0210412f031904cff1",
-        "source_code_sha": "48252a39e0ed7c6cdd504f3153740003e2636c19"
+        "source_fingerprint": "5a70bdf52827f3b2b4b134af5455c26a99cc3ec56def3ef478e3a5d8f0fb6efd",
+        "source_code_sha": "449cd3efb49fcab40488748c1899a5be73574fa5"
       },
       "evidence": [],
       "functional_depends_on": [
@@ -106,8 +106,8 @@
       "status": "review",
       "owner_agent_id": "/root/f1_acceptance",
       "candidate": {
-        "source_fingerprint": "2da2eac55f40d8b65e8a167b6db433d547d519f6250acf0210412f031904cff1",
-        "source_code_sha": "48252a39e0ed7c6cdd504f3153740003e2636c19"
+        "source_fingerprint": "5a70bdf52827f3b2b4b134af5455c26a99cc3ec56def3ef478e3a5d8f0fb6efd",
+        "source_code_sha": "449cd3efb49fcab40488748c1899a5be73574fa5"
       },
       "evidence": [],
       "functional_depends_on": [
@@ -120,8 +120,8 @@
       "status": "review",
       "owner_agent_id": "/root/f1_acceptance",
       "candidate": {
-        "source_fingerprint": "2da2eac55f40d8b65e8a167b6db433d547d519f6250acf0210412f031904cff1",
-        "source_code_sha": "48252a39e0ed7c6cdd504f3153740003e2636c19"
+        "source_fingerprint": "5a70bdf52827f3b2b4b134af5455c26a99cc3ec56def3ef478e3a5d8f0fb6efd",
+        "source_code_sha": "449cd3efb49fcab40488748c1899a5be73574fa5"
       },
       "evidence": [],
       "functional_depends_on": [

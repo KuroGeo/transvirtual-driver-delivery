@@ -4,19 +4,22 @@
   "contract_revision": 4,
   "date": "2026-10-12",
   "candidate": {
-    "source_fingerprint": "2da2eac55f40d8b65e8a167b6db433d547d519f6250acf0210412f031904cff1",
-    "source_code_sha": "48252a39e0ed7c6cdd504f3153740003e2636c19",
+    "source_fingerprint": "5a70bdf52827f3b2b4b134af5455c26a99cc3ec56def3ef478e3a5d8f0fb6efd",
+    "source_code_sha": "449cd3efb49fcab40488748c1899a5be73574fa5",
     "source_main": "53c2089349aacf90a330a9245dbd14789eb16d2e",
-    "planning_sha": "5f32b66a91dbd6b92b692d252188e23e3e64276e"
+    "planning_sha": "5f32b66a91dbd6b92b692d252188e23e3e64276e",
+    "integration_main": "080bae7f34c43ded48b003404238405fa07d6cde",
+    "app_source_sha": "48252a39e0ed7c6cdd504f3153740003e2636c19",
+    "integration_note": "Current main only changes README among counted inputs; all App/Harness/contracts/assets/locks are byte-identical to the prior2da candidate. Approval source_main remains the frozen original baseline."
   },
   "scope": "F1 client source/tests/reviewable PR only; F2/F3 preparation retained",
   "local_verdict": {
     "quality": "passed",
     "host": "passed",
     "native_fixture": "passed",
-    "independent_native_review": "passed",
+    "independent_native_review": "passed: current integrated host/native-fixture",
     "production_eligible": false,
-    "real_apple_pin": "passed: simulator destination pin and return only"
+    "real_apple_pin": "prior2da simulator pin/return passed; current App source identical, no new actual Maps run claimed"
   },
   "quality": {
     "python_cases": 252,
@@ -31,7 +34,7 @@
       {
         "id": "tooling-tests",
         "status": "passed",
-        "sha256": "70ddfa8b488d68b005f8b643f99d0fabb456cd010a88be12ab2fbedb798000ee"
+        "sha256": "98a66822ef4b9754277f1095f8ba3b880f651cd6924bf2d65d4e07c270ec47b3"
       },
       {
         "id": "sdk",
@@ -51,12 +54,12 @@
       {
         "id": "analyze",
         "status": "passed",
-        "sha256": "e0ad201a40faa147ff0cc20d1887c4489f4fb3963d95eaa482ec2a3fc8dfe35b"
+        "sha256": "c3e3e0d8632f9efa69d19f12fd43f4296a13a424124ac54cb3f583bfc7b80908"
       },
       {
         "id": "flutter-tests",
         "status": "passed",
-        "sha256": "22800f9bd9c94188b06df7323cf42609d7bef4c8bc7e980e591d026fb9f1198d"
+        "sha256": "c1f059459e864cdb929b763aac07ecd3a66c4267b163612a454b33b10fe1a8ab"
       }
     ]
   },
@@ -139,7 +142,7 @@
     "publish_allowed": false,
     "platform": "ios",
     "device": {
-      "udid": "E0267048-688C-4D20-8C05-6ABC95A904F3",
+      "udid": "F3C0DEA9-9737-4599-A82B-B3227122087A",
       "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-26-4",
       "type": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
       "task_owned": true
@@ -150,8 +153,8 @@
     "phases": [
       {
         "phase": "saved",
-        "pid": 4205,
-        "session": "f7c2005ba253b1a15d1bf105a2c0f8f76e2e7bdbce684245",
+        "pid": 12870,
+        "session": "f416887896af00a1eec862dfd083f4d0768f82873fe0d40f",
         "status": "passed",
         "checks": [
           "F1.route-preview",
@@ -161,8 +164,8 @@
       },
       {
         "phase": "recovered",
-        "pid": 4371,
-        "session": "3c88f865646d3c64e5fbc9b4f9c9a98a8672b0e878551d7a",
+        "pid": 13022,
+        "session": "9c8d5f11d8faf120e4976411e82e96b60a2b1d1ca69e4e36",
         "status": "passed",
         "checks": [
           "F1.cold-recovery",
@@ -172,8 +175,8 @@
       },
       {
         "phase": "confirmed",
-        "pid": 4449,
-        "session": "368ac440b5464b0eaffd711a2e5d88275875700e6db98220",
+        "pid": 13112,
+        "session": "ad51b70642404be922366dfc1f7d67c956bb4203c9ce0543",
         "status": "passed",
         "checks": [
           "F1.outbox-invariance"
@@ -211,94 +214,94 @@
   ],
   "evidence": {
     "quality": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051701983109Z-quality/attempts/000001/report.json",
-      "repository_path": "harness/runs/20261012T051701983109Z-quality/attempts/000001/report.json",
-      "sha256": "6ccc4759c3a5e0119a2565a88a91a86052de82eaec4def479d30e087b7503a0b",
-      "bytes": 13291,
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054823574352Z-quality/attempts/000001/report.json",
+      "repository_path": "harness/runs/20261012T054823574352Z-quality/attempts/000001/report.json",
+      "sha256": "a4e551b4af6c9530ac5ea4b6fefc898a8713c7be90bc8d2a57295050f5ae1ba6",
+      "bytes": 13313,
       "kind": "quality-run"
     },
     "flutter_machine": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051701983109Z-quality/attempts/000001/flutter-tests.events.jsonl",
-      "repository_path": "harness/runs/20261012T051701983109Z-quality/attempts/000001/flutter-tests.events.jsonl",
-      "sha256": "74860fe033537f77d44fd7e18605ee1b5b5a605e6acf2c176b93ebaa2e273c2c",
-      "bytes": 207526,
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054823574352Z-quality/attempts/000001/flutter-tests.events.jsonl",
+      "repository_path": "harness/runs/20261012T054823574352Z-quality/attempts/000001/flutter-tests.events.jsonl",
+      "sha256": "394095340fb77b26cfaf3796aad793ef07ed42499b112664200aa0f8d0e9da5b",
+      "bytes": 207550,
       "kind": "original-machine-events"
     },
     "source_objects": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051701983109Z-quality/attempts/000001/source-objects.json",
-      "repository_path": "harness/runs/20261012T051701983109Z-quality/attempts/000001/source-objects.json",
-      "sha256": "b511786318606650a47dacba924f7b678a3608aeb4d70231c31008d9d1d2648f",
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054823574352Z-quality/attempts/000001/source-objects.json",
+      "repository_path": "harness/runs/20261012T054823574352Z-quality/attempts/000001/source-objects.json",
+      "sha256": "8f1bf7b9ccbd78bede8ee75ffd55790f6b92028e38b1e8a98989516398b02228",
       "bytes": 105777,
       "kind": "original-git-object-proof"
     },
     "host_manifest": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051701983109Z-quality/attempts/000001/f1-host/manifest.json",
-      "repository_path": "harness/runs/20261012T051701983109Z-quality/attempts/000001/f1-host/manifest.json",
-      "sha256": "ca7fa6d6ea22af4b4f8d0cfadee3f1347fc91e73ac06517e01aede4e089259a4",
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054823574352Z-quality/attempts/000001/f1-host/manifest.json",
+      "repository_path": "harness/runs/20261012T054823574352Z-quality/attempts/000001/f1-host/manifest.json",
+      "sha256": "1355d3d1b1019c92148466bc336f5d8fddef58080f659bb96b8c1104d37b8653",
       "bytes": 936,
       "kind": "f1-manifest"
     },
     "host_gate": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051701983109Z-quality/attempts/000001/f1-host/gate.json",
-      "repository_path": "harness/runs/20261012T051701983109Z-quality/attempts/000001/f1-host/gate.json",
-      "sha256": "65982bc51d6e009714acc92a19deef6e3c91bb538dae6c63af76bd08f650fd50",
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054823574352Z-quality/attempts/000001/f1-host/gate.json",
+      "repository_path": "harness/runs/20261012T054823574352Z-quality/attempts/000001/f1-host/gate.json",
+      "sha256": "d082306fa21cf755d44ce7062ca126f9fe3cb4f5753af56b796673b15086f396",
       "bytes": 676,
       "kind": "f1-gate"
     },
     "native_runner": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/report.json",
-      "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/report.json",
-      "sha256": "6e6215474c039cbeb746c940199e81afb63d07103144939f1d04ff41535de812",
-      "bytes": 12122,
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/report.json",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/report.json",
+      "sha256": "fd5eab864ddc915d91185b38c273bb1c81c5f15fa1bcfd84549489ba6614d938",
+      "bytes": 12137,
       "kind": "native-run"
     },
     "native_collector": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/native/result.json",
-      "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/native/result.json",
-      "sha256": "5911a792bde662fcfd92509421f4c0d3b783f9129f2b3c1345f4dee19a71048d",
-      "bytes": 2065341,
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/result.json",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/result.json",
+      "sha256": "a4174fa83270db928039dbcfb1d383ce3b89874656b04f04c7822caefd8e9659",
+      "bytes": 2066478,
       "kind": "raw-native-collector"
     },
     "compiled_manifest": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/artifact-workbench-build/manifest.json",
-      "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/artifact-workbench-build/manifest.json",
-      "sha256": "a520b1394508d05b1cfc357d3de73def1b7fadbe3dbeca7f48c14bef1e46329e",
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/artifact-workbench-build/manifest.json",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/artifact-workbench-build/manifest.json",
+      "sha256": "4d24038974933f4f556f97ee4473d657d7899b664ee87c7a6ea001c5d14fe34c",
       "bytes": 19237,
       "kind": "compiled-artifact-manifest"
     },
     "compiled_archive": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/artifact-workbench-build/Runner.tar.gz",
-      "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/artifact-workbench-build/Runner.tar.gz",
-      "sha256": "ba5c6d0b923d986a3306791fcd1a39242296f561023f137674e469ba81af3603",
-      "bytes": 60301266,
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/artifact-workbench-build/Runner.tar.gz",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/artifact-workbench-build/Runner.tar.gz",
+      "sha256": "0db8949c2f73aad00211d4e9a254ea0449d4924448ca8e90e5dce873e04b787c",
+      "bytes": 60301284,
       "kind": "original-compiled-archive"
     },
     "native_manifest": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/f1-evidence/manifest.json",
-      "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/f1-evidence/manifest.json",
-      "sha256": "838000af1de7a11aab04246d3cc7e451aaaeb2c1c5ab64f1285d628330e6de70",
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/f1-evidence/manifest.json",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/f1-evidence/manifest.json",
+      "sha256": "2eb8d8adbb5b7f3111d610c339e04fbefa8b0b29bde1c9f3d202a2127c1fa476",
       "bytes": 1996,
       "kind": "f1-manifest"
     },
     "native_gate_attempt": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T052248642223Z-f1-gate/attempts/000001/report.json",
-      "repository_path": "harness/runs/20261012T052248642223Z-f1-gate/attempts/000001/report.json",
-      "sha256": "457a4d3a783e33aceb7c0603dd3dbce139e1eeb7e1a46e6f6274131fb6396f15",
-      "bytes": 4583,
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T055203424460Z-f1-gate/attempts/000001/report.json",
+      "repository_path": "harness/runs/20261012T055203424460Z-f1-gate/attempts/000001/report.json",
+      "sha256": "c8e1f1f52b784815635f2ec8752c4588073a37f717113f1a98d7e2941a23725e",
+      "bytes": 4588,
       "kind": "f1-gate-run"
     },
     "native_gate_leaf": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T052248642223Z-f1-gate/attempts/000001/f1-evidence-gate.log",
-      "repository_path": "harness/runs/20261012T052248642223Z-f1-gate/attempts/000001/f1-evidence-gate.log",
-      "sha256": "e486d0b42ed78b0f8b5fb3807a3f5163de02e121daab5771598ef5500e946003",
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T055203424460Z-f1-gate/attempts/000001/f1-evidence-gate.log",
+      "repository_path": "harness/runs/20261012T055203424460Z-f1-gate/attempts/000001/f1-evidence-gate.log",
+      "sha256": "06fe68fc9feab289105e8eb1ad7405ad7b8985ff3231e3b6979558f4fb2bafaa",
       "bytes": 689,
       "kind": "f1-gate"
     },
     "original_preview": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/native/saved/list-navigation-preview.png",
-      "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/native/saved/list-navigation-preview.png",
-      "sha256": "a9030042a8f6b8bebf39043b4028cfe377d55916ba6473ab9f3a050d0bf102c9",
-      "bytes": 306592,
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/list-navigation-preview.png",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/list-navigation-preview.png",
+      "sha256": "6045444df88ee174d5c0bf61661df8a3bd6baae15ee2fad97868b3d5c46ebb58",
+      "bytes": 307739,
       "kind": "original-os-screenshot"
     },
     "live_apple_pin": {
@@ -316,150 +319,150 @@
       "kind": "original-os-screenshot"
     },
     "original30_public_verification": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/f1-original-stop-verification-20261012/all30.public-verification.json",
-      "repository_path": "harness/runs/f1-original-stop-verification-20261012/all30.public-verification.json",
-      "sha256": "9ce2c41b551a79e740217d1faafa838c184abb0d15d49876fc8a892a187639eb",
-      "bytes": 104773,
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/f1-original-stop-verification-20261012/all30.public-verification.v2.json",
+      "repository_path": "harness/runs/f1-original-stop-verification-20261012/all30.public-verification.v2.json",
+      "sha256": "a95e72fad7acd72edbe2968a32b14b3a7e6b947116c5cc03fc32350359cbd252",
+      "bytes": 108674,
       "kind": "bounded-public-research-summary"
     },
     "independent_review": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/f1-independent-pin-review-20261012T052637436914Z/review-receipt.json",
-      "repository_path": "harness/runs/f1-independent-pin-review-20261012T052637436914Z/review-receipt.json",
-      "sha256": "2e8ac3c9bce3bce54ddb5c9fa43b023441f9ac469518bf755446e28dda9db574",
-      "bytes": 2746,
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/f1-independent-integrated-review-20261012T055540940790Z/review-receipt.json",
+      "repository_path": "harness/runs/f1-independent-integrated-review-20261012T055540940790Z/review-receipt.json",
+      "sha256": "d1dbe18c7e5021b297a88d41a27785dbfc5942829ab050d7ede6af01030a4e77",
+      "bytes": 3420,
       "kind": "independent-review-receipt"
     },
     "saved_result.json": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/native/saved/result.json",
-      "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/native/saved/result.json",
-      "sha256": "d50983d5f7282629d40a19b4348c0593d653d150f0f872f90945fe5cdbf1fa3f",
-      "bytes": 2078,
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/result.json",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/result.json",
+      "sha256": "0b1a92e1aade45b5b783a0bc2813443916c5cac7196a82bbfc76bd6d66397bc0",
+      "bytes": 2080,
       "kind": "original-native-evidence"
     },
     "saved_phase-final.sqlite": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/native/saved/phase-final.sqlite",
-      "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/native/saved/phase-final.sqlite",
-      "sha256": "042b7079f427f3137ac5962be38c50fcd1c33130a0fce7a4df06ee74334941f6",
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/phase-final.sqlite",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/phase-final.sqlite",
+      "sha256": "d8c5fc04006b175e34a237b88fe6dbe908f7db30df8b5d1ed9ce414f19df7977",
       "bytes": 61440,
       "kind": "original-native-evidence"
     },
     "saved_phase-final.sqlite.json": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/native/saved/phase-final.sqlite.json",
-      "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/native/saved/phase-final.sqlite.json",
-      "sha256": "dc06a3cd1b817c016ded1c1eb0f60707a26885ba55377674d3467770af870dc2",
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/phase-final.sqlite.json",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/phase-final.sqlite.json",
+      "sha256": "1bc8184f9b79822d792267167f113aa51caa2e2b36787264757a2dad9d92bca7",
       "bytes": 22418,
       "kind": "original-native-evidence"
     },
     "saved_actions.jsonl": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/native/saved/actions.jsonl",
-      "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/native/saved/actions.jsonl",
-      "sha256": "9e3ce195e54ad8bfe70c4fbd77503820cdf3245ac4414b16ae1f1a276556ffa2",
-      "bytes": 66585,
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/actions.jsonl",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/actions.jsonl",
+      "sha256": "79dd79b8a77c6101b92ad122317cc08235d060c7e26dec6433136c6e071bc415",
+      "bytes": 67000,
       "kind": "original-native-evidence"
     },
     "saved_observations.jsonl": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/native/saved/observations.jsonl",
-      "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/native/saved/observations.jsonl",
-      "sha256": "c761e7816d1a930015837a60b7fecdb21b39f9c92e0b86314883db95389b2a83",
-      "bytes": 1258313,
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/observations.jsonl",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/observations.jsonl",
+      "sha256": "1f6a18d4be43f7265fd34e79e69ae1239831410386e7c276b3266fc89a1367a5",
+      "bytes": 1258653,
       "kind": "original-native-evidence"
     },
     "saved_phase-final.png": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/native/saved/phase-final.png",
-      "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/native/saved/phase-final.png",
-      "sha256": "539aafefb59519060558135c69990f692c15ecd9a7c439e828e1ef423b612d9f",
-      "bytes": 254022,
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/phase-final.png",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/saved/phase-final.png",
+      "sha256": "777debb829484522b868d9ef611d0e3d95a6e595ef842bad10bbc5e55b02be22",
+      "bytes": 254079,
       "kind": "original-native-evidence"
     },
     "recovered_result.json": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/native/recovered/result.json",
-      "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/native/recovered/result.json",
-      "sha256": "78387d08699c68e7462fe540695631bdb2ad4d2c6eb5f4dfdc3e90400afde8ae",
-      "bytes": 2102,
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/recovered/result.json",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/recovered/result.json",
+      "sha256": "acab54551425e2029c30b27b36c4811582e8453b38d71d4f98333a92ca53af3f",
+      "bytes": 2104,
       "kind": "original-native-evidence"
     },
     "recovered_phase-final.sqlite": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/native/recovered/phase-final.sqlite",
-      "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/native/recovered/phase-final.sqlite",
-      "sha256": "75d3ad3b9f5880c8185b1879693e2593ec32adbe6c6af2439c598de510350ef8",
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/recovered/phase-final.sqlite",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/recovered/phase-final.sqlite",
+      "sha256": "f9abb3d548423ed4d15da1b20be5a10319fef7556afa7fb5611a72a803f78720",
       "bytes": 61440,
       "kind": "original-native-evidence"
     },
     "recovered_phase-final.sqlite.json": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/native/recovered/phase-final.sqlite.json",
-      "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/native/recovered/phase-final.sqlite.json",
-      "sha256": "e748ef31430e0ef5dc89eb5d310287316db011f7b313fa39cb6eb05a31b8d777",
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/recovered/phase-final.sqlite.json",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/recovered/phase-final.sqlite.json",
+      "sha256": "0fad1b93c32c041c50132023ec805e1337d2f395a559a284d39d903c62cb6c6c",
       "bytes": 22418,
       "kind": "original-native-evidence"
     },
     "recovered_actions.jsonl": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/native/recovered/actions.jsonl",
-      "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/native/recovered/actions.jsonl",
-      "sha256": "07355b04be1918c78613840942fcf8b82cc245104d2c7025e4ff53b56e0c64cf",
-      "bytes": 40336,
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/recovered/actions.jsonl",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/recovered/actions.jsonl",
+      "sha256": "6dec29e1fbd19cac23832cad3a517927c0b0011224fb1bcee024a573f8007a13",
+      "bytes": 40595,
       "kind": "original-native-evidence"
     },
     "recovered_observations.jsonl": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/native/recovered/observations.jsonl",
-      "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/native/recovered/observations.jsonl",
-      "sha256": "9cf5d2e2e3213492d1a4ad5e7e43ba7a500340820149712139323823df3aa8ea",
-      "bytes": 785470,
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/recovered/observations.jsonl",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/recovered/observations.jsonl",
+      "sha256": "fcd1f38fbd55cb8047519af771356fa9ee0f5d1bc78e6b30a60e5d56b3b8d916",
+      "bytes": 785715,
       "kind": "original-native-evidence"
     },
     "recovered_phase-final.png": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/native/recovered/phase-final.png",
-      "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/native/recovered/phase-final.png",
-      "sha256": "40d0e8827fa3eb7d62d27b05a4fce8a8340ca02db2ed990a6179a8e2b0aaf997",
-      "bytes": 234065,
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/recovered/phase-final.png",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/recovered/phase-final.png",
+      "sha256": "e015af9d7444158affe33b324295d95a4f059592ba5cd0595cc22fc89e117e31",
+      "bytes": 234124,
       "kind": "original-native-evidence"
     },
     "confirmed_result.json": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/native/confirmed/result.json",
-      "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/native/confirmed/result.json",
-      "sha256": "92fce872e125f91dca7454d644988202be09192f5b4a41078ff3af80ca8c267d",
-      "bytes": 1240,
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/confirmed/result.json",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/confirmed/result.json",
+      "sha256": "3f9b1f3845ce525cec9ee9ce452de2e4aeeaeed0f6e17ba1f32a3a46240f013f",
+      "bytes": 1242,
       "kind": "original-native-evidence"
     },
     "confirmed_phase-final.sqlite": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/native/confirmed/phase-final.sqlite",
-      "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/native/confirmed/phase-final.sqlite",
-      "sha256": "75d3ad3b9f5880c8185b1879693e2593ec32adbe6c6af2439c598de510350ef8",
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/confirmed/phase-final.sqlite",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/confirmed/phase-final.sqlite",
+      "sha256": "f9abb3d548423ed4d15da1b20be5a10319fef7556afa7fb5611a72a803f78720",
       "bytes": 61440,
       "kind": "original-native-evidence"
     },
     "confirmed_phase-final.sqlite.json": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/native/confirmed/phase-final.sqlite.json",
-      "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/native/confirmed/phase-final.sqlite.json",
-      "sha256": "e748ef31430e0ef5dc89eb5d310287316db011f7b313fa39cb6eb05a31b8d777",
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/confirmed/phase-final.sqlite.json",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/confirmed/phase-final.sqlite.json",
+      "sha256": "0fad1b93c32c041c50132023ec805e1337d2f395a559a284d39d903c62cb6c6c",
       "bytes": 22418,
       "kind": "original-native-evidence"
     },
     "confirmed_actions.jsonl": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/native/confirmed/actions.jsonl",
-      "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/native/confirmed/actions.jsonl",
-      "sha256": "f59088f89a8189a1983f7236aed8093faf4d88d224775d1e2d5fd485a987e98a",
-      "bytes": 3784,
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/confirmed/actions.jsonl",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/confirmed/actions.jsonl",
+      "sha256": "59f0e7aec0777e2ff50d80377ce0375aff14d1c40685615d7add4f1a376d8600",
+      "bytes": 3808,
       "kind": "original-native-evidence"
     },
     "confirmed_observations.jsonl": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/native/confirmed/observations.jsonl",
-      "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/native/confirmed/observations.jsonl",
-      "sha256": "ef220a8f0b649e95d7030c57fc270f7750fb351e8728c76668f8b6ed7d243edf",
-      "bytes": 94101,
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/confirmed/observations.jsonl",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/confirmed/observations.jsonl",
+      "sha256": "c6570d3417f375d02759bfd01eaac149a6398d3a966c8f079a4bf0c8ae78ff03",
+      "bytes": 94131,
       "kind": "original-native-evidence"
     },
     "confirmed_phase-final.png": {
-      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/native/confirmed/phase-final.png",
-      "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/native/confirmed/phase-final.png",
-      "sha256": "40d0e8827fa3eb7d62d27b05a4fce8a8340ca02db2ed990a6179a8e2b0aaf997",
-      "bytes": 234065,
+      "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T054941116495Z-native/attempts/000001/native/confirmed/phase-final.png",
+      "repository_path": "harness/runs/20261012T054941116495Z-native/attempts/000001/native/confirmed/phase-final.png",
+      "sha256": "e015af9d7444158affe33b324295d95a4f059592ba5cd0595cc22fc89e117e31",
+      "bytes": 234124,
       "kind": "original-native-evidence"
     },
     "review_preview_copy": {
       "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/reports/f1-navigation-preview.png",
       "repository_path": "harness/reports/f1-navigation-preview.png",
-      "sha256": "a9030042a8f6b8bebf39043b4028cfe377d55916ba6473ab9f3a050d0bf102c9",
-      "bytes": 306592,
+      "sha256": "6045444df88ee174d5c0bf61661df8a3bd6baae15ee2fad97868b3d5c46ebb58",
+      "bytes": 307739,
       "kind": "unmodified-review-copy"
     },
     "independent_live_review": {
@@ -495,8 +498,8 @@
   "evidence_note": "Original local harness/runs files are retained and ignored by Git. Review report/display copy does not replace gate inputs. CI regenerates host evidence; local native fixture is separately witnessed.",
   "independent_review": {
     "reviewer": "/root/f1_acceptance",
-    "status": "passed: host/native-fixture",
-    "live_apple_pin": "passed: formal demo Apple coordinate pin/OS return and original database invariance on simulator only"
+    "status": "passed: current integrated host/native-fixture; actual Apple evidence retains prior2da scope",
+    "live_apple_pin": "passed on prior2da formal-demo build; current App source byte-identical; simulator-only"
   },
   "historical_candidates": [
     {
@@ -541,13 +544,87 @@
         "bytes": 33154,
         "kind": "independent-review-receipt"
       }
+    },
+    {
+      "candidate": {
+        "source_fingerprint": "2da2eac55f40d8b65e8a167b6db433d547d519f6250acf0210412f031904cff1",
+        "source_code_sha": "48252a39e0ed7c6cdd504f3153740003e2636c19",
+        "source_main": "53c2089349aacf90a330a9245dbd14789eb16d2e",
+        "planning_sha": "5f32b66a91dbd6b92b692d252188e23e3e64276e"
+      },
+      "local_verdict": {
+        "quality": "passed",
+        "host": "passed",
+        "native_fixture": "passed",
+        "independent_native_review": "passed",
+        "production_eligible": false,
+        "real_apple_pin": "passed: simulator destination pin and return only"
+      },
+      "evidence": {
+        "quality": {
+          "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051701983109Z-quality/attempts/000001/report.json",
+          "repository_path": "harness/runs/20261012T051701983109Z-quality/attempts/000001/report.json",
+          "sha256": "6ccc4759c3a5e0119a2565a88a91a86052de82eaec4def479d30e087b7503a0b",
+          "bytes": 13291,
+          "kind": "quality-run"
+        },
+        "native_collector": {
+          "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/native/result.json",
+          "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/native/result.json",
+          "sha256": "5911a792bde662fcfd92509421f4c0d3b783f9129f2b3c1345f4dee19a71048d",
+          "bytes": 2065341,
+          "kind": "raw-native-collector"
+        },
+        "native_gate_leaf": {
+          "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T052248642223Z-f1-gate/attempts/000001/f1-evidence-gate.log",
+          "repository_path": "harness/runs/20261012T052248642223Z-f1-gate/attempts/000001/f1-evidence-gate.log",
+          "sha256": "e486d0b42ed78b0f8b5fb3807a3f5163de02e121daab5771598ef5500e946003",
+          "bytes": 689,
+          "kind": "f1-gate"
+        },
+        "independent_review": {
+          "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/f1-independent-pin-review-20261012T052637436914Z/review-receipt.json",
+          "repository_path": "harness/runs/f1-independent-pin-review-20261012T052637436914Z/review-receipt.json",
+          "sha256": "2e8ac3c9bce3bce54ddb5c9fa43b023441f9ac469518bf755446e28dda9db574",
+          "bytes": 2746,
+          "kind": "independent-review-receipt"
+        },
+        "live_apple_pin": {
+          "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T052303209406Z-build/attempts/000001/preview/live-apple-pin-receipt.json",
+          "repository_path": "harness/runs/20261012T052303209406Z-build/attempts/000001/preview/live-apple-pin-receipt.json",
+          "sha256": "1fbf10a2950384f13fc5d46ca4a287a23a9722ac21ea9aa68a56776c3c4032cf",
+          "bytes": 4150,
+          "kind": "live-native-ui-summary"
+        },
+        "independent_live_review": {
+          "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/f1-independent-live-pin-review-20261012T054208750006Z/review-receipt.json",
+          "repository_path": "harness/runs/f1-independent-live-pin-review-20261012T054208750006Z/review-receipt.json",
+          "sha256": "8e2f28f5c9c93fa40167827128f74afb18ac9f9743407c58098daeda30a04c6b",
+          "bytes": 3500,
+          "kind": "independent-review-receipt"
+        },
+        "original_preview": {
+          "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/20261012T051942704734Z-native/attempts/000001/native/saved/list-navigation-preview.png",
+          "repository_path": "harness/runs/20261012T051942704734Z-native/attempts/000001/native/saved/list-navigation-preview.png",
+          "sha256": "a9030042a8f6b8bebf39043b4028cfe377d55916ba6473ab9f3a050d0bf102c9",
+          "bytes": 306592,
+          "kind": "original-os-screenshot"
+        },
+        "original30_public_verification": {
+          "path": "/Users/yeyufeng/.codex/worktrees/ocean-f1-navigation/transvirtual-driver-delivery/harness/runs/f1-original-stop-verification-20261012/all30.public-verification.json",
+          "repository_path": "harness/runs/f1-original-stop-verification-20261012/all30.public-verification.json",
+          "sha256": "9ce2c41b551a79e740217d1faafa838c184abb0d15d49876fc8a892a187639eb",
+          "bytes": 104773,
+          "kind": "bounded-public-research-summary"
+        }
+      }
     }
   ],
   "map_destination_repair": {
     "reason": "Unknown-origin Apple directions prompted for an origin over stale San Francisco when location services were off.",
     "behavior": "Unknown Apple start opens exact numeric coordinate pin; reliable start retains driving directions. Destination coordinates visible; generic map-opening request receipt.",
     "source_data_changed": false,
-    "name_verification": "0 of original30 qualify as verified name+location matches; all retain stored coordinate destinations.",
+    "name_verification": "0 of original30 qualify as verified name+location matches;16 ambiguous/other-location and14 unverified after sharing duplicate-name evidence; all retain stored coordinate destinations.",
     "live_native_scope": "Actual formal demo app button, Apple pin, OS return and original detail; original30stop/delivery/outbox rows unchanged."
   }
 }
