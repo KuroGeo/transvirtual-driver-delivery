@@ -554,6 +554,75 @@ void main() {
     },
   );
 
+  for (final scenario in [
+    (
+      name: 'Apple Maps without a start opens the exact destination pin',
+      origin: null,
+      query: {'ll': '-33.885987,151.197618', 'q': '-33.885987,151.197618'},
+    ),
+    (
+      name: 'Apple Maps with a start preserves coordinate driving directions',
+      origin: fixtures.originCoordinate,
+      query: {
+        'daddr': '-33.885987,151.197618',
+        'dirflg': 'd',
+        'saddr': fixtures.originCoordinate.uriValue,
+      },
+    ),
+  ]) {
+    test(scenario.name, () async {
+      const destination = RouteCoordinate(-33.885987, 151.197618);
+      Uri? checked;
+      Uri? opened;
+      LaunchMode? launchedMode;
+      var launches = 0;
+      final gateway = UrlNavigationGateway(
+        platform: TargetPlatform.iOS,
+        supportsMode: (mode) async => mode == LaunchMode.externalApplication,
+        canLaunch: (uri) async {
+          checked = uri;
+          return true;
+        },
+        launchUrl: (uri, mode) async {
+          launches++;
+          opened = uri;
+          launchedMode = mode;
+          return true;
+        },
+      );
+      expect(
+        await gateway.launch(
+          NavigationApp.appleMaps,
+          destination: destination,
+          origin: scenario.origin,
+          isCurrent: () => true,
+        ),
+        HandoffStatus.handoffRequested,
+      );
+      expect(launches, 1);
+      expect(launchedMode, LaunchMode.externalApplication);
+      expect(checked, opened);
+      expect(opened!.scheme, 'maps');
+      expect(opened!.host, isEmpty);
+      expect(opened!.userInfo, isEmpty);
+      expect(opened!.fragment, isEmpty);
+      expect(opened!.queryParameters, scenario.query);
+      for (final privateValue in [
+        fixtures.target.stopId,
+        fixtures.target.label,
+        fixtures.target.address,
+        fixtures.scope.workspaceId,
+        fixtures.scope.principalId,
+        fixtures.scope.datasetId,
+      ]) {
+        expect(
+          Uri.decodeFull(opened.toString()),
+          isNot(contains(privateValue)),
+        );
+      }
+    });
+  }
+
   test('Android native navigation uses the documented opaque URI', () {
     final uri = UrlNavigationGateway(platform: TargetPlatform.android).uriFor(
       NavigationApp.googleMaps,

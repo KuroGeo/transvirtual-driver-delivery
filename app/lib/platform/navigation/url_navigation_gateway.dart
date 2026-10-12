@@ -87,11 +87,14 @@ class UrlNavigationGateway implements NavigationGateway {
         return Uri(
           scheme: 'maps',
           host: '',
-          queryParameters: {
-            'daddr': destination.uriValue,
-            'dirflg': 'd',
-            if (origin != null) 'saddr': origin.uriValue,
-          },
+          // Show the exact destination before Maps asks for an unknown start.
+          queryParameters: origin == null
+              ? {'ll': destination.uriValue, 'q': destination.uriValue}
+              : {
+                  'daddr': destination.uriValue,
+                  'dirflg': 'd',
+                  'saddr': origin.uriValue,
+                },
         );
       case NavigationApp.googleMaps:
         if (platform == TargetPlatform.iOS) {
